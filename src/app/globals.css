@@ -1,0 +1,304 @@
+@import "tailwindcss";
+
+/* Tmavý režim: systémová preference NEBO třída `dark` na <html>.
+   Třída `light` naopak systémovou preferenci přebije. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:not(.light, .light *)) {
+      @slot;
+    }
+  }
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   Barevná paleta
+   Světlý režim staví na teplém papírovém podkladu, aby barvy
+   rodičů (modrá / růžová) v kalendáři jasně vystoupily.
+   ─────────────────────────────────────────────────────────── */
+:root {
+  --canvas: #f6f5f2;
+  --surface: #ffffff;
+  --surface-2: #fbfaf8;
+  --ink: #191817;
+  --ink-muted: #6f6b66;
+  --ink-subtle: #9a958e;
+  --line: #e7e3dc;
+  --line-strong: #d6d1c8;
+
+  --brand: #2f6f5e;
+  --brand-hover: #275c4e;
+  --brand-soft: #e4f0ea;
+  --brand-ink: #ffffff;
+
+  --danger: #c2453d;
+  --danger-soft: #fbeae8;
+  --warning: #b5761b;
+  --warning-soft: #fdf1de;
+  --success: #2f7d3f;
+  --success-soft: #e6f3e8;
+  --info: #2b6cb0;
+  --info-soft: #e6effa;
+
+  /* Výchozí barvy rodičů — lze přepsat v nastavení člena */
+  --parent-a: #3f74e0;
+  --parent-b: #d9557a;
+  --parent-both: #7c5cd6;
+
+  --ring: #2f6f5e;
+  --shadow-card: 0 1px 2px rgb(25 24 23 / 0.05), 0 8px 24px -12px rgb(25 24 23 / 0.12);
+  --shadow-pop: 0 12px 40px -12px rgb(25 24 23 / 0.28);
+}
+
+/* Tmavá paleta se uplatní podle systému… */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+  --canvas: #131417;
+  --surface: #1b1d21;
+  --surface-2: #212429;
+  --ink: #f1f0ed;
+  --ink-muted: #a2a29e;
+  --ink-subtle: #7b7b78;
+  --line: #2c2f35;
+  --line-strong: #3a3e46;
+
+  --brand: #4bb897;
+  --brand-hover: #5fc7a8;
+  --brand-soft: #172f29;
+  --brand-ink: #0d1a16;
+
+  --danger: #ef7b72;
+  --danger-soft: #33201e;
+  --warning: #e0a24a;
+  --warning-soft: #33280f;
+  --success: #6cc07d;
+  --success-soft: #162a1a;
+  --info: #6fa8e8;
+  --info-soft: #16232f;
+
+  --parent-a: #6c9bff;
+  --parent-b: #f0819f;
+  --parent-both: #a68cf0;
+
+  --ring: #4bb897;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
+  }
+}
+
+/* …a natvrdo při ruční volbě v nastavení. */
+:root.dark {
+  --canvas: #131417;
+  --surface: #1b1d21;
+  --surface-2: #212429;
+  --ink: #f1f0ed;
+  --ink-muted: #a2a29e;
+  --ink-subtle: #7b7b78;
+  --line: #2c2f35;
+  --line-strong: #3a3e46;
+
+  --brand: #4bb897;
+  --brand-hover: #5fc7a8;
+  --brand-soft: #172f29;
+  --brand-ink: #0d1a16;
+
+  --danger: #ef7b72;
+  --danger-soft: #33201e;
+  --warning: #e0a24a;
+  --warning-soft: #33280f;
+  --success: #6cc07d;
+  --success-soft: #162a1a;
+  --info: #6fa8e8;
+  --info-soft: #16232f;
+
+  --parent-a: #6c9bff;
+  --parent-b: #f0819f;
+  --parent-both: #a68cf0;
+
+  --ring: #4bb897;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-parent-a: var(--parent-a);
+  --color-parent-b: var(--parent-b);
+  --color-parent-both: var(--parent-both);
+
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  --font-sans: var(--font-app), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Bezpečné zóny iOS (notch + home indicator) */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Zamezí horizontálnímu posunu na mobilu */
+    overflow-x: hidden;
+  }
+
+  /* Číselné údaje (částky, počty nocí) zarovnané na stejnou šířku */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* iOS nezvětšuje stránku při focusu, pokud je písmo ≥ 16px */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+@layer components {
+  .card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Skrytí scrollbaru u horizontálních pásů (výběr dětí, dny) */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+@layer utilities {
+  @keyframes rp-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes rp-sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes rp-pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes rp-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  .animate-fade-in {
+    animation: rp-fade-in 0.18s ease-out both;
+  }
+  .animate-sheet-up {
+    animation: rp-sheet-up 0.26s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+  .animate-pop-in {
+    animation: rp-pop-in 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--surface-2) 25%,
+      var(--line) 37%,
+      var(--surface-2) 63%
+    );
+    background-size: 200% 100%;
+    animation: rp-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Rodinný plánovač">
+  <rect width="512" height="512" rx="112" fill="#2f6f5e"/>
+  <rect x="96" y="128" width="320" height="288" rx="40" fill="#f6f5f2"/>
+  <rect x="96" y="128" width="320" height="64" rx="32" fill="#e7e3dc"/>
+  <circle cx="168" cy="112" r="18" fill="#f6f5f2"/>
+  <circle cx="344" cy="112" r="18" fill="#f6f5f2"/>
+  <rect x="140" y="232" width="72" height="64" rx="16" fill="#3f74e0"/>
+  <rect x="228" y="232" width="72" height="64" rx="16" fill="#3f74e0"/>
+  <rect x="316" y="232" width="60" height="64" rx="16" fill="#d9557a"/>
+  <rect x="140" y="316" width="72" height="64" rx="16" fill="#d9557a"/>
+  <rect x="228" y="316" width="72" height="64" rx="16" fill="#d9557a"/>
+  <rect x="316" y="316" width="60" height="64" rx="16" fill="#3f74e0"/>
+</svg>
