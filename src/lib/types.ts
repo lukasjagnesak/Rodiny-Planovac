@@ -97,6 +97,8 @@ export interface Child {
   avatar_url: string | null;
   school: string | null;
   class_name: string | null;
+  /** Okres školy — určuje termín jarních prázdnin. */
+  okres: string | null;
   notes: string | null;
   archived: boolean;
 }

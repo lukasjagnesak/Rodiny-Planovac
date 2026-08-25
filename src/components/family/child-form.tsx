@@ -6,9 +6,10 @@ import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet, ConfirmSheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Checkbox, Field, Input, Textarea } from "@/components/ui/field";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
+import { OKRESY } from "@/lib/data/jarni-prazdniny";
 import type { Child, SessionContext } from "@/lib/types";
 
 export function ChildForm({
@@ -38,6 +39,7 @@ export function ChildForm({
             color: child.color,
             school: child.school ?? "",
             class_name: child.class_name ?? "",
+            okres: child.okres ?? "",
             notes: child.notes ?? "",
             archived: child.archived,
           }
@@ -69,6 +71,7 @@ export function ChildForm({
       color: form.color,
       school: form.school.trim() || null,
       class_name: form.class_name.trim() || null,
+      okres: form.okres || null,
       notes: form.notes.trim() || null,
       archived: form.archived,
     };
@@ -164,6 +167,20 @@ export function ChildForm({
             </Field>
           </div>
 
+          <Field
+            label="Okres školy"
+            hint="doplní jarní prázdniny do kalendáře"
+          >
+            <Select value={form.okres} onChange={(e) => set("okres", e.target.value)}>
+              <option value="">Nevyplněno</option>
+              {OKRESY.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
           <Field label="Poznámka" hint="alergie, léky, velikost oblečení…">
             <Textarea value={form.notes} onChange={(e) => set("notes", e.target.value)} />
           </Field>
@@ -198,6 +215,7 @@ function empty() {
     color: COLOR_PALETTE[2],
     school: "",
     class_name: "",
+    okres: "",
     notes: "",
     archived: false,
   };

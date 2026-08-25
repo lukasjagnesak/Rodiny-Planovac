@@ -7,6 +7,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, Moon, Repeat } from "lucide-re
 import {
   DOW_SHORT,
   DOW_ORDER,
+  formatDayShort,
   formatMonth,
   monthDays,
   monthGrid,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/dates";
 import { custodyStats, resolveCustody, type CustodyDay } from "@/lib/custody";
 import { expandActivities } from "@/lib/activities";
+import { holidayByDay, holidaysInRange, type Holiday } from "@/lib/holidays";
 import { cn, nights, withAlpha } from "@/lib/format";
 import { sideColor, sideLabel } from "@/lib/members";
 import { Card, CardBody } from "@/components/ui/card";
@@ -123,6 +125,31 @@ export function MonthView({
   const colorA = sideColor(session.members, "a");
   const colorB = sideColor(session.members, "b");
 
+  /**
+   * Prázdniny se počítají z okresu školy. Když mají sourozenci školy v různých
+   * okresech, bereme okres vybraného dítěte — v pohledu na všechny děti okres
+   * prvního, které ho má vyplněný.
+   */
+  const okres = React.useMemo(() => {
+    if (selectedChild) return selectedChild.okres;
+    return session.children.find((c) => c.okres)?.okres ?? null;
+  }, [selectedChild, session.children]);
+
+  const holidays = React.useMemo(() => {
+    const first = toDateKey(grid[0]);
+    const last = toDateKey(grid[grid.length - 1]);
+    return holidaysInRange(first, last, okres);
+  }, [grid, okres]);
+
+  const holidayMap = React.useMemo(() => holidayByDay(holidays), [holidays]);
+
+  /** Prázdniny, které zasahují do zobrazeného měsíce — pro popisek pod mřížkou. */
+  const monthHolidays = React.useMemo(() => {
+    const first = toDateKey(inMonth[0]);
+    const last = toDateKey(inMonth[inMonth.length - 1]);
+    return holidays.filter((h) => h.to >= first && h.from <= last);
+  }, [holidays, inMonth]);
+
   function go(offset: number) {
     const target = toDateKey(startOfMonth(addMonths(anchor, offset))).slice(0, 7);
     router.push(`/kalendar?m=${target}&dite=${childId}`);
@@ -217,6 +244,7 @@ export function MonthView({
             const today = isToday(date);
             const dayActivities = activityMap.get(key) ?? [];
             const dayEvents = eventMap.get(key) ?? [];
+            const holiday = holidayMap.get(key);
 
             const tint = mixed
               ? undefined
@@ -236,11 +264,15 @@ export function MonthView({
                   outside && "opacity-45",
                   "hover:brightness-[0.97] active:brightness-95",
                 )}
+                title={holiday ? holiday.label : undefined}
                 style={{
                   backgroundColor: tint,
                   backgroundImage: mixed
                     ? `linear-gradient(135deg, ${withAlpha(colorA, 0.16)} 0 50%, ${withAlpha(colorB, 0.16)} 50% 100%)`
                     : undefined,
+                  // Prázdniny nesou vlastní proužek u dolní hrany, aby
+                  // nesoupeřily o plochu s barvou rodiče.
+                  boxShadow: holiday ? "inset 0 -3px 0 var(--ink-subtle)" : undefined,
                 }}
               >
                 <span
@@ -307,6 +339,30 @@ export function MonthView({
           })}
         </div>
       </Card>
+
+      {monthHolidays.length > 0 ? (
+        <Card>
+          <CardBody className="space-y-2 py-3">
+            {monthHolidays.map((h: Holiday) => (
+              <div key={`${h.kind}-${h.from}`} className="flex items-center gap-2.5 text-sm">
+                <span className="h-2.5 w-2.5 shrink-0 rounded-sm bg-ink-subtle" />
+                <span className="font-medium text-ink">{h.label}</span>
+                <span className="tnum ml-auto text-ink-muted">
+                  {h.from === h.to
+                    ? formatDayShort(h.from)
+                    : `${formatDayShort(h.from)} – ${formatDayShort(h.to)}`}
+                </span>
+              </div>
+            ))}
+            {!okres ? (
+              <p className="pt-1 text-xs text-ink-subtle">
+                Jarní prázdniny se liší podle okresu školy — doplň ho u dítěte v sekci Děti
+                a rodina.
+              </p>
+            ) : null}
+          </CardBody>
+        </Card>
+      ) : null}
 
       {/* ── Souhrn nocí ────────────────────────────────────────── */}
       <Card>
