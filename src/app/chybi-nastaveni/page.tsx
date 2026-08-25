@@ -8,11 +8,42 @@ export const metadata: Metadata = { title: "Chybí nastavení" };
  * aplikace běží, ale nemá vyplněné přístupy k Supabase.
  */
 export default function MissingConfigPage() {
-  const vars = [
-    { key: "NEXT_PUBLIC_SUPABASE_URL", ok: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) },
-    { key: "NEXT_PUBLIC_SUPABASE_ANON_KEY", ok: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) },
-    { key: "SUPABASE_SERVICE_ROLE_KEY", ok: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY) },
-    { key: "TOKEN_ENCRYPTION_KEY", ok: Boolean(process.env.TOKEN_ENCRYPTION_KEY) },
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+
+  /** Adresa musí jít rozparsovat a začínat na http(s) — jinak Supabase klient spadne. */
+  function urlState(): { label: string; tone: "ok" | "bad" } {
+    if (!rawUrl) return { label: "chybí", tone: "bad" };
+    try {
+      const parsed = new URL(rawUrl);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        return { label: "chybí https://", tone: "bad" };
+      }
+      return { label: "vyplněno", tone: "ok" };
+    } catch {
+      return { label: "není platná adresa", tone: "bad" };
+    }
+  }
+
+  const vars: { key: string; label: string; tone: "ok" | "bad" }[] = [
+    { key: "NEXT_PUBLIC_SUPABASE_URL", ...urlState() },
+    {
+      key: "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      ...(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+        ? { label: "vyplněno", tone: "ok" as const }
+        : { label: "chybí", tone: "bad" as const }),
+    },
+    {
+      key: "SUPABASE_SERVICE_ROLE_KEY",
+      ...(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+        ? { label: "vyplněno", tone: "ok" as const }
+        : { label: "chybí", tone: "bad" as const }),
+    },
+    {
+      key: "TOKEN_ENCRYPTION_KEY",
+      ...(process.env.TOKEN_ENCRYPTION_KEY?.trim()
+        ? { label: "vyplněno", tone: "ok" as const }
+        : { label: "chybí", tone: "bad" as const }),
+    },
   ];
 
   return (
@@ -35,11 +66,17 @@ export default function MissingConfigPage() {
             <li key={item.key} className="flex items-center gap-2.5 text-sm">
               <span
                 aria-hidden
-                className={`h-2 w-2 shrink-0 rounded-full ${item.ok ? "bg-success" : "bg-danger"}`}
+                className={`h-2 w-2 shrink-0 rounded-full ${
+                  item.tone === "ok" ? "bg-success" : "bg-danger"
+                }`}
               />
               <code className="min-w-0 truncate text-ink-muted">{item.key}</code>
-              <span className={`ml-auto shrink-0 text-xs ${item.ok ? "text-success" : "text-danger"}`}>
-                {item.ok ? "vyplněno" : "chybí"}
+              <span
+                className={`ml-auto shrink-0 text-xs ${
+                  item.tone === "ok" ? "text-success" : "text-danger"
+                }`}
+              >
+                {item.label}
               </span>
             </li>
           ))}
@@ -51,7 +88,12 @@ export default function MissingConfigPage() {
             <li>
               <code className="rounded bg-surface px-1">cp .env.example .env.local</code>
             </li>
-            <li>Doplň klíče ze Supabase.</li>
+            <li>
+              Doplň klíče ze Supabase. Adresa musí být celá včetně{" "}
+              <code className="rounded bg-surface px-1">https://</code>, bez uvozovek
+              a bez mezer — tedy{" "}
+              <code className="rounded bg-surface px-1">https://abcdefgh.supabase.co</code>.
+            </li>
             <li>
               Zastav server (<code className="rounded bg-surface px-1">Ctrl+C</code>) a spusť znovu{" "}
               <code className="rounded bg-surface px-1">npm run dev</code>.

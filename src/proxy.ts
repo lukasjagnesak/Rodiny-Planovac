@@ -3,16 +3,28 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/prihlaseni", "/registrace", "/pozvanka", "/auth", "/api/telegram", "/api/cron"];
 
-/** Bez těchto proměnných nejde vytvořit Supabase klient a spadne každá stránka. */
-function configMissing(): boolean {
-  return (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+/**
+ * Supabase klient spadne nejen když proměnné chybí, ale i když je adresa
+ * rozbitá — třeba bez `https://` nebo s uvozovkami okolo. Obojí zachytíme tady,
+ * ať uživatel dostane vysvětlení místo pádu.
+ */
+function configProblem(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  if (!url || !key) return true;
+
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol !== "https:" && parsed.protocol !== "http:";
+  } catch {
+    return true;
+  }
 }
 
 export async function proxy(request: NextRequest) {
   // Místo bílé chyby 500 ukážeme stránku, která řekne, co doplnit.
-  if (configMissing() && request.nextUrl.pathname !== "/chybi-nastaveni") {
+  if (configProblem() && request.nextUrl.pathname !== "/chybi-nastaveni") {
     const url = request.nextUrl.clone();
     url.pathname = "/chybi-nastaveni";
     url.search = "";
