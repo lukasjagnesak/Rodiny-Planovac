@@ -3,7 +3,22 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/prihlaseni", "/registrace", "/pozvanka", "/auth", "/api/telegram", "/api/cron"];
 
+/** Bez těchto proměnných nejde vytvořit Supabase klient a spadne každá stránka. */
+function configMissing(): boolean {
+  return (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
 export async function proxy(request: NextRequest) {
+  // Místo bílé chyby 500 ukážeme stránku, která řekne, co doplnit.
+  if (configMissing() && request.nextUrl.pathname !== "/chybi-nastaveni") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/chybi-nastaveni";
+    url.search = "";
+    return NextResponse.rewrite(url);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
