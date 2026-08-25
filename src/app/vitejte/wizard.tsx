@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
 import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
-import { PATTERN_HINTS, PATTERN_LABELS } from "@/lib/custody";
+import { PATTERN_HINTS, PATTERN_LABELS, currentWeekInfo } from "@/lib/custody";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
 import { toDateKey } from "@/lib/dates";
 import { startOfWeek } from "date-fns";
@@ -38,7 +38,7 @@ export function OnboardingWizard({ defaultName }: { defaultName: string }) {
     { name: "", birthDate: "", color: COLOR_PALETTE[2] },
   ]);
 
-  const [kind, setKind] = React.useState<PatternKind>("alternating_weeks");
+  const [kind, setKind] = React.useState<PatternKind>("iso_week_parity");
   const [anchorDate, setAnchorDate] = React.useState(
     toDateKey(startOfWeek(new Date(), WEEK_OPTS)),
   );
@@ -296,7 +296,34 @@ export function OnboardingWizard({ defaultName }: { defaultName: string }) {
               ))}
             </div>
 
-            {kind === "custom_weekly" ? (
+            {kind === "iso_week_parity" ? (
+              <>
+                <Field
+                  label="Sudý týden mají děti u"
+                  hint="lichý týden pak u druhého rodiče"
+                >
+                  <Select
+                    value={anchorSide}
+                    onChange={(e) => setAnchorSide(e.target.value as "a" | "b")}
+                  >
+                    <option value="a">
+                      Strana A{mySide === "a" ? ` — ${myName || "já"}` : otherName ? ` — ${otherName}` : ""}
+                    </option>
+                    <option value="b">
+                      Strana B{mySide === "b" ? ` — ${myName || "já"}` : otherName ? ` — ${otherName}` : ""}
+                    </option>
+                  </Select>
+                </Field>
+                <p className="rounded-xl bg-surface-2 p-3 text-sm text-ink-muted">
+                  Tento týden je{" "}
+                  <strong className="text-ink">{currentWeekInfo().week}.</strong> — tedy{" "}
+                  <strong className="text-ink">
+                    {currentWeekInfo().even ? "sudý" : "lichý"}
+                  </strong>
+                  .
+                </p>
+              </>
+            ) : kind === "custom_weekly" ? (
               <Field label="Rozpis týdne" hint="klikni na den a přepni stranu">
                 <WeeklyMapEditor value={weeklyMap} onChange={setWeeklyMap} />
               </Field>

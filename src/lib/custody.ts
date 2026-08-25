@@ -1,4 +1,4 @@
-import { differenceInCalendarDays, startOfWeek } from "date-fns";
+import { addWeeks, differenceInCalendarDays, getISOWeek, startOfWeek } from "date-fns";
 import { WEEK_OPTS, toDateKey, fromDateKey } from "./dates";
 import type { CustodyOverride, CustodyPattern, CustodySide } from "./types";
 
@@ -64,6 +64,13 @@ export function sideFromPattern(pattern: CustodyPattern, date: Date): CustodySid
       // `weekly_map` je od pondělí; getDay() vrací 0 = neděle.
       const idx = (date.getDay() + 6) % 7;
       return map[idx] === "a" ? "a" : "b";
+    }
+
+    case "iso_week_parity": {
+      // `anchor_side` je strana, která má SUDÝ týden. Číslo týdne je podle
+      // ISO 8601 — týden začíná pondělím, stejně jako školní rozvrhy.
+      const even = getISOWeek(date) % 2 === 0;
+      return even ? pattern.anchor_side : otherSide(pattern.anchor_side);
     }
 
     case "week_2_2_3": {
@@ -201,6 +208,7 @@ function isNextDay(prevKey: string, nextKey: string): boolean {
 }
 
 export const PATTERN_LABELS: Record<CustodyPattern["kind"], string> = {
+  iso_week_parity: "Sudý a lichý týden",
   alternating_weeks: "Střídání po týdnu",
   week_2_2_3: "Schéma 2-2-3",
   custom_weekly: "Vlastní týdenní rozpis",
@@ -208,8 +216,39 @@ export const PATTERN_LABELS: Record<CustodyPattern["kind"], string> = {
 };
 
 export const PATTERN_HINTS: Record<CustodyPattern["kind"], string> = {
-  alternating_weeks: "Celý týden u jednoho rodiče, pak se vymění. Nejčastější varianta.",
+  iso_week_parity:
+    "Podle čísla kalendářního týdne — sudý u jednoho rodiče, lichý u druhého. Tak to bývá v rozsudcích i školních rozvrzích.",
+  alternating_weeks:
+    "Celý týden u jednoho rodiče, pak se vymění. Cyklus se počítá od data, které zvolíš.",
   week_2_2_3: "Po–Út u A, St–Čt u B, Pá–Ne u A. Další týden obráceně.",
   custom_weekly: "Sám určíš, který den v týdnu patří komu. Opakuje se každý týden.",
   fixed_parent: "Bez střídání — děti jsou trvale u jednoho rodiče.",
 };
+
+/** Číslo a parita právě probíhajícího týdne — pomáhá při nastavování vzoru. */
+export function currentWeekInfo(date = new Date()): { week: number; even: boolean } {
+  const week = getISOWeek(date);
+  return { week, even: week % 2 === 0 };
+}
+
+/**
+ * Roky s 53 týdny způsobí, že na přelomu roku naváže lichý týden na lichý
+ * (nebo sudý na sudý) a jeden rodič má děti dva týdny v kuse. U vzoru
+ * „sudý/lichý týden“ se tomu nedá vyhnout jinak než ruční výjimkou, takže
+ * na to aspoň včas upozorníme.
+ */
+export function findDoubleWeeks(from = new Date(), monthsAhead = 24): string[] {
+  const start = startOfWeek(from, WEEK_OPTS);
+  const weeks = Math.ceil((monthsAhead / 12) * 53);
+  const hits: string[] = [];
+
+  for (let i = 1; i <= weeks; i += 1) {
+    const monday = addWeeks(start, i);
+    const previous = addWeeks(start, i - 1);
+    if (getISOWeek(monday) % 2 === getISOWeek(previous) % 2) {
+      hits.push(toDateKey(monday));
+    }
+  }
+
+  return hits;
+}

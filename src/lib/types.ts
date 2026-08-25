@@ -1,6 +1,11 @@
 export type CustodySide = "a" | "b";
 export type MemberRole = "owner" | "parent" | "guardian" | "viewer";
-export type PatternKind = "alternating_weeks" | "week_2_2_3" | "custom_weekly" | "fixed_parent";
+export type PatternKind =
+  | "alternating_weeks"
+  | "iso_week_parity"
+  | "week_2_2_3"
+  | "custom_weekly"
+  | "fixed_parent";
 
 export type EventKind =
   | "school_trip"

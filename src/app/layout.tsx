@@ -56,7 +56,13 @@ const THEME_SCRIPT = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="cs"
+      className={inter.variable}
+      // Next jinak varuje, že plynulé rolování rozbíjí přechody mezi stránkami.
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>

@@ -12,7 +12,12 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { Sheet, ConfirmSheet } from "@/components/ui/sheet";
 import { Alert, EmptyState, Spinner } from "@/components/ui/misc";
 import { WeeklyMapEditor } from "@/app/vitejte/wizard";
-import { PATTERN_HINTS, PATTERN_LABELS } from "@/lib/custody";
+import {
+  PATTERN_HINTS,
+  PATTERN_LABELS,
+  currentWeekInfo,
+  findDoubleWeeks,
+} from "@/lib/custody";
 import { WEEK_OPTS, formatDay, toDateKey } from "@/lib/dates";
 import { sideColor, sideLabel } from "@/lib/members";
 import type {
@@ -72,6 +77,8 @@ export function CustodySettings({
           ))}
         </CardBody>
       </Card>
+
+      {patterns.some((p) => p.kind === "iso_week_parity") ? <DoubleWeekWarning /> : null}
 
       {/* ── Vzory ──────────────────────────────────────────────── */}
       <Card>
@@ -142,7 +149,12 @@ export function CustodySettings({
                       <p className="mt-0.5 text-xs text-ink-subtle">
                         {p.kind === "fixed_parent"
                           ? `Trvale u: ${sideLabel(session.members, p.fixed_side ?? p.anchor_side)}`
-                          : `První cyklus od ${formatDay(p.anchor_date)}: ${sideLabel(session.members, p.anchor_side)}`}
+                          : p.kind === "iso_week_parity"
+                            ? `Sudý týden: ${sideLabel(session.members, p.anchor_side)} · lichý: ${sideLabel(
+                                session.members,
+                                p.anchor_side === "a" ? "b" : "a",
+                              )}`
+                            : `První cyklus od ${formatDay(p.anchor_date)}: ${sideLabel(session.members, p.anchor_side)}`}
                       </p>
                     )}
                   </div>
@@ -386,7 +398,23 @@ function PatternForm({
             </Field>
           </div>
 
-          {form.kind === "custom_weekly" ? (
+          {form.kind === "iso_week_parity" ? (
+            <>
+              <Field
+                label="Sudý týden mají děti u"
+                hint="lichý týden pak automaticky u druhého rodiče"
+              >
+                <Select
+                  value={form.anchor_side}
+                  onChange={(e) => set("anchor_side", e.target.value as CustodySide)}
+                >
+                  <option value="a">Strana A — {sideLabel(session.members, "a")}</option>
+                  <option value="b">Strana B — {sideLabel(session.members, "b")}</option>
+                </Select>
+              </Field>
+              <WeekParityHint side={form.anchor_side} session={session} />
+            </>
+          ) : form.kind === "custom_weekly" ? (
             <Field label="Rozpis týdne" hint="klikni na den a přepni stranu">
               <WeeklyMapEditor value={form.weekly_map} onChange={(v) => set("weekly_map", v)} />
             </Field>
@@ -445,7 +473,7 @@ function PatternForm({
 function empty() {
   const monday = toDateKey(startOfWeek(new Date(), WEEK_OPTS));
   return {
-    kind: "alternating_weeks" as PatternKind,
+    kind: "iso_week_parity" as PatternKind,
     child_id: "",
     starts_on: monday,
     ends_on: "",
@@ -455,4 +483,64 @@ function empty() {
     fixed_side: "a" as CustodySide,
     note: "",
   };
+}
+
+/** Ukáže, jaké číslo má právě probíhající týden a u koho tedy děti jsou. */
+function WeekParityHint({
+  side,
+  session,
+}: {
+  side: CustodySide;
+  session: SessionContext;
+}) {
+  const { week, even } = currentWeekInfo();
+  const whoNow = even ? side : side === "a" ? "b" : "a";
+
+  return (
+    <div className="rounded-xl bg-surface-2 p-3 text-sm">
+      <p className="text-ink-muted">
+        Tento týden je <strong className="text-ink">{week}.</strong> — tedy{" "}
+        <strong className="text-ink">{even ? "sudý" : "lichý"}</strong>.
+      </p>
+      <p className="mt-1 flex items-center gap-2 text-ink-muted">
+        <Dot color={sideColor(session.members, whoNow)} />
+        Podle tohoto nastavení má děti{" "}
+        <strong className="text-ink">{sideLabel(session.members, whoNow)}</strong>.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Upozornění na týdny, kde kvůli 53týdennímu roku připadnou dva stejné
+ * týdny za sebou. Rodina si je může ošetřit výjimkou v kalendáři.
+ */
+function DoubleWeekWarning() {
+  const upcoming = findDoubleWeeks(new Date(), 24);
+  if (upcoming.length === 0) return null;
+
+  return (
+    <div className="rounded-xl border border-[var(--flag-rule,transparent)] bg-warning-soft p-3.5">
+      <p className="flex items-start gap-2 text-sm font-medium text-warning">
+        <CalendarRange className="mt-0.5 h-4 w-4 shrink-0" />
+        Pozor na přelom roku
+      </p>
+      <p className="mt-1.5 text-sm text-ink-muted">
+        {upcoming.length === 1 ? "Jednou" : `${upcoming.length}×`} v nejbližších dvou letech
+        naváže stejná parita týdne sama na sebe — rok má 53 týdnů. Jeden rodič by tak měl děti{" "}
+        <strong className="text-ink">dva týdny v kuse</strong>:
+      </p>
+      <ul className="mt-2 space-y-1">
+        {upcoming.map((day) => (
+          <li key={day} className="text-sm text-ink">
+            týden od <strong>{formatDay(day)}</strong>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs text-ink-subtle">
+        Není to chyba, ale vlastnost střídání podle čísla týdne. Domluvte se, kdo tento týden
+        vezme, a přepište ho v kalendáři klikem na den.
+      </p>
+    </div>
+  );
 }
