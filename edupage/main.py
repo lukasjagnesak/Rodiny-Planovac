@@ -205,7 +205,22 @@ def jmeno(hodnota) -> Optional[str]:
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True}
+    """
+    Kromě „žiju" hlásí i to, co spuštěný kód umí.
+
+    Uvicorn si po úpravě souboru sám nic nenačte a při ladění se pak
+    těžko pozná, jestli běží nová verze, nebo pořád ta stará.
+    """
+    return {
+        "ok": True,
+        "umi": [
+            "parentStudentids",
+            "jmena-z-dbi",
+            "zpravy",
+            "rozvrh",
+            "zmeny-rozvrhu",
+        ],
+    }
 
 
 @app.post("/overit")
