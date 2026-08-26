@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Bell,
   Bike,
   BookOpen,
   CalendarDays,
@@ -166,12 +167,37 @@ function TabLink({
   );
 }
 
+/** Zvoneček s počtem nepřečtených. Vede na jedno místo se vším novým. */
+function Zvonecek({ pocet, className }: { pocet: number; className?: string }) {
+  const active = useActive("/oznameni");
+  return (
+    <Link
+      href="/oznameni"
+      aria-label={pocet > 0 ? `Co je nového — ${pocet} nových` : "Co je nového"}
+      className={cn(
+        "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors",
+        active ? "bg-brand-soft text-brand" : "text-ink-muted hover:bg-surface-2 hover:text-ink",
+        className,
+      )}
+    >
+      <Bell className="h-[18px] w-[18px]" />
+      {pocet > 0 ? (
+        <span className="tnum absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white">
+          {pocet > 9 ? "9+" : pocet}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
 export function AppShell({
   session,
   children,
+  novychOznameni = 0,
 }: {
   session: SessionContext;
   children: React.ReactNode;
+  novychOznameni?: number;
 }) {
   const me = session.members.find((m) => m.userId === session.userId);
 
@@ -184,6 +210,7 @@ export function AppShell({
             <CalendarHeart className="h-5 w-5" />
           </div>
           <FamilySwitcher session={session} />
+          <Zvonecek pocet={novychOznameni} />
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
@@ -223,7 +250,8 @@ export function AppShell({
             <CalendarHeart className="h-4 w-4" />
           </div>
           <FamilySwitcher session={session} />
-          <Link href="/nastaveni" className="ml-auto shrink-0">
+          <Zvonecek pocet={novychOznameni} className="ml-auto" />
+          <Link href="/nastaveni" className="shrink-0">
             <Avatar name={me?.name ?? "Já"} color={me?.color} src={me?.avatarUrl} size={32} />
           </Link>
         </header>
