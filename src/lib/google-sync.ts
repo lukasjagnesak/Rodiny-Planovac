@@ -1,3 +1,4 @@
+import { ZNACKA } from "./brand";
 import "server-only";
 
 import { addDays, eachDayOfInterval } from "date-fns";
@@ -133,7 +134,7 @@ export async function syncUserCalendar(userId: string): Promise<SyncResult> {
           day: block.startKey,
           payload: {
             summary: `👨‍👩‍👧 Děti: ${sideLabel(memberViews, block.side)}`,
-            description: `${block.nights} ${block.nights === 1 ? "noc" : block.nights < 5 ? "noci" : "nocí"} · Rodinný plánovač`,
+            description: `${block.nights} ${block.nights === 1 ? "noc" : block.nights < 5 ? "noci" : "nocí"} · ${ZNACKA}`,
             // Google bere `end.date` jako exkluzivní — proto +1 den.
             startDate: block.startKey,
             endDate: toDateKey(addDays(new Date(`${block.endKey}T00:00:00`), 1)),

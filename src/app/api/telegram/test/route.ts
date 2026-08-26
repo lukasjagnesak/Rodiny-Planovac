@@ -1,3 +1,4 @@
+import { ZNACKA } from "@/lib/brand";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendTelegramMessage } from "@/lib/telegram";
@@ -23,7 +24,7 @@ export async function POST() {
 
   const result = await sendTelegramMessage(
     profile.telegram_chat_id,
-    "🔔 <b>Zkušební zpráva</b>\nRodinný plánovač je správně propojený — připomínky ti budou chodit sem.",
+    `🔔 <b>Zkušební zpráva</b>\n${ZNACKA} je správně propojený — připomínky ti budou chodit sem.`,
   );
 
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 500 });

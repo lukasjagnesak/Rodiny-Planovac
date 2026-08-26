@@ -36,7 +36,7 @@ import {
   toDateKey,
 } from "@/lib/dates";
 import { cn, formatMoney, nights } from "@/lib/format";
-import { memberName, sideColor, sideLabel } from "@/lib/members";
+import { memberName, sideBg, sideColor, sideLabel } from "@/lib/members";
 import type {
   Activity,
   ActivityOccurrence,
@@ -181,13 +181,13 @@ export function Dashboard({
         <div
           className="flex items-center gap-3 p-4"
           style={{
-            background: `linear-gradient(90deg, ${sideColor(session.members, todayCustody[0]?.side ?? null)}1f, transparent)`,
+            background: `linear-gradient(90deg, ${sideBg(session.members, todayCustody[0]?.side ?? null)}, transparent)`,
           }}
         >
           <span
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
             style={{
-              backgroundColor: `${sideColor(session.members, todayCustody[0]?.side ?? null)}2e`,
+              backgroundColor: sideBg(session.members, todayCustody[0]?.side ?? null),
               color: sideColor(session.members, todayCustody[0]?.side ?? null),
             }}
           >

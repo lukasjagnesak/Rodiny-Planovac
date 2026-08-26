@@ -1,3 +1,4 @@
+import { ZNACKA } from "./brand";
 import "server-only";
 
 import { decryptSecret } from "./crypto";
@@ -121,7 +122,7 @@ function toGoogleBody(payload: GoogleEventPayload) {
     end: payload.endDate
       ? { date: payload.endDate }
       : { dateTime: payload.endDateTime, timeZone: payload.timeZone },
-    source: { title: "Rodinný plánovač", url: siteUrl() },
+    source: { title: ZNACKA, url: siteUrl() },
   };
 }
 

@@ -7,7 +7,7 @@
 # ═══════════════════════════════════════════════════════════════════
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/opt/rodinny-planovac}"
+APP_DIR="${APP_DIR:-/opt/dvojklic}"
 
 log() { printf '\n\033[1;32m▶ %s\033[0m\n' "$1"; }
 
@@ -56,14 +56,14 @@ cat <<'EOF'
  Server je připravený. Další kroky:
 
  1) Nahrej projekt na server, například:
-      git clone <adresa-repozitáře> /opt/rodinny-planovac
-      cd /opt/rodinny-planovac
+      git clone <adresa-repozitáře> /opt/dvojklic
+      cd /opt/dvojklic
 
  2) Vytvoř .env podle .env.example a doplň klíče:
       cp .env.example .env && nano .env
 
  3) Do .env přidej i doménu pro Caddy:
-      APP_DOMAIN=planovac.tvoje-domena.cz
+      APP_DOMAIN=dvojklic.cz
 
  4) Nasměruj A záznam domény na IP tohoto serveru.
 

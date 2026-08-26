@@ -15,41 +15,52 @@
 
 /* ───────────────────────────────────────────────────────────
    Barevná paleta
-   Světlý režim staví na teplém papírovém podkladu, aby barvy
-   rodičů (modrá / růžová) v kalendáři jasně vystoupily.
+   Teplý papírový podklad, k němu zelená (strana A) a terakota
+   (strana B). Plná barva rodiče patří jen na tečky, avatary a
+   okraje — velké plochy v kalendáři nesou světlé varianty `-bg`,
+   jinak je mřížka nečitelná.
    ─────────────────────────────────────────────────────────── */
 :root {
-  --canvas: #f6f5f2;
+  --canvas: #faf7f2;
   --surface: #ffffff;
-  --surface-2: #fbfaf8;
-  --ink: #191817;
-  --ink-muted: #6f6b66;
-  --ink-subtle: #9a958e;
-  --line: #e7e3dc;
-  --line-strong: #d6d1c8;
+  --surface-2: #f5f1ea;
+  --ink: #2e2a24;
+  --ink-muted: #8a8074;
+  --ink-subtle: #a9a093;
+  --line: #ede6da;
+  --line-strong: #dcd3c4;
 
-  --brand: #2f6f5e;
-  --brand-hover: #275c4e;
-  --brand-soft: #e4f0ea;
+  /* Značka jede na stejné zeleni jako strana A. Nevadí to: plná
+     barva rodiče se nikde nerozlévá do velkých ploch. */
+  --brand: #4a7c6f;
+  --brand-hover: #3e6a5e;
+  --brand-soft: #e8f0ed;
   --brand-ink: #ffffff;
 
-  --danger: #c2453d;
-  --danger-soft: #fbeae8;
-  --warning: #b5761b;
-  --warning-soft: #fdf1de;
-  --success: #2f7d3f;
-  --success-soft: #e6f3e8;
-  --info: #2b6cb0;
-  --info-soft: #e6effa;
+  /* Stavové barvy jsou schválně odtažené od terakoty strany B,
+     aby chybová hláška nevypadala jako druhý rodič. */
+  --danger: #a8443a;
+  --danger-soft: #f6e6e3;
+  --warning: #9a7420;
+  --warning-soft: #f8efdc;
+  --success: #4f7a45;
+  --success-soft: #e7efe4;
+  --info: #5f7a8c;
+  --info-soft: #e7edf1;
 
-  /* Výchozí barvy rodičů — lze přepsat v nastavení člena */
-  --parent-a: #3f74e0;
-  --parent-b: #d9557a;
-  --parent-both: #7c5cd6;
+  /* Výchozí barvy rodičů — člen si je může v nastavení přepsat */
+  --parent-a: #4a7c6f;
+  --parent-a-bg: #e8f0ed;
+  --parent-a-text: #2e5148;
+  --parent-b: #c4674f;
+  --parent-b-bg: #f7e9e4;
+  --parent-b-text: #8a4232;
+  --parent-both: #5f7a8c;
+  --parent-both-bg: #e7edf1;
 
-  --ring: #2f6f5e;
-  --shadow-card: 0 1px 2px rgb(25 24 23 / 0.05), 0 8px 24px -12px rgb(25 24 23 / 0.12);
-  --shadow-pop: 0 12px 40px -12px rgb(25 24 23 / 0.28);
+  --ring: #4a7c6f;
+  --shadow-card: 0 1px 2px rgb(46 42 36 / 0.05), 0 8px 24px -12px rgb(46 42 36 / 0.14);
+  --shadow-pop: 0 12px 40px -12px rgb(46 42 36 / 0.3);
 }
 
 /* Tmavá paleta se uplatní podle systému… */
@@ -57,34 +68,39 @@
   :root:not(.light) {
   /* Aby i nativní prvky prohlížeče (výběr data, posuvníky) byly tmavé. */
   color-scheme: dark;
-  --canvas: #131417;
-  --surface: #1b1d21;
-  --surface-2: #212429;
-  --ink: #f1f0ed;
-  --ink-muted: #a2a29e;
-  --ink-subtle: #7b7b78;
-  --line: #2c2f35;
-  --line-strong: #3a3e46;
+  --canvas: #1c1a17;
+  --surface: #262320;
+  --surface-2: #2f2b27;
+  --ink: #f0ebe3;
+  --ink-muted: #a39a8c;
+  --ink-subtle: #857d71;
+  --line: #3a362f;
+  --line-strong: #4a453c;
 
-  --brand: #4bb897;
-  --brand-hover: #5fc7a8;
-  --brand-soft: #172f29;
-  --brand-ink: #0d1a16;
+  --brand: #6fa394;
+  --brand-hover: #7fb3a4;
+  --brand-soft: #25352f;
+  --brand-ink: #12201b;
 
-  --danger: #ef7b72;
-  --danger-soft: #33201e;
-  --warning: #e0a24a;
-  --warning-soft: #33280f;
-  --success: #6cc07d;
-  --success-soft: #162a1a;
-  --info: #6fa8e8;
-  --info-soft: #16232f;
+  --danger: #e08279;
+  --danger-soft: #3a2422;
+  --warning: #d9ac5c;
+  --warning-soft: #372c16;
+  --success: #8fb77f;
+  --success-soft: #232e20;
+  --info: #8aa5b8;
+  --info-soft: #222c33;
 
-  --parent-a: #6c9bff;
-  --parent-b: #f0819f;
-  --parent-both: #a68cf0;
+  --parent-a: #6fa394;
+  --parent-a-bg: #25352f;
+  --parent-a-text: #c8e0d8;
+  --parent-b: #d98a72;
+  --parent-b-bg: #3a2620;
+  --parent-b-text: #f0c7b8;
+  --parent-both: #8aa5b8;
+  --parent-both-bg: #222c33;
 
-  --ring: #4bb897;
+  --ring: #6fa394;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
   }
@@ -93,34 +109,39 @@
 /* …a natvrdo při ruční volbě v nastavení. */
 :root.dark {
   color-scheme: dark;
-  --canvas: #131417;
-  --surface: #1b1d21;
-  --surface-2: #212429;
-  --ink: #f1f0ed;
-  --ink-muted: #a2a29e;
-  --ink-subtle: #7b7b78;
-  --line: #2c2f35;
-  --line-strong: #3a3e46;
+  --canvas: #1c1a17;
+  --surface: #262320;
+  --surface-2: #2f2b27;
+  --ink: #f0ebe3;
+  --ink-muted: #a39a8c;
+  --ink-subtle: #857d71;
+  --line: #3a362f;
+  --line-strong: #4a453c;
 
-  --brand: #4bb897;
-  --brand-hover: #5fc7a8;
-  --brand-soft: #172f29;
-  --brand-ink: #0d1a16;
+  --brand: #6fa394;
+  --brand-hover: #7fb3a4;
+  --brand-soft: #25352f;
+  --brand-ink: #12201b;
 
-  --danger: #ef7b72;
-  --danger-soft: #33201e;
-  --warning: #e0a24a;
-  --warning-soft: #33280f;
-  --success: #6cc07d;
-  --success-soft: #162a1a;
-  --info: #6fa8e8;
-  --info-soft: #16232f;
+  --danger: #e08279;
+  --danger-soft: #3a2422;
+  --warning: #d9ac5c;
+  --warning-soft: #372c16;
+  --success: #8fb77f;
+  --success-soft: #232e20;
+  --info: #8aa5b8;
+  --info-soft: #222c33;
 
-  --parent-a: #6c9bff;
-  --parent-b: #f0819f;
-  --parent-both: #a68cf0;
+  --parent-a: #6fa394;
+  --parent-a-bg: #25352f;
+  --parent-a-text: #c8e0d8;
+  --parent-b: #d98a72;
+  --parent-b-bg: #3a2620;
+  --parent-b-text: #f0c7b8;
+  --parent-both: #8aa5b8;
+  --parent-both-bg: #222c33;
 
-  --ring: #4bb897;
+  --ring: #6fa394;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
 }
@@ -150,8 +171,13 @@
   --color-info-soft: var(--info-soft);
 
   --color-parent-a: var(--parent-a);
+  --color-parent-a-bg: var(--parent-a-bg);
+  --color-parent-a-text: var(--parent-a-text);
   --color-parent-b: var(--parent-b);
+  --color-parent-b-bg: var(--parent-b-bg);
+  --color-parent-b-text: var(--parent-b-text);
   --color-parent-both: var(--parent-both);
+  --color-parent-both-bg: var(--parent-both-bg);
 
   --radius-card: 1rem;
   --radius-pill: 999px;

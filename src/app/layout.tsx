@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { POPIS, ZNACKA } from "@/lib/brand";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -10,16 +11,15 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Rodinný plánovač",
-    template: "%s · Rodinný plánovač",
+    default: ZNACKA,
+    template: `%s · ${ZNACKA}`,
   },
-  description:
-    "Kalendář střídavé péče, kroužky, výdaje a události na jednom místě — pro celou rodinu.",
+  description: POPIS,
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Plánovač",
+    title: ZNACKA,
   },
   icons: {
     icon: "/icons/icon.svg",
@@ -33,8 +33,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f5f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#131417" },
+    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1a17" },
   ],
 };
 

@@ -35,10 +35,10 @@ export interface EdupageRow {
 }
 
 const DRUH: Record<EdupageDruh, { label: string; color: string }> = {
-  ukol: { label: "Úkol", color: "#3f74e0" },
-  pisemka: { label: "Písemka", color: "#c2453d" },
-  zprava: { label: "Zpráva", color: "#2f6f5e" },
-  akce: { label: "Akce školy", color: "#b5761b" },
+  ukol: { label: "Úkol", color: "#5f7a8c" },
+  pisemka: { label: "Písemka", color: "#a8443a" },
+  zprava: { label: "Zpráva", color: "#4a7c6f" },
+  akce: { label: "Akce školy", color: "#b58a3c" },
 };
 
 type Zalozka = "aktivni" | "zpravy" | "vse";

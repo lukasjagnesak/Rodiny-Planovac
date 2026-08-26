@@ -17,7 +17,7 @@ import { custodyStats, resolveCustody, type CustodyDay } from "@/lib/custody";
 import { expandActivities } from "@/lib/activities";
 import { holidayByDay, holidaysInRange, type Holiday } from "@/lib/holidays";
 import { cn, nights, withAlpha } from "@/lib/format";
-import { sideColor, sideLabel } from "@/lib/members";
+import { sideBg, sideColor, sideLabel } from "@/lib/members";
 import { Card, CardBody } from "@/components/ui/card";
 import { Segmented, SplitBar } from "@/components/ui/misc";
 import { Dot } from "@/components/ui/badge";
@@ -130,6 +130,9 @@ export function MonthView({
 
   const colorA = sideColor(session.members, "a");
   const colorB = sideColor(session.members, "b");
+  // Velké plochy nesou tlumený odstín, plná barva zůstává tečkám a okrajům.
+  const bgA = sideBg(session.members, "a");
+  const bgB = sideBg(session.members, "b");
 
   /**
    * Prázdniny se počítají z okresu školy. Když mají sourozenci školy v různých
@@ -252,13 +255,7 @@ export function MonthView({
             const dayEvents = eventMap.get(key) ?? [];
             const holiday = holidayMap.get(key);
 
-            const tint = mixed
-              ? undefined
-              : side === "a"
-                ? withAlpha(colorA, outside ? 0.07 : 0.16)
-                : side === "b"
-                  ? withAlpha(colorB, outside ? 0.07 : 0.16)
-                  : undefined;
+            const tint = mixed ? undefined : side === "a" ? bgA : side === "b" ? bgB : undefined;
 
             return (
               <button
@@ -274,7 +271,7 @@ export function MonthView({
                 style={{
                   backgroundColor: tint,
                   backgroundImage: mixed
-                    ? `linear-gradient(135deg, ${withAlpha(colorA, 0.16)} 0 50%, ${withAlpha(colorB, 0.16)} 50% 100%)`
+                    ? `linear-gradient(135deg, ${bgA} 0 50%, ${bgB} 50% 100%)`
                     : undefined,
                   // Prázdniny nesou vlastní proužek u dolní hrany, aby
                   // nesoupeřily o plochu s barvou rodiče.

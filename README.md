@@ -1,4 +1,4 @@
-# Souhra
+# Dvojklíč
 
 Webová aplikace pro rodiny ve střídavé péči. Kalendář, kdo má kdy děti, kroužky
 a plán dopravy, výdaje s fotkami účtenek, školní i lékařské události — a všechno
@@ -58,8 +58,8 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` klíč → `SUPABASE_SERVICE_ROLE_KEY` *(tenhle nikdy nikam nedávej veřejně)*
 4. V **Authentication → URL Configuration** nastav:
-   - Site URL: `https://planovac.tvoje-domena.cz`
-   - Redirect URLs: `https://planovac.tvoje-domena.cz/auth/callback`
+   - Site URL: `https://dvojklic.cz`
+   - Redirect URLs: `https://dvojklic.cz/auth/callback`
 
 > Data jsou chráněná na úrovni databáze. I kdyby někdo získal `anon` klíč,
 > uvidí jen rodiny, jejichž je členem — hlídá to RLS, ne aplikace.
@@ -91,7 +91,7 @@ a nastavením střídání.
    jako testovací uživatele (aplikace nemusí procházet ověřením, dokud ji
    používá jen rodina)
 4. **Credentials → Create credentials → OAuth client ID → Web application**
-   - Authorized redirect URI: `https://planovac.tvoje-domena.cz/api/google/callback`
+   - Authorized redirect URI: `https://dvojklic.cz/api/google/callback`
    - lokálně navíc: `http://localhost:3000/api/google/callback`
 5. `Client ID` a `Client secret` doplň do `.env`
 
@@ -152,7 +152,7 @@ dne a projeví se i na „dnes končí" na přehledu.
 curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
   -H "Content-Type: application/json" \
   -d '{
-    "url": "https://planovac.tvoje-domena.cz/api/telegram/webhook",
+    "url": "https://dvojklic.cz/api/telegram/webhook",
     "secret_token": "<TELEGRAM_WEBHOOK_SECRET>",
     "allowed_updates": ["message"]
   }'
@@ -169,8 +169,8 @@ Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 # na serveru jako root
 bash deploy/hetzner-setup.sh        # Docker, firewall, swap, automatické aktualizace
 
-git clone <adresa-repozitáře> /opt/rodinny-planovac
-cd /opt/rodinny-planovac
+git clone <adresa-repozitáře> /opt/dvojklic
+cd /opt/dvojklic
 cp .env.example .env && nano .env   # doplň klíče + APP_DOMAIN
 
 docker compose up -d --build
@@ -190,7 +190,7 @@ připomínky a zesynchronizuje Google kalendáře. Ručně:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
-  https://planovac.tvoje-domena.cz/api/cron/reminders
+  https://dvojklic.cz/api/cron/reminders
 ```
 
 ---

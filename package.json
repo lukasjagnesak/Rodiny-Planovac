@@ -1,8 +1,8 @@
 {
-  "name": "rodinny-planovac",
+  "name": "dvojklic",
   "version": "1.0.0",
   "private": true,
-  "description": "Rodinný plánovač pro střídavou péči — kalendář, kroužky, výdaje, notifikace",
+  "description": "Dvojklíč — přehled o dětech, které mají dva domovy",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

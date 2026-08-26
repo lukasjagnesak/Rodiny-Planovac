@@ -11,7 +11,7 @@ import { Select } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { formatDayLong, formatTime, fromDateKey } from "@/lib/dates";
 import { hodinyDneSeZmenami } from "@/lib/rozvrh";
-import { sideColor, sideLabel } from "@/lib/members";
+import { sideBg, sideColor, sideLabel } from "@/lib/members";
 import { EVENT_KINDS } from "@/lib/constants";
 import { cn } from "@/lib/format";
 import type { CustodyDay } from "@/lib/custody";
@@ -173,7 +173,7 @@ export function DaySheet({
           ) : (
             <div
               className="flex items-center gap-3 rounded-xl p-3"
-              style={{ backgroundColor: `${sideColor(session.members, side)}22` }}
+              style={{ backgroundColor: sideBg(session.members, side) }}
             >
               <Dot color={sideColor(session.members, side)} className="h-3 w-3" />
               <div className="min-w-0 flex-1">
@@ -207,7 +207,7 @@ export function DaySheet({
                   )}
                   style={
                     side === s
-                      ? { backgroundColor: `${sideColor(session.members, s)}22` }
+                      ? { backgroundColor: sideBg(session.members, s) }
                       : undefined
                   }
                 >

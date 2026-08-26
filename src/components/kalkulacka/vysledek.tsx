@@ -6,8 +6,13 @@ import { DOW_SHORT, formatDayShort, formatMonth, relativeDayLabel } from "@/lib/
 import { cn } from "@/lib/format";
 import { nejblizsiPredani, type PlanVstup, type VysledekPlanu } from "@/lib/kalkulacka";
 
-export const BARVA_A = "#3f74e0";
-export const BARVA_B = "#d9557a";
+/** Stejné barvy jako v aplikaci — veřejný web musí ladit s produktem. */
+export const BARVA_A = "var(--parent-a)";
+export const BARVA_B = "var(--parent-b)";
+export const POZADI_A = "var(--parent-a-bg)";
+export const POZADI_B = "var(--parent-b-bg)";
+export const TEXT_A = "var(--parent-a-text)";
+export const TEXT_B = "var(--parent-b-text)";
 
 /** Sdílené vykreslení výsledku — používá ho kalkulačka i sdílený odkaz. */
 export function Vysledek({
@@ -179,15 +184,20 @@ function MesicniMrizka({
         {vMesici.map((den) => (
           <span
             key={den.klic}
-            className={cn(
-              "tnum flex aspect-square items-center justify-center rounded-md text-[11px] font-medium",
-              den.strana ? "text-white" : "text-ink-subtle",
-            )}
+            className="tnum flex aspect-square items-center justify-center rounded-md text-[11px] font-medium"
             style={{
               backgroundColor:
-                den.strana === "a" ? BARVA_A : den.strana === "b" ? BARVA_B : undefined,
-              // Den předání dostane světlý rámeček, ať je v mřížce vidět.
-              boxShadow: den.predani ? "inset 0 0 0 2px rgba(255,255,255,0.65)" : undefined,
+                den.strana === "a" ? POZADI_A : den.strana === "b" ? POZADI_B : undefined,
+              color:
+                den.strana === "a"
+                  ? TEXT_A
+                  : den.strana === "b"
+                    ? TEXT_B
+                    : "var(--ink-subtle)",
+              // Den předání se pozná plnou barvou v rámečku.
+              boxShadow: den.predani
+                ? `inset 0 0 0 2px ${den.strana === "a" ? BARVA_A : BARVA_B}`
+                : undefined,
             }}
           >
             {den.datum.getDate()}

@@ -4,15 +4,15 @@ export const EXPENSE_CATEGORIES: Record<
   ExpenseCategory,
   { label: string; emoji: string; color: string }
 > = {
-  alimony: { label: "Výživné", emoji: "💶", color: "#2f6f5e" },
-  activities: { label: "Kroužky", emoji: "⚽", color: "#7c5cd6" },
-  clothing: { label: "Oblečení", emoji: "👕", color: "#d9557a" },
-  fun: { label: "Zábava", emoji: "🎉", color: "#e0a24a" },
-  school: { label: "Škola", emoji: "🎒", color: "#3f74e0" },
-  health: { label: "Zdraví", emoji: "🩺", color: "#c2453d" },
-  food: { label: "Jídlo", emoji: "🍎", color: "#7aa63f" },
-  travel: { label: "Cestování", emoji: "✈️", color: "#3aa8b8" },
-  other: { label: "Ostatní", emoji: "📦", color: "#8a8a86" },
+  alimony: { label: "Výživné", emoji: "💶", color: "#4a7c6f" },
+  activities: { label: "Kroužky", emoji: "⚽", color: "#8a6f9e" },
+  clothing: { label: "Oblečení", emoji: "👕", color: "#9a5b6b" },
+  fun: { label: "Zábava", emoji: "🎉", color: "#b58a3c" },
+  school: { label: "Škola", emoji: "🎒", color: "#5f7a8c" },
+  health: { label: "Zdraví", emoji: "🩺", color: "#a8443a" },
+  food: { label: "Jídlo", emoji: "🍎", color: "#4f7a45" },
+  travel: { label: "Cestování", emoji: "✈️", color: "#3f7d84" },
+  other: { label: "Ostatní", emoji: "📦", color: "#8a8074" },
 };
 
 export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
@@ -28,14 +28,14 @@ export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
 ];
 
 export const EVENT_KINDS: Record<EventKind, { label: string; emoji: string; color: string }> = {
-  school_trip: { label: "Škola v přírodě", emoji: "🏕️", color: "#7aa63f" },
-  parent_meeting: { label: "Třídní schůzky", emoji: "🧑‍🏫", color: "#3f74e0" },
-  photo_session: { label: "Focení", emoji: "📸", color: "#d9557a" },
-  excursion: { label: "Školní výlet", emoji: "🚌", color: "#e0a24a" },
-  medical: { label: "Lékař", emoji: "🩺", color: "#c2453d" },
-  birthday: { label: "Narozeniny", emoji: "🎂", color: "#7c5cd6" },
-  holiday: { label: "Prázdniny", emoji: "🌴", color: "#3aa8b8" },
-  other: { label: "Ostatní", emoji: "📌", color: "#8a8a86" },
+  school_trip: { label: "Škola v přírodě", emoji: "🏕️", color: "#4f7a45" },
+  parent_meeting: { label: "Třídní schůzky", emoji: "🧑‍🏫", color: "#5f7a8c" },
+  photo_session: { label: "Focení", emoji: "📸", color: "#9a5b6b" },
+  excursion: { label: "Školní výlet", emoji: "🚌", color: "#b58a3c" },
+  medical: { label: "Lékař", emoji: "🩺", color: "#a8443a" },
+  birthday: { label: "Narozeniny", emoji: "🎂", color: "#8a6f9e" },
+  holiday: { label: "Prázdniny", emoji: "🌴", color: "#3f7d84" },
+  other: { label: "Ostatní", emoji: "📌", color: "#8a8074" },
 };
 
 export const EVENT_KIND_ORDER: EventKind[] = [
@@ -63,18 +63,23 @@ export const ROLE_HINTS: Record<MemberRole, string> = {
   viewer: "Vidí data, ale nemůže nic měnit.",
 };
 
-/** Nabídka barev pro rodiče a děti. */
+/**
+ * Nabídka barev pro rodiče a děti.
+ *
+ * Prvními dvěma jsou výchozí barvy stran, zbytek drží stejnou zemitou
+ * linku — aby si nikdo nevybral odstín, který v kalendáři vyčnívá.
+ */
 export const COLOR_PALETTE = [
-  "#3f74e0",
-  "#d9557a",
-  "#2f6f5e",
-  "#7c5cd6",
-  "#e0a24a",
-  "#3aa8b8",
-  "#c2453d",
-  "#7aa63f",
-  "#b5761b",
-  "#5b6470",
+  "#4a7c6f",
+  "#c4674f",
+  "#5f7a8c",
+  "#8a6f9e",
+  "#b58a3c",
+  "#4f7a45",
+  "#9a5b6b",
+  "#3f7d84",
+  "#8a7a5c",
+  "#6b6459",
 ];
 
 export const PRICE_PERIODS: Record<string, string> = {

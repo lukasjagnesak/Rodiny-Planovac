@@ -1,23 +1,52 @@
 {
-  "name": "Rodinný plánovač",
-  "short_name": "Plánovač",
-  "description": "Kalendář střídavé péče, kroužky, výdaje a události pro celou rodinu.",
+  "name": "Dvojklíč",
+  "short_name": "Dvojklíč",
+  "description": "Přehled o dětech, které mají dva domovy — kalendář péče, kroužky, výdaje a škola.",
   "start_url": "/prehled",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f6f5f2",
-  "theme_color": "#2f6f5e",
+  "background_color": "#faf7f2",
+  "theme_color": "#4a7c6f",
   "lang": "cs",
   "icons": [
-    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Kalendář", "url": "/kalendar" },
-    { "name": "Přidat výdaj", "url": "/vydaje?novy=dnes" },
-    { "name": "Kroužky", "url": "/krouzky" }
+    {
+      "name": "Kalendář",
+      "url": "/kalendar"
+    },
+    {
+      "name": "Přidat výdaj",
+      "url": "/vydaje?novy=dnes"
+    },
+    {
+      "name": "Kroužky",
+      "url": "/krouzky"
+    }
   ]
 }
