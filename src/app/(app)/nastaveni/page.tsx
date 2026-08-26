@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   CalendarSync,
   ChevronRight,
+  GraduationCap,
   Repeat,
   Send,
 } from "lucide-react";
@@ -19,11 +20,14 @@ export default async function SettingsPage() {
   const session = await requireSession();
   const supabase = await createClient();
 
-  const { data: google } = await supabase
-    .from("google_accounts")
-    .select("*")
-    .eq("user_id", session.userId)
-    .maybeSingle();
+  const [{ data: google }, { data: edupage }] = await Promise.all([
+    supabase.from("google_accounts").select("*").eq("user_id", session.userId).maybeSingle(),
+    supabase
+      .from("edupage_accounts")
+      .select("user_id")
+      .eq("user_id", session.userId)
+      .maybeSingle(),
+  ]);
 
   const links = [
     {
@@ -39,6 +43,13 @@ export default async function SettingsPage() {
       description: "Přenos událostí do tvého kalendáře",
       Icon: CalendarSync,
       badge: google ? "propojeno" : null,
+    },
+    {
+      href: "/nastaveni/edupage",
+      title: "EduPage",
+      description: "Úkoly, písemky a školní akce",
+      Icon: GraduationCap,
+      badge: edupage ? "propojeno" : null,
     },
     {
       href: "/nastaveni/telegram",

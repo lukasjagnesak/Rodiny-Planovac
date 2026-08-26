@@ -44,6 +44,18 @@ services:
         curl -fsS -m 280 -H \"Authorization: Bearer $$CRON_SECRET\" http://app:3000/api/cron/reminders || echo 'cron: pokus selhal';
       done"
 
+  # EduPage nemá veřejné API — tahle služba napodobuje mobilní aplikaci.
+  # V komerčním nasazení ji prostě nespouštěj:
+  #   docker compose up -d --scale edupage=0
+  edupage:
+    build: ./edupage
+    restart: unless-stopped
+    environment:
+      EDUPAGE_SIDECAR_SECRET: ${EDUPAGE_SIDECAR_SECRET}
+    expose:
+      - "8000"
+    networks: [web]
+
 volumes:
   caddy_data:
   caddy_config:

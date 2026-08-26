@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Bike,
+  BookOpen,
   CalendarDays,
   CalendarHeart,
   ChevronDown,
@@ -27,6 +28,7 @@ const NAV = [
 ];
 
 const SECONDARY = [
+  { href: "/ukoly", label: "Úkoly ze školy", Icon: BookOpen },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];

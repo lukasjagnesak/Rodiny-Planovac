@@ -18,6 +18,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **Výdaje** | Výživné, kroužky, oblečení, škola, zdraví… Fotka účtenky přímo z foťáku, rozdělení nákladů mezi rodiče, přehled kdo komu dluží |
 | **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava a události |
 | **Google kalendář** | Každý člen si propojí **svůj** účet; péče, kroužky i události se přenesou do jeho kalendáře |
+| **EduPage** | Úkoly, písemky a školní akce ze školního systému (jen rodinná verze) |
 | **Telegram** | Připomínky zdarma přímo do telefonu — kdo zítra veze, kdy je předání, co se blíží |
 | **Rodina** | Pozvánky odkazem, role (správce / rodič / pečující osoba / jen pro čtení), vlastní barvy |
 
@@ -93,7 +94,31 @@ a nastavením střídání.
 Propojení pak proběhne v aplikaci v **Nastavení → Google kalendář**. Refresh
 token se do databáze ukládá zašifrovaný (AES‑256‑GCM).
 
-### 4. Telegram notifikace (nepovinné)
+### 4. EduPage (nepovinné, jen rodinná verze)
+
+EduPage nemá veřejné API. Aplikace proto mluví s vedlejší službou ve složce
+`edupage/`, která napodobuje mobilní aplikaci pomocí knihovny `edupage-api`.
+Je to samostatný kontejner — v komerčním nasazení ho prostě nespouštěj.
+
+```bash
+# do .env
+EDUPAGE_SIDECAR_URL=http://edupage:8000
+EDUPAGE_SIDECAR_SECRET=$(openssl rand -hex 24)
+```
+
+Propojení pak proběhne v aplikaci v **Nastavení → EduPage**. Každý rodič
+zadává vlastní přihlašovací údaje; heslo se ukládá zašifrované a nikdo ho
+nemusí sdílet s druhým rodičem. Stažené úkoly ale vidí celá rodina.
+
+Co se stáhne: úkoly, písemky a školní akce z timeline. U akcí nabídne
+aplikace jedním klikem vytvoření události v kalendáři.
+
+> **Kdy to nebude fungovat:** účet chráněný dvoufázovým ověřením nebo
+> přihlašování přes Google či Microsoft. A protože jde o neoficiální cestu,
+> stahování se může rozbít, kdykoli EduPage něco změní — pak stačí povýšit
+> `edupage-api` v `edupage/requirements.txt`.
+
+### 5. Telegram notifikace (nepovinné)
 
 1. V Telegramu napiš [@BotFather](https://t.me/BotFather) → `/newbot`
 2. Token vlož do `.env` jako `TELEGRAM_BOT_TOKEN`
@@ -113,7 +138,7 @@ curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
 Každý člen rodiny si pak v **Nastavení → Telegram** vygeneruje šestimístný kód
 a pošle ho botovi. Hotovo.
 
-### 5. Nasazení na Hetzner
+### 6. Nasazení na Hetzner
 
 Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 
