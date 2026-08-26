@@ -299,7 +299,9 @@ def deti_ze_seznamu(data: Any) -> list[int]:
 
     if isinstance(data, dict):
         for klic, hodnota in data.items():
-            if klic.lower() in KLICE_SEZNAMU_ID and isinstance(hodnota, list):
+            # Klíč nemusí být řetězec — `userProps` má například číselné.
+            nizky = klic.lower() if isinstance(klic, str) else ""
+            if nizky in KLICE_SEZNAMU_ID and isinstance(hodnota, list):
                 for polozka in hodnota:
                     cislo = _cislo(polozka)
                     if cislo is not None and cislo not in nalezena:
@@ -360,7 +362,7 @@ def najdi_deti(data: Any, cesta: str = "", nalezene: Optional[list] = None) -> l
 
     if isinstance(data, dict):
         for klic, hodnota in data.items():
-            nizky = klic.lower()
+            nizky = klic.lower() if isinstance(klic, str) else ""
             vypada_na_deti = any(
                 slovo in nizky for slovo in ("child", "dieta", "deti", "ziak", "student")
             )
@@ -401,7 +403,8 @@ def popis_struktury(data: Any, max_klicu: int = 40) -> list[str]:
         return []
 
     radky: list[str] = []
-    for klic, hodnota in list(data.items())[:max_klicu]:
+    for surovy_klic, hodnota in list(data.items())[:max_klicu]:
+        klic = str(surovy_klic)
         if isinstance(hodnota, dict):
             podklice = list(hodnota.keys())[:12]
             radky.append(f"{klic}: dict({', '.join(map(str, podklice))})")
@@ -433,26 +436,34 @@ def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
     edupage = prihlas(data)
 
     surova = getattr(edupage, "data", None) or {}
-    jmena = jmena_studentu(surova)
-
     bez_duplicit: dict[int, dict] = {}
+    potize: Optional[str] = None
 
-    # Nejdřív pole s holými ID — to je cesta, kterou EduPage opravdu používá.
-    for cislo in deti_ze_seznamu(surova):
-        bez_duplicit[cislo] = {
-            "edupageId": cislo,
-            "jmeno": jmena.get(cislo),
-            "kde": "parentStudentids",
-        }
+    # Struktura dat se mezi školami liší natolik, že hledání může narazit
+    # na něco nečekaného. Když spadne, chceme pořád vrátit aspoň popis
+    # dat — jinak není podle čeho chybu opravit.
+    try:
+        jmena = jmena_studentu(surova)
 
-    # Když nic, zkusíme hledat podle tvaru dat. Stejné dítě může být
-    # v datech víckrát; bereme první výskyt.
-    if not bez_duplicit:
-        for dite in najdi_deti(surova):
-            if dite["edupageId"] not in bez_duplicit:
-                if not dite.get("jmeno"):
-                    dite["jmeno"] = jmena.get(dite["edupageId"])
-                bez_duplicit[dite["edupageId"]] = dite
+        # Nejdřív pole s holými ID — tou cestou to EduPage opravdu vozí.
+        for cislo in deti_ze_seznamu(surova):
+            bez_duplicit[cislo] = {
+                "edupageId": cislo,
+                "jmeno": jmena.get(cislo),
+                "kde": "parentStudentids",
+            }
+
+        # Když nic, zkusíme hledat podle tvaru dat. Stejné dítě může být
+        # v datech víckrát; bereme první výskyt.
+        if not bez_duplicit:
+            for dite in najdi_deti(surova):
+                if dite["edupageId"] not in bez_duplicit:
+                    if not dite.get("jmeno"):
+                        dite["jmeno"] = jmena.get(dite["edupageId"])
+                    bez_duplicit[dite["edupageId"]] = dite
+    except Exception as chyba:  # noqa: BLE001
+        log.warning("hledání dětí selhalo: %s", chyba)
+        potize = f"{type(chyba).__name__}: {chyba}"
 
     return {
         "ok": True,
@@ -461,6 +472,7 @@ def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
         # Jen názvy polí a typy, žádné hodnoty — kdyby hledání selhalo,
         # aby bylo podle čeho ho doladit.
         "klice": popis_struktury(surova) if not bez_duplicit else [],
+        "potize": potize,
     }
 
 

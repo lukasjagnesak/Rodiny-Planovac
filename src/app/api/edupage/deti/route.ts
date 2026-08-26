@@ -31,7 +31,9 @@ export async function POST() {
   if (!ucet) return NextResponse.json({ error: "EduPage není propojené." }, { status: 400 });
 
   try {
-    const { jeRodic, deti, klice } = await fetchEdupageDeti(credentialsFromRow(ucet));
+    const { jeRodic, deti, klice, potize } = await fetchEdupageDeti(
+      credentialsFromRow(ucet),
+    );
 
     // Zapisují se jen nové děti — párování na dítě v plánovači i jméno,
     // které si rodič případně opravil, se přepsat nesmí.
@@ -62,6 +64,7 @@ export async function POST() {
       nalezeno: deti.length,
       pridano: nove.length,
       klice,
+      potize,
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Hledání dětí selhalo.";

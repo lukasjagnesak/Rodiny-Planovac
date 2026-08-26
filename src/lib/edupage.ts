@@ -117,14 +117,26 @@ export interface EdupageDiteInfo {
  * Vrací i názvy klíčů v přihlašovacích datech — když se nic nenajde, je
  * podle čeho hledání doladit, místo hádání naslepo.
  */
-export async function fetchEdupageDeti(
-  creds: Credentials,
-): Promise<{ jeRodic: boolean; deti: EdupageDiteInfo[]; klice: string[] }> {
-  const data = await call<{ jeRodic: boolean; deti: EdupageDiteInfo[]; klice: string[] }>(
-    "/deti",
-    { ...creds },
-  );
-  return { jeRodic: data.jeRodic, deti: data.deti ?? [], klice: data.klice ?? [] };
+export async function fetchEdupageDeti(creds: Credentials): Promise<{
+  jeRodic: boolean;
+  deti: EdupageDiteInfo[];
+  klice: string[];
+  /** Když hledání spadlo — vrací se i tak, aby bylo co opravovat. */
+  potize: string | null;
+}> {
+  const data = await call<{
+    jeRodic: boolean;
+    deti: EdupageDiteInfo[];
+    klice: string[];
+    potize: string | null;
+  }>("/deti", { ...creds });
+
+  return {
+    jeRodic: data.jeRodic,
+    deti: data.deti ?? [],
+    klice: data.klice ?? [],
+    potize: data.potize ?? null,
+  };
 }
 
 export interface EdupageLesson {

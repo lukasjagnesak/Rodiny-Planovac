@@ -86,5 +86,17 @@ ok("bez seznamu ID vrátí prázdno", deti_ze_seznamu({"dp": {"year": 2025}}) ==
 ok("bez dbi.students vrátí prázdno", jmena_studentu({"dbi": {}}) == {})
 ok("duplicitní ID se nezopakuje", deti_ze_seznamu({"a": {"studentids": [1, 1, 2]}}) == [1, 2])
 
+# EduPage vozí `userProps` s číselnými klíči. Volání .lower() na nich
+# shodilo celé hledání dřív, než se dostalo k parentStudentids.
+S_CISELNYMI_KLICI = {
+    "userProps": {946616: {}, 945195: {}, 1035206: {}},
+    "parentStudentids": [946616, 945195],
+}
+ok(
+    "číselné klíče hledání neshodí",
+    deti_ze_seznamu(S_CISELNYMI_KLICI) == [946616, 945195],
+)
+ok("číselné klíče neshodí ani záložní hledání", najdi_deti(S_CISELNYMI_KLICI) == [])
+
 print("\n=== VŠE PROŠLO ===" if selhalo == 0 else f"\n=== {selhalo} SELHALO ===")
 sys.exit(0 if selhalo == 0 else 1)

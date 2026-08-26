@@ -77,6 +77,9 @@ export function EdupageSettings({
     setBusy("deti");
     setError(null);
     setMessage(null);
+    // Výpis z minulého pokusu musí zmizet hned. Když se hledání pokazí,
+    // starý rámeček by tvrdil, že platí — a hledá se pak chyba jinde.
+    setKlice([]);
 
     const response = await fetch("/api/edupage/deti", { method: "POST" });
     const data = await response.json();
@@ -90,7 +93,11 @@ export function EdupageSettings({
     if (data.nalezeno === 0) {
       // Není to chyba spojení, ale výsledek je k ničemu — proto varování,
       // ne zelené potvrzení.
-      setError("V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž.");
+      setError(
+        data.potize
+          ? `Hledání dětí selhalo: ${data.potize}`
+          : "V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž.",
+      );
       setKlice(Array.isArray(data.klice) ? data.klice : []);
     } else {
       setKlice([]);
