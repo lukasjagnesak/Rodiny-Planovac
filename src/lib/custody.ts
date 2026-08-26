@@ -60,10 +60,25 @@ export function sideFromPattern(pattern: CustodyPattern, date: Date): CustodySid
 
     case "custom_weekly": {
       const map = pattern.weekly_map;
-      if (!map || map.length !== 7) return null;
-      // `weekly_map` je od pondělí; getDay() vrací 0 = neděle.
-      const idx = (date.getDay() + 6) % 7;
-      return map[idx] === "a" ? "a" : "b";
+      if (!map) return null;
+
+      // Sedm znaků = rozpis se opakuje každý týden.
+      if (map.length === 7) {
+        // `weekly_map` je od pondělí; getDay() vrací 0 = neděle.
+        const idx = (date.getDay() + 6) % 7;
+        return map[idx] === "a" ? "a" : "b";
+      }
+
+      // Čtrnáct znaků = dvoutýdenní cyklus. Který týden je v cyklu první,
+      // určuje týden, do kterého padá `anchor_date`.
+      if (map.length === 14) {
+        const anchorWeekStart = startOfWeek(anchor, WEEK_OPTS);
+        const diff = differenceInCalendarDays(date, anchorWeekStart);
+        const idx = ((diff % 14) + 14) % 14;
+        return map[idx] === "a" ? "a" : "b";
+      }
+
+      return null;
     }
 
     case "iso_week_parity": {
@@ -211,7 +226,7 @@ export const PATTERN_LABELS: Record<CustodyPattern["kind"], string> = {
   iso_week_parity: "Sudý a lichý týden",
   alternating_weeks: "Střídání po týdnu",
   week_2_2_3: "Schéma 2-2-3",
-  custom_weekly: "Vlastní týdenní rozpis",
+  custom_weekly: "Vlastní rozpis dnů",
   fixed_parent: "Trvale u jednoho rodiče",
 };
 
@@ -221,7 +236,8 @@ export const PATTERN_HINTS: Record<CustodyPattern["kind"], string> = {
   alternating_weeks:
     "Celý týden u jednoho rodiče, pak se vymění. Cyklus se počítá od data, které zvolíš.",
   week_2_2_3: "Po–Út u A, St–Čt u B, Pá–Ne u A. Další týden obráceně.",
-  custom_weekly: "Sám určíš, který den v týdnu patří komu. Opakuje se každý týden.",
+  custom_weekly:
+    "Sám určíš, který den patří komu. Cyklus může být jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
   fixed_parent: "Bez střídání — děti jsou trvale u jednoho rodiče.",
 };
 

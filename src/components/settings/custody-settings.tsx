@@ -415,9 +415,31 @@ function PatternForm({
               <WeekParityHint side={form.anchor_side} session={session} />
             </>
           ) : form.kind === "custom_weekly" ? (
-            <Field label="Rozpis týdne" hint="klikni na den a přepni stranu">
-              <WeeklyMapEditor value={form.weekly_map} onChange={(v) => set("weekly_map", v)} />
-            </Field>
+            <>
+              <Field label="Rozpis dnů" hint="klikni na den a přepni stranu">
+                <WeeklyMapEditor
+                  value={form.weekly_map}
+                  onChange={(v) => set("weekly_map", v)}
+                  labelA={sideLabel(session.members, "a")}
+                  labelB={sideLabel(session.members, "b")}
+                  colorA={sideColor(session.members, "a")}
+                  colorB={sideColor(session.members, "b")}
+                />
+              </Field>
+
+              {form.weekly_map.length === 14 ? (
+                <Field
+                  label="Prvním týdnem cyklu je týden, do kterého padá"
+                  hint="stačí libovolný den z toho týdne"
+                >
+                  <Input
+                    type="date"
+                    value={form.anchor_date}
+                    onChange={(e) => set("anchor_date", e.target.value)}
+                  />
+                </Field>
+              ) : null}
+            </>
           ) : form.kind === "fixed_parent" ? (
             <Field label="Děti jsou trvale u">
               <Select

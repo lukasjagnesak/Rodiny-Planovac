@@ -324,9 +324,23 @@ export function OnboardingWizard({ defaultName }: { defaultName: string }) {
                 </p>
               </>
             ) : kind === "custom_weekly" ? (
-              <Field label="Rozpis týdne" hint="klikni na den a přepni stranu">
-                <WeeklyMapEditor value={weeklyMap} onChange={setWeeklyMap} />
-              </Field>
+              <>
+                <Field label="Rozpis dnů" hint="klikni na den a přepni stranu">
+                  <WeeklyMapEditor value={weeklyMap} onChange={setWeeklyMap} />
+                </Field>
+                {weeklyMap.length === 14 ? (
+                  <Field
+                    label="Prvním týdnem cyklu je týden, do kterého padá"
+                    hint="stačí libovolný den z toho týdne"
+                  >
+                    <Input
+                      type="date"
+                      value={anchorDate}
+                      onChange={(e) => setAnchorDate(e.target.value)}
+                    />
+                  </Field>
+                ) : null}
+              </>
             ) : (
               <>
                 <Field
@@ -396,37 +410,110 @@ export function OnboardingWizard({ defaultName }: { defaultName: string }) {
 
 const DOW_LABELS = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"];
 
+/**
+ * Rozpis dnů. Sedm políček = opakuje se každý týden, čtrnáct = dvoutýdenní
+ * cyklus. Den patří tomu, u koho dítě tu noc spí — předání odpoledne se tedy
+ * zapisuje na den, kdy dítě u nového rodiče přespí.
+ */
 export function WeeklyMapEditor({
   value,
   onChange,
+  labelA = "Strana A",
+  labelB = "Strana B",
+  colorA = "var(--parent-a)",
+  colorB = "var(--parent-b)",
 }: {
   value: string;
   onChange: (value: string) => void;
+  labelA?: string;
+  labelB?: string;
+  colorA?: string;
+  colorB?: string;
 }) {
-  const chars = value.padEnd(7, "a").slice(0, 7).split("");
+  const twoWeeks = value.length === 14;
+  const chars = value.padEnd(twoWeeks ? 14 : 7, "a").slice(0, twoWeeks ? 14 : 7).split("");
+
+  function toggle(i: number) {
+    const next = [...chars];
+    next[i] = next[i] === "a" ? "b" : "a";
+    onChange(next.join(""));
+  }
+
+  function setLength(two: boolean) {
+    if (two === twoWeeks) return;
+    // Při rozšíření se druhý týden založí jako kopie prvního, ať je co upravovat.
+    onChange(two ? chars.join("") + chars.join("") : chars.slice(0, 7).join(""));
+  }
+
+  function row(offset: number) {
+    return (
+      <div className="grid grid-cols-7 gap-1.5">
+        {DOW_LABELS.map((label, i) => {
+          const idx = offset + i;
+          const isA = chars[idx] === "a";
+          return (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => toggle(idx)}
+              aria-label={`${label} — ${isA ? labelA : labelB}`}
+              className="flex flex-col items-center gap-0.5 rounded-lg border border-transparent py-2 text-xs font-medium text-white transition-transform active:scale-95"
+              style={{ backgroundColor: isA ? colorA : colorB }}
+            >
+              <span>{label}</span>
+              <span className="text-[10px] opacity-90">{isA ? "A" : "B"}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  const nightsA = chars.filter((c) => c === "a").length;
 
   return (
-    <div className="grid grid-cols-7 gap-1.5">
-      {chars.map((c, i) => (
+    <div className="space-y-2.5">
+      <div className="flex gap-1 rounded-xl bg-surface-2 p-1">
         <button
-          key={i}
           type="button"
-          onClick={() => {
-            const next = [...chars];
-            next[i] = c === "a" ? "b" : "a";
-            onChange(next.join(""));
-          }}
-          className="flex flex-col items-center gap-1 rounded-lg border border-line p-2 text-xs font-medium transition-colors"
-          style={{
-            backgroundColor: c === "a" ? "var(--parent-a)" : "var(--parent-b)",
-            color: "#fff",
-            borderColor: "transparent",
-          }}
+          onClick={() => setLength(false)}
+          className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+            !twoWeeks ? "bg-surface text-ink shadow-sm" : "text-ink-muted"
+          }`}
         >
-          <span>{DOW_LABELS[i]}</span>
-          <span className="text-[10px] uppercase opacity-90">{c}</span>
+          Každý týden stejně
         </button>
-      ))}
+        <button
+          type="button"
+          onClick={() => setLength(true)}
+          className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+            twoWeeks ? "bg-surface text-ink shadow-sm" : "text-ink-muted"
+          }`}
+        >
+          Dvoutýdenní cyklus
+        </button>
+      </div>
+
+      {twoWeeks ? (
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-ink-subtle">
+            První týden
+          </p>
+          {row(0)}
+          <p className="pt-1 text-xs font-medium uppercase tracking-wide text-ink-subtle">
+            Druhý týden
+          </p>
+          {row(7)}
+        </div>
+      ) : (
+        row(0)
+      )}
+
+      <p className="text-xs text-ink-subtle">
+        {nightsA} z {chars.length}{" "}
+        {chars.length === 7 ? "nocí v týdnu" : "nocí za dva týdny"} připadá na stranu A.
+        Den patří tomu, u koho dítě tu noc spí.
+      </p>
     </div>
   );
 }
