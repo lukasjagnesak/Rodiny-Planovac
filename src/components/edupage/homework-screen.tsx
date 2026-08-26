@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge, Dot } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
-import { Alert, EmptyState, Segmented } from "@/components/ui/misc";
+import { Alert, EmptyState, Segmented, TextSOdkazy } from "@/components/ui/misc";
 import { formatDayShort, formatDateTime, relativeDayLabel, toDateKey } from "@/lib/dates";
 import { cn } from "@/lib/format";
 import type { EdupageDruh, SessionContext } from "@/lib/types";
@@ -315,7 +315,7 @@ function PolozkaCard({
                 row.hotovo && !jeZprava && "line-through",
               )}
             >
-              {row.text || "(bez popisu)"}
+              {row.text ? <TextSOdkazy text={row.text} /> : "(bez popisu)"}
             </p>
 
             <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-ink-subtle">

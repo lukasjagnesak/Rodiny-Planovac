@@ -165,3 +165,53 @@ export function Alert({
     </div>
   );
 }
+
+/**
+ * Text, ve kterém jsou odkazy klikatelné.
+ *
+ * Zprávy ze školy bývají „podrobnosti najdete na https://…" a přepisovat
+ * adresu ručně je otrava. Text se jen rozseká podle adres a poskládá
+ * z Reactu — žádné vkládání HTML, do kterého by šlo něco propašovat.
+ */
+const ADRESA = /(https?:\/\/[^\s<>"']+)/g;
+
+/** Tečka na konci věty není součástí adresy. */
+function orizniInterpunkci(url: string): [string, string] {
+  const konec = url.match(/[.,;:!?)\]]+$/);
+  if (!konec) return [url, ""];
+  return [url.slice(0, -konec[0].length), konec[0]];
+}
+
+export function TextSOdkazy({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
+  const casti = React.useMemo(() => text.split(ADRESA), [text]);
+
+  return (
+    <span className={className}>
+      {casti.map((cast, i) => {
+        // Split se zachytávající skupinou dá adresy na liché pozice.
+        if (i % 2 === 0) return <React.Fragment key={i}>{cast}</React.Fragment>;
+
+        const [url, zbytek] = orizniInterpunkci(cast);
+        return (
+          <React.Fragment key={i}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-brand underline underline-offset-2 hover:no-underline"
+            >
+              {url}
+            </a>
+            {zbytek}
+          </React.Fragment>
+        );
+      })}
+    </span>
+  );
+}

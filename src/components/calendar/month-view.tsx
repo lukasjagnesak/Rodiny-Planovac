@@ -273,26 +273,44 @@ export function MonthView({
                   backgroundImage: mixed
                     ? `linear-gradient(135deg, ${bgA} 0 50%, ${bgB} 50% 100%)`
                     : undefined,
-                  // Prázdniny nesou vlastní proužek u dolní hrany, aby
-                  // nesoupeřily o plochu s barvou rodiče.
-                  boxShadow: holiday ? "inset 0 -3px 0 var(--ink-subtle)" : undefined,
+                  // Prázdniny se kreslí šrafou přes barvu rodiče — obojí
+                  // musí zůstat čitelné najednou, výplň by jedno přebila.
+                  boxShadow: holiday ? "inset 0 0 0 2px var(--holiday)" : undefined,
                 }}
               >
+                {/* Šrafa leží pod obsahem, jinak by přebila čísla i popisky. */}
+                {holiday ? (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      backgroundImage:
+                        "repeating-linear-gradient(45deg, var(--holiday-stripe) 0 5px, transparent 5px 11px)",
+                    }}
+                  />
+                ) : null}
+
                 <span
                   className={cn(
-                    "tnum flex h-6 w-6 items-center justify-center rounded-full text-[13px] font-medium",
+                    "tnum relative flex h-6 w-6 items-center justify-center rounded-full text-[13px] font-medium",
                     today ? "bg-ink text-canvas font-semibold" : "text-ink",
                   )}
                 >
                   {date.getDate()}
                 </span>
 
+                {holiday ? (
+                  <span className="relative hidden max-w-full truncate rounded-pill bg-holiday px-1.5 py-0.5 text-[10px] font-medium text-white sm:block">
+                    {holiday.label}
+                  </span>
+                ) : null}
+
                 {/* Značka ručně přepsaného dne */}
                 {entry?.day.isOverride ? (
                   <Repeat className="absolute right-1 top-1.5 h-3 w-3 text-ink-subtle" />
                 ) : null}
 
-                <div className="flex w-full flex-wrap items-center justify-center gap-0.5 sm:justify-start">
+                <div className="relative flex w-full flex-wrap items-center justify-center gap-0.5 sm:justify-start">
                   {dayActivities.slice(0, 3).map((a) => (
                     <span
                       key={a.key}

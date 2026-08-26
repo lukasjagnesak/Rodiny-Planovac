@@ -58,6 +58,10 @@
   --parent-both: #5f7a8c;
   --parent-both-bg: #e7edf1;
 
+  /* Prázdniny leží přes barvu rodiče, proto šrafa a ne výplň. */
+  --holiday: #b58a3c;
+  --holiday-stripe: rgb(181 138 60 / 0.28);
+
   --ring: #4a7c6f;
   --shadow-card: 0 1px 2px rgb(46 42 36 / 0.05), 0 8px 24px -12px rgb(46 42 36 / 0.14);
   --shadow-pop: 0 12px 40px -12px rgb(46 42 36 / 0.3);
@@ -100,6 +104,9 @@
   --parent-both: #8aa5b8;
   --parent-both-bg: #222c33;
 
+  --holiday: #d9ac5c;
+  --holiday-stripe: rgb(217 172 92 / 0.26);
+
   --ring: #6fa394;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
@@ -141,6 +148,9 @@
   --parent-both: #8aa5b8;
   --parent-both-bg: #222c33;
 
+  --holiday: #d9ac5c;
+  --holiday-stripe: rgb(217 172 92 / 0.26);
+
   --ring: #6fa394;
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
@@ -178,6 +188,7 @@
   --color-parent-b-text: var(--parent-b-text);
   --color-parent-both: var(--parent-both);
   --color-parent-both-bg: var(--parent-both-bg);
+  --color-holiday: var(--holiday);
 
   --radius-card: 1rem;
   --radius-pill: 999px;

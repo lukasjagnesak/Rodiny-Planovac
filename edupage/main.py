@@ -219,6 +219,7 @@ def health() -> dict:
             "potize-misto-500",
             "hodnoty-id",
             "zaporna-id",
+            "udalost-id",
             "jmena-z-dbi",
             "zpravy",
             "rozvrh",
@@ -536,6 +537,10 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
                     # ID události je jedinečné v rámci účtu, ne dítěte —
                     # do klíče proto patří obojí.
                     "id": f"{dite_id}:{u.event_id}" if dite_id else str(u.event_id),
+                    # Holé ID události. Rodičovský účet vidí u každého dítěte
+                    # tutéž timeline, takže se podle něj pozná, co patří celé
+                    # rodině a co opravdu jednomu dítěti.
+                    "udalostId": str(u.event_id),
                     "diteId": dite_id,
                     "druh": druh,
                     "typ": u.event_type.name,

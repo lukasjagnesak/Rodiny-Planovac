@@ -43,12 +43,40 @@ export async function POST() {
   try {
     const { polozky, chyby } = await fetchEdupageItems(kontext.creds, 45);
 
-    const radky = polozky.map((item) => {
-      const dite = item.diteId != null ? podleEdupageId.get(item.diteId) : undefined;
-      return {
+    /**
+     * Rodičovský účet vidí u každého dítěte tutéž timeline, takže zprávy
+     * pro rodiče přijdou tolikrát, kolik je dětí. Co se objeví u víc dětí,
+     * patří celé rodině — jinak by to skončilo u toho, kdo přišel poslední,
+     * a vypadalo by to jako zpráva o jednom dítěti.
+     */
+    const uKolikaDeti = new Map<string, Set<number>>();
+    for (const item of polozky) {
+      if (item.diteId == null) continue;
+      const kde = uKolikaDeti.get(item.udalostId) ?? new Set<number>();
+      kde.add(item.diteId);
+      uKolikaDeti.set(item.udalostId, kde);
+    }
+
+    const spolecne = (item: (typeof polozky)[number]) =>
+      (uKolikaDeti.get(item.udalostId)?.size ?? 0) > 1;
+
+    // Společné položky se ukládají jednou, pod holým ID události.
+    const videno = new Set<string>();
+
+    const radky = polozky.flatMap((item) => {
+      const jeSpolecna = spolecne(item);
+      const externalId = jeSpolecna ? item.udalostId : item.id;
+
+      if (videno.has(externalId)) return [];
+      videno.add(externalId);
+
+      const dite =
+        !jeSpolecna && item.diteId != null ? podleEdupageId.get(item.diteId) : undefined;
+
+      return [{
         family_id: dite?.family_id ?? vychoziFamilyId,
         child_id: dite?.child_id ?? null,
-        external_id: item.id,
+        external_id: externalId,
         druh: item.druh,
         typ: item.typ,
         text: item.text,
@@ -59,7 +87,7 @@ export async function POST() {
         autor: item.autor,
         navrh_kalendare: item.navrhKalendare,
         fetched_at: new Date().toISOString(),
-      };
+      }];
     });
 
     if (radky.length > 0) {

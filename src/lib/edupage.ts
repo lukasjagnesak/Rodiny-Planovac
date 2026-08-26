@@ -11,6 +11,8 @@ import { decryptSecret } from "./crypto";
 
 export interface EdupageItem {
   id: string;
+  /** Holé ID události v EduPage, bez ohledu na dítě. */
+  udalostId: string;
   diteId: number | null;
   druh: "ukol" | "pisemka" | "zprava" | "akce";
   typ: string | null;
