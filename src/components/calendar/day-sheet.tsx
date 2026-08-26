@@ -10,7 +10,7 @@ import { Badge, Dot } from "@/components/ui/badge";
 import { Select } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { formatDayLong, formatTime, fromDateKey } from "@/lib/dates";
-import { hodinyDne } from "@/lib/rozvrh";
+import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { sideColor, sideLabel } from "@/lib/members";
 import { EVENT_KINDS } from "@/lib/constants";
 import { cn } from "@/lib/format";
@@ -20,6 +20,7 @@ import type {
   CustodySide,
   FamilyEvent,
   RozvrhHodina,
+  RozvrhZmena,
   SessionContext,
 } from "@/lib/types";
 
@@ -32,6 +33,7 @@ export function DaySheet({
   activities,
   events,
   rozvrh,
+  zmeny,
   childId,
 }: {
   dayKey: string;
@@ -42,6 +44,7 @@ export function DaySheet({
   activities: ActivityInstance[];
   events: FamilyEvent[];
   rozvrh: RozvrhHodina[];
+  zmeny: RozvrhZmena[];
   childId: string | null;
 }) {
   const router = useRouter();
@@ -138,14 +141,18 @@ export function DaySheet({
 
     return deti
       .map((dite) => {
-        const hodiny = hodinyDne(
+        const hodiny = hodinyDneSeZmenami(
           rozvrh.filter((h) => h.child_id === dite.id),
+          zmeny.filter((z) => z.child_id === dite.id),
           den,
         );
-        return { dite, hodiny };
+        const odpada = zmeny.filter(
+          (z) => z.child_id === dite.id && z.den === dayKey && z.druh === "zruseno",
+        ).length;
+        return { dite, hodiny, odpada };
       })
-      .filter((z) => z.hodiny.length > 0);
-  }, [rozvrh, dayKey, childId, session.children]);
+      .filter((z) => z.hodiny.length > 0 || z.odpada > 0);
+  }, [rozvrh, zmeny, dayKey, childId, session.children]);
 
   return (
     <Sheet open onClose={onClose} title={formatDayLong(dayKey)} size="lg">
@@ -240,7 +247,7 @@ export function DaySheet({
               Škola
             </h3>
             <ul className="space-y-2">
-              {skola.map(({ dite, hodiny }) => (
+              {skola.map(({ dite, hodiny, odpada }) => (
                 <li
                   key={dite.id}
                   className="flex items-center gap-3 rounded-xl border border-line bg-surface-2 p-3"
@@ -250,9 +257,22 @@ export function DaySheet({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">{dite.name}</p>
                     <p className="tnum text-xs text-ink-muted">
-                      {hodiny[0].zacatek.slice(0, 5)}–
-                      {hodiny[hodiny.length - 1].konec.slice(0, 5)} · {hodiny.length}{" "}
-                      {hodiny.length === 1 ? "hodina" : hodiny.length < 5 ? "hodiny" : "hodin"}
+                      {hodiny.length > 0 ? (
+                        <>
+                          {hodiny[0].zacatek.slice(0, 5)}–
+                          {hodiny[hodiny.length - 1].konec.slice(0, 5)} · {hodiny.length}{" "}
+                          {hodiny.length === 1
+                            ? "hodina"
+                            : hodiny.length < 5
+                              ? "hodiny"
+                              : "hodin"}
+                        </>
+                      ) : (
+                        "vyučování odpadá"
+                      )}
+                      {odpada > 0 && hodiny.length > 0 ? (
+                        <span className="text-warning"> · {odpada} odpadá</span>
+                      ) : null}
                     </p>
                   </div>
                   <Link

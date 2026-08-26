@@ -11,7 +11,8 @@ import { decryptSecret } from "./crypto";
 
 export interface EdupageItem {
   id: string;
-  druh: "ukol" | "pisemka" | "akce";
+  diteId: number | null;
+  druh: "ukol" | "pisemka" | "zprava" | "akce";
   typ: string | null;
   text: string;
   predmet: string | null;
@@ -37,7 +38,8 @@ interface Credentials {
   email: string;
   heslo: string;
   subdomena?: string | null;
-  dite_id?: number | null;
+  /** ID dětí v EduPage, mezi kterými se má účet přepínat. */
+  deti?: number[];
 }
 
 async function call<T>(path: string, body: Record<string, unknown>): Promise<T> {
@@ -88,19 +90,42 @@ export async function verifyEdupage(creds: Credentials): Promise<EdupageAccountI
   return call<EdupageAccountInfo>("/overit", { ...creds });
 }
 
-/** Stáhne úkoly, písemky a školní akce z timeline. */
+/** Stáhne úkoly, písemky, zprávy a školní akce z timeline. */
 export async function fetchEdupageItems(
   creds: Credentials,
   dnuZpet = 30,
-): Promise<EdupageItem[]> {
-  const data = await call<{ polozky: EdupageItem[] }>("/ukoly", {
+): Promise<{ polozky: EdupageItem[]; chyby: string[] }> {
+  const data = await call<{ polozky: EdupageItem[]; chyby: string[] }>("/ukoly", {
     ...creds,
     dnu_zpet: dnuZpet,
   });
-  return data.polozky ?? [];
+  return { polozky: data.polozky ?? [], chyby: data.chyby ?? [] };
+}
+
+export interface EdupageDiteInfo {
+  edupageId: number;
+  jmeno: string | null;
+  kde?: string;
+}
+
+/**
+ * Děti, které rodičovský účet vidí.
+ *
+ * Vrací i názvy klíčů v přihlašovacích datech — když se nic nenajde, je
+ * podle čeho hledání doladit, místo hádání naslepo.
+ */
+export async function fetchEdupageDeti(
+  creds: Credentials,
+): Promise<{ jeRodic: boolean; deti: EdupageDiteInfo[]; klice: string[] }> {
+  const data = await call<{ jeRodic: boolean; deti: EdupageDiteInfo[]; klice: string[] }>(
+    "/deti",
+    { ...creds },
+  );
+  return { jeRodic: data.jeRodic, deti: data.deti ?? [], klice: data.klice ?? [] };
 }
 
 export interface EdupageLesson {
+  diteId: number | null;
   den: number;
   datum: string;
   tyden: number;
@@ -110,6 +135,8 @@ export interface EdupageLesson {
   ucitel: string | null;
   zacatek: string;
   konec: string;
+  zruseno: boolean;
+  akce: boolean;
 }
 
 /** Stáhne rozvrh na následující dny — den po dni, tak jak ho EduPage vydává. */
@@ -125,16 +152,14 @@ export async function fetchEdupageRozvrh(
 }
 
 /** Poskládá přihlašovací údaje z databázového řádku (heslo je zašifrované). */
-export function credentialsFromRow(row: {
-  email: string;
-  heslo_enc: string;
-  subdomena: string | null;
-  dite_id: number | null;
-}): Credentials {
+export function credentialsFromRow(
+  row: { email: string; heslo_enc: string; subdomena: string | null },
+  deti: number[] = [],
+): Credentials {
   return {
     email: row.email,
     heslo: decryptSecret(row.heslo_enc),
     subdomena: row.subdomena,
-    dite_id: row.dite_id,
+    deti,
   };
 }

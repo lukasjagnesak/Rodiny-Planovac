@@ -29,6 +29,7 @@ import type {
   CustodyPattern,
   FamilyEvent,
   RozvrhHodina,
+  RozvrhZmena,
   SessionContext,
 } from "@/lib/types";
 
@@ -42,6 +43,7 @@ export function MonthView({
   occurrences,
   events,
   rozvrh,
+  rozvrhZmeny,
 }: {
   session: SessionContext;
   monthKey: string;
@@ -52,6 +54,7 @@ export function MonthView({
   occurrences: ActivityOccurrence[];
   events: FamilyEvent[];
   rozvrh: RozvrhHodina[];
+  rozvrhZmeny: RozvrhZmena[];
 }) {
   const router = useRouter();
   const [childId, setChildId] = React.useState(initialChildId);
@@ -415,6 +418,7 @@ export function MonthView({
           activities={activityMap.get(openDay) ?? []}
           events={eventMap.get(openDay) ?? []}
           rozvrh={rozvrh}
+          zmeny={rozvrhZmeny}
           childId={childId === "all" ? null : childId}
         />
       ) : null}

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { getISOWeek } from "date-fns";
-import { Download, MapPin, Plus, Table2 } from "lucide-react";
+import { CalendarX2, Download, MapPin, Plus, Table2 } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,9 @@ import {
   maParitu,
   zacatekVyucovani,
 } from "@/lib/rozvrh";
-import { DOW_SHORT } from "@/lib/dates";
+import { DOW_SHORT, formatDayShort, relativeDayLabel, toDateKey } from "@/lib/dates";
 import { cn } from "@/lib/format";
-import type { RozvrhHodina, SessionContext } from "@/lib/types";
+import type { RozvrhHodina, RozvrhZmena, SessionContext } from "@/lib/types";
 
 /** Pondělí až pátek — víkendová hodina se dá založit, ale mřížka je školní. */
 const DNY = [1, 2, 3, 4, 5];
@@ -33,10 +33,12 @@ const NAZVY: Record<number, string> = {
 export function RozvrhScreen({
   session,
   hodiny,
+  zmeny,
   edupagePropojeno,
 }: {
   session: SessionContext;
   hodiny: RozvrhHodina[];
+  zmeny: RozvrhZmena[];
   edupagePropojeno: boolean;
 }) {
   const router = useRouter();
@@ -79,6 +81,14 @@ export function RozvrhScreen({
     [viditelne],
   );
 
+  /** Změny od dneška dál — na starší už nikdo nekouká. */
+  const mojeZmeny = React.useMemo(() => {
+    const dnesKlic = toDateKey(dnes);
+    return zmeny
+      .filter((z) => z.child_id === childId && z.den >= dnesKlic)
+      .sort((a, b) => a.den.localeCompare(b.den) || a.poradi - b.poradi);
+  }, [zmeny, childId, dnes]);
+
   const dnesKonec = konecVyucovani(moje, dnes);
   const dnesZacatek = zacatekVyucovani(moje, dnes);
 
@@ -99,11 +109,7 @@ export function RozvrhScreen({
     setZprava(null);
     setChyba(null);
 
-    const response = await fetch("/api/edupage/rozvrh", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ childId }),
-    });
+    const response = await fetch("/api/edupage/rozvrh", { method: "POST" });
     const data = await response.json();
 
     setStahuji(false);
@@ -113,9 +119,13 @@ export function RozvrhScreen({
     }
     setZprava(
       data.pocet === 0
-        ? "EduPage nevrátilo žádné hodiny. Zkontroluj, jestli je účet přepnutý na dítě."
-        : `Staženo ${data.pocet} hodin za ${data.dnu} školních dní.`,
+        ? "EduPage nevrátilo žádné hodiny. Zkontroluj v nastavení, jestli máš spárované děti."
+        : `Staženo ${data.pocet} hodin pro ${data.deti} ${
+            data.deti === 1 ? "dítě" : "děti"
+          } za ${data.dnu} školních dní` +
+            (data.zmeny > 0 ? `, z toho ${data.zmeny} změn.` : "."),
     );
+    if (data.chyby?.length > 0) setChyba(data.chyby.join(" · "));
     router.refresh();
   }
 
@@ -200,6 +210,39 @@ export function RozvrhScreen({
         </Card>
       ) : (
         <>
+          {mojeZmeny.length > 0 ? (
+            <Card>
+              <div className="flex items-center gap-2 px-4 pt-3.5">
+                <CalendarX2 className="h-4 w-4 text-warning" />
+                <h2 className="text-sm font-semibold text-ink">Změny na nejbližší dny</h2>
+              </div>
+              <CardBody className="pt-2">
+                <ul className="divide-y divide-line">
+                  {mojeZmeny.slice(0, 10).map((z) => (
+                    <li key={z.id} className="flex items-center gap-3 py-2">
+                      <span className="tnum w-24 shrink-0 text-xs text-ink-subtle">
+                        {formatDayShort(z.den)} · {relativeDayLabel(z.den)}
+                      </span>
+                      <span className="min-w-0 flex-1 text-sm">
+                        <span
+                          className={cn(
+                            "text-ink",
+                            z.druh === "zruseno" && "line-through text-ink-muted",
+                          )}
+                        >
+                          {z.poradi}. {z.predmet ?? "hodina"}
+                        </span>
+                      </span>
+                      <Badge color={z.druh === "zruseno" ? "var(--danger)" : "var(--warning)"}>
+                        {z.druh === "zruseno" ? "odpadá" : "jinak"}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              </CardBody>
+            </Card>
+          ) : null}
+
           {/* ── Mobil: jeden den ───────────────────────────────── */}
           <div className="space-y-3 lg:hidden">
             <Segmented

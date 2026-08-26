@@ -12,6 +12,7 @@ import type {
   Expense,
   FamilyEvent,
   RozvrhHodina,
+  RozvrhZmena,
 } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Přehled" };
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
     events,
     expenses,
     rozvrh,
+    rozvrhZmeny,
   ] = await Promise.all([
     supabase
       .from("custody_patterns")
@@ -73,6 +75,11 @@ export default async function DashboardPage() {
       .select("*")
       .eq("family_id", session.family.id)
       .order("poradi"),
+    supabase
+      .from("rozvrh_zmeny")
+      .select("*")
+      .eq("family_id", session.family.id)
+      .gte("den", toDateKey(today)),
   ]);
 
   return (
@@ -85,6 +92,7 @@ export default async function DashboardPage() {
       events={(events.data ?? []) as FamilyEvent[]}
       expenses={(expenses.data ?? []) as Expense[]}
       rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
+      rozvrhZmeny={(rozvrhZmeny.data ?? []) as RozvrhZmena[]}
     />
   );
 }

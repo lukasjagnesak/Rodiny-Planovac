@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
 import { HomeworkScreen, type EdupageRow } from "@/components/edupage/homework-screen";
 
-export const metadata: Metadata = { title: "Úkoly ze školy" };
+export const metadata: Metadata = { title: "Ze školy" };
 
 export default async function HomeworkPage() {
   const session = await requireSession();
@@ -14,8 +14,9 @@ export default async function HomeworkPage() {
     .select("*")
     .eq("family_id", session.family.id)
     .eq("skryto", false)
-    .order("termin", { nullsFirst: false })
-    .limit(200);
+    // Řadí se až v prohlížeči — úkoly podle termínu, zprávy podle data.
+    .order("zadano", { ascending: false, nullsFirst: false })
+    .limit(300);
 
   return <HomeworkScreen session={session} items={(data ?? []) as EdupageRow[]} />;
 }

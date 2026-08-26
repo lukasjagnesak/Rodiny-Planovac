@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Avatar, Badge, Dot } from "@/components/ui/badge";
-import { konecVyucovani } from "@/lib/rozvrh";
+import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, SplitBar } from "@/components/ui/misc";
 import { custodyStats, resolveCustody } from "@/lib/custody";
@@ -45,6 +45,7 @@ import type {
   Expense,
   FamilyEvent,
   RozvrhHodina,
+  RozvrhZmena,
   SessionContext,
 } from "@/lib/types";
 
@@ -57,6 +58,7 @@ export function Dashboard({
   events,
   expenses,
   rozvrh,
+  rozvrhZmeny,
 }: {
   session: SessionContext;
   patterns: CustodyPattern[];
@@ -66,6 +68,7 @@ export function Dashboard({
   events: FamilyEvent[];
   expenses: Expense[];
   rozvrh: RozvrhHodina[];
+  rozvrhZmeny: RozvrhZmena[];
 }) {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -79,18 +82,23 @@ export function Dashboard({
     () =>
       session.children
         .filter((c) => !c.archived)
-        .map((dite) => ({
-          dite,
-          konec: konecVyucovani(
+        .map((dite) => {
+          // Odpadlá hodina posune konec vyučování — proto se počítá se změnami.
+          const hodiny = hodinyDneSeZmenami(
             rozvrh.filter((h) => h.child_id === dite.id),
+            rozvrhZmeny.filter((z) => z.child_id === dite.id),
             today,
-          ),
-        }))
+          );
+          return {
+            dite,
+            konec: hodiny.length > 0 ? hodiny[hodiny.length - 1].konec.slice(0, 5) : null,
+          };
+        })
         .filter((z): z is { dite: (typeof session.children)[number]; konec: string } =>
           z.konec !== null,
         ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [rozvrh, todayKey, session.children],
+    [rozvrh, rozvrhZmeny, todayKey, session.children],
   );
 
   /** Kdo má děti dnes (podle obecného vzoru rodiny). */

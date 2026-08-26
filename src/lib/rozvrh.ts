@@ -82,6 +82,8 @@ export function maParitu(hodiny: RozvrhHodina[]): boolean {
 /** Jedna hodina tak, jak ji ten den viděl EduPage. */
 export interface PozorovanaHodina {
   den: number;
+  /** Konkrétní datum pozorování — kvůli změnám, které platí jen ten den. */
+  datum: string;
   tyden: number;
   poradi: number;
   predmet: string;
@@ -89,6 +91,21 @@ export interface PozorovanaHodina {
   ucitel: string | null;
   zacatek: string;
   konec: string;
+  /** EduPage hodinu ten den škrtlo — odpadá. */
+  zruseno?: boolean;
+  /** Místo hodiny je ten den školní akce. */
+  akce?: boolean;
+}
+
+/** Odchylka od stálého rozvrhu, platná na jeden konkrétní den. */
+export interface ZmenaVRozvrhu {
+  den: string;
+  poradi: number;
+  druh: "zruseno" | "navic" | "zmena";
+  predmet: string | null;
+  ucebna: string | null;
+  zacatek: string | null;
+  konec: string | null;
 }
 
 export interface SlozenaHodina {
@@ -113,7 +130,12 @@ function otisk(h: PozorovanaHodina): string {
  * pozná se to jedině tak, že se dva po sobě jdoucí týdny liší. Když je
  * v datech jen jeden týden, nemáme co porovnávat a všechno platí vždy.
  */
-export function slozRozvrh(pozorovani: PozorovanaHodina[]): SlozenaHodina[] {
+export function slozRozvrh(vsechna: PozorovanaHodina[]): SlozenaHodina[] {
+  // Odpadlá hodina pořád říká, co v tom místě normálně bývá — do skládání
+  // patří. Školní akce na místě hodiny ne, ta je jednorázová a přebila by
+  // skutečný předmět.
+  const pozorovani = vsechna.filter((h) => !h.akce);
+
   const tydny = new Set(pozorovani.map((h) => h.tyden));
   const rozlisovat = tydny.size >= 2;
 
@@ -156,4 +178,57 @@ export function slozRozvrh(pozorovani: PozorovanaHodina[]): SlozenaHodina[] {
   }
 
   return vysledek.sort((a, b) => a.den - b.den || a.poradi - b.poradi);
+}
+
+/**
+ * Co se v konkrétní dny liší od stálého rozvrhu.
+ *
+ * Hlásí se jen to, co EduPage samo označí — odpadlou hodinu a školní akci
+ * na místě hodiny. Dopočítávat další rozdíly nemá cenu: stálý rozvrh se
+ * skládá ze stejných dat, takže by šlo o vlastní ozvěnu, ne o změnu.
+ */
+export function zmenyZPozorovani(pozorovani: PozorovanaHodina[]): ZmenaVRozvrhu[] {
+  const zmeny: ZmenaVRozvrhu[] = [];
+
+  for (const h of pozorovani) {
+    const druh = h.zruseno ? "zruseno" : h.akce ? "zmena" : null;
+    if (!druh) continue;
+
+    zmeny.push({
+      den: h.datum,
+      poradi: h.poradi,
+      druh,
+      predmet: h.predmet,
+      ucebna: h.ucebna,
+      zacatek: h.zacatek,
+      konec: h.konec,
+    });
+  }
+
+  // Na jedno místo v jednom dni patří jedna změna.
+  const jedinecne = new Map<string, ZmenaVRozvrhu>();
+  for (const z of zmeny) jedinecne.set(`${z.den}|${z.poradi}`, z);
+
+  return [...jedinecne.values()].sort(
+    (a, b) => a.den.localeCompare(b.den) || a.poradi - b.poradi,
+  );
+}
+
+/** Hodiny dne po zohlednění změn — odpadlé se vyhodí. */
+export function hodinyDneSeZmenami(
+  hodiny: RozvrhHodina[],
+  zmeny: { den: string; poradi: number; druh: string }[],
+  date: Date,
+): RozvrhHodina[] {
+  const denKlic = [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  const zrusene = new Set(
+    zmeny.filter((z) => z.den === denKlic && z.druh === "zruseno").map((z) => z.poradi),
+  );
+
+  return hodinyDne(hodiny, date).filter((h) => !zrusene.has(h.poradi));
 }

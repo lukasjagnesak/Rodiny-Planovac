@@ -208,6 +208,32 @@ export interface Receipt {
 
 export type RozvrhParita = "vzdy" | "sudy" | "lichy";
 
+export type EdupageDruh = "ukol" | "pisemka" | "zprava" | "akce";
+
+/** Párování dítěte v EduPage na dítě v plánovači. */
+export interface EdupageDite {
+  id: string;
+  user_id: string;
+  edupage_id: number;
+  child_id: string | null;
+  jmeno: string | null;
+}
+
+/** Odchylka od stálého rozvrhu na jeden konkrétní den. */
+export interface RozvrhZmena {
+  id: string;
+  family_id: string;
+  child_id: string;
+  den: string;
+  poradi: number;
+  druh: "zruseno" | "navic" | "zmena";
+  predmet: string | null;
+  ucebna: string | null;
+  zacatek: string | null;
+  konec: string | null;
+  puvodni: string | null;
+}
+
 export interface RozvrhHodina {
   id: string;
   family_id: string;

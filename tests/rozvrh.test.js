@@ -13,6 +13,8 @@ const {
   paritaPlati,
   denVTydnu,
   hodinTydne,
+  zmenyZPozorovani,
+  hodinyDneSeZmenami,
 } = require("../.test-build/rozvrh.js");
 
 let selhalo = 0;
@@ -21,8 +23,20 @@ function ok(popis, podminka) {
   if (!podminka) selhalo++;
 }
 
-const h = (den, tyden, poradi, predmet, zacatek = "08:00", konec = "08:45") => ({
-  den, tyden, poradi, predmet, ucebna: null, ucitel: null, zacatek, konec,
+// Pondělí týdne 34 je 18. 8. 2025, týdne 35 pak 25. 8. 2025.
+const DATUM = { 34: "2025-08-18", 35: "2025-08-25" };
+
+const h = (den, tyden, poradi, predmet, extra = {}) => ({
+  den,
+  tyden,
+  datum: DATUM[tyden] ?? "2025-08-18",
+  poradi,
+  predmet,
+  ucebna: null,
+  ucitel: null,
+  zacatek: "08:00",
+  konec: "08:45",
+  ...extra,
 });
 
 console.log("── slozRozvrh ──");
@@ -47,14 +61,43 @@ ok("hodina jen v sudém týdnu → 'sudy'", r.find((x) => x.poradi === 6)?.parit
 
 // 5) Stejný předmět, ale jiná učebna → rozdělí se.
 r = slozRozvrh([
-  { ...h(1, 34, 1, "Tělocvik"), ucebna: "Hala" },
-  { ...h(1, 35, 1, "Tělocvik"), ucebna: "Bazén" },
+  h(1, 34, 1, "Tělocvik", { ucebna: "Hala" }),
+  h(1, 35, 1, "Tělocvik", { ucebna: "Bazén" }),
 ]);
 ok("jiná učebna → dva řádky", r.length === 2);
 
 // 6) Řazení podle dne a pořadí.
 r = slozRozvrh([h(3, 34, 2, "B"), h(1, 34, 5, "A")]);
 ok("seřazeno podle dne", r[0].den === 1 && r[1].den === 3);
+
+// 7) Odpadlá hodina pořád říká, co tam normálně bývá — nesmí rozhodit paritu.
+r = slozRozvrh([
+  h(1, 34, 1, "Matematika", { zruseno: true }),
+  h(1, 35, 1, "Matematika"),
+]);
+ok("odpadlá hodina nezpůsobí rozdělení na sudý/lichý", r.length === 1 && r[0].parita === "vzdy");
+
+// 8) Školní akce na místě hodiny se do stálého rozvrhu nepromítne.
+r = slozRozvrh([
+  h(1, 34, 1, "Výlet do ZOO", { akce: true }),
+  h(1, 35, 1, "Matematika"),
+]);
+ok("akce nepřebije skutečný předmět", r.length === 1 && r[0].predmet === "Matematika");
+
+console.log("── změny v rozvrhu ──");
+
+let z = zmenyZPozorovani([
+  h(1, 34, 1, "Matematika"),
+  h(1, 34, 5, "Tělocvik", { zruseno: true }),
+  h(1, 35, 3, "Beseda", { akce: true }),
+]);
+ok("hlásí se jen odpadlé hodiny a akce", z.length === 2);
+ok("odpadlá hodina má druh 'zruseno'", z.find((x) => x.poradi === 5)?.druh === "zruseno");
+ok("akce má druh 'zmena'", z.find((x) => x.poradi === 3)?.druh === "zmena");
+ok("změna nese datum, ne jen den v týdnu", z[0].den === "2025-08-18");
+
+z = zmenyZPozorovani([h(1, 34, 1, "M"), h(2, 34, 2, "Č")]);
+ok("beze změn → prázdný seznam", z.length === 0);
 
 console.log("── výpočty nad rozvrhem ──");
 
@@ -78,6 +121,20 @@ const dalsiPondeli = new Date(2025, 8, 8);
 ok("v lichém týdnu se přidají dílny", konecVyucovani(rozvrh, dalsiPondeli) === "13:30");
 ok("den bez hodin → null", konecVyucovani(rozvrh, new Date(2025, 8, 6)) === null);
 ok("hodinTydne: 2 stálé + průměr sudý/lichý", hodinTydne(rozvrh) === 3);
+
+// 1. 9. 2025 je pondělí; odpadne pátá hodina, takže se končí dřív.
+const zmenyDne = [
+  { den: "2025-09-01", poradi: 5, druh: "zruseno" },
+  { den: "2025-09-08", poradi: 1, druh: "zruseno" },
+];
+ok(
+  "odpadlá poslední hodina posune konec vyučování",
+  hodinyDneSeZmenami(rozvrh, zmenyDne, pondeli).length === 1,
+);
+ok(
+  "změna z jiného dne se nepoužije",
+  hodinyDneSeZmenami(rozvrh, zmenyDne, new Date(2025, 8, 15)).length === 2,
+);
 
 console.log(selhalo === 0 ? "\n=== VŠE PROŠLO ===" : `\n=== ${selhalo} SELHALO ===`);
 process.exit(selhalo === 0 ? 0 : 1);

@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { credentialsFromRow, fetchEdupageRozvrh } from "@/lib/edupage";
-import { slozRozvrh } from "@/lib/rozvrh";
+import { fetchEdupageRozvrh, type EdupageLesson } from "@/lib/edupage";
+import { nactiEdupageKontext, zapisVysledek } from "@/lib/edupage-sync";
+import { slozRozvrh, zmenyZPozorovani, type PozorovanaHodina } from "@/lib/rozvrh";
 
 export const maxDuration = 300;
 
 /**
- * Stáhne rozvrh z EduPage a nahradí jím dřív stažené hodiny.
+ * Stáhne rozvrh z EduPage pro všechny spárované děti.
  *
  * Ručně zapsané hodiny zůstávají — když si rodič něco doplnil sám,
- * stažení mu to nepřepíše.
+ * stažení mu to nepřepíše. Nahrazují se jen řádky z minulého stažení.
  */
-export async function POST(request: Request) {
+export async function POST() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,107 +21,124 @@ export async function POST(request: Request) {
 
   if (!user) return NextResponse.json({ error: "Nepřihlášeno" }, { status: 401 });
 
-  const { childId } = (await request.json()) as { childId?: string };
-  if (!childId) {
-    return NextResponse.json({ error: "Chybí dítě, ke kterému rozvrh patří." }, { status: 400 });
-  }
+  const { kontext, chyba } = await nactiEdupageKontext(user.id);
+  if (!kontext) return NextResponse.json({ error: chyba }, { status: 400 });
 
   const admin = createAdminClient();
 
-  const { data: account } = await admin
-    .from("edupage_accounts")
-    .select("*")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (!account) {
-    return NextResponse.json({ error: "EduPage není propojené." }, { status: 400 });
-  }
-
-  // Dítě musí patřit do rodiny, ve které smí uživatel upravovat.
-  const { data: dite } = await admin
-    .from("children")
-    .select("id, family_id")
-    .eq("id", childId)
-    .maybeSingle();
-
-  if (!dite) return NextResponse.json({ error: "Dítě nenalezeno." }, { status: 404 });
-
-  const { data: clenstvi } = await admin
-    .from("family_members")
-    .select("role")
-    .eq("user_id", user.id)
-    .eq("family_id", dite.family_id)
-    .maybeSingle();
-
-  if (!clenstvi || clenstvi.role === "viewer") {
-    return NextResponse.json({ error: "Na tohle nemáš oprávnění." }, { status: 403 });
-  }
-
   try {
-    const { hodiny, dnu, chyby } = await fetchEdupageRozvrh(credentialsFromRow(account), 14);
-    const slozene = slozRozvrh(hodiny);
+    const { hodiny, dnu, chyby } = await fetchEdupageRozvrh(kontext.creds, 14);
 
-    // Ručně zapsané hodiny mají přednost — na jejich místo se nesahá.
-    const { data: rucni } = await admin
-      .from("rozvrh_hodiny")
-      .select("den, poradi, parita")
-      .eq("child_id", childId)
-      .eq("ze_edupage", false);
+    // Žákovský účet nic nepřepíná, takže hodiny přijdou bez ID dítěte —
+    // patří tomu jedinému spárovanému.
+    const jedineDite = kontext.parovani.length === 1 ? kontext.parovani[0] : null;
+    const podleEdupageId = new Map(kontext.parovani.map((p) => [p.edupage_id, p]));
 
-    const obsazeno = new Set(
-      (rucni ?? []).map((h) => `${h.den}|${h.poradi}|${h.parita}`),
-    );
+    const podleDitete = new Map<string, { hodiny: EdupageLesson[]; family_id: string }>();
+    let bezDitete = 0;
 
-    await admin
-      .from("rozvrh_hodiny")
-      .delete()
-      .eq("child_id", childId)
-      .eq("ze_edupage", true);
-
-    const kZapisu = slozene
-      .filter((h) => !obsazeno.has(`${h.den}|${h.poradi}|${h.parita}`))
-      .map((h) => ({
-        family_id: dite.family_id,
-        child_id: childId,
-        den: h.den,
-        poradi: h.poradi,
-        predmet: h.predmet,
-        ucebna: h.ucebna,
-        ucitel: h.ucitel,
-        zacatek: h.zacatek,
-        konec: h.konec,
-        parita: h.parita,
-        ze_edupage: true,
-      }));
-
-    if (kZapisu.length > 0) {
-      const { error } = await admin.from("rozvrh_hodiny").insert(kZapisu);
-      if (error) throw error;
+    for (const h of hodiny) {
+      const dite = h.diteId != null ? podleEdupageId.get(h.diteId) : jedineDite;
+      if (!dite) {
+        bezDitete += 1;
+        continue;
+      }
+      const zaznam = podleDitete.get(dite.child_id);
+      if (zaznam) zaznam.hodiny.push(h);
+      else podleDitete.set(dite.child_id, { hodiny: [h], family_id: dite.family_id });
     }
 
-    await admin
-      .from("edupage_accounts")
-      .update({
-        last_sync_at: new Date().toISOString(),
-        last_sync_error: null,
-        rozvrh_child_id: childId,
-      })
-      .eq("user_id", user.id);
+    let zapsano = 0;
+    let preskoceno = 0;
+    let zmenCelkem = 0;
+
+    for (const [childId, { hodiny: moje, family_id }] of podleDitete) {
+      const pozorovani: PozorovanaHodina[] = moje;
+      const slozene = slozRozvrh(pozorovani);
+      const zmeny = zmenyZPozorovani(pozorovani);
+
+      // Ručně zapsané hodiny mají přednost — na jejich místo se nesahá.
+      const { data: rucni } = await admin
+        .from("rozvrh_hodiny")
+        .select("den, poradi, parita")
+        .eq("child_id", childId)
+        .eq("ze_edupage", false);
+
+      const obsazeno = new Set((rucni ?? []).map((h) => `${h.den}|${h.poradi}|${h.parita}`));
+
+      await admin
+        .from("rozvrh_hodiny")
+        .delete()
+        .eq("child_id", childId)
+        .eq("ze_edupage", true);
+
+      const kZapisu = slozene
+        .filter((h) => !obsazeno.has(`${h.den}|${h.poradi}|${h.parita}`))
+        .map((h) => ({
+          family_id,
+          child_id: childId,
+          den: h.den,
+          poradi: h.poradi,
+          predmet: h.predmet,
+          ucebna: h.ucebna,
+          ucitel: h.ucitel,
+          zacatek: h.zacatek,
+          konec: h.konec,
+          parita: h.parita,
+          ze_edupage: true,
+        }));
+
+      if (kZapisu.length > 0) {
+        const { error } = await admin.from("rozvrh_hodiny").insert(kZapisu);
+        if (error) throw error;
+      }
+
+      zapsano += kZapisu.length;
+      preskoceno += slozene.length - kZapisu.length;
+
+      // Změny platí na konkrétní den — starší už nikoho nezajímají.
+      await admin.from("rozvrh_zmeny").delete().eq("child_id", childId);
+
+      if (zmeny.length > 0) {
+        const { error } = await admin.from("rozvrh_zmeny").insert(
+          zmeny.map((z) => ({
+            family_id,
+            child_id: childId,
+            den: z.den,
+            poradi: z.poradi,
+            druh: z.druh,
+            predmet: z.predmet,
+            ucebna: z.ucebna,
+            zacatek: z.zacatek,
+            konec: z.konec,
+          })),
+        );
+        if (error) throw error;
+      }
+      zmenCelkem += zmeny.length;
+    }
+
+    const potize = [...chyby];
+    if (bezDitete > 0) {
+      potize.push(
+        `${bezDitete} hodin nešlo přiřadit k dítěti — zkontroluj párování v nastavení.`,
+      );
+    }
+
+    await zapisVysledek(user.id, potize.length > 0 ? potize.join("; ") : null);
 
     return NextResponse.json({
       ok: true,
-      pocet: kZapisu.length,
+      pocet: zapsano,
       dnu,
-      preskoceno: slozene.length - kZapisu.length,
-      chyby,
+      deti: podleDitete.size,
+      zmeny: zmenCelkem,
+      preskoceno,
+      chyby: potize,
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Stažení rozvrhu selhalo.";
-    await admin
-      .from("edupage_accounts")
-      .update({ last_sync_error: message.slice(0, 400) })
-      .eq("user_id", user.id);
+    await zapisVysledek(user.id, message);
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

@@ -139,6 +139,55 @@ exception
   when check_violation then raise notice 'OK: obrácené časy odmítnuty';
 end $$;
 
+\echo '--- 12e) změna v rozvrhu platí na jeden den a jen jednou'
+insert into rozvrh_zmeny (family_id, child_id, den, poradi, druh, predmet)
+values (:'family_id', :'child_id', '2026-03-03', 5, 'zruseno', 'Tělocvik');
+
+do $$
+begin
+  insert into rozvrh_zmeny (family_id, child_id, den, poradi, druh)
+  values (current_setting('test.family')::uuid, current_setting('test.child')::uuid,
+          '2026-03-03', 5, 'zmena');
+  raise exception 'CHYBA: druhá změna na stejné místo prošla';
+exception
+  when unique_violation then raise notice 'OK: druhá změna na stejné místo odmítnuta';
+end $$;
+
+do $$
+begin
+  insert into rozvrh_zmeny (family_id, child_id, den, poradi, druh)
+  values (current_setting('test.family')::uuid, current_setting('test.child')::uuid,
+          '2026-03-04', 5, 'nesmysl');
+  raise exception 'CHYBA: neznámý druh změny prošel';
+exception
+  when check_violation then raise notice 'OK: neznámý druh změny odmítnut';
+end $$;
+
+\echo '--- 12e2) párování dítěte v EduPage patří jen svému uživateli'
+insert into edupage_deti (user_id, edupage_id, child_id, jmeno)
+values ('22222222-2222-2222-2222-222222222222', 4521, :'child_id', 'Kuba');
+select count(*) as moje_parovani from edupage_deti;
+
+do $$
+begin
+  insert into edupage_deti (user_id, edupage_id)
+  values ('11111111-1111-1111-1111-111111111111', 999);
+  raise exception 'CHYBA: párování cizímu uživateli prošlo';
+exception
+  when insufficient_privilege then raise notice 'OK: párování cizímu uživateli odmítnuto';
+end $$;
+
+\echo '--- 12f) položky ze školy zapisuje jen stahování, ne člen rodiny'
+do $$
+begin
+  insert into edupage_items (family_id, child_id, external_id, druh, text)
+  values (current_setting('test.family')::uuid, current_setting('test.child')::uuid,
+          '77:1234', 'zprava', 'Podvrh');
+  raise exception 'CHYBA: ruční zápis položky prošel';
+exception
+  when insufficient_privilege then raise notice 'OK: ruční zápis odmítnut (píše jen stahování)';
+end $$;
+
 \echo '--- 13) máma NESMÍ přejmenovat rodinu (není owner)'
 update families set name = 'Ukradeno';
 select name as nazev_rodiny_zustal from families;
@@ -154,7 +203,10 @@ select
   (select count(*) from activities) as krouzky,
   (select count(*) from events) as udalosti,
   (select count(*) from custody_patterns) as vzory,
-  (select count(*) from rozvrh_hodiny) as hodin_rozvrhu;
+  (select count(*) from rozvrh_hodiny) as hodin_rozvrhu,
+  (select count(*) from rozvrh_zmeny) as zmen_rozvrhu,
+  (select count(*) from edupage_items) as ze_skoly,
+  (select count(*) from edupage_deti) as parovani;
 
 \echo '--- 15) cizí uživatel nemůže vložit výdaj do cizí rodiny'
 do $$
@@ -170,9 +222,31 @@ end $$;
 \echo '--- 16) cizí uživatel vidí jen svůj profil'
 select count(*) as viditelne_profily from profiles;
 
--- ══ Notifikace: ON CONFLICT musí umět odvodit index ═══════════════
+-- ══ Zápisy servisním klíčem (stahování z EduPage) ═════════════════
 reset role;
 reset request.jwt.claim.sub;
+
+\echo '--- 16b) zpráva z EduPage je platný druh položky'
+insert into edupage_items (family_id, child_id, external_id, druh, text)
+values (:'family_id', :'child_id', '77:1234', 'zprava', 'Zítra jdeme do divadla');
+select druh, child_id is not null as ma_dite from edupage_items;
+
+\echo '--- 16c) neznámý druh položky neprojde ani servisnímu klíči'
+do $$
+begin
+  insert into edupage_items (family_id, external_id, druh, text)
+  values (current_setting('test.family')::uuid, 'x:1', 'vymysl', '');
+  raise exception 'CHYBA: neznámý druh položky prošel';
+exception
+  when check_violation then raise notice 'OK: neznámý druh položky odmítnut';
+end $$;
+
+\echo '--- 16d) stejná položka dvakrát se nezaloží dvakrát'
+insert into edupage_items (family_id, child_id, external_id, druh, text)
+values (:'family_id', :'child_id', '77:1234', 'zprava', 'Upravený text')
+on conflict (family_id, external_id) do update set text = excluded.text;
+select count(*) as polozek, max(text) as text from edupage_items;
+
 
 \echo '--- 17) upsert notifikace s dedupe klíčem (dvakrát → jeden řádek)'
 insert into notifications (family_id, user_id, title, body, dedupe_key)

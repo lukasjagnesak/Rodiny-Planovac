@@ -19,7 +19,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **Výdaje** | Výživné, kroužky, oblečení, škola, zdraví… Fotka účtenky přímo z foťáku, rozdělení nákladů mezi rodiče, přehled kdo komu dluží |
 | **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava a události |
 | **Google kalendář** | Každý člen si propojí **svůj** účet; péče, kroužky i události se přenesou do jeho kalendáře |
-| **EduPage** | Úkoly, písemky, školní akce a stažení rozvrhu ze školního systému (jen rodinná verze) |
+| **EduPage** | Úkoly, písemky, zprávy od učitelů, školní akce a rozvrh ze školního systému. Víc dětí pod jedním účtem, všechno roztříděné podle toho, komu patří (jen rodinná verze) |
 | **Telegram** | Připomínky zdarma přímo do telefonu — kdo zítra veze, kdy je předání, co se blíží |
 | **Rodina** | Pozvánky odkazem, role (správce / rodič / pečující osoba / jen pro čtení), vlastní barvy |
 
@@ -50,8 +50,8 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0008` — pozdější rozšíření (střídání po sudých týdnech, okresy,
-     dvoutýdenní rozpis, EduPage, rozvrh)
+   - `0004`–`0009` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+     dvoutýdenní rozpis, EduPage, rozvrh, víc dětí a zprávy)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -111,12 +111,26 @@ EDUPAGE_SIDECAR_SECRET=$(openssl rand -hex 24)
 
 Propojení pak proběhne v aplikaci v **Nastavení → EduPage**. Každý rodič
 zadává vlastní přihlašovací údaje; heslo se ukládá zašifrované a nikdo ho
-nemusí sdílet s druhým rodičem. Stažené úkoly ale vidí celá rodina.
+nemusí sdílet s druhým rodičem. Stažené věci ale vidí celá rodina.
 
-Co se stáhne: úkoly, písemky a školní akce z timeline. U akcí nabídne
-aplikace jedním klikem vytvoření události v kalendáři. Na stránce **Rozvrh**
-je navíc tlačítko, které stáhne rozvrh hodin — čte se čtrnáct dní dopředu,
-aby se poznalo, jestli škola jede na sudý a lichý týden.
+**Děti.** Rodičovský účet vidí data dítěte až po přepnutí na něj, a dětí
+tam bývá víc. V nastavení proto tlačítko **Najít** projde přihlašovací data
+a nabídne, co v nich za děti našlo; ke každému se pak vybere, kterému dítěti
+v plánovači odpovídá. Bez toho přiřazení se dítě nestahuje — nebylo by
+poznat, komu úkol patří. Když se hledání nechytne (EduPage má strukturu
+dat u každé školy trochu jinou), dá se ID přidat ručně: v EduPage se přepni
+na dítě a v adrese stránky bude `studentid=…`.
+
+Co se stáhne: úkoly, písemky, **zprávy od učitelů**, školní novinky a akce
+z timeline. Všechno označené tím, kterého dítěte se týká, takže se to dá na
+stránce **Ze školy** filtrovat. U akcí nabídne aplikace jedním klikem
+vytvoření události v kalendáři.
+
+Na stránce **Rozvrh** je tlačítko, které stáhne rozvrh hodin pro všechny
+spárované děti. Čte se čtrnáct dní dopředu, aby se poznalo, jestli škola
+jede na sudý a lichý týden. Denní rozvrh z EduPage nese i to, co ten den
+odpadá — z toho se udělají **změny**, které se ukážou u rozvrhu, v detailu
+dne a projeví se i na „dnes končí" na přehledu.
 
 > Ručně zapsané hodiny stažení nepřepíše. Nahrazují se jen ty, které z
 > EduPage přišly minule.
@@ -245,7 +259,15 @@ npm run dev         # vývojový server
 npm run build       # produkční build
 npm run start       # spuštění produkčního buildu
 npm run typecheck   # kontrola typů
-npm run test:rozvrh # testy skládání rozvrhu (sudý/lichý týden)
+npm run test:rozvrh # testy skládání rozvrhu (sudý/lichý týden, změny)
+```
+
+Hledání dětí v datech EduPage má vlastní testy — struktura se mezi školami
+liší, takže se hledá podle tvaru a bez testů by se chyba poznala až tím, že
+rodič nevidí druhé dítě:
+
+```bash
+cd edupage && python test_deti.py
 ```
 
 ### Test databázového zabezpečení
@@ -259,5 +281,6 @@ PGHOST=/tmp PGPORT=5433 bash supabase/tests/run.sh
 ```
 
 Kontroluje mimo jiné, že cizí uživatel nevidí ani jeden řádek, že rodič bez
-role správce nepřejmenuje rodinu a že přiřazení řidiče i odeslané notifikace
-se nemohou zduplikovat.
+role správce nepřejmenuje rodinu, že přiřazení řidiče i odeslané notifikace
+se nemohou zduplikovat, že se do rozvrhu nedá zapsat hodina s koncem před
+začátkem a že položky ze školy smí zakládat jen stahování, ne člen rodiny.

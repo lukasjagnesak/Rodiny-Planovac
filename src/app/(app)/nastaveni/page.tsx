@@ -47,7 +47,7 @@ export default async function SettingsPage() {
     {
       href: "/nastaveni/edupage",
       title: "EduPage",
-      description: "Úkoly, písemky a školní akce",
+      description: "Úkoly, zprávy, rozvrh a školní akce",
       Icon: GraduationCap,
       badge: edupage ? "propojeno" : null,
     },

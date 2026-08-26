@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { credentialsFromRow, fetchEdupageItems } from "@/lib/edupage";
+import { fetchEdupageItems } from "@/lib/edupage";
+import { nactiEdupageKontext, zapisVysledek } from "@/lib/edupage-sync";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
 import { cookies } from "next/headers";
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
-/** Stáhne úkoly z EduPage a uloží je pro celou rodinu. */
+/** Stáhne úkoly, písemky a zprávy z EduPage a uloží je pro celou rodinu. */
 export async function POST() {
   const supabase = await createClient();
   const {
@@ -16,19 +17,13 @@ export async function POST() {
 
   if (!user) return NextResponse.json({ error: "Nepřihlášeno" }, { status: 401 });
 
+  const { kontext, chyba } = await nactiEdupageKontext(user.id);
+  if (!kontext) return NextResponse.json({ error: chyba }, { status: 400 });
+
   const admin = createAdminClient();
 
-  const { data: account } = await admin
-    .from("edupage_accounts")
-    .select("*")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (!account) {
-    return NextResponse.json({ error: "EduPage není propojené." }, { status: 400 });
-  }
-
-  // Do které rodiny se úkoly uloží — bere se právě otevřená rodina.
+  // Kam se uloží položky, které nepatří konkrétnímu dítěti — do právě
+  // otevřené rodiny.
   const { data: memberships } = await admin
     .from("family_members")
     .select("family_id")
@@ -40,44 +35,52 @@ export async function POST() {
   }
 
   const preferred = (await cookies()).get(ACTIVE_FAMILY_COOKIE)?.value;
-  const familyId = familyIds.includes(preferred ?? "") ? preferred! : familyIds[0];
+  const vychoziFamilyId = familyIds.includes(preferred ?? "") ? preferred! : familyIds[0];
+
+  // ID dítěte v EduPage → dítě v plánovači.
+  const podleEdupageId = new Map(kontext.parovani.map((p) => [p.edupage_id, p]));
 
   try {
-    const items = await fetchEdupageItems(credentialsFromRow(account), 45);
+    const { polozky, chyby } = await fetchEdupageItems(kontext.creds, 45);
 
-    if (items.length > 0) {
-      const { error } = await admin.from("edupage_items").upsert(
-        items.map((item) => ({
-          family_id: familyId,
-          external_id: item.id,
-          druh: item.druh,
-          typ: item.typ,
-          text: item.text,
-          predmet: item.predmet,
-          termin: item.termin,
-          zadano: item.zadano,
-          hotovo: item.hotovo,
-          autor: item.autor,
-          navrh_kalendare: item.navrhKalendare,
-          fetched_at: new Date().toISOString(),
-        })),
-        { onConflict: "family_id,external_id" },
-      );
+    const radky = polozky.map((item) => {
+      const dite = item.diteId != null ? podleEdupageId.get(item.diteId) : undefined;
+      return {
+        family_id: dite?.family_id ?? vychoziFamilyId,
+        child_id: dite?.child_id ?? null,
+        external_id: item.id,
+        druh: item.druh,
+        typ: item.typ,
+        text: item.text,
+        predmet: item.predmet,
+        termin: item.termin,
+        zadano: item.zadano,
+        hotovo: item.hotovo,
+        autor: item.autor,
+        navrh_kalendare: item.navrhKalendare,
+        fetched_at: new Date().toISOString(),
+      };
+    });
+
+    if (radky.length > 0) {
+      const { error } = await admin
+        .from("edupage_items")
+        .upsert(radky, { onConflict: "family_id,external_id" });
       if (error) throw error;
     }
 
-    await admin
-      .from("edupage_accounts")
-      .update({ last_sync_at: new Date().toISOString(), last_sync_error: null })
-      .eq("user_id", user.id);
+    await zapisVysledek(user.id, chyby.length > 0 ? chyby.join("; ") : null);
 
-    return NextResponse.json({ ok: true, pocet: items.length });
+    return NextResponse.json({
+      ok: true,
+      pocet: radky.length,
+      zprav: radky.filter((r) => r.druh === "zprava").length,
+      deti: kontext.parovani.length,
+      chyby,
+    });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Stažení selhalo.";
-    await admin
-      .from("edupage_accounts")
-      .update({ last_sync_error: message.slice(0, 400) })
-      .eq("user_id", user.id);
+    await zapisVysledek(user.id, message);
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

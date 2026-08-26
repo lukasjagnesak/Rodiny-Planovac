@@ -11,6 +11,7 @@ import type {
   CustodyPattern,
   FamilyEvent,
   RozvrhHodina,
+  RozvrhZmena,
 } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Kalendář" };
@@ -32,7 +33,8 @@ export default async function CalendarPage({
   const fromKey = toDateKey(gridStart);
   const toKey = toDateKey(addDays(gridEnd, 1));
 
-  const [patterns, overrides, activities, occurrences, events, rozvrh] = await Promise.all([
+  const [patterns, overrides, activities, occurrences, events, rozvrh, rozvrhZmeny] =
+    await Promise.all([
     supabase
       .from("custody_patterns")
       .select("*")
@@ -69,6 +71,12 @@ export default async function CalendarPage({
       .select("*")
       .eq("family_id", session.family.id)
       .order("poradi"),
+    supabase
+      .from("rozvrh_zmeny")
+      .select("*")
+      .eq("family_id", session.family.id)
+      .gte("den", fromKey)
+      .lte("den", toKey),
   ]);
 
   return (
@@ -82,6 +90,7 @@ export default async function CalendarPage({
       occurrences={(occurrences.data ?? []) as ActivityOccurrence[]}
       events={(events.data ?? []) as FamilyEvent[]}
       rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
+      rozvrhZmeny={(rozvrhZmeny.data ?? []) as RozvrhZmena[]}
     />
   );
 }

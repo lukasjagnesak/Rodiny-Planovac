@@ -10,6 +10,10 @@ použije je a zapomene; uložené (zašifrované) jsou v databázi plánovače.
 
 Chráněná je sdíleným tajemstvím v hlavičce `X-Sidecar-Secret`, aby na ni
 nemohl sáhnout nikdo jiný než plánovač.
+
+Rodičovský účet vidí data dítěte až po přepnutí na něj. Když má rodič dětí
+víc, přihlásí se jednou a přepíná se mezi nimi — proto každý koncový bod
+bere seznam dětí a vrací výsledky označené tím, komu patří.
 """
 
 from __future__ import annotations
@@ -17,7 +21,7 @@ from __future__ import annotations
 import logging
 import os
 from datetime import date, datetime, timedelta
-from typing import Any, Optional
+from typing import Any, Iterator, Optional
 
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException
@@ -45,16 +49,28 @@ ZKOUSENI = {
     EventType.ORAL_EXAM,
     EventType.PROJECT_EXAM,
     EventType.PAPER,
+    EventType.SHORT_EXAM,
+}
+
+# Zprávy od učitelů a školní novinky.
+ZPRAVY = {
+    EventType.MESSAGE,
+    EventType.NEWS,
 }
 
 # Typy, které dávají smysl nabídnout k zapsání do kalendáře.
 SKOLNI_AKCE = {
     EventType.PARENTS_EVENING: "parent_meeting",
     EventType.EXCURSION: "excursion",
+    EventType.SCHOOL_TRIP: "school_trip",
+    EventType.SCHOOL_EVENT: "other",
+    EventType.CLASS_TEACHER_EVENT: "other",
+    EventType.EVENT: "other",
     EventType.CULTURE: "other",
     EventType.CONTEST: "other",
     EventType.FREE_DAY: "holiday",
     EventType.HOLIDAY: "holiday",
+    EventType.SHORT_HOLIDAY: "holiday",
 }
 
 
@@ -70,13 +86,21 @@ class Prihlaseni(BaseModel):
     heslo: str
     """Nepovinná subdoména školy. Bez ní se použije automatické hledání."""
     subdomena: Optional[str] = None
-    """ID dítěte u rodičovského účtu — bez něj se bere timeline rodiče."""
-    dite_id: Optional[int] = None
+    """
+    ID dětí v EduPage. Prázdný seznam znamená „ber účet tak, jak je“ —
+    u žákovského účtu je to to jediné správné.
+    """
+    deti: list[int] = Field(default_factory=list)
 
 
 class DotazUkoly(Prihlaseni):
     """Kolik dní zpět z timeline načíst."""
     dnu_zpet: int = Field(default=30, ge=1, le=180)
+
+
+class DotazRozvrh(Prihlaseni):
+    """Kolik dní dopředu se má rozvrh číst. Dva týdny stačí i na školy se sudým a lichým týdnem."""
+    dnu_dopredu: int = Field(default=14, ge=1, le=28)
 
 
 def prihlas(data: Prihlaseni) -> Edupage:
@@ -99,13 +123,44 @@ def prihlas(data: Prihlaseni) -> Edupage:
             "Účet je chráněný dvoufázovým ověřením. Tudy se k datům dostat nedá.",
         )
 
-    if data.dite_id is not None:
-        try:
-            edupage.switch_to_child(data.dite_id)
-        except Exception as chyba:  # noqa: BLE001
-            raise HTTPException(400, f"Přepnutí na dítě se nepovedlo: {chyba}")
-
     return edupage
+
+
+def je_rodic(edupage: Edupage) -> bool:
+    try:
+        return "Rodic" in edupage.get_user_id()
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def po_detech(edupage: Edupage, deti: list[int]) -> Iterator[tuple[Optional[int], list[str]]]:
+    """
+    Projde postupně všechny děti a mezi nimi přepne účet.
+
+    Vrací dvojici (ID dítěte, chyby). Když seznam dětí prázdný je, projde
+    se účet tak, jak je — to je případ žákovského účtu. Chyba u jednoho
+    dítěte neshodí ostatní; vrátí se v seznamu a plánovač ji ukáže.
+    """
+    if not deti:
+        yield None, []
+        return
+
+    rodic = je_rodic(edupage)
+
+    for index, dite in enumerate(deti):
+        chyby: list[str] = []
+        try:
+            # Mezi dětmi se musí projít přes rodiče, přímé přepnutí
+            # z dítěte na dítě EduPage nenabízí.
+            if rodic and index > 0:
+                edupage.switch_to_parent()
+            edupage.switch_to_child(dite)
+        except Exception as chyba:  # noqa: BLE001
+            log.warning("přepnutí na dítě %s selhalo: %s", dite, chyba)
+            chyby.append(f"dítě {dite}: přepnutí selhalo ({chyba})")
+            continue
+
+        yield dite, chyby
 
 
 def cas(hodnota: Any) -> Optional[str]:
@@ -136,6 +191,18 @@ def predmet(udalost) -> Optional[str]:
     return None
 
 
+def jmeno(hodnota) -> Optional[str]:
+    """Z objektu knihovny (předmět, učebna, učitel) vytáhne čitelné jméno."""
+    if hodnota is None:
+        return None
+    for atribut in ("name", "short"):
+        nazev = getattr(hodnota, atribut, None)
+        if isinstance(nazev, str) and nazev.strip():
+            return nazev.strip()
+    text = str(hodnota).strip()
+    return text or None
+
+
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
@@ -157,10 +224,130 @@ def overit(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict
     }
 
 
+# ─────────────────────────────────────────────────────────────────────
+#  Hledání dětí rodičovského účtu
+# ─────────────────────────────────────────────────────────────────────
+
+# Klíče, pod kterými EduPage vozí jméno a ID. Je jich víc verzí, tak se
+# zkouší po řadě.
+KLICE_ID = ("studentid", "childid", "userid", "id", "student_id", "child_id")
+KLICE_JMENA = ("name", "meno", "fullname", "celemeno", "vypis")
+
+
+def _cislo(hodnota: Any) -> Optional[int]:
+    try:
+        cislo = int(str(hodnota).strip())
+    except (TypeError, ValueError):
+        return None
+    return cislo if cislo > 0 else None
+
+
+def _jako_dite(zaznam: dict) -> Optional[dict]:
+    """Z jednoho záznamu udělá dítě, pokud vypadá jako člověk s ID."""
+    dite_id = None
+    for klic in KLICE_ID:
+        dite_id = _cislo(zaznam.get(klic))
+        if dite_id is not None:
+            break
+    if dite_id is None:
+        return None
+
+    nazev = None
+    for klic in KLICE_JMENA:
+        hodnota = zaznam.get(klic)
+        if isinstance(hodnota, str) and hodnota.strip():
+            nazev = hodnota.strip()
+            break
+
+    # Rozdělené jméno se skládá zvlášť — samotné křestní by ke dvěma
+    # sourozencům nestačilo.
+    if nazev is None:
+        casti = [zaznam.get("firstname"), zaznam.get("lastname")]
+        slozene = " ".join(c.strip() for c in casti if isinstance(c, str) and c.strip())
+        nazev = slozene or None
+
+    return {"edupageId": dite_id, "jmeno": nazev}
+
+
+def najdi_deti(data: Any, cesta: str = "", nalezene: Optional[list] = None) -> list[dict]:
+    """
+    Prohledá přihlašovací data a najde v nich děti rodiče.
+
+    EduPage nemá koncový bod, který by děti vypsal, a knihovna to neumí
+    taky. Struktura se navíc mezi školami liší, proto se hledá podle tvaru
+    dat: seznam pod klíčem, který zmiňuje dítě, jehož položky mají ID.
+    """
+    if nalezene is None:
+        nalezene = []
+    if len(nalezene) >= 20:
+        return nalezene
+
+    if isinstance(data, dict):
+        for klic, hodnota in data.items():
+            nizky = klic.lower()
+            vypada_na_deti = any(
+                slovo in nizky for slovo in ("child", "dieta", "deti", "ziak", "student")
+            )
+
+            if vypada_na_deti and isinstance(hodnota, list):
+                for polozka in hodnota:
+                    if isinstance(polozka, dict):
+                        dite = _jako_dite(polozka)
+                        if dite:
+                            dite["kde"] = f"{cesta}{klic}"
+                            nalezene.append(dite)
+            elif vypada_na_deti and isinstance(hodnota, dict):
+                # Někdy je to slovník ID → údaje.
+                for pod_klic, polozka in hodnota.items():
+                    if isinstance(polozka, dict):
+                        dite = _jako_dite({**polozka, "id": polozka.get("id", pod_klic)})
+                        if dite:
+                            dite["kde"] = f"{cesta}{klic}"
+                            nalezene.append(dite)
+
+            najdi_deti(hodnota, f"{cesta}{klic}.", nalezene)
+
+    elif isinstance(data, list):
+        for polozka in data[:50]:
+            najdi_deti(polozka, cesta, nalezene)
+
+    return nalezene
+
+
+@app.post("/deti")
+def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
+    """
+    Děti, které rodičovský účet vidí.
+
+    Když se nic nenajde, vrátí se aspoň názvy klíčů v přihlašovacích datech
+    — podle nich se dá dohledat, kde je má zrovna tahle škola schované, a
+    ID jde vždycky zadat ručně.
+    """
+    zkontroluj_tajemstvi(x_sidecar_secret)
+    edupage = prihlas(data)
+
+    surova = getattr(edupage, "data", None) or {}
+    nalezene = najdi_deti(surova)
+
+    # Stejné dítě může být v datech víckrát; bereme první výskyt.
+    bez_duplicit: dict[int, dict] = {}
+    for dite in nalezene:
+        bez_duplicit.setdefault(dite["edupageId"], dite)
+
+    return {
+        "ok": True,
+        "jeRodic": je_rodic(edupage),
+        "deti": list(bez_duplicit.values()),
+        # Jen názvy klíčů, žádný obsah — kdyby hledání selhalo, aby bylo
+        # podle čeho ho doladit.
+        "klice": sorted(surova.keys()) if isinstance(surova, dict) else [],
+    }
+
+
 @app.post("/ukoly")
 def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
     """
-    Úkoly, písemky a školní akce z timeline.
+    Úkoly, písemky, zprávy a školní akce z timeline.
 
     EduPage nemá zvláštní koncový bod pro úkoly — všechno chodí jako proud
     událostí, které se rozliší podle typu.
@@ -169,60 +356,54 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
     edupage = prihlas(data)
 
     od = date.today() - timedelta(days=data.dnu_zpet)
-    try:
-        udalosti = edupage.get_notification_history(od)
-    except Exception as chyba:  # noqa: BLE001
-        raise HTTPException(502, f"Načtení timeline selhalo: {chyba}")
-
     polozky = []
-    for u in udalosti:
-        if u.is_removed:
+    chyby: list[str] = []
+
+    for dite_id, potize in po_detech(edupage, data.deti):
+        chyby.extend(potize)
+
+        try:
+            udalosti = edupage.get_notification_history(od)
+        except Exception as chyba:  # noqa: BLE001
+            chyby.append(f"timeline{f' dítěte {dite_id}' if dite_id else ''}: {chyba}")
             continue
 
-        if u.event_type in UKOLY:
-            druh = "ukol"
-        elif u.event_type in ZKOUSENI:
-            druh = "pisemka"
-        elif u.event_type in SKOLNI_AKCE:
-            druh = "akce"
-        else:
-            continue
+        for u in udalosti:
+            if u.is_removed:
+                continue
 
-        polozky.append(
-            {
-                "id": str(u.event_id),
-                "druh": druh,
-                "typ": u.event_type.name,
-                "text": (u.text or "").strip(),
-                "predmet": predmet(u),
-                "termin": termin(u),
-                "zadano": cas(u.timestamp),
-                "hotovo": bool(u.is_done),
-                "autor": str(u.author),
-                # Návrh typu události pro kalendář — jen u školních akcí.
-                "navrhKalendare": SKOLNI_AKCE.get(u.event_type),
-            }
-        )
+            if u.event_type in UKOLY:
+                druh = "ukol"
+            elif u.event_type in ZKOUSENI:
+                druh = "pisemka"
+            elif u.event_type in ZPRAVY:
+                druh = "zprava"
+            elif u.event_type in SKOLNI_AKCE:
+                druh = "akce"
+            else:
+                continue
 
-    polozky.sort(key=lambda p: (p["termin"] or "9999", p["zadano"] or ""), reverse=False)
-    return {"ok": True, "pocet": len(polozky), "polozky": polozky}
+            polozky.append(
+                {
+                    # ID události je jedinečné v rámci účtu, ne dítěte —
+                    # do klíče proto patří obojí.
+                    "id": f"{dite_id}:{u.event_id}" if dite_id else str(u.event_id),
+                    "diteId": dite_id,
+                    "druh": druh,
+                    "typ": u.event_type.name,
+                    "text": (u.text or "").strip(),
+                    "predmet": predmet(u),
+                    "termin": termin(u),
+                    "zadano": cas(u.timestamp),
+                    "hotovo": bool(u.is_done),
+                    "autor": str(u.author),
+                    # Návrh typu události pro kalendář — jen u školních akcí.
+                    "navrhKalendare": SKOLNI_AKCE.get(u.event_type),
+                }
+            )
 
-
-class DotazRozvrh(Prihlaseni):
-    """Kolik dní dopředu se má rozvrh číst. Dva týdny stačí i na školy se sudým a lichým týdnem."""
-    dnu_dopredu: int = Field(default=14, ge=1, le=28)
-
-
-def jmeno(hodnota) -> Optional[str]:
-    """Z objektu knihovny (předmět, učebna, učitel) vytáhne čitelné jméno."""
-    if hodnota is None:
-        return None
-    for atribut in ("name", "short"):
-        nazev = getattr(hodnota, atribut, None)
-        if isinstance(nazev, str) and nazev.strip():
-            return nazev.strip()
-    text = str(hodnota).strip()
-    return text or None
+    polozky.sort(key=lambda p: (p["termin"] or "9999", p["zadano"] or ""))
+    return {"ok": True, "pocet": len(polozky), "polozky": polozky, "chyby": chyby[:8]}
 
 
 @app.post("/rozvrh")
@@ -230,53 +411,57 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
     """
     Rozvrh na následující dny.
 
-    EduPage vrací rozvrh vždy po jednom dni, takže se prochází den po dni.
-    Skládání do týdenní tabulky (včetně rozpoznání sudého a lichého týdne)
-    dělá až plánovač — tahle služba jen hlásí, co který den viděla.
+    EduPage vydává rozvrh vždy po jednom dni — a je to rozvrh toho dne,
+    tedy včetně odpadlých hodin. Skládání do týdenní tabulky i rozpoznání
+    změn dělá až plánovač; tahle služba jen hlásí, co který den viděla.
     """
     zkontroluj_tajemstvi(x_sidecar_secret)
     edupage = prihlas(data)
 
     hodiny = []
+    chyby: list[str] = []
     dnu = 0
-    chyby = []
 
-    for posun in range(data.dnu_dopredu):
-        den = date.today() + timedelta(days=posun)
-        # Víkend nemá rozvrh, ať se zbytečně netahá.
-        if den.weekday() >= 5:
-            continue
+    for dite_id, potize in po_detech(edupage, data.deti):
+        chyby.extend(potize)
 
-        try:
-            tabulka = edupage.get_my_timetable(den)
-        except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
-            chyby.append(f"{den.isoformat()}: {chyba}")
-            continue
-
-        if tabulka is None:
-            continue
-
-        dnu += 1
-        for lekce in tabulka.lessons:
-            # Zrušené hodiny a jednorázové akce do trvalého rozvrhu nepatří.
-            if lekce.is_cancelled or lekce.is_event:
-                continue
-            predmet_nazev = jmeno(lekce.subject)
-            if not predmet_nazev:
+        for posun in range(data.dnu_dopredu):
+            den = date.today() + timedelta(days=posun)
+            # Víkend nemá rozvrh, ať se zbytečně netahá.
+            if den.weekday() >= 5:
                 continue
 
-            hodiny.append(
-                {
-                    "den": den.isoweekday(),
-                    "datum": den.isoformat(),
-                    "tyden": den.isocalendar()[1],
-                    "poradi": lekce.period if lekce.period is not None else 0,
-                    "predmet": predmet_nazev,
-                    "ucebna": jmeno((lekce.classrooms or [None])[0]),
-                    "ucitel": jmeno((lekce.teachers or [None])[0]),
-                    "zacatek": lekce.start_time.strftime("%H:%M"),
-                    "konec": lekce.end_time.strftime("%H:%M"),
-                }
-            )
+            try:
+                tabulka = edupage.get_my_timetable(den)
+            except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
+                chyby.append(f"{den.isoformat()}: {chyba}")
+                continue
 
-    return {"ok": True, "dnu": dnu, "pocet": len(hodiny), "hodiny": hodiny, "chyby": chyby[:5]}
+            if tabulka is None:
+                continue
+
+            dnu += 1
+            for lekce in tabulka.lessons:
+                predmet_nazev = jmeno(lekce.subject)
+                if not predmet_nazev:
+                    continue
+
+                hodiny.append(
+                    {
+                        "diteId": dite_id,
+                        "den": den.isoweekday(),
+                        "datum": den.isoformat(),
+                        "tyden": den.isocalendar()[1],
+                        "poradi": lekce.period if lekce.period is not None else 0,
+                        "predmet": predmet_nazev,
+                        "ucebna": jmeno((lekce.classrooms or [None])[0]),
+                        "ucitel": jmeno((lekce.teachers or [None])[0]),
+                        "zacatek": lekce.start_time.strftime("%H:%M"),
+                        "konec": lekce.end_time.strftime("%H:%M"),
+                        # Denní rozvrh nese i to, co se ten den nekoná.
+                        "zruseno": bool(lekce.is_cancelled),
+                        "akce": bool(lekce.is_event),
+                    }
+                )
+
+    return {"ok": True, "dnu": dnu, "pocet": len(hodiny), "hodiny": hodiny, "chyby": chyby[:8]}

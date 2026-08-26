@@ -2,18 +2,18 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, GraduationCap, RefreshCw, Unlink } from "lucide-react";
+import { CheckCircle2, GraduationCap, RefreshCw, Search, Trash2, Unlink } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Field, Input } from "@/components/ui/field";
+import { Field, Input, Select } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { formatDateTime } from "@/lib/dates";
+import type { Child, EdupageDite } from "@/lib/types";
 
 interface Account {
   email: string;
   subdomena: string | null;
-  dite_id: number | null;
   je_rodic: boolean;
   last_sync_at: string | null;
   last_sync_error: string | null;
@@ -21,20 +21,24 @@ interface Account {
 
 export function EdupageSettings({
   account,
+  edupageDeti,
+  deti,
   configured,
 }: {
   account: Account | null;
+  /** Děti nalezené v EduPage a jejich párování. */
+  edupageDeti: EdupageDite[];
+  /** Děti vedené v plánovači. */
+  deti: Child[];
   configured: boolean;
 }) {
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [heslo, setHeslo] = React.useState("");
   const [subdomena, setSubdomena] = React.useState("");
-  const [diteId, setDiteId] = React.useState(
-    account?.dite_id != null ? String(account.dite_id) : "",
-  );
+  const [rucniId, setRucniId] = React.useState("");
   const [busy, setBusy] = React.useState<
-    "connect" | "sync" | "disconnect" | "dite" | null
+    "connect" | "sync" | "disconnect" | "deti" | "parovani" | null
   >(null);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -47,12 +51,7 @@ export function EdupageSettings({
     const response = await fetch("/api/edupage/connect", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        heslo,
-        subdomena: subdomena || null,
-        diteId: diteId || null,
-      }),
+      body: JSON.stringify({ email, heslo, subdomena: subdomena || null }),
     });
     const data = await response.json();
 
@@ -70,15 +69,38 @@ export function EdupageSettings({
     router.refresh();
   }
 
-  async function ulozDite() {
-    setBusy("dite");
+  /** Zeptá se EduPage, jaké děti účet vidí. */
+  async function najdiDeti() {
+    setBusy("deti");
     setError(null);
     setMessage(null);
 
-    const response = await fetch("/api/edupage/connect", {
-      method: "PATCH",
+    const response = await fetch("/api/edupage/deti", { method: "POST" });
+    const data = await response.json();
+
+    setBusy(null);
+    if (!response.ok) {
+      setError(data.error);
+      return;
+    }
+    setMessage(
+      data.nalezeno === 0
+        ? "V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž."
+        : `Nalezeno ${data.nalezeno} dětí, nových ${data.pridano}. Teď je přiřaď.`,
+    );
+    router.refresh();
+  }
+
+  /** Přiřadí dítě z EduPage k dítěti v plánovači. */
+  async function paruj(edupageId: number, childId: string, jmeno: string | null) {
+    setBusy("parovani");
+    setError(null);
+    setMessage(null);
+
+    const response = await fetch("/api/edupage/deti", {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ diteId }),
+      body: JSON.stringify({ edupageId, childId: childId || null, jmeno }),
     });
     const data = await response.json();
 
@@ -87,7 +109,24 @@ export function EdupageSettings({
       setError(data.error);
       return;
     }
-    setMessage(diteId ? "Uloženo. Zkus stáhnout znovu." : "Přepínání na dítě vypnuto.");
+    router.refresh();
+  }
+
+  async function pridejRucne() {
+    const cislo = Number(rucniId.trim());
+    if (!Number.isInteger(cislo) || cislo <= 0) {
+      setError("ID dítěte musí být celé číslo.");
+      return;
+    }
+    await paruj(cislo, "", null);
+    setRucniId("");
+    setMessage("Dítě přidáno. Teď mu vyber, komu v plánovači odpovídá.");
+  }
+
+  async function odeber(edupageId: number) {
+    setBusy("parovani");
+    await fetch(`/api/edupage/deti?edupageId=${edupageId}`, { method: "DELETE" });
+    setBusy(null);
     router.refresh();
   }
 
@@ -104,7 +143,12 @@ export function EdupageSettings({
       setError(data.error);
       return;
     }
-    setMessage(`Staženo ${data.pocet} položek.`);
+    setMessage(
+      data.zprav > 0
+        ? `Staženo ${data.pocet} položek, z toho ${data.zprav} zpráv.`
+        : `Staženo ${data.pocet} položek.`,
+    );
+    if (data.chyby?.length > 0) setError(data.chyby.join(" · "));
     router.refresh();
   }
 
@@ -153,39 +197,104 @@ export function EdupageSettings({
             </CardBody>
           </Card>
 
-          {account.je_rodic ? (
-            <Card>
-              <CardHeader
-                title="Které dítě"
-                description="Rodičovský účet vidí data dítěte až po přepnutí na něj."
-              />
-              <CardBody className="space-y-3 pt-3">
-                <Field
-                  label="ID dítěte v EduPage"
-                  hint="nepovinné"
-                >
-                  <Input
-                    inputMode="numeric"
-                    placeholder="např. 12345"
-                    value={diteId}
-                    onChange={(e) => setDiteId(e.target.value)}
-                  />
-                </Field>
-                <p className="text-xs text-ink-muted">
-                  Najdeš ho v EduPage: přepni se na dítě a v adrese stránky bude{" "}
-                  <code>studentid=…</code>. Bez něj se stahují data rodiče, což bývá
-                  prázdné.
-                </p>
+          <Card>
+            <CardHeader
+              title="Děti"
+              description={
+                account.je_rodic
+                  ? "Rodičovský účet vidí data dítěte až po přepnutí na něj. Přiřaď, kdo je kdo."
+                  : "Žákovský účet stahuje sám sebe. Přiřaď, kterému dítěti odpovídá."
+              }
+              action={
                 <Button
                   variant="secondary"
-                  onClick={ulozDite}
-                  disabled={busy === "dite"}
+                  size="sm"
+                  onClick={najdiDeti}
+                  disabled={busy === "deti"}
                 >
-                  {busy === "dite" ? <Spinner /> : null} Uložit
+                  {busy === "deti" ? <Spinner /> : <Search className="h-4 w-4" />}
+                  Najít
                 </Button>
-              </CardBody>
-            </Card>
-          ) : null}
+              }
+            />
+            <CardBody className="space-y-3 pt-3">
+              {edupageDeti.length === 0 ? (
+                <p className="text-sm text-ink-muted">
+                  Zatím nic. Zkus <strong className="text-ink">Najít</strong> — a když se
+                  nenajde nic, přidej ID ručně níž.
+                </p>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {edupageDeti.map((d) => (
+                    <li key={d.edupage_id} className="flex flex-wrap items-center gap-2 py-2.5">
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-ink">
+                          {d.jmeno ?? `Dítě ${d.edupage_id}`}
+                        </span>
+                        <span className="tnum block text-xs text-ink-subtle">
+                          ID {d.edupage_id}
+                        </span>
+                      </span>
+
+                      <Select
+                        className="w-44"
+                        value={d.child_id ?? ""}
+                        disabled={busy === "parovani"}
+                        onChange={(e) => paruj(d.edupage_id, e.target.value, d.jmeno)}
+                      >
+                        <option value="">— nestahovat —</option>
+                        {deti.map((dite) => (
+                          <option key={dite.id} value={dite.id}>
+                            {dite.name}
+                          </option>
+                        ))}
+                      </Select>
+
+                      <button
+                        type="button"
+                        onClick={() => odeber(d.edupage_id)}
+                        disabled={busy === "parovani"}
+                        aria-label="Odebrat"
+                        className="rounded-lg p-2 text-ink-subtle hover:bg-surface-2 hover:text-danger disabled:opacity-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {deti.length === 0 ? (
+                <Alert tone="warning">
+                  V plánovači zatím nemáš žádné dítě, takže není k čemu přiřazovat.
+                </Alert>
+              ) : null}
+
+              <div className="rounded-xl bg-surface-2 p-3">
+                <Field label="Přidat ID ručně" hint="když se hledání nechytne">
+                  <div className="flex gap-2">
+                    <Input
+                      inputMode="numeric"
+                      placeholder="12345"
+                      value={rucniId}
+                      onChange={(e) => setRucniId(e.target.value)}
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={pridejRucne}
+                      disabled={busy === "parovani" || !rucniId}
+                    >
+                      Přidat
+                    </Button>
+                  </div>
+                </Field>
+                <p className="mt-2 text-xs text-ink-muted">
+                  ID najdeš v EduPage: přepni se na dítě a v adrese stránky bude{" "}
+                  <code>studentid=…</code>.
+                </p>
+              </div>
+            </CardBody>
+          </Card>
 
           {account.last_sync_error ? (
             <Alert tone="danger">Poslední stažení selhalo: {account.last_sync_error}</Alert>
@@ -251,18 +360,6 @@ export function EdupageSettings({
               />
             </Field>
 
-            <Field
-              label="ID dítěte v EduPage"
-              hint="nepovinné — jen u rodičovského účtu"
-            >
-              <Input
-                inputMode="numeric"
-                placeholder="12345"
-                value={diteId}
-                onChange={(e) => setDiteId(e.target.value)}
-              />
-            </Field>
-
             <Button onClick={connect} disabled={busy === "connect" || !email || !heslo}>
               {busy === "connect" ? <Spinner /> : <GraduationCap className="h-4 w-4" />}
               Propojit
@@ -278,6 +375,10 @@ export function EdupageSettings({
             <strong className="text-ink">Heslo se ukládá zašifrovaně</strong> a používá se jen
             při stahování. Každý rodič si propojuje svůj vlastní účet — nikdo nemusí své školní
             heslo nikomu dávat.
+          </p>
+          <p>
+            <strong className="text-ink">Stahují se i zprávy.</strong> Zprávy od učitelů a
+            školní novinky z EduPage se vypisují mezi úkoly a dají se filtrovat.
           </p>
           <p>
             <strong className="text-ink">Stahuje se i rozvrh.</strong> Čte se čtrnáct dní
