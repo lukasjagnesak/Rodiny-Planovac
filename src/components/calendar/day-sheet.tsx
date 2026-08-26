@@ -3,19 +3,25 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, MapPin, Plus, Undo2 } from "lucide-react";
+import { Car, GraduationCap, MapPin, Plus, Undo2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
 import { Badge, Dot } from "@/components/ui/badge";
 import { Select } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
-import { formatDayLong, formatTime } from "@/lib/dates";
+import { formatDayLong, formatTime, fromDateKey } from "@/lib/dates";
+import { hodinyDne } from "@/lib/rozvrh";
 import { sideColor, sideLabel } from "@/lib/members";
 import { EVENT_KINDS } from "@/lib/constants";
 import { cn } from "@/lib/format";
 import type { CustodyDay } from "@/lib/custody";
 import type { ActivityInstance } from "@/lib/activities";
-import type { CustodySide, FamilyEvent, SessionContext } from "@/lib/types";
+import type {
+  CustodySide,
+  FamilyEvent,
+  RozvrhHodina,
+  SessionContext,
+} from "@/lib/types";
 
 export function DaySheet({
   dayKey,
@@ -25,6 +31,7 @@ export function DaySheet({
   mixed,
   activities,
   events,
+  rozvrh,
   childId,
 }: {
   dayKey: string;
@@ -34,6 +41,7 @@ export function DaySheet({
   mixed: boolean;
   activities: ActivityInstance[];
   events: FamilyEvent[];
+  rozvrh: RozvrhHodina[];
   childId: string | null;
 }) {
   const router = useRouter();
@@ -117,6 +125,27 @@ export function DaySheet({
   }
 
   const side = custody?.side ?? null;
+
+  /**
+   * Kdy má které dítě ten den školu. Kvůli tomuhle rozvrh v aplikaci je —
+   * kdo veze a kdo přebírá, se plánuje podle konce vyučování.
+   */
+  const skola = React.useMemo(() => {
+    const den = fromDateKey(dayKey);
+    const deti = childId
+      ? session.children.filter((c) => c.id === childId)
+      : session.children;
+
+    return deti
+      .map((dite) => {
+        const hodiny = hodinyDne(
+          rozvrh.filter((h) => h.child_id === dite.id),
+          den,
+        );
+        return { dite, hodiny };
+      })
+      .filter((z) => z.hodiny.length > 0);
+  }, [rozvrh, dayKey, childId, session.children]);
 
   return (
     <Sheet open onClose={onClose} title={formatDayLong(dayKey)} size="lg">
@@ -203,6 +232,40 @@ export function DaySheet({
             <p className="text-xs text-ink-subtle">Úprava se uloží pro všechny děti.</p>
           )}
         </section>
+
+        {/* ── Škola ─────────────────────────────────────────────── */}
+        {skola.length > 0 ? (
+          <section className="space-y-2.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-ink-subtle">
+              Škola
+            </h3>
+            <ul className="space-y-2">
+              {skola.map(({ dite, hodiny }) => (
+                <li
+                  key={dite.id}
+                  className="flex items-center gap-3 rounded-xl border border-line bg-surface-2 p-3"
+                  style={{ borderLeft: `3px solid ${dite.color}` }}
+                >
+                  <GraduationCap className="h-4 w-4 shrink-0 text-ink-subtle" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-ink">{dite.name}</p>
+                    <p className="tnum text-xs text-ink-muted">
+                      {hodiny[0].zacatek.slice(0, 5)}–
+                      {hodiny[hodiny.length - 1].konec.slice(0, 5)} · {hodiny.length}{" "}
+                      {hodiny.length === 1 ? "hodina" : hodiny.length < 5 ? "hodiny" : "hodin"}
+                    </p>
+                  </div>
+                  <Link
+                    href="/rozvrh"
+                    className="shrink-0 text-xs font-medium text-brand hover:underline"
+                  >
+                    Rozvrh
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         {/* ── Kroužky ───────────────────────────────────────────── */}
         {activities.length > 0 ? (

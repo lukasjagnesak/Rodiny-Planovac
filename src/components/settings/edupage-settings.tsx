@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, GraduationCap, RefreshCw, Unlink } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
@@ -29,7 +30,12 @@ export function EdupageSettings({
   const [email, setEmail] = React.useState("");
   const [heslo, setHeslo] = React.useState("");
   const [subdomena, setSubdomena] = React.useState("");
-  const [busy, setBusy] = React.useState<"connect" | "sync" | "disconnect" | null>(null);
+  const [diteId, setDiteId] = React.useState(
+    account?.dite_id != null ? String(account.dite_id) : "",
+  );
+  const [busy, setBusy] = React.useState<
+    "connect" | "sync" | "disconnect" | "dite" | null
+  >(null);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
 
@@ -41,7 +47,12 @@ export function EdupageSettings({
     const response = await fetch("/api/edupage/connect", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, heslo, subdomena: subdomena || null }),
+      body: JSON.stringify({
+        email,
+        heslo,
+        subdomena: subdomena || null,
+        diteId: diteId || null,
+      }),
     });
     const data = await response.json();
 
@@ -56,6 +67,27 @@ export function EdupageSettings({
         ? "Účet propojen — je to rodičovský účet."
         : "Účet propojen.",
     );
+    router.refresh();
+  }
+
+  async function ulozDite() {
+    setBusy("dite");
+    setError(null);
+    setMessage(null);
+
+    const response = await fetch("/api/edupage/connect", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ diteId }),
+    });
+    const data = await response.json();
+
+    setBusy(null);
+    if (!response.ok) {
+      setError(data.error);
+      return;
+    }
+    setMessage(diteId ? "Uloženo. Zkus stáhnout znovu." : "Přepínání na dítě vypnuto.");
     router.refresh();
   }
 
@@ -121,6 +153,40 @@ export function EdupageSettings({
             </CardBody>
           </Card>
 
+          {account.je_rodic ? (
+            <Card>
+              <CardHeader
+                title="Které dítě"
+                description="Rodičovský účet vidí data dítěte až po přepnutí na něj."
+              />
+              <CardBody className="space-y-3 pt-3">
+                <Field
+                  label="ID dítěte v EduPage"
+                  hint="nepovinné"
+                >
+                  <Input
+                    inputMode="numeric"
+                    placeholder="např. 12345"
+                    value={diteId}
+                    onChange={(e) => setDiteId(e.target.value)}
+                  />
+                </Field>
+                <p className="text-xs text-ink-muted">
+                  Najdeš ho v EduPage: přepni se na dítě a v adrese stránky bude{" "}
+                  <code>studentid=…</code>. Bez něj se stahují data rodiče, což bývá
+                  prázdné.
+                </p>
+                <Button
+                  variant="secondary"
+                  onClick={ulozDite}
+                  disabled={busy === "dite"}
+                >
+                  {busy === "dite" ? <Spinner /> : null} Uložit
+                </Button>
+              </CardBody>
+            </Card>
+          ) : null}
+
           {account.last_sync_error ? (
             <Alert tone="danger">Poslední stažení selhalo: {account.last_sync_error}</Alert>
           ) : null}
@@ -139,6 +205,14 @@ export function EdupageSettings({
               <Unlink className="h-4 w-4" /> Odpojit
             </Button>
           </div>
+
+          <p className="text-sm text-ink-muted">
+            Rozvrh hodin se stahuje zvlášť —{" "}
+            <Link href="/rozvrh" className="text-brand hover:underline">
+              na stránce Rozvrh
+            </Link>
+            , kde se vybírá dítě, kterému patří.
+          </p>
         </>
       ) : (
         <Card>
@@ -177,6 +251,18 @@ export function EdupageSettings({
               />
             </Field>
 
+            <Field
+              label="ID dítěte v EduPage"
+              hint="nepovinné — jen u rodičovského účtu"
+            >
+              <Input
+                inputMode="numeric"
+                placeholder="12345"
+                value={diteId}
+                onChange={(e) => setDiteId(e.target.value)}
+              />
+            </Field>
+
             <Button onClick={connect} disabled={busy === "connect" || !email || !heslo}>
               {busy === "connect" ? <Spinner /> : <GraduationCap className="h-4 w-4" />}
               Propojit
@@ -192,6 +278,11 @@ export function EdupageSettings({
             <strong className="text-ink">Heslo se ukládá zašifrovaně</strong> a používá se jen
             při stahování. Každý rodič si propojuje svůj vlastní účet — nikdo nemusí své školní
             heslo nikomu dávat.
+          </p>
+          <p>
+            <strong className="text-ink">Stahuje se i rozvrh.</strong> Čte se čtrnáct dní
+            dopředu, aby se poznalo, jestli škola jede na sudý a lichý týden. Hodiny, které
+            sis zapsal ručně, stažení nepřepíše.
           </p>
           <p>
             <strong className="text-ink">EduPage nemá veřejné rozhraní.</strong> Data se

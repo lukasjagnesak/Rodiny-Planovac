@@ -28,6 +28,7 @@ import type {
   CustodyOverride,
   CustodyPattern,
   FamilyEvent,
+  RozvrhHodina,
   SessionContext,
 } from "@/lib/types";
 
@@ -40,6 +41,7 @@ export function MonthView({
   activities,
   occurrences,
   events,
+  rozvrh,
 }: {
   session: SessionContext;
   monthKey: string;
@@ -49,6 +51,7 @@ export function MonthView({
   activities: Activity[];
   occurrences: ActivityOccurrence[];
   events: FamilyEvent[];
+  rozvrh: RozvrhHodina[];
 }) {
   const router = useRouter();
   const [childId, setChildId] = React.useState(initialChildId);
@@ -411,6 +414,7 @@ export function MonthView({
           mixed={custodyByDay.get(openDay)?.mixed ?? false}
           activities={activityMap.get(openDay) ?? []}
           events={eventMap.get(openDay) ?? []}
+          rozvrh={rozvrh}
           childId={childId === "all" ? null : childId}
         />
       ) : null}

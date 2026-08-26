@@ -13,6 +13,7 @@ import {
 import {
   ArrowRight,
   Car,
+  GraduationCap,
   Home,
   MapPin,
   Moon,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Avatar, Badge, Dot } from "@/components/ui/badge";
+import { konecVyucovani } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, SplitBar } from "@/components/ui/misc";
 import { custodyStats, resolveCustody } from "@/lib/custody";
@@ -42,6 +44,7 @@ import type {
   CustodyPattern,
   Expense,
   FamilyEvent,
+  RozvrhHodina,
   SessionContext,
 } from "@/lib/types";
 
@@ -53,6 +56,7 @@ export function Dashboard({
   occurrences,
   events,
   expenses,
+  rozvrh,
 }: {
   session: SessionContext;
   patterns: CustodyPattern[];
@@ -61,6 +65,7 @@ export function Dashboard({
   occurrences: ActivityOccurrence[];
   events: FamilyEvent[];
   expenses: Expense[];
+  rozvrh: RozvrhHodina[];
 }) {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -68,6 +73,25 @@ export function Dashboard({
 
   const colorA = sideColor(session.members, "a");
   const colorB = sideColor(session.members, "b");
+
+  /** Kdy dnes které dítě končí ve škole — podle toho se plánuje odvoz. */
+  const skolaDnes = React.useMemo(
+    () =>
+      session.children
+        .filter((c) => !c.archived)
+        .map((dite) => ({
+          dite,
+          konec: konecVyucovani(
+            rozvrh.filter((h) => h.child_id === dite.id),
+            today,
+          ),
+        }))
+        .filter((z): z is { dite: (typeof session.children)[number]; konec: string } =>
+          z.konec !== null,
+        ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rozvrh, todayKey, session.children],
+  );
 
   /** Kdo má děti dnes (podle obecného vzoru rodiny). */
   const todayCustody = React.useMemo(
@@ -188,6 +212,30 @@ export function Dashboard({
           </Link>
         </div>
       </Card>
+
+      {/* ── Dnes ve škole ──────────────────────────────────────── */}
+      {skolaDnes.length > 0 ? (
+        <Card>
+          <CardBody className="flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
+            <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-ink-subtle">
+              <GraduationCap className="h-4 w-4" /> Dnes končí
+            </span>
+            {skolaDnes.map(({ dite, konec }) => (
+              <span key={dite.id} className="flex items-center gap-1.5 text-sm">
+                <Dot color={dite.color} />
+                <span className="text-ink-muted">{dite.name}</span>
+                <span className="tnum font-semibold text-ink">{konec}</span>
+              </span>
+            ))}
+            <Link
+              href="/rozvrh"
+              className="ml-auto text-sm text-brand hover:underline"
+            >
+              Rozvrh
+            </Link>
+          </CardBody>
+        </Card>
+      ) : null}
 
       {/* ── Klíčová čísla ──────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-3">

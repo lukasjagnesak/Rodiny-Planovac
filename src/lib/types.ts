@@ -206,6 +206,26 @@ export interface Receipt {
   created_at: string;
 }
 
+export type RozvrhParita = "vzdy" | "sudy" | "lichy";
+
+export interface RozvrhHodina {
+  id: string;
+  family_id: string;
+  child_id: string;
+  /** 1 = pondělí … 7 = neděle */
+  den: number;
+  /** 0 = nultá hodina */
+  poradi: number;
+  predmet: string;
+  ucebna: string | null;
+  ucitel: string | null;
+  zacatek: string;
+  konec: string;
+  parita: RozvrhParita;
+  poznamka: string | null;
+  ze_edupage: boolean;
+}
+
 export interface GoogleAccount {
   user_id: string;
   google_email: string | null;

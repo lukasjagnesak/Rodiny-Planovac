@@ -100,6 +100,30 @@ export async function fetchEdupageItems(
   return data.polozky ?? [];
 }
 
+export interface EdupageLesson {
+  den: number;
+  datum: string;
+  tyden: number;
+  poradi: number;
+  predmet: string;
+  ucebna: string | null;
+  ucitel: string | null;
+  zacatek: string;
+  konec: string;
+}
+
+/** Stáhne rozvrh na následující dny — den po dni, tak jak ho EduPage vydává. */
+export async function fetchEdupageRozvrh(
+  creds: Credentials,
+  dnuDopredu = 14,
+): Promise<{ hodiny: EdupageLesson[]; dnu: number; chyby: string[] }> {
+  const data = await call<{ hodiny: EdupageLesson[]; dnu: number; chyby: string[] }>("/rozvrh", {
+    ...creds,
+    dnu_dopredu: dnuDopredu,
+  });
+  return { hodiny: data.hodiny ?? [], dnu: data.dnu ?? 0, chyby: data.chyby ?? [] };
+}
+
 /** Poskládá přihlašovací údaje z databázového řádku (heslo je zašifrované). */
 export function credentialsFromRow(row: {
   email: string;

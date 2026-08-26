@@ -206,3 +206,77 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
 
     polozky.sort(key=lambda p: (p["termin"] or "9999", p["zadano"] or ""), reverse=False)
     return {"ok": True, "pocet": len(polozky), "polozky": polozky}
+
+
+class DotazRozvrh(Prihlaseni):
+    """Kolik dní dopředu se má rozvrh číst. Dva týdny stačí i na školy se sudým a lichým týdnem."""
+    dnu_dopredu: int = Field(default=14, ge=1, le=28)
+
+
+def jmeno(hodnota) -> Optional[str]:
+    """Z objektu knihovny (předmět, učebna, učitel) vytáhne čitelné jméno."""
+    if hodnota is None:
+        return None
+    for atribut in ("name", "short"):
+        nazev = getattr(hodnota, atribut, None)
+        if isinstance(nazev, str) and nazev.strip():
+            return nazev.strip()
+    text = str(hodnota).strip()
+    return text or None
+
+
+@app.post("/rozvrh")
+def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dict:
+    """
+    Rozvrh na následující dny.
+
+    EduPage vrací rozvrh vždy po jednom dni, takže se prochází den po dni.
+    Skládání do týdenní tabulky (včetně rozpoznání sudého a lichého týdne)
+    dělá až plánovač — tahle služba jen hlásí, co který den viděla.
+    """
+    zkontroluj_tajemstvi(x_sidecar_secret)
+    edupage = prihlas(data)
+
+    hodiny = []
+    dnu = 0
+    chyby = []
+
+    for posun in range(data.dnu_dopredu):
+        den = date.today() + timedelta(days=posun)
+        # Víkend nemá rozvrh, ať se zbytečně netahá.
+        if den.weekday() >= 5:
+            continue
+
+        try:
+            tabulka = edupage.get_my_timetable(den)
+        except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
+            chyby.append(f"{den.isoformat()}: {chyba}")
+            continue
+
+        if tabulka is None:
+            continue
+
+        dnu += 1
+        for lekce in tabulka.lessons:
+            # Zrušené hodiny a jednorázové akce do trvalého rozvrhu nepatří.
+            if lekce.is_cancelled or lekce.is_event:
+                continue
+            predmet_nazev = jmeno(lekce.subject)
+            if not predmet_nazev:
+                continue
+
+            hodiny.append(
+                {
+                    "den": den.isoweekday(),
+                    "datum": den.isoformat(),
+                    "tyden": den.isocalendar()[1],
+                    "poradi": lekce.period if lekce.period is not None else 0,
+                    "predmet": predmet_nazev,
+                    "ucebna": jmeno((lekce.classrooms or [None])[0]),
+                    "ucitel": jmeno((lekce.teachers or [None])[0]),
+                    "zacatek": lekce.start_time.strftime("%H:%M"),
+                    "konec": lekce.end_time.strftime("%H:%M"),
+                }
+            )
+
+    return {"ok": True, "dnu": dnu, "pocet": len(hodiny), "hodiny": hodiny, "chyby": chyby[:5]}

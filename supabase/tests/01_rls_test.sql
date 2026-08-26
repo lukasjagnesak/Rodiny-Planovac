@@ -104,6 +104,41 @@ values (:'family_id', :'child_id', 'medical', 'Zubař', now() + interval '3 days
         '22222222-2222-2222-2222-222222222222');
 select count(*) as udalosti from events;
 
+-- psql do bloků $$…$$ proměnné nedosazuje, tak si je přeneseme přes nastavení.
+select set_config('test.family', :'family_id', false),
+       set_config('test.child', :'child_id', false);
+
+\echo '--- 12b) rozvrh: hodina se nedá založit dvakrát na stejné místo'
+insert into rozvrh_hodiny (family_id, child_id, den, poradi, predmet, zacatek, konec)
+values (:'family_id', :'child_id', 1, 1, 'Matematika', '08:00', '08:45');
+
+do $$
+begin
+  insert into rozvrh_hodiny (family_id, child_id, den, poradi, predmet, zacatek, konec)
+  values (current_setting('test.family')::uuid, current_setting('test.child')::uuid,
+          1, 1, 'Čeština', '08:00', '08:45');
+  raise exception 'CHYBA: duplicitní hodina prošla';
+exception
+  when unique_violation then raise notice 'OK: druhá hodina na stejném místě odmítnuta';
+end $$;
+
+\echo '--- 12c) rozvrh: sudý a lichý týden vedle sebe projdou'
+insert into rozvrh_hodiny (family_id, child_id, den, poradi, predmet, zacatek, konec, parita)
+values (:'family_id', :'child_id', 1, 6, 'Dílny', '12:45', '13:30', 'sudy'),
+       (:'family_id', :'child_id', 1, 6, 'Vaření', '12:45', '13:30', 'lichy');
+select count(*) as hodin from rozvrh_hodiny;
+
+\echo '--- 12d) rozvrh: konec před začátkem neprojde'
+do $$
+begin
+  insert into rozvrh_hodiny (family_id, child_id, den, poradi, predmet, zacatek, konec)
+  values (current_setting('test.family')::uuid, current_setting('test.child')::uuid,
+          2, 1, 'Nesmysl', '10:00', '09:00');
+  raise exception 'CHYBA: obrácené časy prošly';
+exception
+  when check_violation then raise notice 'OK: obrácené časy odmítnuty';
+end $$;
+
 \echo '--- 13) máma NESMÍ přejmenovat rodinu (není owner)'
 update families set name = 'Ukradeno';
 select name as nazev_rodiny_zustal from families;
@@ -118,7 +153,8 @@ select
   (select count(*) from expenses) as vydaje,
   (select count(*) from activities) as krouzky,
   (select count(*) from events) as udalosti,
-  (select count(*) from custody_patterns) as vzory;
+  (select count(*) from custody_patterns) as vzory,
+  (select count(*) from rozvrh_hodiny) as hodin_rozvrhu;
 
 \echo '--- 15) cizí uživatel nemůže vložit výdaj do cizí rodiny'
 do $$

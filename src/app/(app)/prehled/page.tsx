@@ -11,6 +11,7 @@ import type {
   CustodyPattern,
   Expense,
   FamilyEvent,
+  RozvrhHodina,
 } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Přehled" };
@@ -25,8 +26,19 @@ export default async function DashboardPage() {
   const yearStart = toDateKey(startOfYear(today));
   const soon = toDateKey(addDays(today, 14));
 
-  const [patterns, overrides, activities, occurrences, events, expenses] = await Promise.all([
-    supabase.from("custody_patterns").select("*").eq("family_id", session.family.id),
+  const [
+    patterns,
+    overrides,
+    activities,
+    occurrences,
+    events,
+    expenses,
+    rozvrh,
+  ] = await Promise.all([
+    supabase
+      .from("custody_patterns")
+      .select("*")
+      .eq("family_id", session.family.id),
     supabase
       .from("custody_overrides")
       .select("*")
@@ -56,6 +68,11 @@ export default async function DashboardPage() {
       .eq("family_id", session.family.id)
       .gte("spent_on", monthStart)
       .lte("spent_on", monthEnd),
+    supabase
+      .from("rozvrh_hodiny")
+      .select("*")
+      .eq("family_id", session.family.id)
+      .order("poradi"),
   ]);
 
   return (
@@ -67,6 +84,7 @@ export default async function DashboardPage() {
       occurrences={(occurrences.data ?? []) as ActivityOccurrence[]}
       events={(events.data ?? []) as FamilyEvent[]}
       expenses={(expenses.data ?? []) as Expense[]}
+      rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
     />
   );
 }
