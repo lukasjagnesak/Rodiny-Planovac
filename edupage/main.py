@@ -314,6 +314,36 @@ def najdi_deti(data: Any, cesta: str = "", nalezene: Optional[list] = None) -> l
     return nalezene
 
 
+def popis_struktury(data: Any, max_klicu: int = 40) -> list[str]:
+    """
+    Popíše tvar přihlašovacích dat — jen názvy polí a typy, žádné hodnoty.
+
+    Když hledání dětí selže, tohle je jediná cesta, jak zjistit, kde je
+    zrovna tahle škola má, aniž by se odsud tahaly osobní údaje.
+    """
+    if not isinstance(data, dict):
+        return []
+
+    radky: list[str] = []
+    for klic, hodnota in list(data.items())[:max_klicu]:
+        if isinstance(hodnota, dict):
+            podklice = list(hodnota.keys())[:12]
+            radky.append(f"{klic}: dict({', '.join(map(str, podklice))})")
+        elif isinstance(hodnota, list):
+            prvni = hodnota[0] if hodnota else None
+            if isinstance(prvni, dict):
+                podklice = list(prvni.keys())[:12]
+                radky.append(
+                    f"{klic}: list[{len(hodnota)}] prvek({', '.join(map(str, podklice))})"
+                )
+            else:
+                radky.append(f"{klic}: list[{len(hodnota)}] {type(prvni).__name__}")
+        else:
+            radky.append(f"{klic}: {type(hodnota).__name__}")
+
+    return radky
+
+
 @app.post("/deti")
 def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
     """
@@ -338,9 +368,9 @@ def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
         "ok": True,
         "jeRodic": je_rodic(edupage),
         "deti": list(bez_duplicit.values()),
-        # Jen názvy klíčů, žádný obsah — kdyby hledání selhalo, aby bylo
-        # podle čeho ho doladit.
-        "klice": sorted(surova.keys()) if isinstance(surova, dict) else [],
+        # Jen názvy polí a typy, žádné hodnoty — kdyby hledání selhalo,
+        # aby bylo podle čeho ho doladit.
+        "klice": popis_struktury(surova) if not bez_duplicit else [],
     }
 
 

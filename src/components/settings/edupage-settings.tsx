@@ -285,11 +285,11 @@ export function EdupageSettings({
                   </p>
                   <p className="mt-1 text-xs text-ink-muted">
                     Struktura se mezi školami liší a v téhle se děti nenašly.
-                    Tenhle seznam jsou jen názvy polí, žádné osobní údaje —
-                    pošli ho, ať jde hledání doladit.
+                    Níž je jen tvar dat — názvy polí a typy, žádné hodnoty ani
+                    osobní údaje. Pošli ho, ať jde hledání doladit.
                   </p>
-                  <code className="mt-2 block max-h-32 overflow-auto rounded-lg bg-surface p-2 text-[11px] leading-relaxed text-ink-muted">
-                    {klice.join(", ")}
+                  <code className="mt-2 block max-h-64 overflow-auto whitespace-pre-line rounded-lg bg-surface p-2 text-[11px] leading-relaxed text-ink-muted">
+                    {klice.join("\n")}
                   </code>
                 </div>
               ) : null}
