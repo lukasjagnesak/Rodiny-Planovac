@@ -63,7 +63,10 @@ async function call<T>(path: string, body: Record<string, unknown>): Promise<T> 
       signal: AbortSignal.timeout(60_000),
     });
   } catch {
-    throw new Error("Služba pro EduPage neodpovídá. Běží kontejner edupage?");
+    throw new Error(
+      "Služba pro EduPage neodpovídá. Zkontroluj, jestli běží — v Dockeru " +
+        "kontejner `edupage`, lokálně uvicorn na portu 8000.",
+    );
   }
 
   const text = await response.text();

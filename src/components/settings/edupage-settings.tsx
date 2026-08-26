@@ -40,6 +40,9 @@ export function EdupageSettings({
   const [busy, setBusy] = React.useState<
     "connect" | "sync" | "disconnect" | "deti" | "parovani" | null
   >(null);
+  // Když hledání dětí selže, ukážeme názvy polí, která škola v datech
+  // opravdu má. Bez nich se hledání nedá doladit jinak než hádáním.
+  const [klice, setKlice] = React.useState<string[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
 
@@ -83,11 +86,16 @@ export function EdupageSettings({
       setError(data.error);
       return;
     }
-    setMessage(
-      data.nalezeno === 0
-        ? "V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž."
-        : `Nalezeno ${data.nalezeno} dětí, nových ${data.pridano}. Teď je přiřaď.`,
-    );
+
+    if (data.nalezeno === 0) {
+      // Není to chyba spojení, ale výsledek je k ničemu — proto varování,
+      // ne zelené potvrzení.
+      setError("V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž.");
+      setKlice(Array.isArray(data.klice) ? data.klice : []);
+    } else {
+      setKlice([]);
+      setMessage(`Nalezeno ${data.nalezeno} dětí, nových ${data.pridano}. Teď je přiřaď.`);
+    }
     router.refresh();
   }
 
@@ -268,6 +276,22 @@ export function EdupageSettings({
                 <Alert tone="warning">
                   V plánovači zatím nemáš žádné dítě, takže není k čemu přiřazovat.
                 </Alert>
+              ) : null}
+
+              {klice.length > 0 ? (
+                <div className="rounded-xl border border-line bg-surface-2 p-3">
+                  <p className="text-sm font-medium text-ink">
+                    Co škola v datech má
+                  </p>
+                  <p className="mt-1 text-xs text-ink-muted">
+                    Struktura se mezi školami liší a v téhle se děti nenašly.
+                    Tenhle seznam jsou jen názvy polí, žádné osobní údaje —
+                    pošli ho, ať jde hledání doladit.
+                  </p>
+                  <code className="mt-2 block max-h-32 overflow-auto rounded-lg bg-surface p-2 text-[11px] leading-relaxed text-ink-muted">
+                    {klice.join(", ")}
+                  </code>
+                </div>
               ) : null}
 
               <div className="rounded-xl bg-surface-2 p-3">
