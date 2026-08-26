@@ -63,25 +63,27 @@ ok("nulové ID se nebere", najdi_deti({"children": [{"studentid": 0, "name": "X"
 # Ověřeno proti ZŠ Mukařov. ID dětí nejsou v žádném objektu, jsou to holá
 # čísla v poli `parentStudentids` — hledání podle tvaru je proto minulo.
 SKUTECNY = {
-    "parentStudentids": [946616, 945195],
+    "parentStudentids": [-1890, -694],
     "childGroups": {"-1890": {}, "-694": {}},
     "userrow": {"UserID": "Rodic1035206", "RodicID": "1035206", "p_meno": "Lukas"},
     "dbi": {
         "students": {
-            "946616": {"id": "946616", "firstname": "Martin", "lastname": "Novak"},
-            "945195": {"id": "945195", "firstname": "Ema", "lastname": "Novakova"},
+            "-1890": {"id": "-1890", "firstname": "Martin", "lastname": "Novak"},
+            "-694": {"id": "-694", "firstname": "Ema", "lastname": "Novakova"},
         }
     },
 }
 
 nalezena = deti_ze_seznamu(SKUTECNY)
-ok("vytáhne ID z parentStudentids", nalezena == [946616, 945195])
+# ZŠ Mukařov má ID dětí záporná. Podmínka „musí být kladné" je tichem
+# zahazovala — proto se dlouho nenašlo nic, aniž by cokoli spadlo.
+ok("vytáhne i záporná ID z parentStudentids", nalezena == [-1890, -694])
 
 jmena = jmena_studentu(SKUTECNY)
-ok("dotáhne jméno prvního dítěte", jmena.get(946616) == "Martin Novak")
-ok("dotáhne jméno druhého dítěte", jmena.get(945195) == "Ema Novakova")
+ok("dotáhne jméno prvního dítěte", jmena.get(-1890) == "Martin Novak")
+ok("dotáhne jméno druhého dítěte", jmena.get(-694) == "Ema Novakova")
 
-ok("záporná ID skupin se neberou jako děti", -1890 not in nalezena)
+ok("nula pořád neprojde", deti_ze_seznamu({"studentids": [0]}) == [])
 ok("bez seznamu ID vrátí prázdno", deti_ze_seznamu({"dp": {"year": 2025}}) == [])
 ok("bez dbi.students vrátí prázdno", jmena_studentu({"dbi": {}}) == {})
 ok("duplicitní ID se nezopakuje", deti_ze_seznamu({"a": {"studentids": [1, 1, 2]}}) == [1, 2])
@@ -90,11 +92,11 @@ ok("duplicitní ID se nezopakuje", deti_ze_seznamu({"a": {"studentids": [1, 1, 2
 # shodilo celé hledání dřív, než se dostalo k parentStudentids.
 S_CISELNYMI_KLICI = {
     "userProps": {946616: {}, 945195: {}, 1035206: {}},
-    "parentStudentids": [946616, 945195],
+    "parentStudentids": [-1890, -694],
 }
 ok(
     "číselné klíče hledání neshodí",
-    deti_ze_seznamu(S_CISELNYMI_KLICI) == [946616, 945195],
+    deti_ze_seznamu(S_CISELNYMI_KLICI) == [-1890, -694],
 )
 ok("číselné klíče neshodí ani záložní hledání", najdi_deti(S_CISELNYMI_KLICI) == [])
 

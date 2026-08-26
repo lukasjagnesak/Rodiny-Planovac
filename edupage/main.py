@@ -218,6 +218,7 @@ def health() -> dict:
             "ciselne-klice",
             "potize-misto-500",
             "hodnoty-id",
+            "zaporna-id",
             "jmena-z-dbi",
             "zpravy",
             "rozvrh",
@@ -253,11 +254,15 @@ KLICE_JMENA = ("name", "meno", "fullname", "celemeno", "vypis", "p_meno")
 
 
 def _cislo(hodnota: Any) -> Optional[int]:
+    """
+    Přečte ID. Záporná čísla jsou platná — EduPage jimi běžně označuje
+    děti rodičovského účtu. Odmítá se jen nula, ta bývá „nevyplněno".
+    """
     try:
         cislo = int(str(hodnota).strip())
     except (TypeError, ValueError):
         return None
-    return cislo if cislo > 0 else None
+    return cislo if cislo != 0 else None
 
 
 def _jako_dite(zaznam: dict) -> Optional[dict]:

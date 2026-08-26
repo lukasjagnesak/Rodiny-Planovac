@@ -129,8 +129,9 @@ export function EdupageSettings({
 
   async function pridejRucne() {
     const cislo = Number(rucniId.trim());
-    if (!Number.isInteger(cislo) || cislo <= 0) {
-      setError("ID dítěte musí být celé číslo.");
+    // Záporná ID jsou platná, EduPage je tak u dětí rodiče opravdu vede.
+    if (!Number.isInteger(cislo) || cislo === 0) {
+      setError("ID dítěte musí být celé číslo různé od nuly.");
       return;
     }
     await paruj(cislo, "", null);
@@ -305,8 +306,8 @@ export function EdupageSettings({
                 <Field label="Přidat ID ručně" hint="když se hledání nechytne">
                   <div className="flex gap-2">
                     <Input
-                      inputMode="numeric"
-                      placeholder="12345"
+                      inputMode="text"
+                      placeholder="-1890"
                       value={rucniId}
                       onChange={(e) => setRucniId(e.target.value)}
                     />

@@ -83,8 +83,12 @@ export async function PUT(request: NextRequest) {
   const childId = typeof childIdRaw === "string" && childIdRaw ? childIdRaw : null;
   const jmeno = typeof body?.jmeno === "string" && body.jmeno ? body.jmeno : null;
 
-  if (!Number.isInteger(edupageId) || edupageId <= 0) {
-    return NextResponse.json({ error: "ID dítěte musí být celé číslo." }, { status: 400 });
+  // Záporná ID jsou platná — EduPage jimi běžně označuje děti rodiče.
+  if (!Number.isInteger(edupageId) || edupageId === 0) {
+    return NextResponse.json(
+      { error: "ID dítěte musí být celé číslo různé od nuly." },
+      { status: 400 },
+    );
   }
 
   const admin = createAdminClient();
