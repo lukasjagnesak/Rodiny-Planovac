@@ -7,6 +7,7 @@ import { cs } from "date-fns/locale";
 import {
   ChevronLeft,
   ChevronRight,
+  FileSpreadsheet,
   Paperclip,
   Plus,
   Scale,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Badge, Dot } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState, Segmented } from "@/components/ui/misc";
 import { ExpenseForm } from "./expense-form";
 import { CategoryDonut, MonthlyTrend } from "./expense-charts";
@@ -168,6 +169,18 @@ export function ExpensesScreen({
           >
             <ChevronRight className="h-4 w-4" />
           </button>
+
+          {canEdit ? (
+            <ButtonLink
+              href="/vydaje/import"
+              variant="secondary"
+              size="icon"
+              aria-label="Import z tabulky"
+              title="Import z tabulky"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+            </ButtonLink>
+          ) : null}
         </div>
       </div>
 
