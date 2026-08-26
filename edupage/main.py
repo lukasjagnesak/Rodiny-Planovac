@@ -231,7 +231,7 @@ def overit(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict
 # Klíče, pod kterými EduPage vozí jméno a ID. Je jich víc verzí, tak se
 # zkouší po řadě.
 KLICE_ID = ("studentid", "childid", "userid", "id", "student_id", "child_id")
-KLICE_JMENA = ("name", "meno", "fullname", "celemeno", "vypis")
+KLICE_JMENA = ("name", "meno", "fullname", "celemeno", "vypis", "p_meno")
 
 
 def _cislo(hodnota: Any) -> Optional[int]:
@@ -262,11 +262,72 @@ def _jako_dite(zaznam: dict) -> Optional[dict]:
     # Rozdělené jméno se skládá zvlášť — samotné křestní by ke dvěma
     # sourozencům nestačilo.
     if nazev is None:
-        casti = [zaznam.get("firstname"), zaznam.get("lastname")]
+        casti = [
+            zaznam.get("firstname") or zaznam.get("p_meno"),
+            zaznam.get("lastname") or zaznam.get("p_priezvisko"),
+        ]
         slozene = " ".join(c.strip() for c in casti if isinstance(c, str) and c.strip())
         nazev = slozene or None
 
     return {"edupageId": dite_id, "jmeno": nazev}
+
+
+# Pole, ve kterých EduPage vozí přímo ID dětí rodiče — bez obalu, jen
+# holá čísla. Tohle je ta spolehlivá cesta; hledání podle tvaru níž je
+# záložní pro školy, které to mají jinak.
+KLICE_SEZNAMU_ID = ("parentstudentids", "studentids", "childids", "childrenids")
+
+
+def deti_ze_seznamu(data: Any) -> list[int]:
+    """Najde pole s holými ID dětí, ať je kdekoli v přihlašovacích datech."""
+    nalezena: list[int] = []
+
+    if isinstance(data, dict):
+        for klic, hodnota in data.items():
+            if klic.lower() in KLICE_SEZNAMU_ID and isinstance(hodnota, list):
+                for polozka in hodnota:
+                    cislo = _cislo(polozka)
+                    if cislo is not None and cislo not in nalezena:
+                        nalezena.append(cislo)
+            else:
+                for cislo in deti_ze_seznamu(hodnota):
+                    if cislo not in nalezena:
+                        nalezena.append(cislo)
+
+    elif isinstance(data, list):
+        for polozka in data[:50]:
+            for cislo in deti_ze_seznamu(polozka):
+                if cislo not in nalezena:
+                    nalezena.append(cislo)
+
+    return nalezena
+
+
+def jmena_studentu(data: Any) -> dict[int, str]:
+    """
+    Jména podle ID ze seznamu studentů, který EduPage posílá s přihlášením.
+
+    Bez něj bychom měli jen čísla a rodič by netušil, které je které dítě.
+    """
+    if not isinstance(data, dict):
+        return {}
+
+    dbi = data.get("dbi")
+    studenti = dbi.get("students") if isinstance(dbi, dict) else None
+    if not isinstance(studenti, dict):
+        return {}
+
+    jmena: dict[int, str] = {}
+    for klic, zaznam in studenti.items():
+        cislo = _cislo(klic)
+        if cislo is None or not isinstance(zaznam, dict):
+            continue
+
+        dite = _jako_dite({**zaznam, "id": zaznam.get("id", klic)})
+        if dite and dite.get("jmeno"):
+            jmena[cislo] = dite["jmeno"]
+
+    return jmena
 
 
 def najdi_deti(data: Any, cesta: str = "", nalezene: Optional[list] = None) -> list[dict]:
@@ -357,12 +418,26 @@ def deti(data: Prihlaseni, x_sidecar_secret: str = Header(default="")) -> dict:
     edupage = prihlas(data)
 
     surova = getattr(edupage, "data", None) or {}
-    nalezene = najdi_deti(surova)
+    jmena = jmena_studentu(surova)
 
-    # Stejné dítě může být v datech víckrát; bereme první výskyt.
     bez_duplicit: dict[int, dict] = {}
-    for dite in nalezene:
-        bez_duplicit.setdefault(dite["edupageId"], dite)
+
+    # Nejdřív pole s holými ID — to je cesta, kterou EduPage opravdu používá.
+    for cislo in deti_ze_seznamu(surova):
+        bez_duplicit[cislo] = {
+            "edupageId": cislo,
+            "jmeno": jmena.get(cislo),
+            "kde": "parentStudentids",
+        }
+
+    # Když nic, zkusíme hledat podle tvaru dat. Stejné dítě může být
+    # v datech víckrát; bereme první výskyt.
+    if not bez_duplicit:
+        for dite in najdi_deti(surova):
+            if dite["edupageId"] not in bez_duplicit:
+                if not dite.get("jmeno"):
+                    dite["jmeno"] = jmena.get(dite["edupageId"])
+                bez_duplicit[dite["edupageId"]] = dite
 
     return {
         "ok": True,

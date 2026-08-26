@@ -10,7 +10,7 @@ Spuštění:  python edupage/test_deti.py
 
 import sys
 
-from main import najdi_deti
+from main import deti_ze_seznamu, jmena_studentu, najdi_deti
 
 selhalo = 0
 
@@ -58,6 +58,33 @@ ok("záznam bez ID se přeskočí", najdi_deti({"children": [{"name": "Bez ID"}]
 
 # Nula ani záporné ID nedávají smysl.
 ok("nulové ID se nebere", najdi_deti({"children": [{"studentid": 0, "name": "X"}]}) == [])
+
+# ── Skutečný tvar dat, jak ho posílá EduPage rodičovskému účtu ──────
+# Ověřeno proti ZŠ Mukařov. ID dětí nejsou v žádném objektu, jsou to holá
+# čísla v poli `parentStudentids` — hledání podle tvaru je proto minulo.
+SKUTECNY = {
+    "parentStudentids": [946616, 945195],
+    "childGroups": {"-1890": {}, "-694": {}},
+    "userrow": {"UserID": "Rodic1035206", "RodicID": "1035206", "p_meno": "Lukas"},
+    "dbi": {
+        "students": {
+            "946616": {"id": "946616", "firstname": "Martin", "lastname": "Novak"},
+            "945195": {"id": "945195", "firstname": "Ema", "lastname": "Novakova"},
+        }
+    },
+}
+
+nalezena = deti_ze_seznamu(SKUTECNY)
+ok("vytáhne ID z parentStudentids", nalezena == [946616, 945195])
+
+jmena = jmena_studentu(SKUTECNY)
+ok("dotáhne jméno prvního dítěte", jmena.get(946616) == "Martin Novak")
+ok("dotáhne jméno druhého dítěte", jmena.get(945195) == "Ema Novakova")
+
+ok("záporná ID skupin se neberou jako děti", -1890 not in nalezena)
+ok("bez seznamu ID vrátí prázdno", deti_ze_seznamu({"dp": {"year": 2025}}) == [])
+ok("bez dbi.students vrátí prázdno", jmena_studentu({"dbi": {}}) == {})
+ok("duplicitní ID se nezopakuje", deti_ze_seznamu({"a": {"studentids": [1, 1, 2]}}) == [1, 2])
 
 print("\n=== VŠE PROŠLO ===" if selhalo == 0 else f"\n=== {selhalo} SELHALO ===")
 sys.exit(0 if selhalo == 0 else 1)
