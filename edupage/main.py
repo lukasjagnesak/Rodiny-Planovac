@@ -217,6 +217,7 @@ def health() -> dict:
             "parentStudentids",
             "ciselne-klice",
             "potize-misto-500",
+            "hodnoty-id",
             "jmena-z-dbi",
             "zpravy",
             "rozvrh",
@@ -407,6 +408,14 @@ def popis_struktury(data: Any, max_klicu: int = 40) -> list[str]:
     radky: list[str] = []
     for surovy_klic, hodnota in list(data.items())[:max_klicu]:
         klic = str(surovy_klic)
+
+        # U polí, ze kterých se čtou ID dětí, ukážeme i hodnoty. Jsou to
+        # čísla, která rodič stejně opisuje ručně, a bez nich se nedá
+        # poznat, proč je hledání nevzalo.
+        if klic.lower() in KLICE_SEZNAMU_ID:
+            radky.append(f"{klic} = {hodnota!r} (typy: {[type(x).__name__ for x in hodnota] if isinstance(hodnota, list) else type(hodnota).__name__})")
+            continue
+
         if isinstance(hodnota, dict):
             podklice = list(hodnota.keys())[:12]
             radky.append(f"{klic}: dict({', '.join(map(str, podklice))})")
