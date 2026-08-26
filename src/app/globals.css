@@ -55,6 +55,8 @@
 /* Tmavá paleta se uplatní podle systému… */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
+  /* Aby i nativní prvky prohlížeče (výběr data, posuvníky) byly tmavé. */
+  color-scheme: dark;
   --canvas: #131417;
   --surface: #1b1d21;
   --surface-2: #212429;
@@ -90,6 +92,7 @@
 
 /* …a natvrdo při ruční volbě v nastavení. */
 :root.dark {
+  color-scheme: dark;
   --canvas: #131417;
   --surface: #1b1d21;
   --surface-2: #212429;

@@ -1,4 +1,4 @@
-# Rodinný plánovač
+# Souhra
 
 Webová aplikace pro rodiny ve střídavé péči. Kalendář, kdo má kdy děti, kroužky
 a plán dopravy, výdaje s fotkami účtenek, školní i lékařské události — a všechno
@@ -21,6 +21,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **Google kalendář** | Každý člen si propojí **svůj** účet; péče, kroužky i události se přenesou do jeho kalendáře |
 | **EduPage** | Úkoly, písemky, zprávy od učitelů, školní akce a rozvrh ze školního systému. Víc dětí pod jedním účtem, všechno roztříděné podle toho, komu patří (jen rodinná verze) |
 | **Telegram** | Připomínky zdarma přímo do telefonu — kdo zítra veze, kdy je předání, co se blíží |
+| **Kalkulačka** | Veřejná stránka `/kalkulacka` bez přihlášení — spočítá rozpis dnů i noci u každého rodiče, jde sdílet odkazem a po přihlášení se rozpis překlopí rovnou do aplikace |
 | **Rodina** | Pozvánky odkazem, role (správce / rodič / pečující osoba / jen pro čtení), vlastní barvy |
 
 ### Proč Telegram a ne WhatsApp
@@ -50,8 +51,8 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0009` — pozdější rozšíření (střídání po sudých týdnech, okresy,
-     dvoutýdenní rozpis, EduPage, rozvrh, víc dětí a zprávy)
+   - `0004`–`0010` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+     dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy a veřejná kalkulačka)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -202,6 +203,7 @@ src/
 │   ├── (auth)/            přihlášení, registrace
 │   ├── (app)/             přehled, kalendář, kroužky, výdaje, události, nastavení
 │   ├── api/               Google OAuth + sync, Telegram webhook, cron
+│   ├── kalkulacka/        veřejná kalkulačka a sdílené rozpisy
 │   ├── pozvanka/[token]/  přijetí pozvánky do rodiny
 │   └── vitejte/           průvodce prvním nastavením
 ├── components/
@@ -216,6 +218,8 @@ src/
 └── lib/
     ├── custody.ts         výpočet, u koho děti kdy jsou
     ├── rozvrh.ts          rozvrh hodin a skládání staženého z EduPage
+    ├── kalkulacka.ts      výpočty pro veřejnou kalkulačku
+    ├── brand.ts           název produktu na jednom místě
     ├── activities.ts      rozvinutí opakujících se kroužků
     ├── reminders.ts       plánování a rozesílání notifikací
     ├── google-sync.ts     přenos do Google kalendáře
@@ -238,6 +242,20 @@ Pravidla se vyhodnocují v tomto pořadí:
 Noc ze dne *D* na *D+1* patří té straně, která má dítě v den *D* — podle toho se
 počítají statistiky.
 
+### Veřejná kalkulačka
+
+`/kalkulacka` je jediná stránka mimo přihlášení, která něco počítá — a je to
+záměrně vstupní brána z vyhledávače. Počítá se **v prohlížeči** stejným kódem
+(`custody.ts`) jako kalendář v aplikaci, takže po registraci nevyjde nic jiného,
+než co stránka slíbila. Na server se pošle až uložení, které vrátí odkaz ke
+sdílení; e-mail je nepovinný a když ho někdo nechá, dostane přihlašovací odkaz
+a rozpis se mu po přihlášení překlopí do průvodce.
+
+Jména dětí kalkulačka nesbírá — k výpočtu nejsou potřeba a veřejný nástroj bez
+přihlášení není místo, kde by měly ležet. Tabulka `kalkulacka_plany` nemá žádné
+RLS politiky schválně: sahá na ni jen serverová část servisním klíčem a rozpis
+otevírá jedině náhodný token z odkazu.
+
 ---
 
 ## Bezpečnost a soukromí
@@ -259,7 +277,7 @@ npm run dev         # vývojový server
 npm run build       # produkční build
 npm run start       # spuštění produkčního buildu
 npm run typecheck   # kontrola typů
-npm run test:rozvrh # testy skládání rozvrhu (sudý/lichý týden, změny)
+npm run test        # výpočty rozvrhu i kalkulačky
 ```
 
 Hledání dětí v datech EduPage má vlastní testy — struktura se mezi školami

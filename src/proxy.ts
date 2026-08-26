@@ -1,7 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/prihlaseni", "/registrace", "/pozvanka", "/auth", "/api/telegram", "/api/cron"];
+const PUBLIC_PATHS = [
+  "/prihlaseni",
+  "/registrace",
+  "/pozvanka",
+  "/auth",
+  // Veřejná kalkulačka je vstupní brána z vyhledávače — přihlášení tam
+  // nesmí být, jinak celý ten kanál nefunguje.
+  "/kalkulacka",
+  "/api/kalkulacka",
+  "/api/telegram",
+  "/api/cron",
+];
 
 /**
  * Supabase klient spadne nejen když proměnné chybí, ale i když je adresa

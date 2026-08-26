@@ -23,7 +23,23 @@ interface ChildDraft {
 
 const STEPS = ["Rodina", "Děti", "Střídání"];
 
-export function OnboardingWizard({ defaultName }: { defaultName: string }) {
+/** Zadání přenesené z veřejné kalkulačky. */
+export interface PredvyplnenoZKalkulacky {
+  kind: PatternKind;
+  anchorDate: string;
+  anchorSide: "a" | "b";
+  weeklyMap: string;
+  pocetDeti: number;
+}
+
+export function OnboardingWizard({
+  defaultName,
+  predvyplneno,
+}: {
+  defaultName: string;
+  /** Když člověk přišel z kalkulačky, střídání už má vyplněné. */
+  predvyplneno?: PredvyplnenoZKalkulacky | null;
+}) {
   const router = useRouter();
   const [step, setStep] = React.useState(0);
   const [busy, setBusy] = React.useState(false);
@@ -34,16 +50,24 @@ export function OnboardingWizard({ defaultName }: { defaultName: string }) {
   const [mySide, setMySide] = React.useState<"a" | "b">("a");
   const [otherName, setOtherName] = React.useState("");
 
-  const [children, setChildren] = React.useState<ChildDraft[]>([
-    { name: "", birthDate: "", color: COLOR_PALETTE[2] },
-  ]);
-
-  const [kind, setKind] = React.useState<PatternKind>("iso_week_parity");
-  const [anchorDate, setAnchorDate] = React.useState(
-    toDateKey(startOfWeek(new Date(), WEEK_OPTS)),
+  const [children, setChildren] = React.useState<ChildDraft[]>(() =>
+    Array.from({ length: Math.max(predvyplneno?.pocetDeti ?? 1, 1) }, (_, i) => ({
+      name: "",
+      birthDate: "",
+      color: COLOR_PALETTE[(2 + i) % COLOR_PALETTE.length],
+    })),
   );
-  const [anchorSide, setAnchorSide] = React.useState<"a" | "b">("a");
-  const [weeklyMap, setWeeklyMap] = React.useState("aabbaab");
+
+  const [kind, setKind] = React.useState<PatternKind>(
+    predvyplneno?.kind ?? "iso_week_parity",
+  );
+  const [anchorDate, setAnchorDate] = React.useState(
+    predvyplneno?.anchorDate ?? toDateKey(startOfWeek(new Date(), WEEK_OPTS)),
+  );
+  const [anchorSide, setAnchorSide] = React.useState<"a" | "b">(
+    predvyplneno?.anchorSide ?? "a",
+  );
+  const [weeklyMap, setWeeklyMap] = React.useState(predvyplneno?.weeklyMap ?? "aabbaab");
 
   const validChildren = children.filter((c) => c.name.trim().length > 0);
 

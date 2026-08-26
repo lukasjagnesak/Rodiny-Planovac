@@ -86,7 +86,8 @@ export function relativeDayLabel(target: Date | string, today = new Date()): str
   if (diff === 1) return "zítra";
   if (diff === 2) return "pozítří";
   if (diff === -1) return "včera";
-  if (diff > 0 && diff < 7) return `za ${diff} dny`;
+  // Česky: 2–4 dny, od pěti dní.
+  if (diff > 0 && diff < 7) return `za ${diff} ${diff < 5 ? "dny" : "dní"}`;
   if (diff >= 7 && diff < 14) return "příští týden";
   if (diff < 0) return `před ${Math.abs(diff)} dny`;
   return formatDayShort(d);
