@@ -4,8 +4,27 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+PRED="$(git rev-parse HEAD)"
+
 echo "▶ Stahuji změny"
 git pull --ff-only
+
+# Zapomenutá migrace se projeví až tím, že někomu spadne stránka —
+# proto se nové soubory vypíšou dřív, než se cokoli restartuje.
+NOVE_MIGRACE="$(git diff --name-only --diff-filter=A "$PRED" HEAD -- supabase/migrations/ || true)"
+
+if [[ -n "$NOVE_MIGRACE" ]]; then
+  echo
+  echo "══════════════════════════════════════════════════════════════"
+  echo " POZOR: přibyly migrace. Spusť je v Supabase → SQL Editor,"
+  echo " v tomhle pořadí, ještě než pustíš novou verzi:"
+  echo
+  echo "$NOVE_MIGRACE" | sed 's/^/   /'
+  echo "══════════════════════════════════════════════════════════════"
+  echo
+  read -r -p "Máš je nahrané? Pokračovat? [a/N] " odpoved
+  [[ "$odpoved" =~ ^[aAyY]$ ]] || { echo "Zastaveno."; exit 1; }
+fi
 
 echo "▶ Přestavuji obraz"
 docker compose build
@@ -16,5 +35,16 @@ docker compose up -d
 echo "▶ Úklid starých obrazů"
 docker image prune -f
 
-echo "✓ Hotovo"
-docker compose ps
+echo "▶ Čekám, až aplikace naběhne"
+for i in $(seq 1 30); do
+  if docker compose ps app | grep -q healthy; then
+    echo "✓ Běží"
+    docker compose ps
+    exit 0
+  fi
+  sleep 2
+done
+
+echo "✗ Aplikace do minuty nenaběhla. Podívej se do logu:"
+echo "   docker compose logs --tail=50 app"
+exit 1

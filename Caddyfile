@@ -1,3 +1,9 @@
+# Kdo napíše www, ať skončí na stejné adrese — jinak by mu Caddy
+# vystavil certifikát, který nemá kam vést.
+www.{$APP_DOMAIN} {
+	redir https://{$APP_DOMAIN}{uri} permanent
+}
+
 {$APP_DOMAIN} {
 	encode zstd gzip
 

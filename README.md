@@ -180,6 +180,10 @@ a pošle ho botovi. Hotovo.
 
 Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 
+> **Data leží v Supabase, ne na serveru.** Když server shoří, přijdeš
+> o pár minut výpadku, ne o kalendář ani o účtenky. Zálohovat je potřeba
+> Supabase, ne Hetzner.
+
 ```bash
 # na serveru jako root
 bash deploy/hetzner-setup.sh        # Docker, firewall, swap, automatické aktualizace
@@ -192,7 +196,23 @@ docker compose up -d --build
 ```
 
 Nasměruj `A` záznam domény na IP serveru — Caddy si certifikát od Let's Encrypt
-vyřídí sám během několika vteřin.
+vyřídí sám během několika vteřin. Doména musí ukazovat na server **dřív**, než
+spustíš compose: Let's Encrypt ověřuje vlastnictví přes veřejný dotaz a při
+neúspěchu chvíli čeká, než to zkusí znovu.
+
+#### Na co nezapomenout mimo server
+
+Tři věci mají adresu aplikace zadrátovanou jinde. Bez nich se dá přihlásit,
+ale rozbijí se přihlašovací odkazy, Google i notifikace:
+
+| Kde | Co nastavit |
+|---|---|
+| Supabase → Authentication → URL Configuration | Site URL `https://dvojklic.cz`, do Redirect URLs přidat `https://dvojklic.cz/auth/callback` |
+| Google Cloud → Credentials → OAuth client | přidat `https://dvojklic.cz/api/google/callback` |
+| Telegram | zaregistrovat webhook na ostrou adresu (viz výše) |
+
+A v `.env` musí `NEXT_PUBLIC_SITE_URL` být ostrá adresa — zapéká se do
+klientského balíčku při buildu, takže pozdější změna znamená přestavět obraz.
 
 Aktualizace na novější verzi:
 
