@@ -212,6 +212,29 @@ export type EdupageDruh = "ukol" | "pisemka" | "zprava" | "akce";
 
 export type KontaktDruh = "skola" | "lekar" | "krouzek" | "rodina" | "jine";
 
+export type DokladDruh =
+  | "pojistenec"
+  | "obcanka"
+  | "pas"
+  | "ockovani"
+  | "rodny_list"
+  | "jine";
+
+export interface Dokument {
+  id: string;
+  family_id: string;
+  child_id: string | null;
+  druh: DokladDruh;
+  nazev: string;
+  storage_path: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  /** Průkazy mívají platnost — hlídat ji je půlka důvodu, proč je tu mít. */
+  plati_do: string | null;
+  poznamka: string | null;
+  created_at: string;
+}
+
 export interface Kontakt {
   id: string;
   family_id: string;

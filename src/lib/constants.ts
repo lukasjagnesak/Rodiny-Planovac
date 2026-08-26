@@ -68,6 +68,27 @@ export const KONTAKT_DRUH_ORDER: import("./types").KontaktDruh[] = [
   "jine",
 ];
 
+export const DOKLAD_DRUHY: Record<
+  import("./types").DokladDruh,
+  { label: string; emoji: string }
+> = {
+  pojistenec: { label: "Kartička pojištěnce", emoji: "🏥" },
+  obcanka: { label: "Občanský průkaz", emoji: "🪪" },
+  pas: { label: "Cestovní pas", emoji: "🛂" },
+  ockovani: { label: "Očkovací průkaz", emoji: "💉" },
+  rodny_list: { label: "Rodný list", emoji: "📜" },
+  jine: { label: "Jiný doklad", emoji: "📄" },
+};
+
+export const DOKLAD_DRUH_ORDER: import("./types").DokladDruh[] = [
+  "pojistenec",
+  "obcanka",
+  "pas",
+  "ockovani",
+  "rodny_list",
+  "jine",
+];
+
 export const ROLE_LABELS: Record<MemberRole, string> = {
   owner: "Správce",
   parent: "Rodič",

@@ -12,6 +12,7 @@ import {
   ChevronDown,
   LayoutDashboard,
   Contact,
+  FileText,
   Settings,
   Table2,
   Users,
@@ -34,6 +35,7 @@ const SECONDARY = [
   { href: "/rozvrh", label: "Rozvrh", Icon: Table2 },
   { href: "/ukoly", label: "Ze školy", Icon: BookOpen },
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
+  { href: "/doklady", label: "Doklady", Icon: FileText },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];
