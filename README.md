@@ -110,6 +110,21 @@ EDUPAGE_SIDECAR_URL=http://edupage:8000
 EDUPAGE_SIDECAR_SECRET=$(openssl rand -hex 24)
 ```
 
+Při vývoji na vlastním stroji se služba pouští mimo Docker. `--reload`
+znamená, že si po každé úpravě načte kód sama — bez něj běží pořád ta
+verze, se kterou se spustila, a ladí se pak něco, co vůbec neběží:
+
+```bash
+cd edupage
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+EDUPAGE_SIDECAR_SECRET=$(grep '^EDUPAGE_SIDECAR_SECRET=' ../.env.local | cut -d= -f2-) \
+  python -m uvicorn main:app --port 8000 --reload
+```
+
+`curl http://127.0.0.1:8000/health` vrátí i seznam toho, co spuštěná
+verze umí — podle něj se pozná, jestli běží to, co si myslíš.
+
 Propojení pak proběhne v aplikaci v **Nastavení → EduPage**. Každý rodič
 zadává vlastní přihlašovací údaje; heslo se ukládá zašifrované a nikdo ho
 nemusí sdílet s druhým rodičem. Stažené věci ale vidí celá rodina.

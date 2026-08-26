@@ -215,6 +215,8 @@ def health() -> dict:
         "ok": True,
         "umi": [
             "parentStudentids",
+            "ciselne-klice",
+            "potize-misto-500",
             "jmena-z-dbi",
             "zpravy",
             "rozvrh",
