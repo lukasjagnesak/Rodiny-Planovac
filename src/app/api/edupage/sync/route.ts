@@ -85,6 +85,7 @@ export async function POST() {
         zadano: item.zadano,
         hotovo: item.hotovo,
         autor: item.autor,
+        odkaz: item.odkaz,
         navrh_kalendare: item.navrhKalendare,
         fetched_at: new Date().toISOString(),
       }];

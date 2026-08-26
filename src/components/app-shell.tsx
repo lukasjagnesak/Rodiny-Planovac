@@ -10,6 +10,7 @@ import {
   CalendarHeart,
   ChevronDown,
   LayoutDashboard,
+  Contact,
   Settings,
   Table2,
   Users,
@@ -31,6 +32,7 @@ const NAV = [
 const SECONDARY = [
   { href: "/rozvrh", label: "Rozvrh", Icon: Table2 },
   { href: "/ukoly", label: "Ze školy", Icon: BookOpen },
+  { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];

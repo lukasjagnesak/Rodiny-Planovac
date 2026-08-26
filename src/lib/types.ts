@@ -210,6 +210,26 @@ export type RozvrhParita = "vzdy" | "sudy" | "lichy";
 
 export type EdupageDruh = "ukol" | "pisemka" | "zprava" | "akce";
 
+export type KontaktDruh = "skola" | "lekar" | "krouzek" | "rodina" | "jine";
+
+export interface Kontakt {
+  id: string;
+  family_id: string;
+  child_id: string | null;
+  druh: KontaktDruh;
+  jmeno: string;
+  role: string | null;
+  organizace: string | null;
+  telefon: string | null;
+  email: string | null;
+  adresa: string | null;
+  /** Ordinační či konzultační hodiny — volný text. */
+  hodiny: string | null;
+  poznamka: string | null;
+  web: string | null;
+  poradi: number;
+}
+
 /** Párování dítěte v EduPage na dítě v plánovači. */
 export interface EdupageDite {
   id: string;

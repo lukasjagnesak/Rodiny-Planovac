@@ -22,6 +22,8 @@ export interface EdupageItem {
   zadano: string | null;
   hotovo: boolean;
   autor: string | null;
+  /** Adresa, na kterou událost odkazuje — u novinek bývá jen tam. */
+  odkaz: string | null;
   navrhKalendare: string | null;
 }
 

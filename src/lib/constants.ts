@@ -49,6 +49,25 @@ export const EVENT_KIND_ORDER: EventKind[] = [
   "other",
 ];
 
+export const KONTAKT_DRUHY: Record<
+  import("./types").KontaktDruh,
+  { label: string; emoji: string; color: string }
+> = {
+  skola: { label: "Škola", emoji: "🎒", color: "#5f7a8c" },
+  lekar: { label: "Lékaři", emoji: "🩺", color: "#a8443a" },
+  krouzek: { label: "Kroužky", emoji: "⚽", color: "#8a6f9e" },
+  rodina: { label: "Rodina a blízcí", emoji: "👨‍👩‍👧", color: "#4a7c6f" },
+  jine: { label: "Ostatní", emoji: "📇", color: "#8a8074" },
+};
+
+export const KONTAKT_DRUH_ORDER: import("./types").KontaktDruh[] = [
+  "skola",
+  "lekar",
+  "krouzek",
+  "rodina",
+  "jine",
+];
+
 export const ROLE_LABELS: Record<MemberRole, string> = {
   owner: "Správce",
   parent: "Rodič",

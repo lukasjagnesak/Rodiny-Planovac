@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from datetime import date, datetime, timedelta
 from typing import Any, Iterator, Optional
 
@@ -191,6 +192,51 @@ def predmet(udalost) -> Optional[str]:
     return None
 
 
+# Adresy, které EduPage vozí u novinek a zpráv. Klíč se liší podle typu
+# události, tak se zkoušejí známé a pak se prohledá zbytek.
+KLICE_ODKAZU = ("url", "link", "href", "odkaz", "externalUrl", "webUrl")
+ADRESA = re.compile(r"https?://[^\s\"'<>\\]+")
+
+
+def _adresa_v_textu(hodnota: Any) -> Optional[str]:
+    if not isinstance(hodnota, str):
+        return None
+    nalez = ADRESA.search(hodnota)
+    return nalez.group(0).rstrip(".,;:!?)") if nalez else None
+
+
+def najdi_odkaz(udalost) -> Optional[str]:
+    """
+    Adresa, na kterou událost odkazuje.
+
+    U novinek je v textu jen titulek — odkaz leží v doprovodných datech.
+    Nejdřív se zkusí známé klíče, pak se prohledají všechny textové
+    hodnoty. Hledat podle tvaru je tady spolehlivější než podle názvu:
+    klíč se mezi typy událostí liší, adresa vypadá vždycky stejně.
+    """
+    data = udalost.additional_data or {}
+
+    if isinstance(data, dict):
+        for klic in KLICE_ODKAZU:
+            adresa = _adresa_v_textu(data.get(klic))
+            if adresa:
+                return adresa
+
+    zasobnik = [data]
+    while zasobnik:
+        polozka = zasobnik.pop()
+        if isinstance(polozka, dict):
+            zasobnik.extend(polozka.values())
+        elif isinstance(polozka, list):
+            zasobnik.extend(polozka[:50])
+        else:
+            adresa = _adresa_v_textu(polozka)
+            if adresa:
+                return adresa
+
+    return _adresa_v_textu(udalost.text)
+
+
 def jmeno(hodnota) -> Optional[str]:
     """Z objektu knihovny (předmět, učebna, učitel) vytáhne čitelné jméno."""
     if hodnota is None:
@@ -220,6 +266,7 @@ def health() -> dict:
             "hodnoty-id",
             "zaporna-id",
             "udalost-id",
+            "odkazy",
             "jmena-z-dbi",
             "zpravy",
             "rozvrh",
@@ -550,6 +597,7 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
                     "zadano": cas(u.timestamp),
                     "hotovo": bool(u.is_done),
                     "autor": str(u.author),
+                    "odkaz": najdi_odkaz(u),
                     # Návrh typu události pro kalendář — jen u školních akcí.
                     "navrhKalendare": SKOLNI_AKCE.get(u.event_type),
                 }

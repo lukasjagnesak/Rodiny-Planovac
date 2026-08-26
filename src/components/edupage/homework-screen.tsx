@@ -8,6 +8,7 @@ import {
   CalendarPlus,
   EyeOff,
   GraduationCap,
+  ExternalLink,
   Mail,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +31,7 @@ export interface EdupageRow {
   zadano: string | null;
   hotovo: boolean;
   autor: string | null;
+  odkaz: string | null;
   navrh_kalendare: string | null;
   event_id: string | null;
 }
@@ -332,6 +334,18 @@ function PolozkaCard({
               )}
               {row.autor ? <span>· {row.autor}</span> : null}
             </p>
+
+            {row.odkaz ? (
+              <a
+                href={row.odkaz}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-brand hover:underline"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Otevřít na webu školy
+              </a>
+            ) : null}
 
             {canEdit ? (
               <div className="mt-2.5 flex flex-wrap gap-2">
