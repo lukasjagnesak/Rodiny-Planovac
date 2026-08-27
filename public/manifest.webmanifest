@@ -1,7 +1,7 @@
 {
-  "name": "Dvojklíč",
-  "short_name": "Dvojklíč",
-  "description": "Přehled o dětech, které mají dva domovy — kalendář péče, kroužky, výdaje a škola.",
+  "name": "Klidoo",
+  "short_name": "Klidoo",
+  "description": "Klid do rodiny, která žije ve dvou domovech — kalendář péče, kroužky, výdaje a škola.",
   "start_url": "/prehled",
   "scope": "/",
   "display": "standalone",

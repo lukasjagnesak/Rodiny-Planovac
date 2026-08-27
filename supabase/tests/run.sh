@@ -11,7 +11,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-DB="${TEST_DB:-dvojklic_test}"
+DB="${TEST_DB:-klidoo_test}"
 PSQL=(psql -U "${PGUSER:-postgres}" -v ON_ERROR_STOP=1 -q)
 
 echo "▶ Připravuji čistou databázi $DB"

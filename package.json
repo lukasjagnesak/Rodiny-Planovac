@@ -1,8 +1,8 @@
 {
-  "name": "dvojklic",
+  "name": "klidoo",
   "version": "1.0.0",
   "private": true,
-  "description": "Dvojklíč — přehled o dětech, které mají dva domovy",
+  "description": "Klidoo — klid do rodiny, která žije ve dvou domovech",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

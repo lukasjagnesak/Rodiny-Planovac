@@ -1,4 +1,4 @@
-# Dvojklíč
+# Klidoo
 
 Webová aplikace pro rodiny ve střídavé péči. Kalendář, kdo má kdy děti, kroužky
 a plán dopravy, výdaje s fotkami účtenek, školní i lékařské události — a všechno
@@ -58,8 +58,8 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` klíč → `SUPABASE_SERVICE_ROLE_KEY` *(tenhle nikdy nikam nedávej veřejně)*
 4. V **Authentication → URL Configuration** nastav:
-   - Site URL: `https://dvojklic.cz`
-   - Redirect URLs: `https://dvojklic.cz/auth/callback`
+   - Site URL: `https://klidoo.cz`
+   - Redirect URLs: `https://klidoo.cz/auth/callback`
 
 > Data jsou chráněná na úrovni databáze. I kdyby někdo získal `anon` klíč,
 > uvidí jen rodiny, jejichž je členem — hlídá to RLS, ne aplikace.
@@ -91,7 +91,7 @@ a nastavením střídání.
    jako testovací uživatele (aplikace nemusí procházet ověřením, dokud ji
    používá jen rodina)
 4. **Credentials → Create credentials → OAuth client ID → Web application**
-   - Authorized redirect URI: `https://dvojklic.cz/api/google/callback`
+   - Authorized redirect URI: `https://klidoo.cz/api/google/callback`
    - lokálně navíc: `http://localhost:3000/api/google/callback`
 5. `Client ID` a `Client secret` doplň do `.env`
 
@@ -167,7 +167,7 @@ dne a projeví se i na „dnes končí" na přehledu.
 curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
   -H "Content-Type: application/json" \
   -d '{
-    "url": "https://dvojklic.cz/api/telegram/webhook",
+    "url": "https://klidoo.cz/api/telegram/webhook",
     "secret_token": "<TELEGRAM_WEBHOOK_SECRET>",
     "allowed_updates": ["message"]
   }'
@@ -188,8 +188,8 @@ Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 # na serveru jako root
 bash deploy/hetzner-setup.sh        # Docker, firewall, swap, automatické aktualizace
 
-git clone <adresa-repozitáře> /opt/dvojklic
-cd /opt/dvojklic
+git clone <adresa-repozitáře> /opt/klidoo
+cd /opt/klidoo
 cp .env.example .env && nano .env   # doplň klíče + APP_DOMAIN
 
 docker compose up -d --build
@@ -207,8 +207,8 @@ ale rozbijí se přihlašovací odkazy, Google i notifikace:
 
 | Kde | Co nastavit |
 |---|---|
-| Supabase → Authentication → URL Configuration | Site URL `https://dvojklic.cz`, do Redirect URLs přidat `https://dvojklic.cz/auth/callback` |
-| Google Cloud → Credentials → OAuth client | přidat `https://dvojklic.cz/api/google/callback` |
+| Supabase → Authentication → URL Configuration | Site URL `https://klidoo.cz`, do Redirect URLs přidat `https://klidoo.cz/auth/callback` |
+| Google Cloud → Credentials → OAuth client | přidat `https://klidoo.cz/api/google/callback` |
 | Telegram | zaregistrovat webhook na ostrou adresu (viz výše) |
 
 A v `.env` musí `NEXT_PUBLIC_SITE_URL` být ostrá adresa — zapéká se do
@@ -225,7 +225,7 @@ připomínky a zesynchronizuje Google kalendáře. Ručně:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
-  https://dvojklic.cz/api/cron/reminders
+  https://klidoo.cz/api/cron/reminders
 ```
 
 ---
