@@ -5,10 +5,10 @@ import type { CustodySide, FamilyMember, MemberView, Profile } from "./types";
 export const ACTIVE_FAMILY_COOKIE = "rp_family";
 
 /** Výchozí barvy podle strany, pokud si člen žádnou nenastavil. */
-export const SIDE_COLOR: Record<CustodySide, string> = { a: "#4a7c6f", b: "#c4674f" };
+export const SIDE_COLOR: Record<CustodySide, string> = { a: "#2c8671", b: "#cf7b66" };
 
 /** Neutrální barva pro dny, které nemají přiřazenou stranu. */
-export const SIDE_NEUTRAL = "#8a8074";
+export const SIDE_NEUTRAL = "#706761";
 
 export function toMemberView(m: FamilyMember & { profile: Profile | null }): MemberView {
   const profile = m.profile;

@@ -110,16 +110,16 @@ export const ROLE_HINTS: Record<MemberRole, string> = {
  * linku — aby si nikdo nevybral odstín, který v kalendáři vyčnívá.
  */
 export const COLOR_PALETTE = [
-  "#4a7c6f",
-  "#c4674f",
+  "#2c8671",
+  "#cf7b66",
   "#5f7a8c",
   "#8a6f9e",
-  "#b58a3c",
-  "#4f7a45",
-  "#9a5b6b",
-  "#3f7d84",
+  "#c39553",
+  "#45845d",
+  "#b1604c",
+  "#006b58",
   "#8a7a5c",
-  "#6b6459",
+  "#706761",
 ];
 
 export const PRICE_PERIODS: Record<string, string> = {

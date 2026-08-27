@@ -1,5 +1,4 @@
-import { ZNACKA } from "@/lib/brand";
-import { CalendarHeart } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,12 +17,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <div className="relative w-full max-w-md">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand text-brand-ink shadow-sm">
-            <CalendarHeart className="h-6 w-6" />
-          </div>
-          <h1 className="text-xl font-semibold tracking-tight text-ink">{ZNACKA}</h1>
+          <Logo size={44} />
           <p className="max-w-xs text-sm text-ink-muted">
-            Kalendář střídavé péče, kroužky, výdaje a události — přehledně pro celou rodinu.
+            Kalendář střídavé péče, kroužky, výdaje a školní termíny — přehledně
+            pro obě domácnosti.
           </p>
         </div>
         {children}

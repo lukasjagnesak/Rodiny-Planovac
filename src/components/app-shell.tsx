@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/format";
 import { Avatar } from "@/components/ui/badge";
+import { Logo, Znak } from "@/components/ui/logo";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
 import type { SessionContext } from "@/lib/types";
 
@@ -208,9 +209,7 @@ export function AppShell({
       {/* ── Desktop sidebar ─────────────────────────────────────── */}
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-surface px-3 py-4 lg:flex">
         <div className="flex items-center gap-2.5 px-2 pb-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand text-brand-ink">
-            <CalendarHeart className="h-5 w-5" />
-          </div>
+          <Znak size={36} />
           <FamilySwitcher session={session} />
           <Zvonecek pocet={novychOznameni} />
         </div>
@@ -248,9 +247,7 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobilní horní lišta */}
         <header className="safe-top sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-surface/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-brand-ink">
-            <CalendarHeart className="h-4 w-4" />
-          </div>
+          <Znak size={30} />
           <FamilySwitcher session={session} />
           <Zvonecek pocet={novychOznameni} className="ml-auto" />
           <Link href="/nastaveni" className="shrink-0">

@@ -1,13 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Klidoo">
-  <rect width="512" height="512" rx="112" fill="#4a7c6f"/>
-  <rect x="96" y="128" width="320" height="288" rx="40" fill="#faf7f2"/>
-  <rect x="96" y="128" width="320" height="64" rx="32" fill="#ede6da"/>
-  <circle cx="168" cy="112" r="18" fill="#faf7f2"/>
-  <circle cx="344" cy="112" r="18" fill="#faf7f2"/>
-  <rect x="140" y="232" width="72" height="64" rx="16" fill="#4a7c6f"/>
-  <rect x="228" y="232" width="72" height="64" rx="16" fill="#4a7c6f"/>
-  <rect x="316" y="232" width="60" height="64" rx="16" fill="#c4674f"/>
-  <rect x="140" y="316" width="72" height="64" rx="16" fill="#c4674f"/>
-  <rect x="228" y="316" width="72" height="64" rx="16" fill="#c4674f"/>
-  <rect x="316" y="316" width="60" height="64" rx="16" fill="#4a7c6f"/>
+  <rect width="512" height="512" rx="112" fill="#fdf7f0"/>
+  <g style="mix-blend-mode:multiply">
+    <circle cx="205" cy="256" r="126" fill="#2c8671"/>
+    <circle cx="307" cy="256" r="126" fill="#cf7b66"/>
+  </g>
 </svg>

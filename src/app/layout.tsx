@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Fredoka, Inter } from "next/font/google";
 import "./globals.css";
 import { POPIS, ZNACKA } from "@/lib/brand";
 
@@ -7,6 +7,17 @@ const inter = Inter({
   subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-app",
+});
+
+/**
+ * Kulaté písmo jen na nápis značky a nadpisy. Text aplikace zůstává
+ * v Interu — čte se líp a v tabulkách čísel se nerozpadá.
+ */
+const fredoka = Fredoka({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  weight: ["500", "600"],
+  variable: "--font-znacka",
 });
 
 export const metadata: Metadata = {
@@ -33,8 +44,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c1a17" },
+    { media: "(prefers-color-scheme: light)", color: "#fdf7f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#161310" },
   ],
 };
 
@@ -58,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="cs"
-      className={inter.variable}
+      className={`${inter.variable} ${fredoka.variable}`}
       // Next jinak varuje, že plynulé rolování rozbíjí přechody mezi stránkami.
       data-scroll-behavior="smooth"
       suppressHydrationWarning

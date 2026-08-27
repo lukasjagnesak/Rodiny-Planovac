@@ -14,57 +14,63 @@
 }
 
 /* ───────────────────────────────────────────────────────────
-   Barevná paleta
-   Teplý papírový podklad, k němu zelená (strana A) a terakota
-   (strana B). Plná barva rodiče patří jen na tečky, avatary a
-   okraje — velké plochy v kalendáři nesou světlé varianty `-bg`,
-   jinak je mřížka nečitelná.
+   Barevná paleta — z návrhu značky Klidoo
+   Teplá krémová základna, tyrkys (strana A) a terakota (strana B).
+   Obě akcentní barvy mají schválně stejnou sytost i světlost a liší
+   se jen odstínem, takže v kalendáři vedle sebe nesoupeří.
+
+   Plná barva rodiče patří na tečky, avatary a okraje. Velké plochy
+   nesou tlumené varianty `-bg`, jinak je mřížka nečitelná.
    ─────────────────────────────────────────────────────────── */
 :root {
-  --canvas: #faf7f2;
-  --surface: #ffffff;
-  --surface-2: #f5f1ea;
-  --ink: #2e2a24;
-  --ink-muted: #8a8074;
-  --ink-subtle: #a9a093;
-  --line: #ede6da;
-  --line-strong: #dcd3c4;
+  --canvas: oklch(98% 0.012 75);
+  --surface: oklch(99.3% 0.006 75);
+  --surface-2: oklch(95.5% 0.014 75);
+  --ink: oklch(24% 0.014 55);
+  --ink-muted: oklch(52% 0.014 55);
+  --ink-subtle: oklch(70% 0.012 60);
+  --line: oklch(90% 0.012 70);
+  --line-strong: oklch(82% 0.014 65);
 
-  /* Značka jede na stejné zeleni jako strana A. Nevadí to: plná
+  /* Značka jede na stejném tyrkysu jako strana A. Nevadí to: plná
      barva rodiče se nikde nerozlévá do velkých ploch. */
-  --brand: #4a7c6f;
-  --brand-hover: #3e6a5e;
-  --brand-soft: #e8f0ed;
-  --brand-ink: #ffffff;
+  --brand: oklch(56% 0.09 175);
+  --brand-hover: oklch(47% 0.09 175);
+  --brand-soft: oklch(94% 0.035 175);
+  --brand-ink: oklch(99% 0.004 75);
 
-  /* Stavové barvy jsou schválně odtažené od terakoty strany B,
-     aby chybová hláška nevypadala jako druhý rodič. */
-  --danger: #a8443a;
-  --danger-soft: #f6e6e3;
-  --warning: #9a7420;
-  --warning-soft: #f8efdc;
-  --success: #4f7a45;
-  --success-soft: #e7efe4;
-  --info: #5f7a8c;
-  --info-soft: #e7edf1;
+  /* Stavové barvy mají sníženou sytost a srovnanou světlost s akcenty,
+     aby se s nimi netloukly. */
+  --danger: oklch(58% 0.11 25);
+  --danger-soft: oklch(94% 0.03 25);
+  --warning: oklch(70% 0.1 75);
+  --warning-soft: oklch(95% 0.03 75);
+  --success: oklch(56% 0.09 155);
+  --success-soft: oklch(94% 0.03 155);
+  --info: oklch(58% 0.06 240);
+  --info-soft: oklch(94% 0.02 240);
 
   /* Výchozí barvy rodičů — člen si je může v nastavení přepsat */
-  --parent-a: #4a7c6f;
-  --parent-a-bg: #e8f0ed;
-  --parent-a-text: #2e5148;
-  --parent-b: #c4674f;
-  --parent-b-bg: #f7e9e4;
-  --parent-b-text: #8a4232;
-  --parent-both: #5f7a8c;
-  --parent-both-bg: #e7edf1;
+  --parent-a: oklch(56% 0.09 175);
+  --parent-a-bg: oklch(94% 0.035 175);
+  --parent-a-text: oklch(38% 0.08 175);
+  --parent-b: oklch(67% 0.11 35);
+  --parent-b-bg: oklch(94% 0.035 35);
+  --parent-b-text: oklch(47% 0.1 35);
+  --parent-both: oklch(58% 0.06 240);
+  --parent-both-bg: oklch(94% 0.02 240);
 
   /* Prázdniny leží přes barvu rodiče, proto šrafa a ne výplň. */
-  --holiday: #b58a3c;
-  --holiday-stripe: rgb(181 138 60 / 0.28);
+  --holiday: oklch(70% 0.1 75);
+  --holiday-stripe: oklch(70% 0.1 75 / 0.3);
 
-  --ring: #4a7c6f;
-  --shadow-card: 0 1px 2px rgb(46 42 36 / 0.05), 0 8px 24px -12px rgb(46 42 36 / 0.14);
-  --shadow-pop: 0 12px 40px -12px rgb(46 42 36 / 0.3);
+  /* Překryv koleček ve znaku. Na světlém podkladu ztmavuje, na tmavém
+     musí naopak zesvětlovat — jinak se druhé kolečko slije s pozadím. */
+  --znak-prolnuti: multiply;
+
+  --ring: oklch(56% 0.09 175);
+  --shadow-card: 0 1px 2px oklch(24% 0.014 55 / 0.05), 0 8px 24px -12px oklch(24% 0.014 55 / 0.14);
+  --shadow-pop: 0 12px 40px -12px oklch(24% 0.014 55 / 0.3);
 }
 
 /* Tmavá paleta se uplatní podle systému… */
@@ -72,88 +78,92 @@
   :root:not(.light) {
   /* Aby i nativní prvky prohlížeče (výběr data, posuvníky) byly tmavé. */
   color-scheme: dark;
-  --canvas: #1c1a17;
-  --surface: #262320;
-  --surface-2: #2f2b27;
-  --ink: #f0ebe3;
-  --ink-muted: #a39a8c;
-  --ink-subtle: #857d71;
-  --line: #3a362f;
-  --line-strong: #4a453c;
+  --canvas: oklch(18% 0.012 60);
+  --surface: oklch(22.5% 0.012 60);
+  --surface-2: oklch(26.5% 0.012 60);
+  --ink: oklch(95% 0.01 75);
+  --ink-muted: oklch(72% 0.012 60);
+  --ink-subtle: oklch(58% 0.012 60);
+  --line: oklch(31% 0.012 60);
+  --line-strong: oklch(40% 0.012 60);
 
-  --brand: #6fa394;
-  --brand-hover: #7fb3a4;
-  --brand-soft: #25352f;
-  --brand-ink: #12201b;
+  --brand: oklch(72% 0.08 175);
+  --brand-hover: oklch(79% 0.075 175);
+  --brand-soft: oklch(29% 0.045 175);
+  --brand-ink: oklch(18% 0.02 175);
 
-  --danger: #e08279;
-  --danger-soft: #3a2422;
-  --warning: #d9ac5c;
-  --warning-soft: #372c16;
-  --success: #8fb77f;
-  --success-soft: #232e20;
-  --info: #8aa5b8;
-  --info-soft: #222c33;
+  --danger: oklch(72% 0.1 25);
+  --danger-soft: oklch(28% 0.045 25);
+  --warning: oklch(78% 0.095 75);
+  --warning-soft: oklch(28% 0.04 75);
+  --success: oklch(72% 0.085 155);
+  --success-soft: oklch(27% 0.04 155);
+  --info: oklch(72% 0.06 240);
+  --info-soft: oklch(27% 0.03 240);
 
-  --parent-a: #6fa394;
-  --parent-a-bg: #25352f;
-  --parent-a-text: #c8e0d8;
-  --parent-b: #d98a72;
-  --parent-b-bg: #3a2620;
-  --parent-b-text: #f0c7b8;
-  --parent-both: #8aa5b8;
-  --parent-both-bg: #222c33;
+  --parent-a: oklch(72% 0.08 175);
+  --parent-a-bg: oklch(29% 0.045 175);
+  --parent-a-text: oklch(88% 0.05 175);
+  --parent-b: oklch(75% 0.1 35);
+  --parent-b-bg: oklch(29% 0.05 35);
+  --parent-b-text: oklch(89% 0.055 35);
+  --parent-both: oklch(72% 0.06 240);
+  --parent-both-bg: oklch(27% 0.03 240);
 
-  --holiday: #d9ac5c;
-  --holiday-stripe: rgb(217 172 92 / 0.26);
+  --holiday: oklch(78% 0.095 75);
+  --holiday-stripe: oklch(78% 0.095 75 / 0.28);
 
-  --ring: #6fa394;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
+  --znak-prolnuti: screen;
+
+  --ring: oklch(72% 0.08 175);
+  --shadow-card: 0 1px 2px oklch(0% 0 0 / 0.4), 0 8px 24px -12px oklch(0% 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -12px oklch(0% 0 0 / 0.7);
   }
 }
 
 /* …a natvrdo při ruční volbě v nastavení. */
 :root.dark {
   color-scheme: dark;
-  --canvas: #1c1a17;
-  --surface: #262320;
-  --surface-2: #2f2b27;
-  --ink: #f0ebe3;
-  --ink-muted: #a39a8c;
-  --ink-subtle: #857d71;
-  --line: #3a362f;
-  --line-strong: #4a453c;
+  --canvas: oklch(18% 0.012 60);
+  --surface: oklch(22.5% 0.012 60);
+  --surface-2: oklch(26.5% 0.012 60);
+  --ink: oklch(95% 0.01 75);
+  --ink-muted: oklch(72% 0.012 60);
+  --ink-subtle: oklch(58% 0.012 60);
+  --line: oklch(31% 0.012 60);
+  --line-strong: oklch(40% 0.012 60);
 
-  --brand: #6fa394;
-  --brand-hover: #7fb3a4;
-  --brand-soft: #25352f;
-  --brand-ink: #12201b;
+  --brand: oklch(72% 0.08 175);
+  --brand-hover: oklch(79% 0.075 175);
+  --brand-soft: oklch(29% 0.045 175);
+  --brand-ink: oklch(18% 0.02 175);
 
-  --danger: #e08279;
-  --danger-soft: #3a2422;
-  --warning: #d9ac5c;
-  --warning-soft: #372c16;
-  --success: #8fb77f;
-  --success-soft: #232e20;
-  --info: #8aa5b8;
-  --info-soft: #222c33;
+  --danger: oklch(72% 0.1 25);
+  --danger-soft: oklch(28% 0.045 25);
+  --warning: oklch(78% 0.095 75);
+  --warning-soft: oklch(28% 0.04 75);
+  --success: oklch(72% 0.085 155);
+  --success-soft: oklch(27% 0.04 155);
+  --info: oklch(72% 0.06 240);
+  --info-soft: oklch(27% 0.03 240);
 
-  --parent-a: #6fa394;
-  --parent-a-bg: #25352f;
-  --parent-a-text: #c8e0d8;
-  --parent-b: #d98a72;
-  --parent-b-bg: #3a2620;
-  --parent-b-text: #f0c7b8;
-  --parent-both: #8aa5b8;
-  --parent-both-bg: #222c33;
+  --parent-a: oklch(72% 0.08 175);
+  --parent-a-bg: oklch(29% 0.045 175);
+  --parent-a-text: oklch(88% 0.05 175);
+  --parent-b: oklch(75% 0.1 35);
+  --parent-b-bg: oklch(29% 0.05 35);
+  --parent-b-text: oklch(89% 0.055 35);
+  --parent-both: oklch(72% 0.06 240);
+  --parent-both-bg: oklch(27% 0.03 240);
 
-  --holiday: #d9ac5c;
-  --holiday-stripe: rgb(217 172 92 / 0.26);
+  --holiday: oklch(78% 0.095 75);
+  --holiday-stripe: oklch(78% 0.095 75 / 0.28);
 
-  --ring: #6fa394;
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  --shadow-pop: 0 12px 40px -12px rgb(0 0 0 / 0.7);
+  --znak-prolnuti: screen;
+
+  --ring: oklch(72% 0.08 175);
+  --shadow-card: 0 1px 2px oklch(0% 0 0 / 0.4), 0 8px 24px -12px oklch(0% 0 0 / 0.6);
+  --shadow-pop: 0 12px 40px -12px oklch(0% 0 0 / 0.7);
 }
 
 @theme inline {
@@ -194,6 +204,7 @@
   --radius-pill: 999px;
 
   --font-sans: var(--font-app), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-znacka), var(--font-app), ui-rounded, system-ui, sans-serif;
 }
 
 @layer base {

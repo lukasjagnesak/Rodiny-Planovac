@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarHeart } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { ZNACKA } from "@/lib/brand";
 
 /**
@@ -11,11 +11,8 @@ export default function VerejnyLayout({ children }: { children: React.ReactNode 
     <div className="min-h-dvh bg-surface-2">
       <header className="safe-top border-b border-line bg-surface">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link href="/kalkulacka" className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-brand-ink">
-              <CalendarHeart className="h-5 w-5" />
-            </span>
-            <span className="text-lg font-semibold tracking-tight text-ink">{ZNACKA}</span>
+          <Link href="/kalkulacka">
+            <Logo size={34} />
           </Link>
 
           <Link
