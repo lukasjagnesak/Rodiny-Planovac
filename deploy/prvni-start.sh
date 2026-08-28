@@ -83,12 +83,15 @@ fi
 log "Kontroluji, kam míří doména"
 
 zaznamy() { # $1 = jméno, $2 = A nebo AAAA
+  # `|| true` na konci každé větve: chybějící záznam je legitimní odpověď,
+  # ne chyba. Bez toho `pipefail` shodí celý skript, protože grep bez
+  # nálezu vrací nenulový kód — a doména bez AAAA je přitom v pořádku.
   if command -v dig >/dev/null 2>&1; then
-    dig +short "$2" "$1" 2>/dev/null | grep -E '^[0-9a-fA-F.:]+$' | sort -u
+    dig +short "$2" "$1" 2>/dev/null | grep -E '^[0-9a-fA-F.:]+$' | sort -u || true
   elif [[ "$2" == "A" ]]; then
-    getent ahostsv4 "$1" 2>/dev/null | awk '{print $1}' | sort -u
+    getent ahostsv4 "$1" 2>/dev/null | awk '{print $1}' | sort -u || true
   else
-    getent ahostsv6 "$1" 2>/dev/null | awk '{print $1}' | sort -u
+    getent ahostsv6 "$1" 2>/dev/null | awk '{print $1}' | sort -u || true
   fi
 }
 
@@ -96,7 +99,9 @@ moje_ip4="$(curl -fsS -m 10 https://api.ipify.org || echo '')"
 moje_ip6="$(curl -fsS -m 10 -6 https://api64.ipify.org 2>/dev/null || echo '')"
 
 echo "  IPv4 tohoto serveru: ${moje_ip4:-nezjištěno}"
-[[ -n "$moje_ip6" ]] && echo "  IPv6 tohoto serveru: $moje_ip6"
+if [[ -n "$moje_ip6" ]]; then
+  echo "  IPv6 tohoto serveru: $moje_ip6"
+fi
 
 potize_dns=0
 
