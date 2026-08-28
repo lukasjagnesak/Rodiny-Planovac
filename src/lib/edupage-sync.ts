@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "./supabase/admin";
-import { credentialsFromRow } from "./edupage";
+import { credentialsFromRow, fetchEdupageItems } from "./edupage";
 
 export interface EdupageParovani {
   edupage_id: number;
@@ -87,4 +87,169 @@ export async function zapisVysledek(userId: string, chyba: string | null): Promi
         : { last_sync_error: chyba.slice(0, 400) },
     )
     .eq("user_id", userId);
+}
+
+/** Kolik hodin uplyne mezi automatickými stahováními. */
+export const INTERVAL_HODIN = 3;
+
+/** Nejvíc účtů na jedno spuštění cronu — ať se vejdeme do limitu běhu. */
+const MAX_UCTU_ZA_BEH = 20;
+
+export interface VysledekStahovani {
+  ulozeno: number;
+  zprav: number;
+  deti: number;
+  chyby: string[];
+}
+
+/**
+ * Stáhne položky z EduPage a uloží je rodině.
+ *
+ * Sdílí to ruční tlačítko v nastavení i cron. Kdyby to byly dvě cesty,
+ * lišily by se — a rozdíl by se poznal až tím, že automatické stahování
+ * ukládá jinam než to ruční.
+ */
+export async function stahniProUzivatele(
+  userId: string,
+  /** Kam uložit položky, které nepatří konkrétnímu dítěti. */
+  preferovanaRodina?: string | null,
+): Promise<VysledekStahovani> {
+  const { kontext, chyba } = await nactiEdupageKontext(userId);
+  if (!kontext) throw new Error(chyba ?? "EduPage není propojené.");
+
+  const admin = createAdminClient();
+
+  const { data: memberships } = await admin
+    .from("family_members")
+    .select("family_id")
+    .eq("user_id", userId);
+
+  const familyIds = (memberships ?? []).map((m) => m.family_id);
+  if (familyIds.length === 0) throw new Error("Nejsi v žádné rodině.");
+
+  const vychoziFamilyId = familyIds.includes(preferovanaRodina ?? "")
+    ? preferovanaRodina!
+    : familyIds[0];
+
+  const podleEdupageId = new Map(kontext.parovani.map((p) => [p.edupage_id, p]));
+
+  const { polozky, chyby } = await fetchEdupageItems(kontext.creds, 45);
+
+  /**
+   * Rodičovský účet vidí u každého dítěte tutéž timeline, takže zprávy
+   * pro rodiče přijdou tolikrát, kolik je dětí. Co se objeví u víc dětí,
+   * patří celé rodině — jinak by to skončilo u toho, kdo přišel poslední,
+   * a vypadalo by to jako zpráva o jednom dítěti.
+   */
+  const uKolikaDeti = new Map<string, Set<number>>();
+  for (const item of polozky) {
+    if (item.diteId == null) continue;
+    const kde = uKolikaDeti.get(item.udalostId) ?? new Set<number>();
+    kde.add(item.diteId);
+    uKolikaDeti.set(item.udalostId, kde);
+  }
+
+  const spolecne = (item: (typeof polozky)[number]) =>
+    (uKolikaDeti.get(item.udalostId)?.size ?? 0) > 1;
+
+  // Společné položky se ukládají jednou, pod holým ID události.
+  const videno = new Set<string>();
+
+  const radky = polozky.flatMap((item) => {
+    const jeSpolecna = spolecne(item);
+    const externalId = jeSpolecna ? item.udalostId : item.id;
+
+    if (videno.has(externalId)) return [];
+    videno.add(externalId);
+
+    const dite =
+      !jeSpolecna && item.diteId != null ? podleEdupageId.get(item.diteId) : undefined;
+
+    return [
+      {
+        family_id: dite?.family_id ?? vychoziFamilyId,
+        child_id: dite?.child_id ?? null,
+        external_id: externalId,
+        druh: item.druh,
+        typ: item.typ,
+        text: item.text,
+        predmet: item.predmet,
+        termin: item.termin,
+        zadano: item.zadano,
+        hotovo: item.hotovo,
+        autor: item.autor,
+        odkaz: item.odkaz,
+        navrh_kalendare: item.navrhKalendare,
+        fetched_at: new Date().toISOString(),
+      },
+    ];
+  });
+
+  if (radky.length > 0) {
+    const { error } = await admin
+      .from("edupage_items")
+      .upsert(radky, { onConflict: "family_id,external_id" });
+    if (error) throw error;
+  }
+
+  await zapisVysledek(userId, chyby.length > 0 ? chyby.join("; ") : null);
+
+  return {
+    ulozeno: radky.length,
+    zprav: radky.filter((r) => r.druh === "zprava").length,
+    deti: kontext.parovani.length,
+    chyby,
+  };
+}
+
+export interface VysledekDavky {
+  ucty: number;
+  ulozeno: number;
+  chyby: string[];
+}
+
+/**
+ * Projde propojené účty, kterým vypršel interval, a stáhne jim novinky.
+ *
+ * Kdy naposledy se stahovalo, se pozná z `last_sync_at` u účtu — proto
+ * přežije restart i to, že cron chodí jinak často, než je interval.
+ * Bere se od nejstaršího, takže při přetečení limitu se na nikoho
+ * dlouhodobě nezapomene.
+ */
+export async function stahniZmeskane(): Promise<VysledekDavky> {
+  const admin = createAdminClient();
+  const hranice = Date.now() - INTERVAL_HODIN * 60 * 60 * 1000;
+
+  // Filtr na interval schválně až v kódu: `or` s ISO časem se v PostgREST
+  // parsuje po tečkách a dvojtečkách a je to zbytečně tenký led. Řazení
+  // od nejstaršího stačí — jakmile narazíme na účet, kterému interval
+  // ještě neuplynul, platí to i pro všechny za ním.
+  const { data: ucty } = await admin
+    .from("edupage_accounts")
+    .select("user_id, last_sync_at")
+    .order("last_sync_at", { ascending: true, nullsFirst: true })
+    .limit(MAX_UCTU_ZA_BEH);
+
+  const vysledek: VysledekDavky = { ucty: 0, ulozeno: 0, chyby: [] };
+
+  for (const ucet of ucty ?? []) {
+    // Porovnáváme čas, ne řetězce: Supabase vrací `+00:00`, kdežto
+    // toISOString() končí na `Z`, a lexikograficky se to na hraně rozchází.
+    const naposledy = ucet.last_sync_at as string | null;
+    if (naposledy && new Date(naposledy).getTime() >= hranice) break;
+
+    try {
+      const r = await stahniProUzivatele(ucet.user_id as string);
+      vysledek.ucty += 1;
+      vysledek.ulozeno += r.ulozeno;
+      if (r.chyby.length > 0) vysledek.chyby.push(...r.chyby);
+    } catch (e) {
+      // Jeden rozbitý účet nesmí zastavit ostatní — třeba jen změnil heslo.
+      const zprava = e instanceof Error ? e.message : String(e);
+      vysledek.chyby.push(zprava);
+      await zapisVysledek(ucet.user_id as string, zprava);
+    }
+  }
+
+  return vysledek;
 }

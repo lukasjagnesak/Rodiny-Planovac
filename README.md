@@ -245,8 +245,13 @@ Aktualizace na novější verzi:
 bash deploy/update.sh
 ```
 
-Kontejner `cron` volá každou hodinu `/api/cron/reminders`, který rozešle
-připomínky a zesynchronizuje Google kalendáře. Ručně:
+Kontejner `cron` volá každou hodinu `/api/cron/reminders`. Ten rozešle
+připomínky, zesynchronizuje Google kalendáře a **jednou za tři hodiny
+stáhne novinky z EduPage**. Každá část si hlídá vlastní interval, protože
+cron je jen jeden — u EduPage se pozná z `last_sync_at` u účtu, takže to
+přežije restart i to, že cron chodí jinak často.
+
+Ručně:
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
