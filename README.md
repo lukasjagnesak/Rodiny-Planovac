@@ -186,14 +186,19 @@ Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 
 ```bash
 # na serveru jako root
-bash deploy/hetzner-setup.sh        # Docker, firewall, swap, automatické aktualizace
-
 git clone <adresa-repozitáře> /opt/klidoo
 cd /opt/klidoo
-cp .env.example .env && nano .env   # doplň klíče + APP_DOMAIN
 
-docker compose up -d --build
+bash deploy/hetzner-setup.sh        # Docker, firewall, swap, automatické aktualizace
+cp .env.example .env && nano .env   # doplň klíče + APP_DOMAIN
+bash deploy/prvni-start.sh          # kontrola nastavení, build, ověření
 ```
+
+`prvni-start.sh` projde `.env` dřív, než se pustí několikaminutový build:
+hlídá prázdné i nepřepsané ukázkové hodnoty, kontroluje, že si adresa
+a doména odpovídají, a upozorní, když doména ještě nemíří na tenhle
+server. Zapomenutý klíč se jinak projeví až tím, že aplikace naběhne
+a nikdo se nepřihlásí.
 
 Nasměruj `A` záznam domény na IP serveru — Caddy si certifikát od Let's Encrypt
 vyřídí sám během několika vteřin. Doména musí ukazovat na server **dřív**, než
