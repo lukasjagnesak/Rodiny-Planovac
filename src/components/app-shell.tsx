@@ -10,14 +10,17 @@ import {
   CalendarDays,
   CalendarHeart,
   ChevronDown,
+  Globe,
   LayoutDashboard,
   Contact,
   FileText,
+  MoreHorizontal,
   Settings,
   Table2,
   Users,
   Wallet,
 } from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/format";
 import { Avatar } from "@/components/ui/badge";
 import { Logo, Znak } from "@/components/ui/logo";
@@ -40,6 +43,15 @@ const SECONDARY = [
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];
+
+/**
+ * Na mobilu se do spodní lišty vejdou čtyři záložky a pátá je „Víc“.
+ * Pět položek vedle sebe se na užších telefonech ořízne a zbytek aplikace
+ * — rozvrh, kontakty, doklady, pozvánky, nastavení — se stane
+ * nedosažitelným. Proto tudy vede cesta úplně všude.
+ */
+const MOBIL_HLAVNI = NAV.slice(0, 4);
+const MOBIL_ZBYTEK = [...NAV.slice(4), ...SECONDARY];
 
 function useActive(href: string) {
   const pathname = usePathname();
@@ -193,6 +205,48 @@ function Zvonecek({ pocet, className }: { pocet: number; className?: string }) {
   );
 }
 
+/**
+ * Zbytek aplikace na mobilu. Otevírá se z páté záložky ve spodní liště
+ * a kromě sekcí nabízí i cestu ven na veřejný web — z aplikace se jinak
+ * není jak dostat zpátky.
+ */
+function VicPanel({
+  open,
+  onClose,
+  email,
+}: {
+  open: boolean;
+  onClose: () => void;
+  email?: string;
+}) {
+  return (
+    <Sheet open={open} onClose={onClose} title="Víc" description={email ?? undefined}>
+      <nav className="grid grid-cols-2 gap-2">
+        {MOBIL_ZBYTEK.map(({ href, label, Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3 py-3 text-sm font-medium text-ink transition-colors hover:border-brand"
+          >
+            <Icon className="h-[18px] w-[18px] shrink-0 text-brand" />
+            <span className="min-w-0 truncate">{label}</span>
+          </Link>
+        ))}
+      </nav>
+
+      <Link
+        href="/"
+        onClick={onClose}
+        className="mt-3 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-muted hover:bg-surface-2"
+      >
+        <Globe className="h-[18px] w-[18px] shrink-0" />
+        Zpět na klidoo.cz
+      </Link>
+    </Sheet>
+  );
+}
+
 export function AppShell({
   session,
   children,
@@ -203,6 +257,7 @@ export function AppShell({
   novychOznameni?: number;
 }) {
   const me = session.members.find((m) => m.userId === session.userId);
+  const [vicOteviren, setVicOteviren] = React.useState(false);
 
   return (
     <div className="min-h-dvh lg:flex">
@@ -262,10 +317,40 @@ export function AppShell({
 
       {/* ── Mobilní spodní navigace ─────────────────────────────── */}
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
-        {NAV.map((item) => (
+        {MOBIL_HLAVNI.map((item) => (
           <TabLink key={item.href} {...item} />
         ))}
+        <button
+          type="button"
+          onClick={() => setVicOteviren(true)}
+          aria-haspopup="dialog"
+          aria-expanded={vicOteviren}
+          className="flex min-w-0 flex-1 flex-col items-center gap-0.5 py-1.5"
+        >
+          <span
+            className={cn(
+              "flex h-8 w-14 items-center justify-center rounded-full transition-colors",
+              vicOteviren ? "bg-brand-soft text-brand" : "text-ink-subtle",
+            )}
+          >
+            <MoreHorizontal className="h-[19px] w-[19px]" />
+          </span>
+          <span
+            className={cn(
+              "max-w-full truncate text-[10.5px] font-medium",
+              vicOteviren ? "text-brand" : "text-ink-subtle",
+            )}
+          >
+            Víc
+          </span>
+        </button>
       </nav>
+
+      <VicPanel
+        open={vicOteviren}
+        onClose={() => setVicOteviren(false)}
+        email={session.profile.email ?? undefined}
+      />
     </div>
   );
 }

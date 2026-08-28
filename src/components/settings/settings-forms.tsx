@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Monitor, Moon, Sun } from "lucide-react";
+import { Globe, LogOut, Monitor, Moon, Sun, UserPlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,9 @@ export function SettingsForms({
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/prihlaseni");
+    // Na úvodní stránku, ne zpátky na přihlašovací formulář — ten vypadá,
+    // jako by se odhlášení nepovedlo a člověk se měl znovu přihlásit.
+    router.push("/");
     router.refresh();
   }
 
@@ -150,6 +153,33 @@ export function SettingsForms({
               {saving === "family" ? <Spinner /> : "Uložit rodinu"}
             </Button>
           ) : null}
+        </CardBody>
+      </Card>
+
+      {/* Pozvánky bydlí u dětí a rodiny. Sem patří aspoň cesta k nim —
+          v nastavení je člověk hledá jako první. */}
+      <Card>
+        <CardBody className="space-y-2">
+          <Link
+            href="/deti"
+            className="flex items-center gap-3 rounded-xl px-1 py-2 text-sm font-medium text-ink hover:bg-surface-2"
+          >
+            <UserPlus className="h-[18px] w-[18px] shrink-0 text-brand" />
+            <span className="min-w-0">
+              Pozvat druhého rodiče
+              <span className="block text-xs font-normal text-ink-subtle">
+                Přístup pro druhou domácnost je zdarma
+              </span>
+            </span>
+          </Link>
+
+          <Link
+            href="/"
+            className="flex items-center gap-3 rounded-xl px-1 py-2 text-sm text-ink-muted hover:bg-surface-2"
+          >
+            <Globe className="h-[18px] w-[18px] shrink-0" />
+            Zpět na klidoo.cz
+          </Link>
         </CardBody>
       </Card>
 

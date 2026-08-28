@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo, Znak } from "@/components/ui/logo";
 import { SledovaniPuvodu } from "@/components/web/puvod";
+import { MobilniMenu } from "@/components/web/mobilni-menu";
 import { ZNACKA } from "@/lib/brand";
 
 /**
@@ -66,19 +67,22 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1 sm:gap-2">
+            {/* Obě cesty do aplikace musí být vidět i na telefonu — kdo už
+                účet má, hledá přihlášení, a nechceme ho nutit do menu. */}
             <Link
               href="/prihlaseni"
-              className="hidden text-sm font-medium text-ink-muted transition-colors hover:text-ink sm:block sm:px-2"
+              className="px-2 text-sm font-medium text-ink-muted transition-colors hover:text-ink"
             >
               Přihlásit se
             </Link>
             <Link
               href="/registrace"
-              className="inline-flex h-10 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+              className="inline-flex h-10 items-center rounded-xl bg-brand px-3 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover sm:px-4"
             >
-              Vyzkoušet zdarma
+              Vyzkoušet<span className="hidden xs:inline">&nbsp;zdarma</span>
             </Link>
+            <MobilniMenu odkazy={NAVIGACE} />
           </div>
         </div>
       </header>

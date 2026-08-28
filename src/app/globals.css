@@ -188,6 +188,10 @@
 }
 
 @theme inline {
+  /* Úzké telefony (iPhone SE, 375 px) — nad tímhle se do hlavičky vejde
+     i druhé slovo v tlačítku. Tailwind vlastní `xs` nemá. */
+  --breakpoint-xs: 400px;
+
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);

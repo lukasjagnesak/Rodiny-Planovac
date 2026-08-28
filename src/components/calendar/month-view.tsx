@@ -285,7 +285,10 @@ export function MonthView({
                     className="pointer-events-none absolute inset-0"
                     style={{
                       backgroundImage:
-                        "repeating-linear-gradient(45deg, var(--holiday-stripe) 0 5px, transparent 5px 11px)",
+                        // 2 px pruh v periodě 12 px ≈ 17 % plochy. Předtím
+                        // to bylo 5 z 11, tedy skoro polovina, a šrafa
+                        // přebíjela barvu rodiče pod sebou.
+                        "repeating-linear-gradient(45deg, var(--holiday-stripe) 0 2px, transparent 2px 12px)",
                     }}
                   />
                 ) : null}
