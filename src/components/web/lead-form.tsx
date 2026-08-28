@@ -22,8 +22,11 @@ export interface LeadFormProps {
   tlacitko: string;
   /** Věta po odeslání. */
   hotovo: string;
-  /** Kam vede materiál, který se po odeslání zpřístupní. */
-  odkaz?: { href: string; popisek: string };
+  /**
+   * Materiál, který se po odeslání zpřístupní. `stahnout` udělá z odkazu
+   * stahování souboru místo přechodu na stránku.
+   */
+  odkaz?: { href: string; popisek: string; stahnout?: boolean };
   /** Partnerský formulář sbírá i jméno a organizaci. */
   partner?: boolean;
   /** Tmavý blok se hodí doprostřed článku, světlý na stránku s formulářem. */
@@ -121,6 +124,7 @@ export function LeadForm({
           {odkaz ? (
             <Link
               href={odkaz.href}
+              {...(odkaz.stahnout ? { download: "", prefetch: false } : {})}
               className={cn(
                 "inline-flex h-11 items-center rounded-xl px-5 font-medium",
                 tmavy
