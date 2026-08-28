@@ -10,6 +10,7 @@ import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field"
 import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE, PRICE_PERIODS } from "@/lib/constants";
 import { DOW_LONG, DOW_ORDER, toDateKey } from "@/lib/dates";
+import { formatMoney } from "@/lib/format";
 import type { Activity, SessionContext } from "@/lib/types";
 
 const EMPTY = {
@@ -24,6 +25,8 @@ const EMPTY = {
   season_end: "",
   price: "",
   price_period: "season",
+  paid_by: "",
+  split_percent: "50",
   contact: "",
   color: COLOR_PALETTE[3],
   notes: "",
@@ -46,10 +49,16 @@ export function ActivityForm({
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [zapsano, setZapsano] = React.useState(false);
+
+  const cenaCislo = Number(form.price) || 0;
+  const podilDruheho = (cenaCislo * Number(form.split_percent)) / 100;
 
   // Při otevření naplníme formulář — buď z upravovaného kroužku, nebo výchozími hodnotami.
   React.useEffect(() => {
     if (!open) return;
+    // Jinak by u dalšího kroužku svítilo „Zapsáno“ z toho předchozího.
+    setZapsano(false);
     if (activity) {
       setForm({
         child_id: activity.child_id,
@@ -63,6 +72,8 @@ export function ActivityForm({
         season_end: activity.season_end ?? "",
         price: activity.price ? String(activity.price) : "",
         price_period: activity.price_period ?? "season",
+        paid_by: activity.paid_by ?? "",
+        split_percent: String(activity.split_percent ?? 50),
         contact: activity.contact ?? "",
         color: activity.color,
         notes: activity.notes ?? "",
@@ -105,6 +116,8 @@ export function ActivityForm({
       season_end: form.season_end || null,
       price: form.price ? Number(form.price) : 0,
       price_period: form.price_period,
+      paid_by: form.paid_by || null,
+      split_percent: Number(form.split_percent),
       contact: form.contact.trim() || null,
       color: form.color,
       notes: form.notes.trim() || null,
@@ -121,6 +134,43 @@ export function ActivityForm({
       return;
     }
     onClose();
+    router.refresh();
+  }
+
+  /**
+   * Zapíše zaplacené období jako běžný výdaj navázaný na kroužek.
+   *
+   * Schválně to není automatické při uložení kroužku: cena za sezónu se
+   * platí jednou, ale kroužek se upravuje pořád, a z každé úpravy by
+   * vznikl další výdaj.
+   */
+  async function zapisPlatbu() {
+    if (!activity || cenaCislo <= 0) return;
+    setBusy(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error: potiz } = await supabase.from("expenses").insert({
+      family_id: session.family.id,
+      child_id: activity.child_id,
+      category: "activities",
+      title: activity.name,
+      amount: cenaCislo,
+      currency: session.family.currency,
+      spent_on: new Date().toISOString().slice(0, 10),
+      paid_by: form.paid_by || null,
+      split_percent: Number(form.split_percent),
+      activity_id: activity.id,
+      note: PRICE_PERIODS[form.price_period as keyof typeof PRICE_PERIODS] ?? null,
+      created_by: session.userId,
+    });
+
+    setBusy(false);
+    if (potiz) {
+      setError(potiz.message);
+      return;
+    }
+    setZapsano(true);
     router.refresh();
   }
 
@@ -275,6 +325,64 @@ export function ActivityForm({
               </Select>
             </Field>
           </div>
+
+          {/* Kroužky jsou jedna z největších pravidelných položek. Bez
+              rozdělení se cena nikam nepočítala a v přehledu výdajů
+              chyběla. */}
+          {cenaCislo > 0 ? (
+            <>
+              <Field label="Kdo kroužek platí">
+                <Select value={form.paid_by} onChange={(e) => set("paid_by", e.target.value)}>
+                  <option value="">Zatím nikdo</option>
+                  {session.members.map((m) => (
+                    <option key={m.userId} value={m.userId}>
+                      {m.name}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+
+              <Field
+                label="Podíl druhého rodiče"
+                hint={`${form.split_percent} % = ${formatMoney(podilDruheho, session.family.currency)}`}
+              >
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={form.split_percent}
+                  onChange={(e) => set("split_percent", e.target.value)}
+                  className="w-full accent-[var(--brand)]"
+                />
+                <div className="flex justify-between text-xs text-ink-subtle">
+                  <span>vše platím já</span>
+                  <span>půl na půl</span>
+                  <span>vše platí druhý</span>
+                </div>
+              </Field>
+
+              {activity ? (
+                <div className="rounded-xl border border-line bg-surface-2 p-3">
+                  <p className="text-sm text-ink-muted">
+                    Zaplacené období zapiš do výdajů — jinak se do přehledu ani do
+                    vyrovnání mezi rodiči nepromítne.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3 w-full"
+                    disabled={busy}
+                    onClick={zapisPlatbu}
+                  >
+                    {zapsano
+                      ? "Zapsáno do výdajů"
+                      : `Zapsat platbu ${formatMoney(cenaCislo, session.family.currency)}`}
+                  </Button>
+                </div>
+              ) : null}
+            </>
+          ) : null}
 
           <Field label="Kontakt na vedoucího" hint="nepovinné">
             <Input

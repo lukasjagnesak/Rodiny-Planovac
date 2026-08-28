@@ -14,7 +14,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 |---|---|
 | **Kalendář péče** | Vzory střídání (po týdnu, 2‑2‑3, vlastní rozpis, trvale u jednoho rodiče), ruční výjimky na jednotlivé dny, barevné odlišení rodičů, počítání nocí za měsíc i za rok |
 | **Rozvrh** | Rozvrh hodin pro každé dítě zvlášť, včetně škol se sudým a lichým týdnem. Z rozvrhu se bere konec vyučování — podle něj se plánuje předání i odvoz |
-| **Kroužky** | Opakující se termíny, místo, cena, sezóna. Ke každému termínu se přiřazuje, **kdo veze tam a kdo zpět** — a řidiči přijde připomínka |
+| **Kroužky** | Opakující se termíny, místo, cena, sezóna. Ke každému termínu se přiřazuje, **kdo veze tam a kdo zpět** — a řidiči přijde připomínka. Cena se dělí mezi rodiče a zaplacené období se zapíše do výdajů |
 | **Události** | Škola v přírodě, třídní schůzky, focení, školní výlety, lékařské prohlídky, narozeniny. Vlastní připomínky u každé události |
 | **Výdaje** | Výživné, kroužky, oblečení, škola, zdraví… Fotka účtenky přímo z foťáku, rozdělení nákladů mezi rodiče, přehled kdo komu dluží |
 | **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava a události |
@@ -52,9 +52,9 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0014` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+   - `0004`–`0015` — pozdější rozšíření (střídání po sudých týdnech, okresy,
      dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy, veřejná kalkulačka,
-     kontakty, oznámení, doklady a sběr kontaktů z webu)
+     kontakty, oznámení, doklady, sběr kontaktů z webu a dělení ceny kroužků)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

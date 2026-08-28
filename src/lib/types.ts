@@ -142,6 +142,10 @@ export interface Activity {
   season_end: string | null;
   price: number | null;
   price_period: string | null;
+  /** Kdo kroužek obvykle platí. Výchozí hodnota pro zápis platby. */
+  paid_by: string | null;
+  /** Jaký podíl z ceny nese druhý rodič (0–100). */
+  split_percent: number;
   contact: string | null;
   color: string;
   notes: string | null;
