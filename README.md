@@ -22,6 +22,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **EduPage** | Úkoly, písemky, zprávy od učitelů, školní akce a rozvrh ze školního systému. Víc dětí pod jedním účtem, všechno roztříděné podle toho, komu patří (jen rodinná verze) |
 | **Telegram** | Připomínky zdarma přímo do telefonu — kdo zítra veze, kdy je předání, co se blíží |
 | **Kalkulačka** | Veřejná stránka `/kalkulacka` bez přihlášení — spočítá rozpis dnů i noci u každého rodiče, jde sdílet odkazem a po přihlášení se rozpis překlopí rovnou do aplikace |
+| **Veřejný web** | Úvodní stránka, průvodce střídavou péčí, vzor dohody, kalkulačka výživného a stránky pro advokáty a mediátory — ve stejném designu jako aplikace, protože berou barvy i písmo ze stejných proměnných |
 | **Rodina** | Pozvánky odkazem, role (správce / rodič / pečující osoba / jen pro čtení), vlastní barvy |
 
 ### Proč Telegram a ne WhatsApp
@@ -51,8 +52,9 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0010` — pozdější rozšíření (střídání po sudých týdnech, okresy,
-     dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy a veřejná kalkulačka)
+   - `0004`–`0014` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+     dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy, veřejná kalkulačka,
+     kontakty, oznámení, doklady a sběr kontaktů z webu)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -242,8 +244,8 @@ src/
 ├── app/
 │   ├── (auth)/            přihlášení, registrace
 │   ├── (app)/             přehled, kalendář, kroužky, výdaje, události, nastavení
-│   ├── api/               Google OAuth + sync, Telegram webhook, cron
-│   ├── kalkulacka/        veřejná kalkulačka a sdílené rozpisy
+│   ├── (web)/             veřejný web: úvodní stránka, obsahové stránky, kalkulačky
+│   ├── api/               Google OAuth + sync, Telegram webhook, cron, sběr kontaktů
 │   ├── pozvanka/[token]/  přijetí pozvánky do rodiny
 │   └── vitejte/           průvodce prvním nastavením
 ├── components/
@@ -253,13 +255,18 @@ src/
 │   ├── expenses/          výdaje, účtenky, grafy
 │   ├── events/            školní a lékařské události
 │   ├── rozvrh/            rozvrh hodin
+│   ├── web/               stavební prvky veřejného webu a sběr kontaktů
 │   ├── family/            děti a členové
 │   └── settings/          profil, střídání, Google, Telegram
 └── lib/
     ├── custody.ts         výpočet, u koho děti kdy jsou
     ├── rozvrh.ts          rozvrh hodin a skládání staženého z EduPage
     ├── kalkulacka.ts      výpočty pro veřejnou kalkulačku
+    ├── vyzivne.ts         orientační výživné podle tabulky MSp
+    ├── atribuce.ts        odkud návštěvník webu přišel
     ├── brand.ts           název produktu na jednom místě
+    ├── partneri.ts        podmínky programu pro mediátory
+    ├── provozovatel.ts    identifikace správce údajů (DOPLNIT)
     ├── activities.ts      rozvinutí opakujících se kroužků
     ├── reminders.ts       plánování a rozesílání notifikací
     ├── google-sync.ts     přenos do Google kalendáře
@@ -296,6 +303,36 @@ přihlášení není místo, kde by měly ležet. Tabulka `kalkulacka_plany` nem
 RLS politiky schválně: sahá na ni jen serverová část servisním klíčem a rozpis
 otevírá jedině náhodný token z odkazu.
 
+### Veřejný web
+
+Marketingové a obsahové stránky nejsou samostatný projekt — leží ve skupině
+`src/app/(web)/` a používají **stejné CSS proměnné a písmo jako aplikace**. Když
+se změní paleta, změní se s ní i web; nemůže se rozejít, protože není z čeho.
+
+| Cesta | K čemu je |
+| --- | --- |
+| `/` | Úvodní stránka. Přihlášeného pošle rovnou na `/prehled` |
+| `/jak-funguje-stridava-pece` | Průvodce — podmínky, rytmy, výživné, trvalé bydliště |
+| `/vzor-dohody-o-stridave-peci` | Co dohoda musí obsahovat; `/text` je celý vzor k okopírování |
+| `/kalkulacka-vyzivneho` | Orientační výživné podle tabulky MSp |
+| `/kalkulacka` | Rozpis dnů a noci u každého rodiče |
+| `/checklist-prvnich-30-dni` | Materiál k vytištění |
+| `/pro-advokaty`, `/pro-mediatory` | Partnerské stránky |
+| `/zasady-ochrany-osobnich-udaju` | Zásady zpracování údajů |
+
+**Materiály se neposílají e-mailem.** Není odesílatel, a slíbit něco, co
+nedorazí, je horší než nesbírat nic. E-mail se uloží do tabulky `leady`
+a materiál se otevře rovnou na webu. Až bude vyřešené SMTP, stačí navázat
+odesílání na `magnet` — texty tvrdí jen to, že se ozveme.
+
+Odkud návštěvník přišel, se zapamatuje **při prvním zobrazení** (`lib/atribuce.ts`,
+mountuje se v layoutu, ne ve formuláři). Lidé přistanou na článku a e-mail
+nechají o dvě stránky dál, kde už v adrese žádné `utm` ani partnerský kód nejsou.
+Odsud se počítají i provize v programu pro mediátory.
+
+Před spuštěním doplň `src/lib/provozovatel.ts` — bez identifikace správce údajů
+nejsou zásady podle GDPR úplné. Podmínky provizí jsou v `src/lib/partneri.ts`.
+
 ---
 
 ## Bezpečnost a soukromí
@@ -317,7 +354,7 @@ npm run dev         # vývojový server
 npm run build       # produkční build
 npm run start       # spuštění produkčního buildu
 npm run typecheck   # kontrola typů
-npm run test        # výpočty rozvrhu i kalkulačky
+npm run test        # výpočty rozvrhu, kalkulaček a importu výdajů
 ```
 
 Hledání dětí v datech EduPage má vlastní testy — struktura se mezi školami

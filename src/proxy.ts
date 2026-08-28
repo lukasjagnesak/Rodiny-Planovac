@@ -6,10 +6,22 @@ const PUBLIC_PATHS = [
   "/registrace",
   "/pozvanka",
   "/auth",
-  // Veřejná kalkulačka je vstupní brána z vyhledávače — přihlášení tam
-  // nesmí být, jinak celý ten kanál nefunguje.
+  // Veřejný web je vstupní brána z vyhledávače — přihlášení tam nesmí
+  // být, jinak celý ten kanál nefunguje. Úvodní stránka si přihlášeného
+  // přesměruje do aplikace sama.
+  "/",
+  "/jak-funguje-stridava-pece",
+  "/vzor-dohody-o-stridave-peci",
+  "/kalkulacka-vyzivneho",
   "/kalkulacka",
+  "/checklist-prvnich-30-dni",
+  "/pro-advokaty",
+  "/pro-mediatory",
+  "/zasady-ochrany-osobnich-udaju",
+  "/sitemap.xml",
+  "/robots.txt",
   "/api/kalkulacka",
+  "/api/lead",
   "/api/telegram",
   "/api/cron",
 ];

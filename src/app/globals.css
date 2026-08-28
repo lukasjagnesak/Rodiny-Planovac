@@ -64,6 +64,15 @@
   --holiday: oklch(70% 0.1 75);
   --holiday-stripe: oklch(70% 0.1 75 / 0.3);
 
+  /* Výrazný blok na veřejném webu (sběr kontaktu). Musí být tmavý
+     v obou režimech — proto vlastní dvojice barev, ne odvozenina
+     z `--brand`, která se v tmavém režimu obrací na světlou. */
+  --vyzva: oklch(38% 0.062 175);
+  --vyzva-ink: oklch(97% 0.008 175);
+  --vyzva-ink-muted: oklch(84% 0.028 175);
+  --vyzva-btn: oklch(53% 0.13 35);
+  --vyzva-btn-ink: oklch(99% 0.005 35);
+
   /* Překryv koleček ve znaku. Na světlém podkladu ztmavuje, na tmavém
      musí naopak zesvětlovat — jinak se druhé kolečko slije s pozadím. */
   --znak-prolnuti: multiply;
@@ -113,6 +122,12 @@
   --holiday: oklch(78% 0.095 75);
   --holiday-stripe: oklch(78% 0.095 75 / 0.28);
 
+  --vyzva: oklch(27.5% 0.05 175);
+  --vyzva-ink: oklch(95% 0.01 175);
+  --vyzva-ink-muted: oklch(79% 0.022 175);
+  --vyzva-btn: oklch(70% 0.12 35);
+  --vyzva-btn-ink: oklch(20% 0.03 35);
+
   --znak-prolnuti: screen;
 
   --ring: oklch(72% 0.08 175);
@@ -159,6 +174,12 @@
   --holiday: oklch(78% 0.095 75);
   --holiday-stripe: oklch(78% 0.095 75 / 0.28);
 
+  --vyzva: oklch(27.5% 0.05 175);
+  --vyzva-ink: oklch(95% 0.01 175);
+  --vyzva-ink-muted: oklch(79% 0.022 175);
+  --vyzva-btn: oklch(70% 0.12 35);
+  --vyzva-btn-ink: oklch(20% 0.03 35);
+
   --znak-prolnuti: screen;
 
   --ring: oklch(72% 0.08 175);
@@ -199,6 +220,9 @@
   --color-parent-both: var(--parent-both);
   --color-parent-both-bg: var(--parent-both-bg);
   --color-holiday: var(--holiday);
+  --color-vyzva: var(--vyzva);
+  --color-vyzva-ink: var(--vyzva-ink);
+  --color-vyzva-btn: var(--vyzva-btn);
 
   --radius-card: 1rem;
   --radius-pill: 999px;
@@ -268,6 +292,71 @@
     border: 1px solid var(--line);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
+  }
+
+  /* ───────────────────────────────────────────────────────────
+     Obsahové stránky veřejného webu
+     Články se píšou jako obyčejné HTML, styl si vezmou odsud. Barvy i
+     písmo jdou ze stejných proměnných jako aplikace — kdyby se paleta
+     změnila, web se změní s ní a branding se nerozejde.
+     ─────────────────────────────────────────────────────────── */
+  .proza {
+    color: var(--ink-muted);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  .proza > * + * {
+    margin-top: 1.1rem;
+  }
+  .proza h2 {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 4vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-top: 2.75rem;
+  }
+  .proza h3 {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 1.9rem;
+  }
+  .proza h2 + *,
+  .proza h3 + * {
+    margin-top: 0.7rem;
+  }
+  .proza strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .proza a {
+    color: var(--brand);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .proza a:hover {
+    color: var(--brand-hover);
+  }
+  .proza ul,
+  .proza ol {
+    padding-left: 1.35rem;
+  }
+  .proza ul {
+    list-style: disc;
+  }
+  .proza ol {
+    list-style: decimal;
+  }
+  .proza li + li {
+    margin-top: 0.45rem;
+  }
+  .proza li::marker {
+    color: var(--brand);
   }
 
   /* Skrytí scrollbaru u horizontálních pásů (výběr dětí, dny) */
@@ -341,6 +430,20 @@
     );
     background-size: 200% 100%;
     animation: rp-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+/* Tisk — vzor dohody a checklist si lidé tisknou. Ovládací prvky
+   a navigace na papír nepatří. */
+@media print {
+  .no-print,
+  header,
+  footer {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
   }
 }
 
