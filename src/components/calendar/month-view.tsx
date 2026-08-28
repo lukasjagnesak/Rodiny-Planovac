@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { addMonths, isSameMonth, isToday, parseISO, startOfMonth } from "date-fns";
+import { addDays, addMonths, isSameMonth, isToday, parseISO, startOfMonth } from "date-fns";
 import { CalendarDays, ChevronLeft, ChevronRight, Moon, Repeat } from "lucide-react";
 import {
   DOW_SHORT,
@@ -16,7 +16,7 @@ import {
 import { custodyStats, resolveCustody, type CustodyDay } from "@/lib/custody";
 import { expandActivities } from "@/lib/activities";
 import { holidayByDay, holidaysInRange, type Holiday } from "@/lib/holidays";
-import { cn, nights, withAlpha } from "@/lib/format";
+import { cn, days, nights, withAlpha } from "@/lib/format";
 import { sideBg, sideColor, sideLabel } from "@/lib/members";
 import { Card, CardBody } from "@/components/ui/card";
 import { Segmented, SplitBar } from "@/components/ui/misc";
@@ -103,7 +103,15 @@ export function MonthView({
     [inMonth, custodyByDay],
   );
 
-  const stats = custodyStats(monthCustody);
+  // Poslední noc v měsíci patří tomu, kdo má první den toho dalšího.
+  // Mřížka kalendáře ho zná, protože dokresluje okolní týdny.
+  const prvniDalsihoMesice = React.useMemo(() => {
+    const posledni = inMonth[inMonth.length - 1];
+    if (!posledni) return null;
+    return custodyByDay.get(toDateKey(addDays(posledni, 1)))?.day ?? null;
+  }, [inMonth, custodyByDay]);
+
+  const stats = custodyStats(monthCustody, prvniDalsihoMesice);
 
   const visibleActivities = React.useMemo(
     () =>
@@ -395,6 +403,15 @@ export function MonthView({
             <Moon className="h-4 w-4 text-ink-subtle" />
             Noci v tomto měsíci
           </div>
+
+          {/* Dnů je vždycky víc než nocí: poslední den pobytu se večer
+              předává, takže ta noc patří druhému rodiči. Bez tohohle
+              vysvětlení vypadají obě čísla jako chyba. */}
+          <p className="text-xs text-ink-subtle">
+            Noc patří tomu, u koho dítě usíná. Zaškrtnutých dnů je proto víc —{" "}
+            {days(stats.daysA)} u {sideLabel(session.members, "a")},{" "}
+            {days(stats.daysB)} u {sideLabel(session.members, "b")}.
+          </p>
 
           <SplitBar a={stats.nightsA} b={stats.nightsB} colorA={colorA} colorB={colorB} />
 

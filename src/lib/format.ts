@@ -30,6 +30,11 @@ export function nights(count: number): string {
   return `${count} ${pluralCs(count, "noc", "noci", "nocí")}`;
 }
 
+/** Dny, které jsou v kalendáři zaškrtnuté. Není to totéž co noci. */
+export function days(count: number): string {
+  return `${count} ${pluralCs(count, "den", "dny", "dní")}`;
+}
+
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";

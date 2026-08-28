@@ -161,37 +161,81 @@ export function resolveCustody({ days, patterns, overrides, childId }: ResolveAr
 }
 
 export interface CustodyStats {
+  /** Zaškrtnuté dny — to, co se v kalendáři klika. */
+  daysA: number;
+  daysB: number;
+  /** Noci. U střídavé péče je to číslo, na které se ptá soud i úřad. */
   nightsA: number;
   nightsB: number;
+  /** Nocí, které šlo přiřadit (o jednu míň než dnů — poslední nemá druhý konec). */
+  nightsTotal: number;
   unassigned: number;
   total: number;
+  /** Podíl podle nocí, ne podle dnů. */
   percentA: number;
   percentB: number;
 }
 
 /**
- * Počet nocí u každé strany.
- * Noc ze dne D na D+1 patří té straně, která má dítě v den D.
+ * Dny a noci u každé strany.
+ *
+ * V kalendáři se zaškrtává, **který den** je dítě u koho. Noc je něco
+ * jiného: patří tomu, u koho dítě ten večer usíná. Když se v neděli večer
+ * předává, nedělní noc už patří přebírajícímu rodiči — proto pobyt od
+ * čtvrtka do neděle znamená čtyři dny, ale tři noci.
+ *
+ * Prakticky tedy noc po dni D patří tomu, kdo má den D+1. Uvnitř pobytu je
+ * to stejná strana a na jeho konci se to samo překlopí na druhou.
+ *
+ * Rozdíl není kosmetický: u střídavé péče se počítají noci a den navíc
+ * v součtu posune poměr, ze kterého se odvíjí výživné.
  */
-export function custodyStats(days: CustodyDay[]): CustodyStats {
-  let nightsA = 0;
-  let nightsB = 0;
+export function custodyStats(
+  days: CustodyDay[],
+  /**
+   * Den následující po rozsahu. Slouží jen k přiřazení poslední noci —
+   * do počtu dnů se nezapočítá. Bez něj se na každém přelomu měsíce
+   * jedna noc ztratí a rok vyjde o dvanáct nocí kratší.
+   */
+  nasledujiciDen?: CustodyDay | null,
+): CustodyStats {
+  let daysA = 0;
+  let daysB = 0;
   let unassigned = 0;
 
   for (const d of days) {
-    if (d.side === "a") nightsA += 1;
-    else if (d.side === "b") nightsB += 1;
+    if (d.side === "a") daysA += 1;
+    else if (d.side === "b") daysB += 1;
     else unassigned += 1;
   }
 
-  const assigned = nightsA + nightsB;
+  let nightsA = 0;
+  let nightsB = 0;
+  for (let i = 0; i < days.length; i += 1) {
+    // Noc po dni D patří tomu, kdo má den D+1.
+    const dalsi = i + 1 < days.length ? days[i + 1] : nasledujiciDen;
+    // Bez následujícího dne poslední noc poctivě přiřadit nejde.
+    if (!dalsi) break;
+    if (dalsi.side === "a") nightsA += 1;
+    else if (dalsi.side === "b") nightsB += 1;
+  }
+
+  const prirazenychNoci = nightsA + nightsB;
+  // Druhé procento se dopočítá z prvního. Kdyby se zaokrouhlovala obě
+  // zvlášť, vyjde u lichých poměrů součet 99 nebo 101 a v přehledu to
+  // vypadá jako chyba výpočtu.
+  const percentA = prirazenychNoci ? Math.round((nightsA / prirazenychNoci) * 100) : 0;
+
   return {
+    daysA,
+    daysB,
     nightsA,
     nightsB,
+    nightsTotal: nasledujiciDen ? days.length : Math.max(days.length - 1, 0),
     unassigned,
     total: days.length,
-    percentA: assigned ? Math.round((nightsA / assigned) * 100) : 0,
-    percentB: assigned ? Math.round((nightsB / assigned) * 100) : 0,
+    percentA,
+    percentB: prirazenychNoci ? 100 - percentA : 0,
   };
 }
 

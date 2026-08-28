@@ -1,4 +1,4 @@
-import { addMonths, eachDayOfInterval, endOfMonth, startOfMonth } from "date-fns";
+import { addDays, addMonths, eachDayOfInterval, endOfMonth, startOfMonth } from "date-fns";
 import { custodyBlocks, custodyStats, resolveCustody, type CustodyBlock } from "./custody";
 import { toDateKey, fromDateKey } from "./dates";
 import type { CustodyPattern, CustodySide, PatternKind } from "./types";
@@ -88,10 +88,22 @@ export function spocitejPlan(vstup: PlanVstup, dnes = new Date()): VysledekPlanu
 
   for (let i = 0; i < 12; i += 1) {
     const zacatek = addMonths(zacatekRoku, i);
-    const dny = eachDayOfInterval({ start: zacatek, end: endOfMonth(zacatek) });
-    const statistika = custodyStats(
-      resolveCustody({ days: dny, patterns: [pattern], overrides: [], childId: null }),
-    );
+    // O den navíc: poslední noc v měsíci patří tomu, kdo má první den
+    // toho dalšího. Bez něj by se na každém přelomu jedna noc ztratila
+    // a rok by vyšel o dvanáct nocí kratší.
+    const dny = eachDayOfInterval({
+      start: zacatek,
+      end: addDays(endOfMonth(zacatek), 1),
+    });
+    const vyreseno = resolveCustody({
+      days: dny,
+      patterns: [pattern],
+      overrides: [],
+      childId: null,
+    });
+    // Poslední prvek je první den dalšího měsíce — patří mu poslední noc,
+    // ale ne den. Proto jde do statistiky zvlášť.
+    const statistika = custodyStats(vyreseno.slice(0, -1), vyreseno[vyreseno.length - 1]);
 
     mesice.push({
       klic: toDateKey(zacatek).slice(0, 7),
