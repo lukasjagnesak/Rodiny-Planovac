@@ -73,18 +73,71 @@ Oprav $chyby $tvar v .env a spusť skript znovu:  nano .env"
 fi
 
 # ── Kontrola DNS ──────────────────────────────────────────────────
+#
+#  Nestačí se zeptat na jednu adresu. Typický stav po přesměrování domény
+#  je, že u registrátora zůstane starý záznam na parkovací stránku vedle
+#  nového na server. Pak se návštěvníci střídavě trefují jinam a Let's
+#  Encrypt ověření neprojde, protože výzvu dostane parkovací nginx.
+#  Stejně tak zapomenutý AAAA záznam: kdo má IPv6 (skoro každý mobil),
+#  jde po něm přednostně a server nikdy neuvidí.
 log "Kontroluji, kam míří doména"
 
-moje_ip="$(curl -fsS -m 10 https://api.ipify.org || echo '')"
-domena_ip="$(getent hosts "$APP_DOMAIN" | awk '{print $1}' | head -1 || echo '')"
+zaznamy() { # $1 = jméno, $2 = A nebo AAAA
+  if command -v dig >/dev/null 2>&1; then
+    dig +short "$2" "$1" 2>/dev/null | grep -E '^[0-9a-fA-F.:]+$' | sort -u
+  elif [[ "$2" == "A" ]]; then
+    getent ahostsv4 "$1" 2>/dev/null | awk '{print $1}' | sort -u
+  else
+    getent ahostsv6 "$1" 2>/dev/null | awk '{print $1}' | sort -u
+  fi
+}
 
-echo "  IP tohoto serveru: ${moje_ip:-nezjištěno}"
-echo "  $APP_DOMAIN míří na: ${domena_ip:-nikam}"
+moje_ip4="$(curl -fsS -m 10 https://api.ipify.org || echo '')"
+moje_ip6="$(curl -fsS -m 10 -6 https://api64.ipify.org 2>/dev/null || echo '')"
 
-if [[ -n "$moje_ip" && -n "$domena_ip" && "$moje_ip" != "$domena_ip" ]]; then
+echo "  IPv4 tohoto serveru: ${moje_ip4:-nezjištěno}"
+[[ -n "$moje_ip6" ]] && echo "  IPv6 tohoto serveru: $moje_ip6"
+
+potize_dns=0
+
+# Caddyfile vystavuje i www, takže certifikát se žádá na obě jména.
+# Špatné www rozbije vydání certifikátu pro celou doménu.
+for jmeno in "$APP_DOMAIN" "www.$APP_DOMAIN"; do
+  a="$(zaznamy "$jmeno" A)"
+  aaaa="$(zaznamy "$jmeno" AAAA)"
+
+  echo "  $jmeno → A: ${a//$'\n'/, } ${aaaa:+| AAAA: ${aaaa//$'\n'/, }}"
+
+  if [[ -z "$a" ]]; then
+    cerveny "    ✗ žádný A záznam"
+    potize_dns=$((potize_dns + 1))
+    continue
+  fi
+
+  navic="$(printf '%s\n' "$a" | grep -vxF "$moje_ip4" || true)"
+  if [[ -n "$moje_ip4" && -n "$navic" ]]; then
+    cerveny "    ✗ míří i jinam než na tenhle server: ${navic//$'\n'/, }"
+    echo "      Smaž ten záznam u registrátora, jinak část lidí skončí jinde"
+    echo "      a Let's Encrypt certifikát nevydá."
+    potize_dns=$((potize_dns + 1))
+  fi
+
+  if [[ -n "$aaaa" ]]; then
+    zbyle6="$(printf '%s\n' "$aaaa" | grep -vxF "${moje_ip6:-nic}" || true)"
+    if [[ -n "$zbyle6" ]]; then
+      cerveny "    ✗ AAAA míří jinam: ${zbyle6//$'\n'/, }"
+      echo "      Kdo má IPv6, jde po něm přednostně a na server se nedostane."
+      echo "      Smaž AAAA záznam, nebo ho nastav na IPv6 tohoto serveru."
+      potize_dns=$((potize_dns + 1))
+    fi
+  fi
+done
+
+if [[ $potize_dns -gt 0 ]]; then
   cerveny "
-  Doména zatím míří jinam. Let's Encrypt certifikát nevydá a po
-  neúspěchu chvíli čeká, než to zkusí znovu — počkej, až se DNS propíše."
+  DNS zatím není v pořádku. Doporučuju to nejdřív spravit u registrátora
+  a počkat, až se změna propíše — Let's Encrypt má po neúspěchu limit
+  a další pokus chvíli trvá."
   read -r -p "  Přesto pokračovat? [a/N] " odpoved
   [[ "$odpoved" =~ ^[aAyY]$ ]] || { echo "Zastaveno."; exit 1; }
 fi

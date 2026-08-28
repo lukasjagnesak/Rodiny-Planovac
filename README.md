@@ -202,10 +202,28 @@ a doména odpovídají, a upozorní, když doména ještě nemíří na tenhle
 server. Zapomenutý klíč se jinak projeví až tím, že aplikace naběhne
 a nikdo se nepřihlásí.
 
-Nasměruj `A` záznam domény na IP serveru — Caddy si certifikát od Let's Encrypt
-vyřídí sám během několika vteřin. Doména musí ukazovat na server **dřív**, než
-spustíš compose: Let's Encrypt ověřuje vlastnictví přes veřejný dotaz a při
-neúspěchu chvíli čeká, než to zkusí znovu.
+#### DNS
+
+Doména musí ukazovat na server **dřív**, než spustíš compose: Let's Encrypt
+ověřuje vlastnictví přes veřejný dotaz a při neúspěchu chvíli čeká, než to
+zkusí znovu.
+
+U registrátora má zůstat přesně tohle:
+
+| Záznam | Hodnota |
+|---|---|
+| `A` na `@` | IP serveru |
+| `A` na `www` | tatáž IP |
+| `AAAA` | jen pokud má server IPv6 — jinak žádný |
+
+**Staré záznamy je potřeba smazat, ne jen přidat nový.** Parkovací stránka
+registrátora obvykle nechá `A` i `AAAA` na svoji adresu; když vedle nich
+přibude záznam na server, návštěvníci se střídavě trefují jinam a Let's
+Encrypt certifikát nevydá, protože výzvu dostane cizí server. U `AAAA` je to
+horší: kdo má IPv6 — tedy skoro každý mobil — jde po něm přednostně a na
+server se nedostane vůbec.
+
+`prvni-start.sh` tohle kontroluje a vypíše, který záznam přebývá.
 
 #### Na co nezapomenout mimo server
 

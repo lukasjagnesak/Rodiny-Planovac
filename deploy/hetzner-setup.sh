@@ -26,6 +26,11 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 systemctl enable --now docker
 
+log "Nástroje pro diagnostiku"
+# dig kvůli kontrole DNS v prvni-start.sh — getent umí jen to, na co má
+# server konektivitu, takže by zapomenutý AAAA záznam neodhalil.
+apt-get install -y -qq dnsutils
+
 log "Firewall — povolíme jen SSH a web"
 apt-get install -y -qq ufw
 ufw allow OpenSSH
