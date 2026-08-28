@@ -61,6 +61,43 @@ if [[ -n "${NEXT_PUBLIC_SITE_URL:-}" && -n "${APP_DOMAIN:-}" ]]; then
   fi
 fi
 
+# ── Hygiena souboru ───────────────────────────────────────────────
+#
+#  Předchozí kontrola se dívá na proměnné až po `source`, jenže shell při
+#  načtení uvozovky odstraní. Hodnota `"https://…"` tak projde jako
+#  v pořádku, ale Docker Compose ji předá i s uvozovkami a Supabase klient
+#  spadne — až za běhu, po celém buildu. Proto se tu čte samotný soubor.
+
+radek_hodnoty() { # $1 = název proměnné, vrátí syrovou hodnotu ze souboru
+  local radek
+  radek="$(grep -m1 "^$1=" .env || true)"
+  printf '%s' "${radek#"$1"=}"
+}
+
+if grep -q $'\r' .env; then
+  cerveny "  ✗ .env má řádky zakončené po windowsku (CRLF)"
+  echo "      Neviditelný znak na konci se stane součástí hodnoty."
+  echo "      Oprav:  sed -i 's/\r\$//' .env"
+  chyby=$((chyby + 1))
+fi
+
+if grep -qE "^[A-Z_]+=[\"']" .env; then
+  cerveny "  ✗ některé hodnoty jsou v uvozovkách — .env je nechce"
+  grep -nE "^[A-Z_]+=[\"']" .env | cut -d: -f2 | cut -d= -f1 | sed 's/^/      /'
+  chyby=$((chyby + 1))
+fi
+
+# Adresa Supabase je nejčastější místo, kde se to zvrtne, a chyba se
+# projeví až tím, že aplikace nenaběhne. Nesmí obsahovat uvozovky,
+# mezery ani chybět schéma.
+supabase_url="$(radek_hodnoty NEXT_PUBLIC_SUPABASE_URL)"
+if [[ -n "$supabase_url" ]] && ! [[ "$supabase_url" =~ ^https?://[^[:space:]\"\'/]+(/.*)?$ ]]; then
+  cerveny "  ✗ NEXT_PUBLIC_SUPABASE_URL není použitelná adresa"
+  echo "      mám:    $supabase_url"
+  echo "      čekám:  https://neco.supabase.co — bez uvozovek a bez mezer"
+  chyby=$((chyby + 1))
+fi
+
 if [[ $chyby -gt 0 ]]; then
   # Česky se počítané podstatné jméno mění: 1 položku, 2–4 položky, 5+ položek.
   if [[ $chyby -eq 1 ]]; then tvar="položku"
