@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Inter } from "next/font/google";
+import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { POPIS, ZNACKA } from "@/lib/brand";
 
@@ -12,8 +12,14 @@ const inter = Inter({
 /**
  * Kulaté písmo jen na nápis značky a nadpisy. Text aplikace zůstává
  * v Interu — čte se líp a v tabulkách čísel se nerozpadá.
+ *
+ * POZOR při výměně: písmo musí mít **skutečně** české znaky, ne jen
+ * deklarovaný rozsah latin-ext. Fredoka, která tu byla předtím, hlásí
+ * latin-ext v CSS, ale v souboru chybí č ď ě ň ř ť ů i verzálky —
+ * prohlížeč pak u každého takového písmene spadne na náhradní font
+ * a slovo se rozsype uprostřed. Pokrytí ověříš přes `npm run test:pismo`.
  */
-const fredoka = Fredoka({
+const baloo = Baloo_2({
   subsets: ["latin", "latin-ext"],
   display: "swap",
   weight: ["500", "600"],
@@ -69,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="cs"
-      className={`${inter.variable} ${fredoka.variable}`}
+      className={`${inter.variable} ${baloo.variable}`}
       // Next jinak varuje, že plynulé rolování rozbíjí přechody mezi stránkami.
       data-scroll-behavior="smooth"
       suppressHydrationWarning

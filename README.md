@@ -373,6 +373,7 @@ npm run build       # produkční build
 npm run start       # spuštění produkčního buildu
 npm run typecheck   # kontrola typů
 npm run test        # výpočty rozvrhu, kalkulaček a importu výdajů
+npm run test:pismo  # mají písma české znaky? (potřebuje síť)
 ```
 
 Hledání dětí v datech EduPage má vlastní testy — struktura se mezi školami
