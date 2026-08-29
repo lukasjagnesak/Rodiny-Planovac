@@ -21,6 +21,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
+import { Zaciname, type Krok } from "@/components/dashboard/zaciname";
 import { Avatar, Badge, Dot } from "@/components/ui/badge";
 import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
@@ -51,6 +52,7 @@ import type {
 
 export function Dashboard({
   session,
+  kroky,
   patterns,
   overrides,
   activities,
@@ -61,6 +63,8 @@ export function Dashboard({
   rozvrhZmeny,
 }: {
   session: SessionContext;
+  /** Rozjezdový checklist — zmizí sám, až bude hotovo. */
+  kroky: Krok[];
   patterns: CustodyPattern[];
   overrides: CustodyOverride[];
   activities: Activity[];
@@ -175,6 +179,8 @@ export function Dashboard({
           {DOW_LONG[today.getDay()]} {formatDayShort(today)}
         </p>
       </div>
+
+      <Zaciname kroky={kroky} />
 
       {/* ── Kdo má dnes děti ───────────────────────────────────── */}
       <Card>

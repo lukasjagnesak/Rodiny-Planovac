@@ -14,6 +14,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
+import { UkazkyAplikace } from "@/components/web/ukazky";
 import { POPIS, ZNACKA } from "@/lib/brand";
 
 export const metadata: Metadata = {
@@ -263,6 +264,25 @@ export default async function Domu() {
                 <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">{popis}</p>
               </div>
             ))}
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── Jak to vypadá uvnitř ─────────────────────────────────── */}
+      {/* Rodič, který se rozhoduje, chce vidět aplikaci dřív, než dá
+          e-mail. Popis funkcí to nenahradí. */}
+      <section className="py-14 sm:py-20">
+        <Sloupec siroky>
+          <Nadtitulek>Jak to vypadá uvnitř</Nadtitulek>
+          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Podívej se, do čeho jdeš
+          </h2>
+          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            Čtyři obrazovky, ve kterých rodiče tráví skoro všechen čas.
+          </p>
+
+          <div className="mt-10">
+            <UkazkyAplikace />
           </div>
         </Sloupec>
       </section>

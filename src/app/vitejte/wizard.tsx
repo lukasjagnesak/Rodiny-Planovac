@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Baby, Check, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Baby, Check, Copy, Mail, Plus, Send, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
@@ -10,6 +10,7 @@ import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
 import { PATTERN_HINTS, PATTERN_LABELS, currentWeekInfo } from "@/lib/custody";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
+import { hlaskaChyby } from "@/lib/format";
 import { toDateKey } from "@/lib/dates";
 import { startOfWeek } from "date-fns";
 import { WEEK_OPTS } from "@/lib/dates";
@@ -21,7 +22,16 @@ interface ChildDraft {
   color: string;
 }
 
-const STEPS = ["Rodina", "Děti", "Střídání"];
+/**
+ * Poslední krok je pozvánka schválně až za kalendářem.
+ *
+ * Nejcennější akce v celém onboardingu je připojení druhého rodiče —
+ * dokud je v aplikaci jeden rodič, je to zápisník; jakmile jsou tam dva,
+ * je to dohoda. Zároveň ale nesmí stát v cestě k první hodnotě: rodič se
+ * nejdřív musí podívat na hotový kalendář, teprve pak má co posílat dál.
+ */
+const STEPS = ["Rodina", "Děti", "Střídání", "Druhý rodič"];
+const POSLEDNI_NASTAVENI = 2;
 
 /** Zadání přenesené z veřejné kalkulačky. */
 export interface PredvyplnenoZKalkulacky {
@@ -42,6 +52,7 @@ export function OnboardingWizard({
 }) {
   const router = useRouter();
   const [step, setStep] = React.useState(0);
+  const [zalozenaRodina, setZalozenaRodina] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -108,8 +119,9 @@ export function OnboardingWizard({
       if (patternError) throw patternError;
 
       document.cookie = `${ACTIVE_FAMILY_COOKIE}=${familyId}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
-      router.push("/prehled");
-      router.refresh();
+      setZalozenaRodina(familyId as string);
+      setBusy(false);
+      setStep(3);
     } catch (e) {
       setBusy(false);
       setError(e instanceof Error ? e.message : "Něco se pokazilo, zkus to prosím znovu.");
@@ -402,16 +414,24 @@ export function OnboardingWizard({
           </>
         ) : null}
 
+        {step === 3 && zalozenaRodina ? (
+          <PozvaniDruhehoRodice
+            familyId={zalozenaRodina}
+            jmeno={otherName}
+            strana={mySide === "a" ? "b" : "a"}
+          />
+        ) : null}
+
         {error ? <Alert tone="danger">{error}</Alert> : null}
 
-        <div className="flex gap-2 pt-1">
+        <div className={`flex gap-2 pt-1 ${step > POSLEDNI_NASTAVENI ? "hidden" : ""}`}>
           {step > 0 ? (
             <Button variant="secondary" onClick={() => setStep((s) => s - 1)} disabled={busy}>
               <ArrowLeft className="h-4 w-4" /> Zpět
             </Button>
           ) : null}
 
-          {step < STEPS.length - 1 ? (
+          {step < POSLEDNI_NASTAVENI ? (
             <Button
               className="flex-1"
               size="lg"
@@ -539,5 +559,145 @@ export function WeeklyMapEditor({
         Den patří tomu, u koho dítě tu noc spí.
       </p>
     </div>
+  );
+}
+
+
+/**
+ * Poslední obrazovka onboardingu: pozvat druhého rodiče.
+ *
+ * Přeskočit jde jedním kliknutím — kdo zrovna teď nemá druhého rodiče
+ * kam pozvat (a v rozvodu to není nic výjimečného), nesmí tady uváznout.
+ * Připomene se to na přehledu.
+ */
+function PozvaniDruhehoRodice({
+  familyId,
+  jmeno,
+  strana,
+}: {
+  familyId: string;
+  jmeno: string;
+  strana: "a" | "b";
+}) {
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [odkaz, setOdkaz] = React.useState<string | null>(null);
+  const [busy, setBusy] = React.useState(false);
+  const [chyba, setChyba] = React.useState<string | null>(null);
+  const [zkopirovano, setZkopirovano] = React.useState(false);
+
+  async function pozvat() {
+    if (!email.includes("@")) {
+      setChyba("Zadej platný e-mail.");
+      return;
+    }
+    setBusy(true);
+    setChyba(null);
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("family_invites")
+      .insert({
+        family_id: familyId,
+        email: email.trim().toLowerCase(),
+        role: "parent",
+        custody_side: strana,
+      })
+      .select("token")
+      .single();
+
+    setBusy(false);
+    if (error) {
+      setChyba(hlaskaChyby(error));
+      return;
+    }
+    setOdkaz(`${window.location.origin}/pozvanka/${data.token}`);
+  }
+
+  function dal() {
+    router.push("/prehled");
+    router.refresh();
+  }
+
+  return (
+    <>
+      <div>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-success/10 text-success">
+          <Check className="h-6 w-6" />
+        </div>
+        <h1 className="mt-3 text-center text-lg font-semibold text-ink">
+          Kalendář je hotový
+        </h1>
+        <p className="mt-1 text-center text-sm text-ink-muted">
+          Zbývá jediná věc, kvůli které to celé má smysl: aby to samé viděl
+          i {jmeno.trim() || "druhý rodič"}. Pak už se nikdo nemusí ptát, kdo má které
+          úterý.
+        </p>
+      </div>
+
+      {odkaz ? (
+        <div className="space-y-3">
+          <Alert tone="success">
+            Pozvánka je připravená. Pošli tenhle odkaz — platí 30 dní.
+          </Alert>
+          <div className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2.5">
+            <p className="min-w-0 flex-1 truncate text-sm text-ink-muted">{odkaz}</p>
+            <button
+              type="button"
+              aria-label="Zkopírovat odkaz"
+              onClick={async () => {
+                await navigator.clipboard.writeText(odkaz);
+                setZkopirovano(true);
+                setTimeout(() => setZkopirovano(false), 2000);
+              }}
+              className="shrink-0 rounded-lg p-2 text-ink-subtle hover:bg-surface hover:text-ink"
+            >
+              {zkopirovano ? (
+                <Check className="h-4 w-4 text-success" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+          <Button size="lg" className="w-full" onClick={dal}>
+            Přejít do aplikace <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <Field label={`E-mail druhého rodiče${jmeno.trim() ? ` (${jmeno.trim()})` : ""}`}>
+            <Input
+              type="email"
+              inputMode="email"
+              autoComplete="off"
+              placeholder="druhy.rodic@example.cz"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Field>
+
+          {chyba ? <Alert tone="danger">{chyba}</Alert> : null}
+
+          <Button size="lg" className="w-full" onClick={pozvat} disabled={busy}>
+            {busy ? <Spinner /> : <Send className="h-4 w-4" />}
+            {busy ? "Připravuji…" : "Vytvořit pozvánku"}
+          </Button>
+
+          <button
+            type="button"
+            onClick={dal}
+            className="w-full text-center text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+          >
+            Teď ne, pozvu ho později
+          </button>
+
+          <p className="flex items-start gap-2 text-xs text-ink-subtle">
+            <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            Druhý rodič uvidí kalendář a výdaje, ale nic tím neplatí — předplatné je
+            jedno na celou rodinu.
+          </p>
+        </div>
+      )}
+    </>
   );
 }
