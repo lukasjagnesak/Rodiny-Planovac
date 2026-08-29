@@ -582,6 +582,7 @@ function PozvaniDruhehoRodice({
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [odkaz, setOdkaz] = React.useState<string | null>(null);
+  const [emailem, setEmailem] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [chyba, setChyba] = React.useState<string | null>(null);
   const [zkopirovano, setZkopirovano] = React.useState(false);
@@ -606,11 +607,18 @@ function PozvaniDruhehoRodice({
       .select("token")
       .single();
 
-    setBusy(false);
     if (error) {
+      setBusy(false);
       setChyba(hlaskaChyby(error));
       return;
     }
+
+    // Odeslání e-mailem je bonus: když SMTP mlčí, odkaz se pořád dá poslat
+    // ručně, takže se kvůli tomu pozvánka neruší.
+    const { poslano } = await odesliPozvanku(data.token);
+
+    setBusy(false);
+    setEmailem(poslano);
     setOdkaz(`${window.location.origin}/pozvanka/${data.token}`);
   }
 
@@ -638,7 +646,9 @@ function PozvaniDruhehoRodice({
       {odkaz ? (
         <div className="space-y-3">
           <Alert tone="success">
-            Pozvánka je připravená. Pošli tenhle odkaz — platí 30 dní.
+            {emailem
+              ? `Pozvánku jsme poslali na ${email.trim().toLowerCase()}. Pro jistotu můžeš odkaz poslat i sám — platí 30 dní.`
+              : "Pozvánka je připravená. Pošli tenhle odkaz — platí 30 dní."}
           </Alert>
           <div className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2.5">
             <p className="min-w-0 flex-1 truncate text-sm text-ink-muted">{odkaz}</p>
@@ -700,4 +710,23 @@ function PozvaniDruhehoRodice({
       )}
     </>
   );
+}
+
+
+/**
+ * Pošle pozvánku e-mailem. Selhání se mlčky spolkne — odkaz zůstává
+ * a poslat ho ručně je pořád lepší než hláška o tom, co se nepovedlo.
+ */
+async function odesliPozvanku(token: string): Promise<{ poslano: boolean }> {
+  try {
+    const odpoved = await fetch("/api/pozvanka/odeslat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    const data = (await odpoved.json()) as { poslano?: boolean };
+    return { poslano: Boolean(data.poslano) };
+  } catch {
+    return { poslano: false };
+  }
 }

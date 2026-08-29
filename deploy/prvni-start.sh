@@ -14,6 +14,7 @@ cd "$(dirname "$0")/.."
 
 zeleny() { printf '\033[1;32m%s\033[0m\n' "$1"; }
 cerveny() { printf '\033[1;31m%s\033[0m\n' "$1"; }
+zluty() { printf '\033[1;33m%s\033[0m\n' "$1"; }
 log() { printf '\n\033[1;32m▶ %s\033[0m\n' "$1"; }
 
 if [[ ! -f .env ]]; then
@@ -23,6 +24,18 @@ fi
 
 # ── Kontrola proměnných ───────────────────────────────────────────
 log "Kontroluji .env"
+
+# Znaky, které shell bere jako příkaz, ne jako text. `SMTP_FROM=Klidoo
+# <ahoj@klidoo.cz>` vypadá nevinně, ale `<` je přesměrování a `source .env`
+# na tom skončí syntaktickou chybou — tenhle skript by spadl dřív, než
+# cokoli zkontroluje. Uvozovky nepomůžou, ty zase vadí Compose.
+if grep -qE '^[A-Z_]+=[^#]*[<>|;&`$()]' .env; then
+  cerveny "  ✗ některé hodnoty obsahují znaky, kterým shell nerozumí:  < > | ; & \` $ ( )"
+  grep -nE '^[A-Z_]+=[^#]*[<>|;&`$()]' .env | cut -d= -f1 | sed 's/^/      /'
+  echo "      Uvozovky to nespraví. Rozděl hodnotu (SMTP_FROM_NAME a SMTP_FROM_EMAIL)"
+  echo "      nebo si nech vygenerovat heslo bez těchhle znaků."
+  exit 1
+fi
 
 set -a; source ./.env; set +a
 
@@ -97,6 +110,27 @@ if [[ -n "$supabase_url" ]] && ! [[ "$supabase_url" =~ ^https?://[^[:space:]\"\'
   echo "      čekám:  https://neco.supabase.co — bez uvozovek a bez mezer"
   chyby=$((chyby + 1))
 fi
+
+# ── Nepovinné, ale bez nich část aplikace mlčí ────────────────────
+#
+#  Tyhle nezastavují nasazení: aplikace běží i bez plateb a e-mailů.
+#  Zjistit to až od zákazníka, kterému nepřišla pozvánka, je ale horší
+#  než vidět to tady.
+
+doporuc() {
+  local jmeno="$1" popis="$2"
+  if [[ -z "${!jmeno:-}" ]]; then
+    zluty "  ! $jmeno není nastavené — $popis"
+  else
+    echo "  ✓ $jmeno"
+  fi
+}
+
+doporuc SMTP_HOST   "pozvánky a upozornění se nepošlou (README, kapitola 5b)"
+doporuc SMTP_PASS   "SMTP bez hesla neodešle nic"
+doporuc SMTP_FROM_EMAIL "bez odesílatele z vlastní domény zprávy končí ve spamu"
+doporuc STRIPE_SECRET_KEY "nepůjde zaplatit předplatné"
+doporuc STRIPE_WEBHOOK_SECRET "platba proběhne, ale aplikace se o ní nedozví"
 
 if [[ $chyby -gt 0 ]]; then
   # Česky se počítané podstatné jméno mění: 1 položku, 2–4 položky, 5+ položek.

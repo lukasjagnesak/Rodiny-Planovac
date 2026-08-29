@@ -25,6 +25,8 @@ const PUBLIC_PATHS = [
   "/api/checklist",
   "/api/telegram",
   "/api/cron",
+  // Chráněné vlastním tajemstvím, ne přihlášením.
+  "/api/mail/kontrola",
   // Stripe chodí bez cookies a podpis si ověřuje route sama.
   "/api/stripe/webhook",
 ];

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { dispatchNotifications, planNotifications } from "@/lib/reminders";
 import { syncAllCalendars } from "@/lib/google-sync";
 import { INTERVAL_HODIN, stahniZmeskane } from "@/lib/edupage-sync";
+import { posliPripominkyPredplatneho } from "@/lib/predplatne-pripominky";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -56,6 +57,16 @@ export async function GET(request: NextRequest) {
       report.edupageIntervalHodin = INTERVAL_HODIN;
     } catch (e) {
       report.edupageError = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  // Konec zkušebního období a neúspěšné platby. Nanejvýš jeden e-mail
+  // na rodinu za den — o to se stará sama funkce.
+  if (request.nextUrl.searchParams.get("predplatne") !== "0") {
+    try {
+      report.predplatne = await posliPripominkyPredplatneho();
+    } catch (e) {
+      report.predplatneError = e instanceof Error ? e.message : String(e);
     }
   }
 

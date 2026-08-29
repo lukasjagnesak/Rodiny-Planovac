@@ -52,10 +52,10 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0016` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+   - `0004`–`0019` — pozdější rozšíření (střídání po sudých týdnech, okresy,
      dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy, veřejná kalkulačka,
      kontakty, oznámení, doklady, sběr kontaktů z webu, dělení ceny kroužků
-     a noc na dni předání)
+     a noc na dni předání, předplatné a paywall)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -178,6 +178,54 @@ curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
 
 Každý člen rodiny si pak v **Nastavení → Telegram** vygeneruje šestimístný kód
 a pošle ho botovi. Hotovo.
+
+### 5b. E-maily (SMTP)
+
+Aplikace posílá pozvánky druhému rodiči, upozornění na konec zkušebního období
+a na neúspěšnou platbu. **Vestavěná pošta Supabase na to nestačí** — má limit
+pár zpráv za hodinu a odesílá z cizí domény, takže pozvánky končí ve spamu.
+
+**Poskytovatel.** Stačí cokoli, co umí SMTP. Pro Klidoo dává smysl
+[Resend](https://resend.com) (3 000 zpráv měsíčně zdarma, evropský region,
+DPA) nebo [Brevo](https://brevo.com), pokud chceš data výhradně v EU.
+Přesedlat jinam znamená změnit čtyři proměnné v `.env`.
+
+**1. Ověř doménu** u poskytovatele a přidej do DNS `klidoo.cz` záznamy, které
+ti ukáže:
+
+| Typ  | Název               | Hodnota                                          |
+|------|---------------------|--------------------------------------------------|
+| TXT  | `@`                 | `v=spf1 include:<poskytovatel> ~all`             |
+| TXT  | `resend._domainkey` | DKIM klíč od poskytovatele                       |
+| TXT  | `_dmarc`            | `v=DMARC1; p=none; rua=mailto:ahoj@klidoo.cz`    |
+
+SPF a DKIM nejsou volitelné: bez nich Seznam i Gmail zprávy zahazují. DMARC
+nech zpočátku na `p=none` a zpřísni ho, až uvidíš, že všechno prochází.
+
+**2. Doplň do `.env`:**
+
+```bash
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=587
+SMTP_USER=resend
+SMTP_PASS=<API klíč>
+SMTP_FROM_NAME=Klidoo
+SMTP_FROM_EMAIL=ahoj@klidoo.cz
+SMTP_REPLY_TO=ahoj@klidoo.cz
+```
+
+**3. Ověř po nasazení:**
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  "https://klidoo.cz/api/mail/kontrola?komu=tvuj@email.cz"
+```
+
+Vrátí stav spojení a pošle zkušební zprávu. Bez `?komu=` jen otestuje přihlášení.
+
+**4. Přepni i přihlašovací e-maily.** V Supabase **Authentication → Emails →
+SMTP Settings** vyplň ty samé údaje. Do té doby chodí potvrzení registrace
+a magic linky ze Supabase, s jejich limitem a jejich doménou.
 
 ### 6. Nasazení na Hetzner
 

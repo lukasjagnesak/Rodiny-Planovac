@@ -228,6 +228,7 @@ function InviteRow({ invite, canManage }: { invite: FamilyInvite; canManage: boo
   const router = useRouter();
   const [copied, setCopied] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
+  const [znovu, setZnovu] = React.useState<"cekam" | "poslano" | null>(null);
 
   const url =
     typeof window !== "undefined" ? `${window.location.origin}/pozvanka/${invite.token}` : "";
@@ -255,6 +256,25 @@ function InviteRow({ invite, canManage }: { invite: FamilyInvite; canManage: boo
           {ROLE_LABELS[invite.role]} · platí do {formatDay(invite.expires_at.slice(0, 10))}
         </p>
       </div>
+      <button
+        type="button"
+        aria-label="Poslat pozvánku znovu e-mailem"
+        title="Poslat znovu e-mailem"
+        disabled={znovu === "cekam"}
+        onClick={async () => {
+          setZnovu("cekam");
+          const poslano = await posliPozvanku(invite.token);
+          setZnovu(poslano ? "poslano" : null);
+          setTimeout(() => setZnovu(null), 3000);
+        }}
+        className="shrink-0 rounded-lg p-2 text-ink-subtle hover:bg-surface hover:text-ink disabled:opacity-50"
+      >
+        {znovu === "poslano" ? (
+          <Check className="h-4 w-4 text-success" />
+        ) : (
+          <Send className="h-4 w-4" />
+        )}
+      </button>
       <button
         type="button"
         onClick={copy}
@@ -294,6 +314,7 @@ function InviteSheet({
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [link, setLink] = React.useState<string | null>(null);
+  const [emailem, setEmailem] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
@@ -302,6 +323,7 @@ function InviteSheet({
       setRole("parent");
       setSide("");
       setLink(null);
+      setEmailem(false);
       setError(null);
     }
   }, [open]);
@@ -327,12 +349,18 @@ function InviteSheet({
       .select("token")
       .single();
 
-    setBusy(false);
     if (error) {
+      setBusy(false);
       setError(hlaskaChyby(error));
       return;
     }
 
+    // E-mail je jen pohodlí navíc — odkaz se dá poslat i ručně,
+    // takže se kvůli mlčícímu SMTP pozvánka neruší.
+    const poslano = await posliPozvanku(data.token);
+
+    setBusy(false);
+    setEmailem(poslano);
     setLink(`${window.location.origin}/pozvanka/${data.token}`);
     router.refresh();
   }
@@ -372,7 +400,11 @@ function InviteSheet({
 
         {link ? (
           <>
-            <Alert tone="success">Pozvánka vytvořena. Odkaz platí 30 dní.</Alert>
+            <Alert tone="success">
+              {emailem
+                ? "Pozvánku jsme poslali e-mailem. Odkaz platí 30 dní — pro jistotu ho můžeš poslat i sám."
+                : "Pozvánka vytvořena. Odkaz platí 30 dní."}
+            </Alert>
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 p-3">
               <Link2 className="h-4 w-4 shrink-0 text-ink-subtle" />
               <span className="min-w-0 flex-1 truncate text-sm text-ink-muted">{link}</span>
@@ -553,4 +585,24 @@ function MemberSheet({
       />
     </>
   );
+}
+
+
+/**
+ * Pošle pozvánku e-mailem. Vrací jen ano/ne — když SMTP mlčí, uživateli
+ * zůstává odkaz ke zkopírování a hláška o chybějícím nastavení by mu
+ * nic neřekla.
+ */
+async function posliPozvanku(token: string): Promise<boolean> {
+  try {
+    const odpoved = await fetch("/api/pozvanka/odeslat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    const data = (await odpoved.json()) as { poslano?: boolean };
+    return Boolean(data.poslano);
+  } catch {
+    return false;
+  }
 }
