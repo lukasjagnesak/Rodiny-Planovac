@@ -275,7 +275,7 @@ export function Dashboard({
       <Card>
         <CardHeader
           title="Čas s dětmi"
-          description="Rozdělení nocí — tento měsíc a celý rok. Noc patří tomu, u koho dítě usíná, takže zaškrtnutých dnů je v kalendáři víc."
+          description="Rozdělení nocí — tento měsíc a celý rok"
           action={
             <Link href="/kalendar" className="text-sm text-brand hover:underline">
               Kalendář

@@ -265,6 +265,20 @@ export function MonthView({
 
             const tint = mixed ? undefined : side === "a" ? bgA : side === "b" ? bgB : undefined;
 
+            /**
+             * Den předání se kreslí diagonálně přepůlený: vlevo nahoře
+             * ten, kdo má dítě přes den, vpravo dole ten, u koho tu noc
+             * spí. Diagonála tak vždycky míří k přebírajícímu rodiči.
+             *
+             * Je to přesně to pravidlo, podle kterého se počítají noci —
+             * jinak nejde poznat, proč jsou dva zaškrtnuté dny jedna noc.
+             */
+            const nocniStrana = custodyByDay.get(toDateKey(addDays(date, 1)))?.day.side ?? null;
+            const predavka =
+              !mixed && side !== null && nocniStrana !== null && nocniStrana !== side;
+            const barvaDne = side === "a" ? bgA : bgB;
+            const barvaNoci = nocniStrana === "a" ? bgA : bgB;
+
             return (
               <button
                 key={key}
@@ -277,26 +291,27 @@ export function MonthView({
                 )}
                 title={holiday ? holiday.label : undefined}
                 style={{
-                  backgroundColor: tint,
+                  backgroundColor: predavka ? undefined : tint,
                   backgroundImage: mixed
                     ? `linear-gradient(135deg, ${bgA} 0 50%, ${bgB} 50% 100%)`
-                    : undefined,
+                    : predavka
+                      ? `linear-gradient(135deg, ${barvaDne} 0 50%, ${barvaNoci} 50% 100%)`
+                      : undefined,
                   // Prázdniny se kreslí šrafou přes barvu rodiče — obojí
                   // musí zůstat čitelné najednou, výplň by jedno přebila.
                   boxShadow: holiday ? "inset 0 0 0 2px var(--holiday)" : undefined,
                 }}
               >
-                {/* Šrafa leží pod obsahem, jinak by přebila čísla i popisky. */}
+                {/* Prázdniny drží pruh u spodní hrany, ne celou dlaždici.
+                    Přes celou plochu přebíjely barvu rodiče a po zavedení
+                    diagonály předání by se s ní navíc tloukly. */}
                 {holiday ? (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute inset-0"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[18%]"
                     style={{
                       backgroundImage:
-                        // 2 px pruh v periodě 12 px ≈ 17 % plochy. Předtím
-                        // to bylo 5 z 11, tedy skoro polovina, a šrafa
-                        // přebíjela barvu rodiče pod sebou.
-                        "repeating-linear-gradient(45deg, var(--holiday-stripe) 0 2px, transparent 2px 12px)",
+                        "repeating-linear-gradient(45deg, var(--holiday-stripe) 0 3px, transparent 3px 8px)",
                     }}
                   />
                 ) : null}
@@ -404,13 +419,10 @@ export function MonthView({
             Noci v tomto měsíci
           </div>
 
-          {/* Dnů je vždycky víc než nocí: poslední den pobytu se večer
-              předává, takže ta noc patří druhému rodiči. Bez tohohle
-              vysvětlení vypadají obě čísla jako chyba. */}
           <p className="text-xs text-ink-subtle">
-            Noc patří tomu, u koho dítě usíná. Zaškrtnutých dnů je proto víc —{" "}
-            {days(stats.daysA)} u {sideLabel(session.members, "a")},{" "}
-            {days(stats.daysB)} u {sideLabel(session.members, "b")}.
+            Každý zaškrtnutý den se počítá jako jedna noc. Přepůlená dlaždice je den
+            předání — vlevo nahoře ten, kdo má dítě přes den, vpravo dole ten, u koho
+            spí.
           </p>
 
           <SplitBar a={stats.nightsA} b={stats.nightsB} colorA={colorA} colorB={colorB} />

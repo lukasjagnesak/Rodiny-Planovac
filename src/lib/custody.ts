@@ -209,16 +209,16 @@ export function custodyStats(
     else unassigned += 1;
   }
 
-  let nightsA = 0;
-  let nightsB = 0;
-  for (let i = 0; i < days.length; i += 1) {
-    // Noc po dni D patří tomu, kdo má den D+1.
-    const dalsi = i + 1 < days.length ? days[i + 1] : nasledujiciDen;
-    // Bez následujícího dne poslední noc poctivě přiřadit nejde.
-    if (!dalsi) break;
-    if (dalsi.side === "a") nightsA += 1;
-    else if (dalsi.side === "b") nightsB += 1;
-  }
+  // Zaškrtnutý den = jedna noc u toho rodiče.
+  //
+  // Zkoušel jsem odvozovat noci posunem o den (noc po dni D patří tomu,
+  // kdo má den D+1), ale vycházelo z toho víc nocí než dnů, což je
+  // nesmysl. Rozdíl mezi dnem a nocí nejde z dat spolehlivě odvodit,
+  // dokud kalendář neumí zapsat, **kdy** se předává — dopoledne, nebo
+  // večer. Do té doby platí jednoduché a průhledné pravidlo, u kterého
+  // si každý ověří, že sedí.
+  const nightsA = daysA;
+  const nightsB = daysB;
 
   const prirazenychNoci = nightsA + nightsB;
   // Druhé procento se dopočítá z prvního. Kdyby se zaokrouhlovala obě
@@ -231,7 +231,7 @@ export function custodyStats(
     daysB,
     nightsA,
     nightsB,
-    nightsTotal: nasledujiciDen ? days.length : Math.max(days.length - 1, 0),
+    nightsTotal: nightsA + nightsB,
     unassigned,
     total: days.length,
     percentA,
