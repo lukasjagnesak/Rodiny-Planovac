@@ -10,7 +10,7 @@ import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field"
 import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE, PRICE_PERIODS } from "@/lib/constants";
 import { DOW_LONG, DOW_ORDER, toDateKey } from "@/lib/dates";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, hlaskaChyby } from "@/lib/format";
 import type { Activity, SessionContext } from "@/lib/types";
 
 const EMPTY = {
@@ -130,7 +130,7 @@ export function ActivityForm({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -181,7 +181,7 @@ export function ActivityForm({
     const { error } = await supabase.from("activities").delete().eq("id", activity.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     setConfirmDelete(false);

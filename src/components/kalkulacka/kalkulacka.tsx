@@ -16,7 +16,7 @@ import {
   zkontrolujVstup,
   type PlanVstup,
 } from "@/lib/kalkulacka";
-import { cn } from "@/lib/format";
+import { cn, hlaskaChyby } from "@/lib/format";
 import type { PatternKind } from "@/lib/types";
 import { BARVA_A, BARVA_B, Vysledek } from "./vysledek";
 
@@ -110,7 +110,7 @@ export function Kalkulacka() {
           emailRedirectTo: `${window.location.origin}/auth/callback?dal=${encodeURIComponent(cil)}`,
         },
       });
-      if (error) setChyba(`Rozpis je uložený, ale e-mail se nepodařilo poslat: ${error.message}`);
+      if (error) setChyba(`Rozpis je uložený, ale e-mail se nepodařilo poslat: ${hlaskaChyby(error)}`);
       else setPoslano(true);
     }
 

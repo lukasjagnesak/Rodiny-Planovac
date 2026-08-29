@@ -13,7 +13,7 @@ import { Alert, EmptyState, Segmented } from "@/components/ui/misc";
 import { ActivityForm } from "./activity-form";
 import { expandActivities, monthlyCost, type ActivityInstance } from "@/lib/activities";
 import { DOW_LONG, DOW_ORDER, formatDayShort, formatTime, toDateKey } from "@/lib/dates";
-import { cn, formatMoney, withAlpha } from "@/lib/format";
+import { cn, formatMoney, withAlpha, hlaskaChyby } from "@/lib/format";
 import { PRICE_PERIODS } from "@/lib/constants";
 import type { Activity, ActivityOccurrence, SessionContext } from "@/lib/types";
 
@@ -163,7 +163,7 @@ function TransportPlanner({
     );
 
     setPending(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else router.refresh();
   }
 
@@ -182,7 +182,7 @@ function TransportPlanner({
       { onConflict: "activity_id,day" },
     );
     setPending(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else router.refresh();
   }
 

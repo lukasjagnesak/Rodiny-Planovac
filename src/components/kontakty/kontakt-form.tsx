@@ -9,6 +9,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { KONTAKT_DRUHY, KONTAKT_DRUH_ORDER } from "@/lib/constants";
 import type { Kontakt, KontaktDruh, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 export function KontaktForm({
   open,
@@ -84,7 +85,7 @@ export function KontaktForm({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -99,7 +100,7 @@ export function KontaktForm({
     setBusy(false);
     setMazani(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();

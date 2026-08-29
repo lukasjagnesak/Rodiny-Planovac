@@ -13,6 +13,7 @@ import {
   Globe,
   LayoutDashboard,
   Contact,
+  CreditCard,
   FileText,
   MoreHorizontal,
   Settings,
@@ -41,6 +42,7 @@ const SECONDARY = [
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/doklady", label: "Doklady", Icon: FileText },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
+  { href: "/predplatne", label: "Předplatné", Icon: CreditCard },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];
 
@@ -251,10 +253,13 @@ export function AppShell({
   session,
   children,
   novychOznameni = 0,
+  pruh,
 }: {
   session: SessionContext;
   children: React.ReactNode;
   novychOznameni?: number;
+  /** Pruh nad obsahem — konec zkušebního období, neprošlá platba. */
+  pruh?: React.ReactNode;
 }) {
   const me = session.members.find((m) => m.userId === session.userId);
   const [vicOteviren, setVicOteviren] = React.useState(false);
@@ -309,6 +314,8 @@ export function AppShell({
             <Avatar name={me?.name ?? "Já"} color={me?.color} src={me?.avatarUrl} size={32} />
           </Link>
         </header>
+
+        {pruh}
 
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-4 sm:px-6 lg:pb-10 lg:pt-6">
           {children}

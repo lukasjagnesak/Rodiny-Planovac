@@ -20,6 +20,7 @@ import { ConfirmSheet } from "@/components/ui/sheet";
 import { DOKLAD_DRUHY, DOKLAD_DRUH_ORDER } from "@/lib/constants";
 import { formatDay } from "@/lib/dates";
 import type { DokladDruh, Dokument, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 export function DokumentyScreen({
   session,
@@ -116,7 +117,7 @@ export function DokumentyScreen({
 
     setBusy(false);
     setMazany(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else router.refresh();
   }
 

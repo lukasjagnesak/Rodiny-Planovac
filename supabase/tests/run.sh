@@ -27,7 +27,10 @@ for migration in supabase/migrations/*.sql; do
 done
 
 echo "▶ Testy chování"
-psql -U "${PGUSER:-postgres}" -d "$DB" -f supabase/tests/01_rls_test.sql
+for test in supabase/tests/0[1-9]_*_test.sql; do
+  echo "▶ $(basename "$test")"
+  psql -U "${PGUSER:-postgres}" -d "$DB" -f "$test"
+done
 
 echo
 echo "✓ Migrace i zabezpečení se chovají podle očekávání"

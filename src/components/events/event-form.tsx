@@ -11,6 +11,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { EVENT_KINDS, EVENT_KIND_ORDER, REMINDER_CHOICES } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
 import type { EventKind, FamilyEvent, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 export function EventForm({
   open,
@@ -112,7 +113,7 @@ export function EventForm({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -126,7 +127,7 @@ export function EventForm({
     const { error } = await supabase.from("events").delete().eq("id", event.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     setConfirmDelete(false);

@@ -17,7 +17,7 @@ import { Badge, Dot } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Alert, EmptyState, Segmented, TextSOdkazy } from "@/components/ui/misc";
 import { formatDayShort, formatDateTime, relativeDayLabel, toDateKey } from "@/lib/dates";
-import { cn } from "@/lib/format";
+import { cn, hlaskaChyby } from "@/lib/format";
 import type { EdupageDruh, SessionContext } from "@/lib/types";
 
 export interface EdupageRow {
@@ -107,7 +107,7 @@ export function HomeworkScreen({
       .update({ hotovo: !row.hotovo })
       .eq("id", row.id);
     setBusy(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else router.refresh();
   }
 
@@ -119,7 +119,7 @@ export function HomeworkScreen({
       .update({ skryto: true })
       .eq("id", row.id);
     setBusy(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else router.refresh();
   }
 
@@ -147,7 +147,7 @@ export function HomeworkScreen({
 
     if (error) {
       setBusy(null);
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
 

@@ -11,6 +11,7 @@ import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
 import { OKRESY } from "@/lib/data/jarni-prazdniny";
 import type { Child, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 export function ChildForm({
   open,
@@ -82,7 +83,7 @@ export function ChildForm({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -96,7 +97,7 @@ export function ChildForm({
     const { error } = await supabase.from("children").delete().eq("id", child.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       setConfirmDelete(false);
       return;
     }

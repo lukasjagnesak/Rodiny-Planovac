@@ -11,6 +11,7 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { Alert, ColorPicker, Segmented, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
 import type { GoogleAccount, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 const CURRENCIES = ["CZK", "EUR", "USD", "PLN"];
 
@@ -44,7 +45,7 @@ export function SettingsForms({
       .eq("id", session.userId);
 
     setSaving(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else {
       setMessage("Profil uložen.");
       router.refresh();
@@ -63,7 +64,7 @@ export function SettingsForms({
       .eq("id", session.family.id);
 
     setSaving(null);
-    if (error) setError(error.message);
+    if (error) setError(hlaskaChyby(error));
     else {
       setMessage("Nastavení rodiny uloženo.");
       router.refresh();

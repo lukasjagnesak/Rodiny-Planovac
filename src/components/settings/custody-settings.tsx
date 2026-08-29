@@ -20,6 +20,7 @@ import {
 } from "@/lib/custody";
 import { WEEK_OPTS, formatDay, toDateKey } from "@/lib/dates";
 import { sideColor, sideLabel } from "@/lib/members";
+import { hlaskaChyby } from "@/lib/format";
 import type {
   CustodyOverride,
   CustodyPattern,
@@ -303,7 +304,7 @@ function PatternForm({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -317,7 +318,7 @@ function PatternForm({
     const { error } = await supabase.from("custody_patterns").delete().eq("id", pattern.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       setConfirmDelete(false);
       return;
     }

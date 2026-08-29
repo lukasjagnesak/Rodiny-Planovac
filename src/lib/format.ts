@@ -63,3 +63,24 @@ export function withAlpha(hex: string, alpha: number): string {
     .padStart(2, "0");
   return `#${clean}${a}`;
 }
+
+/**
+ * Hláška, kterou má smysl ukázat rodiči.
+ *
+ * Supabase vrací chyby anglicky a u RLS navíc mluví o „row-level security
+ * policy", což nikomu nic neřekne. Nejčastější příčina zamítnutého zápisu
+ * je přitom zamčené předplatné — tak ať to tak i vypadá.
+ */
+export function hlaskaChyby(chyba: { message?: string; code?: string } | null | undefined): string {
+  if (!chyba) return "Něco se nepovedlo. Zkus to prosím znovu.";
+
+  const zprava = chyba.message ?? "";
+
+  if (chyba.code === "42501" || /row-level security/i.test(zprava)) {
+    return "Zápis je zamčený — vypršelo předplatné rodiny. Kalendář i výdaje zůstávají vidět, zapisovat půjde hned po obnovení.";
+  }
+  if (chyba.code === "23505") return "Tenhle záznam už existuje.";
+  if (/Failed to fetch|NetworkError/i.test(zprava)) return "Nejsme online. Zkus to prosím znovu.";
+
+  return zprava || "Něco se nepovedlo. Zkus to prosím znovu.";
+}

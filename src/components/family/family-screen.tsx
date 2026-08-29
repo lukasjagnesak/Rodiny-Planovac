@@ -25,6 +25,7 @@ import { ChildForm } from "./child-form";
 import { COLOR_PALETTE, ROLE_HINTS, ROLE_LABELS } from "@/lib/constants";
 import { formatDay } from "@/lib/dates";
 import { sideLabel } from "@/lib/members";
+import { hlaskaChyby } from "@/lib/format";
 import type {
   Child,
   CustodySide,
@@ -328,7 +329,7 @@ function InviteSheet({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
 
@@ -463,7 +464,7 @@ function MemberSheet({
 
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();
@@ -476,7 +477,7 @@ function MemberSheet({
     const { error } = await supabase.from("family_members").delete().eq("id", member.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       setConfirmRemove(false);
       return;
     }

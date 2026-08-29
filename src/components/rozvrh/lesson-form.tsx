@@ -10,6 +10,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { PARITA_LABELS, ZVONENI, vychoziCasy } from "@/lib/rozvrh";
 import { DOW_LONG } from "@/lib/dates";
 import type { RozvrhHodina, RozvrhParita, SessionContext } from "@/lib/types";
+import { hlaskaChyby } from "@/lib/format";
 
 const PARITY: RozvrhParita[] = ["vzdy", "sudy", "lichy"];
 
@@ -118,7 +119,7 @@ export function LessonForm({
       setError(
         error.code === "23505"
           ? "Tuhle hodinu už v ten den máš. Uprav ji, nebo zvol jiné pořadí."
-          : error.message,
+          : hlaskaChyby(error),
       );
       return;
     }
@@ -133,7 +134,7 @@ export function LessonForm({
     const { error } = await supabase.from("rozvrh_hodiny").delete().eq("id", hodina.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     onClose();

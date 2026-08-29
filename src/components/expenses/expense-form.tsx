@@ -11,7 +11,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { ReceiptImage } from "./receipt-image";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_ORDER } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, hlaskaChyby } from "@/lib/format";
 import type { Expense, ExpenseCategory, Receipt, SessionContext } from "@/lib/types";
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
@@ -186,7 +186,7 @@ export function ExpenseForm({
     const { error } = await supabase.from("expenses").delete().eq("id", expense.id);
     setBusy(false);
     if (error) {
-      setError(error.message);
+      setError(hlaskaChyby(error));
       return;
     }
     setConfirmDelete(false);
