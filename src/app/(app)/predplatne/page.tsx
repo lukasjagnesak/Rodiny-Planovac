@@ -1,21 +1,14 @@
 import type { Metadata } from "next";
-import { CalendarCheck, Check, Users, Wallet } from "lucide-react";
+import { Check } from "lucide-react";
 import { requireSession } from "@/lib/session";
 import { nactiPredplatne } from "@/lib/predplatne";
 import { stripeJeNastaveny } from "@/lib/stripe";
-import { tarifPodleId, ZKUSEBNI_DNI } from "@/lib/tarify";
+import { CO_JE_V_CENE, tarifPodleId, ZKUSEBNI_DNI } from "@/lib/tarify";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/misc";
 import { SpravaPredplatneho, VolbaTarifu } from "@/components/predplatne/volba-tarifu";
 
 export const metadata: Metadata = { title: "Předplatné" };
-
-const CO_JE_UVNITR = [
-  { Icon: CalendarCheck, text: "Kalendář střídavé péče s nocemi, prázdninami a výjimkami" },
-  { Icon: Users, text: "Druhý rodič, prarodiče i chůva v ceně — platí rodina, ne hlava" },
-  { Icon: Wallet, text: "Výdaje, účtenky a vyrovnání mezi rodiči" },
-  { Icon: Check, text: "Kroužky, rozvrh, EduPage a připomínky" },
-];
 
 export default async function PredplatnePage({
   searchParams,
@@ -107,10 +100,13 @@ export default async function PredplatnePage({
       <Card>
         <CardHeader title="Co je v ceně" />
         <CardBody className="space-y-2.5 pt-3">
-          {CO_JE_UVNITR.map(({ Icon, text }) => (
-            <div key={text} className="flex items-start gap-2.5 text-sm text-ink-muted">
-              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-              <span>{text}</span>
+          {CO_JE_V_CENE.map(({ nazev, popis }) => (
+            <div key={nazev} className="flex items-start gap-2.5 text-sm">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+              <span>
+                <span className="font-medium text-ink">{nazev}</span>{" "}
+                <span className="text-ink-muted">— {popis}</span>
+              </span>
             </div>
           ))}
         </CardBody>

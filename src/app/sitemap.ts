@@ -16,6 +16,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/vzor-dohody-o-stridave-peci/text", priorita: 0.6, frekvence: "monthly" },
   { cesta: "/kalkulacka-vyzivneho", priorita: 0.9, frekvence: "monthly" },
   { cesta: "/kalkulacka", priorita: 0.8, frekvence: "monthly" },
+  { cesta: "/cenik", priorita: 0.8, frekvence: "monthly" },
   { cesta: "/checklist-prvnich-30-dni", priorita: 0.6, frekvence: "yearly" },
   { cesta: "/pro-advokaty", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-mediatory", priorita: 0.5, frekvence: "yearly" },

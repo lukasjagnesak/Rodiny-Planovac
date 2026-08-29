@@ -23,6 +23,53 @@ export interface Cenik {
 
 export const ZKUSEBNI_DNI = 30;
 
+/**
+ * Co zkušební období obsahuje.
+ *
+ * Odpověď je „všechno" a je to schválně: okleštěná verze zdarma znamená,
+ * že rodič měsíc zkouší něco jiného, než si pak koupí. Kartu po nikom
+ * nechceme — účet bez karty se nedá omylem strhnout a je to ten nejmenší
+ * závazek, jaký umíme nabídnout člověku, který zrovna řeší rozvod.
+ */
+export const ZKUSEBNI_SLIB = {
+  dni: ZKUSEBNI_DNI,
+  vetaKratka: `${ZKUSEBNI_DNI} dní zdarma, všechny funkce. Bez karty.`,
+  body: [
+    "Všechny funkce, žádná omezená verze.",
+    "Bez zadání karty — nic se samo nestrhne.",
+    "Druhý rodič se může připojit hned a taky nic neplatí.",
+    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné, zamkne se jen zapisování.",
+  ],
+} as const;
+
+/** Co je v ceně. Jeden seznam pro web i pro stránku předplatného. */
+export const CO_JE_V_CENE = [
+  {
+    nazev: "Kalendář střídavé péče",
+    popis: "Vzory střídání, výjimky, prázdniny a noci předání — s počtem nocí u každého rodiče.",
+  },
+  {
+    nazev: "Celá rodina v ceně",
+    popis: "Druhý rodič, prarodiče i chůva. Platí jedna domácnost, ne každý účet zvlášť.",
+  },
+  {
+    nazev: "Výdaje a účtenky",
+    popis: "Kdo co zaplatil, jak se to dělí a kolik z toho plyne vyrovnání. Účtenku stačí vyfotit.",
+  },
+  {
+    nazev: "Kroužky a odvozy",
+    popis: "Kdo veze tam a kdo zpátky, u každého termínu jménem. Cenu lze rozdělit mezi rodiče.",
+  },
+  {
+    nazev: "Škola",
+    popis: "Rozvrh každého dítěte, úkoly a zprávy z EduPage, které se samy stahují.",
+  },
+  {
+    nazev: "Připomínky",
+    popis: "Den předem přijde, co se chystá — do Telegramu i do Google kalendáře.",
+  },
+] as const;
+
 export const CENIK: Cenik[] = [
   {
     id: "mesicni",

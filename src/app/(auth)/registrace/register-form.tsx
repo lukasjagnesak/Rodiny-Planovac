@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
+import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { prettyError } from "../prihlaseni/login-form";
 
 export function RegisterForm() {
@@ -131,6 +132,16 @@ export function RegisterForm() {
       <Button type="submit" size="lg" className="w-full" disabled={busy}>
         {busy ? <Spinner /> : "Vytvořit účet"}
       </Button>
+
+      {/* Cena patří sem, ne až za paywall. Kdo ji uvidí až po měsíci
+          práce s kalendářem, právem se cítí podvedený. */}
+      <p className="text-center text-xs text-ink-subtle">
+        {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez zadání karty. Potom{" "}
+        <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
+          {korun(CENIK[0].cena)} měsíčně
+        </Link>{" "}
+        za celou rodinu.
+      </p>
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
         Už máš účet?{" "}

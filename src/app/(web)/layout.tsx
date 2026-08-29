@@ -17,6 +17,7 @@ const NAVIGACE = [
   { href: "/kalkulacka-vyzivneho", popisek: "Výživné" },
   { href: "/kalkulacka", popisek: "Kalkulačka péče" },
   { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody" },
+  { href: "/cenik", popisek: "Ceník" },
 ];
 
 const PATICKA = [
@@ -33,6 +34,7 @@ const PATICKA = [
     odkazy: [
       { href: "/kalkulacka-vyzivneho", popisek: "Kalkulačka výživného" },
       { href: "/kalkulacka", popisek: "Kalkulačka střídavé péče" },
+      { href: "/cenik", popisek: "Ceník" },
     ],
   },
   {

@@ -14,6 +14,7 @@ const PUBLIC_PATHS = [
   "/vzor-dohody-o-stridave-peci",
   "/kalkulacka-vyzivneho",
   "/kalkulacka",
+  "/cenik",
   "/checklist-prvnich-30-dni",
   "/pro-advokaty",
   "/pro-mediatory",

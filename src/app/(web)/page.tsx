@@ -16,6 +16,7 @@ import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { UkazkyAplikace } from "@/components/web/ukazky";
 import { POPIS, ZNACKA } from "@/lib/brand";
+import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 
 export const metadata: Metadata = {
   title: {
@@ -82,6 +83,12 @@ const FUNKCE = [
 ];
 
 const OTAZKY = [
+  {
+    otazka: "Kolik to stojí?",
+    odpoved:
+      "Prvních 30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo " +
+      "1 990 Kč ročně za celou rodinu — ne za člověka. Druhý rodič, prarodiče i chůva jsou v ceně.",
+  },
   {
     otazka: "Musí Klidoo používat oba rodiče?",
     odpoved:
@@ -160,9 +167,17 @@ export default async function Domu() {
               </Link>
             </div>
 
-            <p className="mt-4 flex items-center gap-2 text-sm text-ink-subtle">
-              <Users size={16} aria-hidden />
-              Druhý rodič má přístup vždycky zdarma. Platí jedna domácnost.
+            {/* Věta musí zůstat jedním odstavcem: `flex` by z každého kusu
+                textu udělal vlastní sloupec a odkaz by se zalomil doprostřed. */}
+            <p className="mt-4 flex items-start gap-2 text-sm text-ink-subtle">
+              <Users size={16} className="mt-0.5 shrink-0" aria-hidden />
+              <span>
+                {ZKUSEBNI_SLIB.dni} dní zdarma se vším všudy, bez karty. Potom{" "}
+                <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
+                  {korun(CENIK[0].cena)} měsíčně
+                </Link>{" "}
+                za celou rodinu — druhý rodič neplatí nic.
+              </span>
             </p>
           </div>
 
@@ -433,6 +448,13 @@ export default async function Domu() {
             >
               Založit rodinu zdarma
             </Link>
+            <p className="mt-3 text-sm text-ink-subtle">
+              {ZKUSEBNI_SLIB.vetaKratka} Potom {korun(CENIK[0].cena)} měsíčně za celou rodinu —{" "}
+              <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
+                ceník
+              </Link>
+              .
+            </p>
           </div>
 
           <DalsiCteni
@@ -464,6 +486,13 @@ export default async function Domu() {
               operatingSystem: "Web",
               inLanguage: "cs",
               description: POPIS,
+              offers: CENIK.map((tarif) => ({
+                "@type": "Offer",
+                name: tarif.nazev,
+                price: tarif.cena,
+                priceCurrency: "CZK",
+                url: "https://klidoo.cz/cenik",
+              })),
             },
             {
               "@context": "https://schema.org",
