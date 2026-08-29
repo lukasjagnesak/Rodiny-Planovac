@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
+import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 import { prettyError } from "../prihlaseni/login-form";
 
 export function RegisterForm() {
@@ -84,6 +85,14 @@ export function RegisterForm() {
           Registruješ se na základě pozvánky. Po dokončení tě rovnou přidáme do rodiny.
         </Alert>
       ) : null}
+
+      {/* Přes Google odpadá heslo i potvrzovací e-mail — u pozvánky, kde
+          druhý rodič často nechce nic vyplňovat, je to zásadní rozdíl. */}
+      <PrihlaseniGoogle
+        popisek="Zaregistrovat se přes Google"
+        dal={inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte"}
+      />
+      <Nebo />
 
       <Field label="Jméno" hint="uvidí ho ostatní členové">
         <Input

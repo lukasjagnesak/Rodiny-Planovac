@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
+import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 
 export function LoginForm() {
   const router = useRouter();
@@ -71,6 +72,11 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="card space-y-4 p-5 sm:p-6">
+      {/* Nahoře schválně: je to nejrychlejší cesta dovnitř a většina lidí
+          si stejně nepamatuje, jestli si zakládala heslo. */}
+      <PrihlaseniGoogle popisek="Přihlásit se přes Google" dal={next} />
+      <Nebo />
+
       <Field label="E-mail">
         <Input
           type="email"
