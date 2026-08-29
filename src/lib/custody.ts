@@ -15,6 +15,16 @@ export interface CustodyDay {
   overrideReason: string | null;
   /** Tímto dnem začíná pobyt u dané strany (den předání). */
   isHandover: boolean;
+  /**
+   * U koho dítě tu noc spí.
+   *
+   * Uvnitř pobytu je to táž strana jako přes den. Na dni předání záleží
+   * na tom, kdy se předává: odpoledne znamená, že dítě spí už
+   * u přebírajícího, ráno následujícího dne že ještě u odcházejícího.
+   */
+  nightSide: CustodySide | null;
+  /** Den předání, kdy se noc liší ode dne — kalendář ho kreslí přepůlený. */
+  isNightSplit: boolean;
 }
 
 function otherSide(side: CustodySide): CustodySide {
@@ -137,13 +147,10 @@ export function resolveCustody({ days, patterns, overrides, childId }: ResolveAr
     const key = toDateKey(date);
     const override = overrideMap.get(key);
 
-    let side: CustodySide | null;
-    if (override) {
-      side = override.side;
-    } else {
-      const pattern = pickPattern(patterns, key, childId);
-      side = pattern ? sideFromPattern(pattern, date) : null;
-    }
+    // Výjimka může měnit jen noc — pak `side` zůstane na vzoru.
+    const pattern = pickPattern(patterns, key, childId);
+    const zeVzoru = pattern ? sideFromPattern(pattern, date) : null;
+    const side: CustodySide | null = override?.side ?? zeVzoru;
 
     result.push({
       key,
@@ -152,9 +159,40 @@ export function resolveCustody({ days, patterns, overrides, childId }: ResolveAr
       isOverride: Boolean(override),
       overrideReason: override?.reason ?? null,
       isHandover: side !== null && previousSide !== null && side !== previousSide,
+      // Doplní se v druhém průchodu — potřebuje znát následující den.
+      nightSide: side,
+      isNightSplit: false,
     });
 
     previousSide = side;
+  }
+
+  // ── Noci ────────────────────────────────────────────────────────
+  //
+  // Až teď, protože noc na dni předání se řídí tím, kdo má den další.
+  for (let i = 0; i < result.length; i += 1) {
+    const dnesni = result[i];
+    const zitrejsi = result[i + 1];
+
+    if (dnesni.side === null) {
+      dnesni.nightSide = null;
+      continue;
+    }
+
+    // Poslední den v rozsahu nemá s čím porovnávat — bereme ho jako
+    // pokračování pobytu, ne jako předání.
+    if (!zitrejsi || zitrejsi.side === null || zitrejsi.side === dnesni.side) {
+      dnesni.nightSide = dnesni.side;
+      continue;
+    }
+
+    const override = overrideMap.get(dnesni.key);
+    const pattern = pickPattern(patterns, dnesni.key, childId);
+    // Ruční výjimka na den má přednost před pravidlem ze vzoru.
+    dnesni.nightSide =
+      override?.nocni_strana ??
+      (pattern?.predavka_vecer === false ? dnesni.side : zitrejsi.side);
+    dnesni.isNightSplit = dnesni.nightSide !== dnesni.side;
   }
 
   return result;
@@ -190,15 +228,7 @@ export interface CustodyStats {
  * Rozdíl není kosmetický: u střídavé péče se počítají noci a den navíc
  * v součtu posune poměr, ze kterého se odvíjí výživné.
  */
-export function custodyStats(
-  days: CustodyDay[],
-  /**
-   * Den následující po rozsahu. Slouží jen k přiřazení poslední noci —
-   * do počtu dnů se nezapočítá. Bez něj se na každém přelomu měsíce
-   * jedna noc ztratí a rok vyjde o dvanáct nocí kratší.
-   */
-  nasledujiciDen?: CustodyDay | null,
-): CustodyStats {
+export function custodyStats(days: CustodyDay[]): CustodyStats {
   let daysA = 0;
   let daysB = 0;
   let unassigned = 0;
@@ -209,16 +239,16 @@ export function custodyStats(
     else unassigned += 1;
   }
 
-  // Zaškrtnutý den = jedna noc u toho rodiče.
-  //
-  // Zkoušel jsem odvozovat noci posunem o den (noc po dni D patří tomu,
-  // kdo má den D+1), ale vycházelo z toho víc nocí než dnů, což je
-  // nesmysl. Rozdíl mezi dnem a nocí nejde z dat spolehlivě odvodit,
-  // dokud kalendář neumí zapsat, **kdy** se předává — dopoledne, nebo
-  // večer. Do té doby platí jednoduché a průhledné pravidlo, u kterého
-  // si každý ověří, že sedí.
-  const nightsA = daysA;
-  const nightsB = daysB;
+  // Noc má každý den právě jednu a `resolveCustody` už ví, komu patří —
+  // uvnitř pobytu témuž rodiči jako den, na dni předání podle toho, kdy
+  // se předává. Součet nocí proto vždycky sedí na počet přiřazených dnů
+  // a nikdy nevyjde víc nocí než dnů.
+  let nightsA = 0;
+  let nightsB = 0;
+  for (const d of days) {
+    if (d.nightSide === "a") nightsA += 1;
+    else if (d.nightSide === "b") nightsB += 1;
+  }
 
   const prirazenychNoci = nightsA + nightsB;
   // Druhé procento se dopočítá z prvního. Kdyby se zaokrouhlovala obě

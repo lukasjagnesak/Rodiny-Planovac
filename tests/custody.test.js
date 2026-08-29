@@ -1,15 +1,18 @@
 /**
  * Dny a noci v kalendáři.
  *
- * Zaškrtnutý den se počítá jako jedna noc. Zkoušel jsem noci odvozovat
- * posunem o den, ale vycházelo z toho víc nocí než dnů — což je nesmysl.
- * Rozdíl mezi dnem a nocí nejde z dat spolehlivě odvodit, dokud kalendář
- * neumí zapsat, **kdy** se předává. Tenhle test hlídá hlavně to, že se
- * takové číslo nemůže vrátit.
+ * Noc patří tomu, u koho dítě usíná. Uvnitř pobytu je to táž strana jako
+ * přes den, na dni předání záleží na tom, kdy se předává: odpoledne
+ * znamená, že dítě spí už u přebírajícího, ráno následujícího dne že
+ * ještě u odcházejícího. Tentýž rozpis dnů proto může být jiný počet
+ * nocí — a je to číslo, ze kterého se odvíjí i výživné.
+ *
+ * Testuje se přes `resolveCustody`, ne přes ručně poskládaná pole:
+ * pravidlo pro noc bydlí tam a duplikovat ho v testu by nic neověřilo.
  *
  * Spouští se přes `npm run test:custody`.
  */
-const { custodyStats } = require("../.test-build/custody.js");
+const { resolveCustody, custodyStats } = require("../.test-build/custody.js");
 
 let selhalo = 0;
 function ok(popis, podminka) {
@@ -17,68 +20,135 @@ function ok(popis, podminka) {
   if (!podminka) selhalo++;
 }
 
-/** Ze zkratky „aaabbb“ udělá dny, jak je čeká custodyStats. */
-const dny = (vzor) =>
-  [...vzor].map((z, i) => ({
-    key: `2026-03-${String(i + 1).padStart(2, "0")}`,
-    side: z === "-" ? null : z,
-    isHoliday: false,
-  }));
+/** Vzor „vlastní rozpis dnů“ — sedm znaků od pondělí. */
+const vzor = (weekly_map, zmeny = {}) => ({
+  id: "p1",
+  family_id: "f1",
+  child_id: null,
+  kind: "custom_weekly",
+  starts_on: "2020-01-01",
+  ends_on: null,
+  anchor_date: "2026-01-05",
+  anchor_side: "a",
+  weekly_map,
+  fixed_side: null,
+  handover_dow: 1,
+  handover_time: "18:00",
+  predavka_vecer: true,
+  note: null,
+  ...zmeny,
+});
 
-console.log("── dny a noci ──");
+/** Pondělí 7. 9. 2026 a dál. */
+function tyden(pocet = 7, od = "2026-09-07") {
+  const start = new Date(`${od}T12:00:00Z`);
+  return Array.from({ length: pocet }, (_, i) => {
+    const d = new Date(start);
+    d.setUTCDate(start.getUTCDate() + i);
+    return d;
+  });
+}
+
+const rozvrhni = (weekly_map, { dnu = 7, vzorZmeny = {}, overrides = [] } = {}) =>
+  resolveCustody({
+    days: tyden(dnu),
+    patterns: [vzor(weekly_map, vzorZmeny)],
+    overrides,
+    childId: null,
+  });
+
+console.log("── uvnitř pobytu ──");
 {
-  // Zaškrtnutý den = jedna noc. Rozdíl mezi dnem a nocí nejde odvodit,
-  // dokud kalendář neumí zapsat, kdy se předává — a číslo, kterému se
-  // nedá věřit, je horší než jednoduché pravidlo.
-  const s = custodyStats(dny("aaaabbb"));
-  ok("čtyři dny u A", s.daysA === 4);
-  ok("noci se rovnají dnům", s.nightsA === s.daysA && s.nightsB === s.daysB);
+  const dny = rozvrhni("aaaaaaa");
+  ok("celý týden u jednoho rodiče", dny.every((d) => d.side === "a"));
+  ok("noc patří témuž rodiči", dny.every((d) => d.nightSide === "a"));
+  ok("žádný den se nepůlí", dny.every((d) => !d.isNightSplit));
+}
+
+console.log("── předávka přes den (výchozí) ──");
+{
+  // Čtvrtek a pátek u A, zbytek u B.
+  const dny = rozvrhni("bbbaabb");
+  const s = custodyStats(dny);
+  ok("dva zaškrtnuté dny u A", s.daysA === 2);
+  // Předává se přes den, takže dítě přijíždí už ve středu večer a ve
+  // čtvrtek u A spí. Odjíždí v pátek přes den, pátek už spí u B.
+  ok("středa se kreslí přepůlená (příjezd)", dny[2].isNightSplit && dny[2].nightSide === "a");
+  ok("pátek se kreslí přepůlený (odjezd)", dny[4].isNightSplit && dny[4].nightSide === "b");
+  ok("čtvrtek uprostřed pobytu se nepůlí", !dny[3].isNightSplit);
+  ok("co se u jedné předávky získá, u druhé ztratí", s.nightsA === s.daysA);
   ok("nikdy víc nocí než dnů", s.nightsA <= s.daysA && s.nightsB <= s.daysB);
+  ok("každý den má právě jednu noc", s.nightsA + s.nightsB === s.daysA + s.daysB);
+}
+
+console.log("── krátký pobyt: dva dny, jedna noc ──");
+{
+  // Dítě přijíždí až ve čtvrtek odpoledne a v pátek odpoledne odjíždí.
+  // Vzor to sám neuhodne — středeční noc se přepíše ručně na B.
+  const dny = rozvrhni("bbbaabb", {
+    overrides: [
+      {
+        id: "o1",
+        family_id: "f1",
+        child_id: null,
+        day: "2026-09-09",
+        side: null,
+        nocni_strana: "b",
+        reason: "přijíždí až ve čtvrtek",
+      },
+    ],
+  });
+  const s = custodyStats(dny);
+  ok("pořád dva zaškrtnuté dny", s.daysA === 2);
+  ok("ale jen jedna noc", s.nightsA === 1);
+  ok("součet nocí zůstal celý", s.nightsA + s.nightsB === s.total);
+}
+
+console.log("── předávka až ráno ──");
+{
+  const dny = rozvrhni("bbbaabb", { vzorZmeny: { predavka_vecer: false } });
+  const s = custodyStats(dny);
+  ok("dva dny jsou dvě noci", s.daysA === 2 && s.nightsA === 2);
+  ok("nic se nepůlí", dny.every((d) => !d.isNightSplit));
+}
+
+console.log("── ruční výjimka na den ──");
+{
+  // Vzor říká, že v pátek dítě spí u B. Přepíšeme to na A.
+  const dny = rozvrhni("bbbaabb", {
+    overrides: [
+      {
+        id: "o1",
+        family_id: "f1",
+        child_id: null,
+        day: "2026-09-11",
+        side: null,
+        nocni_strana: "a",
+        reason: null,
+      },
+    ],
+  });
+  const s = custodyStats(dny);
+  ok("výjimka přebije pravidlo ze vzoru", dny[4].nightSide === "a");
+  ok("a promítne se do součtu", s.nightsA === 3);
+  ok("výjimka jen na noc nechá den beze změny", dny[4].side === "a");
 }
 
 console.log("── střídání po týdnu ──");
 {
-  const s = custodyStats(dny("aaaaaaabbbbbbb"));
-  ok("sedm dnů u každého", s.daysA === 7 && s.daysB === 7);
-  ok("a sedm nocí u každého", s.nightsA === 7 && s.nightsB === 7);
-  ok("součet nocí sedí", s.nightsA + s.nightsB === s.nightsTotal);
+  const s = custodyStats(rozvrhni("aaaaaaa", { dnu: 14 }));
+  ok("dva celé týdny u jednoho", s.daysA === 14 && s.nightsA === 14);
 }
 
-console.log("── celky ──");
+console.log("── celky a krajní případy ──");
 {
-  const s = custodyStats(dny("aaabbbaaa"));
-  ok("dnů je tolik, kolik jich přišlo", s.daysA + s.daysB + s.unassigned === s.total);
+  const s = custodyStats(rozvrhni("bbbaabb"));
   ok("procenta se dopočítávají do sta", s.percentA + s.percentB === 100);
-}
-
-console.log("── nepřiřazené dny ──");
-{
-  const s = custodyStats(dny("aa--bb"));
-  ok("prázdné dny se počítají zvlášť", s.unassigned === 2);
-  ok("prázdné dny se nepočítají do nocí", s.nightsA + s.nightsB === 4);
-}
-
-console.log("── krajní případy ──");
-{
   ok("prázdný měsíc nespadne", custodyStats([]).nightsTotal === 0);
-  const jeden = custodyStats(dny("a"));
+}
+{
+  const jeden = custodyStats(rozvrhni("aaaaaaa", { dnu: 1 }));
   ok("jediný den je jedna noc", jeden.daysA === 1 && jeden.nightsA === 1);
-}
-
-console.log("── následující den nic nerozhodí ──");
-{
-  const mesic = dny("aaabbb");
-  const bez = custodyStats(mesic);
-  const s = custodyStats(mesic, { key: "2026-04-01", side: "b", isHoliday: false });
-  ok("dny zůstanou stejné", s.daysA === bez.daysA && s.daysB === bez.daysB);
-  ok("noci zůstanou stejné", s.nightsA === bez.nightsA && s.nightsB === bez.nightsB);
-}
-
-console.log("── celý rok se srovná ──");
-{
-  // Padesát dva střídání po týdnu: rozdíl smí být nanejvýš jedna noc.
-  const s = custodyStats(dny("aaaaaaabbbbbbb".repeat(26)));
-  ok("po roce vyjde rovnoměrné střídání nastejno", s.nightsA === s.nightsB);
 }
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);

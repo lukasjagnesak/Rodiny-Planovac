@@ -52,6 +52,9 @@ export function vzorZPlanu(vstup: PlanVstup): CustodyPattern {
     fixed_side: vstup.kind === "fixed_parent" ? vstup.anchorSide : null,
     handover_dow: 1,
     handover_time: "18:00",
+    // Veřejná kalkulačka počítá noci stejně jako aplikace: na dni předání
+    // spí dítě u přebírajícího rodiče.
+    predavka_vecer: true,
     note: null,
   };
 }
@@ -95,15 +98,15 @@ export function spocitejPlan(vstup: PlanVstup, dnes = new Date()): VysledekPlanu
       start: zacatek,
       end: addDays(endOfMonth(zacatek), 1),
     });
+    // O den navíc, aby `resolveCustody` poznalo předávku na konci měsíce;
+    // do statistiky pak jde jen samotný měsíc.
     const vyreseno = resolveCustody({
       days: dny,
       patterns: [pattern],
       overrides: [],
       childId: null,
     });
-    // Poslední prvek je první den dalšího měsíce — patří mu poslední noc,
-    // ale ne den. Proto jde do statistiky zvlášť.
-    const statistika = custodyStats(vyreseno.slice(0, -1), vyreseno[vyreseno.length - 1]);
+    const statistika = custodyStats(vyreseno.slice(0, -1));
 
     mesice.push({
       klic: toDateKey(zacatek).slice(0, 7),

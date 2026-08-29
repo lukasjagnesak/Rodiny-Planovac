@@ -103,15 +103,7 @@ export function MonthView({
     [inMonth, custodyByDay],
   );
 
-  // Poslední noc v měsíci patří tomu, kdo má první den toho dalšího.
-  // Mřížka kalendáře ho zná, protože dokresluje okolní týdny.
-  const prvniDalsihoMesice = React.useMemo(() => {
-    const posledni = inMonth[inMonth.length - 1];
-    if (!posledni) return null;
-    return custodyByDay.get(toDateKey(addDays(posledni, 1)))?.day ?? null;
-  }, [inMonth, custodyByDay]);
-
-  const stats = custodyStats(monthCustody, prvniDalsihoMesice);
+  const stats = custodyStats(monthCustody);
 
   const visibleActivities = React.useMemo(
     () =>
@@ -273,11 +265,9 @@ export function MonthView({
              * Je to přesně to pravidlo, podle kterého se počítají noci —
              * jinak nejde poznat, proč jsou dva zaškrtnuté dny jedna noc.
              */
-            const nocniStrana = custodyByDay.get(toDateKey(addDays(date, 1)))?.day.side ?? null;
-            const predavka =
-              !mixed && side !== null && nocniStrana !== null && nocniStrana !== side;
+            const predavka = !mixed && (entry?.day.isNightSplit ?? false);
             const barvaDne = side === "a" ? bgA : bgB;
-            const barvaNoci = nocniStrana === "a" ? bgA : bgB;
+            const barvaNoci = entry?.day.nightSide === "a" ? bgA : bgB;
 
             return (
               <button
@@ -420,9 +410,10 @@ export function MonthView({
           </div>
 
           <p className="text-xs text-ink-subtle">
-            Každý zaškrtnutý den se počítá jako jedna noc. Přepůlená dlaždice je den
-            předání — vlevo nahoře ten, kdo má dítě přes den, vpravo dole ten, u koho
-            spí.
+            Přepůlená dlaždice je den předání — vlevo nahoře ten, kdo má dítě přes den,
+            vpravo dole ten, u koho spí. Klikni na den a noc přepneš.{" "}
+            {days(stats.daysA)} u {sideLabel(session.members, "a")},{" "}
+            {days(stats.daysB)} u {sideLabel(session.members, "b")}.
           </p>
 
           <SplitBar a={stats.nightsA} b={stats.nightsB} colorA={colorA} colorB={colorB} />

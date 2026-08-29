@@ -117,6 +117,11 @@ export interface CustodyPattern {
   handover_dow: number;
   handover_time: string;
   note: string | null;
+  /**
+   * true = na dni předání dítě spí u přebírajícího rodiče (předává se
+   * přes den). false = přespí ještě u odcházejícího a odjíždí ráno.
+   */
+  predavka_vecer: boolean;
 }
 
 export interface CustodyOverride {
@@ -124,7 +129,10 @@ export interface CustodyOverride {
   family_id: string;
   child_id: string | null;
   day: string;
-  side: CustodySide;
+  /** `null` = výjimka mění jen noc, ne celý den. */
+  side: CustodySide | null;
+  /** U koho dítě tu noc spí. `null` = řídí se pravidlem ze vzoru. */
+  nocni_strana: CustodySide | null;
   reason: string | null;
 }
 

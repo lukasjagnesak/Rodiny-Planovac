@@ -52,9 +52,10 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0015` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+   - `0004`–`0016` — pozdější rozšíření (střídání po sudých týdnech, okresy,
      dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy, veřejná kalkulačka,
-     kontakty, oznámení, doklady, sběr kontaktů z webu a dělení ceny kroužků)
+     kontakty, oznámení, doklady, sběr kontaktů z webu, dělení ceny kroužků
+     a noc na dni předání)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -309,8 +310,24 @@ Pravidla se vyhodnocují v tomto pořadí:
 3. **Vzor přiřazený konkrétnímu dítěti** (nejnovější platný)
 4. **Vzor pro celou rodinu** (nejnovější platný)
 
-Noc ze dne *D* na *D+1* patří té straně, která má dítě v den *D* — podle toho se
-počítají statistiky.
+### Dny a noci
+
+Kalendář zaškrtává **dny**, ale u střídavé péče se počítají **noci** — a to je
+číslo, ze kterého se odvíjí i výživné. Uvnitř pobytu je to totéž, na dni předání
+ne: noc patří tomu, u koho dítě usíná.
+
+Kdy se předává, z rozpisu dnů nevyplývá. Tytéž dva zaškrtnuté dny můžou být jedna
+noc i dvě podle toho, jestli dítě přijede odpoledne a druhý den odpoledne odjede,
+nebo jestli přespí a odjíždí až ráno. Proto to jsou dvě nastavení:
+
+| Kde | Co určuje |
+| --- | --- |
+| `custody_patterns.predavka_vecer` | výchozí pravidlo pro celý vzor — `true` znamená, že na dni předání dítě spí už u přebírajícího |
+| `custody_overrides.nocni_strana` | výjimka na konkrétní den; přebije vzor |
+
+Den, kdy se noc liší ode dne, kreslí kalendář diagonálně přepůlený: vlevo nahoře
+ten, kdo má dítě přes den, vpravo dole ten, u koho spí. Kliknutím na den se to
+přepne.
 
 ### Veřejná kalkulačka
 

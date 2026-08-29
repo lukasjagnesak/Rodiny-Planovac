@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Car, GraduationCap, MapPin, Plus, Undo2 } from "lucide-react";
+import { Car, GraduationCap, MapPin, Moon, Plus, Undo2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Sheet } from "@/components/ui/sheet";
 import { Badge, Dot } from "@/components/ui/badge";
@@ -53,13 +53,20 @@ export function DaySheet({
 
   const canEdit = session.myMembership.role !== "viewer";
 
-  async function setOverride(side: CustodySide | null) {
+  /**
+   * Zapíše výjimku na den. `side` mění, kdo má dítě přes den,
+   * `nocni_strana` u koho spí — a jde je nastavit i nezávisle na sobě.
+   */
+  async function setOverride(
+    side: CustodySide | null,
+    nocniStrana: CustodySide | null = custody?.nightSide ?? null,
+  ) {
     setBusy(true);
     setError(null);
     const supabase = createClient();
 
     try {
-      if (side === null) {
+      if (side === null && nocniStrana === null) {
         const query = supabase
           .from("custody_overrides")
           .delete()
@@ -84,6 +91,9 @@ export function DaySheet({
           child_id: childId,
           day: dayKey,
           side,
+          // Noc se ukládá jen když se liší ode dne — jinak by se výjimka
+          // držela i po změně vzoru a nešlo by ji rozeznat od pravidla.
+          nocni_strana: nocniStrana && nocniStrana !== side ? nocniStrana : null,
           created_by: session.userId,
         });
         if (error) throw error;
@@ -228,6 +238,45 @@ export function DaySheet({
               ) : null}
 
               {busy ? <Spinner className="self-center text-ink-subtle" /> : null}
+            </div>
+          ) : null}
+
+          {/* Den předání. Kdy se přesně předává, z rozpisu dnů nevyplývá —
+              stejné dva dny můžou být jedna noc i dvě. Proto se to dá
+              přepnout tady, u konkrétního dne. */}
+          {canEdit && side !== null && custody ? (
+            <div className="rounded-xl border border-line bg-surface-2 p-3">
+              <p className="text-sm font-medium text-ink">Kde dítě tuhle noc spí</p>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                {custody.isNightSplit
+                  ? "Tenhle den se předává, proto je v kalendáři přepůlený."
+                  : "Uvnitř pobytu — noc patří témuž rodiči jako den."}
+              </p>
+
+              <div className="mt-2.5 flex flex-wrap gap-2">
+                {(["a", "b"] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setOverride(side, s)}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50",
+                      custody.nightSide === s
+                        ? "border-transparent"
+                        : "border-line-strong hover:bg-surface",
+                    )}
+                    style={
+                      custody.nightSide === s
+                        ? { backgroundColor: sideBg(session.members, s) }
+                        : undefined
+                    }
+                  >
+                    <Moon className="h-3.5 w-3.5" style={{ color: sideColor(session.members, s) }} />
+                    {sideLabel(session.members, s)}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
 
