@@ -46,38 +46,65 @@ export const KOEFICIENT_POVINNOSTI: Record<number, number> = {
   4: 0.6,
 };
 
-export interface VyzivneVstup {
+export interface DiteVstup {
   /** `id` z {@link ETAPY}. */
   etapa: string;
+}
+
+export interface VyzivneVstup {
+  /** Společné děti obou rodičů. Každé má vlastní etapu — procenta z tabulky se liší. */
+  deti: DiteVstup[];
   /** Čistý měsíční příjem rodiče A v Kč. */
   prijemA: number;
   /** Čistý měsíční příjem rodiče B v Kč. */
   prijemB: number;
-  /** Podíl péče rodiče A v procentech (0–100). Při střídavce 50. */
+  /**
+   * Podíl péče rodiče A v procentech (0–100). Při střídavce 50.
+   * Platí pro všechny společné děti — jiný režim u sourozenců je vzácný
+   * a tabulka na něj stejně nemá odpověď.
+   */
   peceA: number;
-  /** Počet vyživovacích povinností rodiče včetně tohoto dítěte (1–4). */
-  povinnosti: number;
+  /** Další vyživované děti rodiče A mimo tento vztah. */
+  dalsiDetiA: number;
+  /** Další vyživované děti rodiče B mimo tento vztah. */
+  dalsiDetiB: number;
 }
 
 export const VYCHOZI_VYZIVNE: VyzivneVstup = {
-  etapa: "druhy-stupen",
+  deti: [{ etapa: "druhy-stupen" }],
   prijemA: 42000,
   prijemB: 30000,
   peceA: 50,
-  povinnosti: 1,
+  dalsiDetiA: 0,
+  dalsiDetiB: 0,
 };
+
+/** Nejvíc společných dětí, se kterými kalkulačka počítá. */
+export const MAX_DETI = 6;
+
+/** Nejvíc dalších dětí na rodiče. Nad čtyři povinnosti tabulka nejde. */
+export const MAX_DALSICH_DETI = 3;
+
+export interface PodilDitete {
+  etapa: Etapa;
+  /** Kolik z celkové částky připadá na tohle dítě. */
+  castka: number;
+}
 
 export interface VyzivneVysledek {
   /** `true`, když je rozdíl tak malý, že se výživné obvykle nestanoví. */
   bezVyzivneho: boolean;
   /** Kdo platí. `null`, když se výživné nestanoví. */
   platce: "a" | "b" | null;
-  /** Částka měsíčně v Kč, zaokrouhlená na desetikoruny. */
+  /** Částka měsíčně v Kč za všechny děti dohromady, zaokrouhlená na desetikoruny. */
   castka: number;
   /** Dolní a horní hranice podle rozpětí procent v tabulce. */
   rozpeti: { od: number; do: number };
-  /** Použité procento (střed rozpětí) a hranice tabulky. */
-  procenta: { od: number; do: number; stred: number };
+  /** Rozpad po dětech, aby bylo vidět, odkud se částka bere. */
+  podleDeti: PodilDitete[];
+  /** Kolik vyživovacích povinností se u kterého rodiče počítalo. */
+  povinnostiA: number;
+  povinnostiB: number;
 }
 
 /** Hranice, pod kterou už nemá smysl mluvit o výživném. */
@@ -107,11 +134,26 @@ function povinnost(prijem: number, procenta: number, podilPece: number, koeficie
 }
 
 export function spocitejVyzivne(vstup: VyzivneVstup): VyzivneVysledek {
-  const etapa = najdiEtapu(vstup.etapa);
-  const stred = (etapa.od + etapa.do) / 2;
+  const deti = (vstup.deti?.length ? vstup.deti : VYCHOZI_VYZIVNE.deti).slice(0, MAX_DETI);
+  const etapy = deti.map((d) => najdiEtapu(d.etapa));
 
-  const povinnosti = omez(Math.round(vstup.povinnosti), 1, 4);
-  const koeficient = KOEFICIENT_POVINNOSTI[povinnosti];
+  /**
+   * Koeficient se řídí **celkovým** počtem vyživovacích povinností rodiče,
+   * tedy i dětmi z jiného vztahu. Každý rodič jich může mít jiný počet —
+   * proto se počítá zvlášť pro každého.
+   */
+  const povinnostiA = omez(
+    deti.length + Math.round(vstup.dalsiDetiA || 0),
+    1,
+    4,
+  );
+  const povinnostiB = omez(
+    deti.length + Math.round(vstup.dalsiDetiB || 0),
+    1,
+    4,
+  );
+  const koefA = KOEFICIENT_POVINNOSTI[povinnostiA];
+  const koefB = KOEFICIENT_POVINNOSTI[povinnostiB];
 
   const prijemA = Math.max(0, Number(vstup.prijemA) || 0);
   const prijemB = Math.max(0, Number(vstup.prijemB) || 0);
@@ -119,26 +161,33 @@ export function spocitejVyzivne(vstup: VyzivneVstup): VyzivneVysledek {
   const podilA = omez(vstup.peceA, 0, 100) / 100;
   const podilB = 1 - podilA;
 
-  /** Kladné číslo znamená, že platí rodič A. */
-  const rozdil = (procenta: number) =>
-    povinnost(prijemA, procenta, podilA, koeficient) -
-    povinnost(prijemB, procenta, podilB, koeficient);
+  /** Kladné číslo znamená, že na tohle dítě platí rodič A. */
+  const rozdilDitete = (etapa: Etapa, procenta: number) =>
+    povinnost(prijemA, procenta, podilA, koefA) - povinnost(prijemB, procenta, podilB, koefB);
 
-  const stredniRozdil = rozdil(stred);
+  const soucet = (vyber: (e: Etapa) => number) =>
+    etapy.reduce((s, e) => s + rozdilDitete(e, vyber(e)), 0);
+
+  const stred = (e: Etapa) => (e.od + e.do) / 2;
+  const stredniRozdil = soucet(stred);
   const castka = naDesetikoruny(Math.abs(stredniRozdil));
+
+  const prazdneRozpeti = { od: 0, do: 0 };
 
   if (castka < ZANEDBATELNE_KC) {
     return {
       bezVyzivneho: true,
       platce: null,
       castka: 0,
-      rozpeti: { od: 0, do: 0 },
-      procenta: { od: etapa.od, do: etapa.do, stred },
+      rozpeti: prazdneRozpeti,
+      podleDeti: etapy.map((etapa) => ({ etapa, castka: 0 })),
+      povinnostiA,
+      povinnostiB,
     };
   }
 
-  const dolni = Math.abs(rozdil(etapa.od));
-  const horni = Math.abs(rozdil(etapa.do));
+  const dolni = Math.abs(soucet((e) => e.od));
+  const horni = Math.abs(soucet((e) => e.do));
 
   return {
     bezVyzivneho: false,
@@ -148,6 +197,11 @@ export function spocitejVyzivne(vstup: VyzivneVstup): VyzivneVysledek {
       od: naDesetikoruny(Math.min(dolni, horni)),
       do: naDesetikoruny(Math.max(dolni, horni)),
     },
-    procenta: { od: etapa.od, do: etapa.do, stred },
+    podleDeti: etapy.map((etapa) => ({
+      etapa,
+      castka: naDesetikoruny(Math.abs(rozdilDitete(etapa, stred(etapa)))),
+    })),
+    povinnostiA,
+    povinnostiB,
   };
 }

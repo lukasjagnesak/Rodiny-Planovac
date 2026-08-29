@@ -47,11 +47,19 @@ const OTAZKY = [
       "nepočítá kontrolní částku, tedy minimum, které musí platícímu rodiči zůstat.",
   },
   {
-    otazka: "Co když má rodič víc dětí?",
+    otazka: "Co když máme víc společných dětí?",
     odpoved:
-      "Vyberte počet vyživovacích povinností včetně tohoto dítěte. Podíl na každé jednotlivé " +
-      "dítě se sníží, celkové zatížení rodiče ale roste. Používáme koeficient, ne samostatnou " +
-      "řadu z tabulky — je to zjednodušení.",
+      "Přidejte je tlačítkem a u každého vyberte etapu — procenta z tabulky se s věkem liší, " +
+      "takže starší sourozenec vyjde dráž. Výsledek uvidíte celkem i rozepsaný po dětech; " +
+      "soud stanovuje výživné na každé dítě zvlášť.",
+  },
+  {
+    otazka: "A když má jeden z rodičů dítě z jiného vztahu?",
+    odpoved:
+      "Vyplňte to u něj do „dalších dětí“. Koeficient se řídí celkovým počtem vyživovacích " +
+      "povinností, a ten může být u každého rodiče jiný — další dítě platícího rodiče výživné " +
+      "sníží, další dítě toho přijímajícího ho naopak zvýší. Používáme koeficient, ne " +
+      "samostatnou řadu z tabulky; je to zjednodušení.",
   },
 ];
 
@@ -61,7 +69,7 @@ export default function KalkulackaVyzivnehoStranka() {
       <Hero
         nadtitulek="Kalkulačka · doporučující tabulka MSp"
         nadpis="Kolik vyjde výživné"
-        perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče. Tahle zohledňuje oba a k tomu rozsah péče — takže funguje i pro střídavku, kde je výsledek často nula."
+        perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
       />
 
       <Sloupec>

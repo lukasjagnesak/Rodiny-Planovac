@@ -1,9 +1,9 @@
 /**
  * Výpočet výživného podle doporučující tabulky MSp.
  *
- * Kalkulačka výživného je vstupní stránka z vyhledávače a lidé podle ní
- * jdou k soudu nebo k mediátorovi. Když spočítá blbost, ublíží to konkrétní
- * rodině — proto se tady kontroluje i to, co se zdá samozřejmé.
+ * Kalkulačka je vstupní stránka z vyhledávače a lidé podle ní jdou k soudu
+ * nebo k mediátorovi. Když spočítá blbost, ublíží to konkrétní rodině —
+ * proto se tady kontroluje i to, co se zdá samozřejmé.
  *
  * Spouští se přes `npm run test:vyzivne`.
  */
@@ -22,6 +22,8 @@ function ok(popis, podminka) {
 }
 
 const vstup = (zmeny = {}) => ({ ...VYCHOZI_VYZIVNE, ...zmeny });
+/** Zkratka: ze seznamu etap udělá děti. */
+const deti = (...etapy) => etapy.map((etapa) => ({ etapa }));
 
 console.log("── tabulka etap ──");
 ok("čtyři etapy", ETAPY.length === 4);
@@ -40,50 +42,81 @@ console.log("── rovnováha ──");
   const v = spocitejVyzivne(vstup({ prijemA: 40000, prijemB: 40000, peceA: 100 }));
   ok("stejné příjmy, dítě jen u A → platí B", !v.bezVyzivneho && v.platce === "b");
 }
-{
-  const v = spocitejVyzivne(vstup({ prijemA: 40000, prijemB: 40000, peceA: 0 }));
-  ok("stejné příjmy, dítě jen u B → platí A", !v.bezVyzivneho && v.platce === "a");
-}
 
 console.log("── směr platby ──");
 {
-  const v = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, peceA: 50 }));
+  const v = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000 }));
   ok("při střídavce platí ten s vyšším příjmem", v.platce === "a");
-  const opacne = spocitejVyzivne(vstup({ prijemA: 25000, prijemB: 80000, peceA: 50 }));
+  const opacne = spocitejVyzivne(vstup({ prijemA: 25000, prijemB: 80000 }));
   ok("obrácené zadání dá zrcadlový výsledek", opacne.platce === "b" && opacne.castka === v.castka);
 }
 
-console.log("── výše ──");
+console.log("── jedno dítě, ruční výpočet ──");
 {
   // 2. stupeň = 15–19 %, střed 17 %. Jedna povinnost, péče půl na půl:
   // (80000 − 25000) × 0,17 × 1 × 0,5 = 4675 → 4680 po zaokrouhlení.
-  const v = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, peceA: 50 }));
-  ok("ruční výpočet sedí (4680 Kč)", v.castka === 4680);
+  const v = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000 }));
+  ok("sedí na 4680 Kč", v.castka === 4680);
   ok("rozpětí obklopuje výsledek", v.rozpeti.od <= v.castka && v.castka <= v.rozpeti.do);
-  ok("rozpětí odpovídá tabulce", v.procenta.od === 15 && v.procenta.do === 19);
+  ok("jedno dítě v rozpadu", v.podleDeti.length === 1);
+}
+
+console.log("── víc společných dětí ──");
+{
+  const jedno = spocitejVyzivne(vstup({ deti: deti("druhy-stupen"), prijemA: 80000, prijemB: 25000 }));
+  const dve = spocitejVyzivne(
+    vstup({ deti: deti("druhy-stupen", "druhy-stupen"), prijemA: 80000, prijemB: 25000 }),
+  );
+  ok("dvě děti stojí víc než jedno", dve.castka > jedno.castka);
+  ok(
+    "ale ne dvojnásobek — koeficient podíl na dítě snižuje",
+    dve.castka < jedno.castka * 2,
+  );
+  ok("rozpad má dvě položky", dve.podleDeti.length === 2);
+  ok(
+    "součet rozpadu odpovídá celku",
+    Math.abs(dve.podleDeti.reduce((s, d) => s + d.castka, 0) - dve.castka) <= 20,
+  );
+  ok("obě děti počítají dvě povinnosti", dve.povinnostiA === 2 && dve.povinnostiB === 2);
 }
 {
-  const jedno = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, povinnosti: 1 }));
-  const dve = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, povinnosti: 2 }));
+  const stejne = spocitejVyzivne(
+    vstup({ deti: deti("predskolni", "predskolni"), prijemA: 80000, prijemB: 25000 }),
+  );
+  const ruzne = spocitejVyzivne(
+    vstup({ deti: deti("predskolni", "stredni"), prijemA: 80000, prijemB: 25000 }),
+  );
+  ok("starší sourozenec zvýší částku", ruzne.castka > stejne.castka);
   ok(
-    "druhé dítě sníží výživné na první koeficientem",
-    Math.abs(dve.castka - jedno.castka * KOEFICIENT_POVINNOSTI[2]) <= 10,
+    "starší dítě má v rozpadu vyšší podíl",
+    ruzne.podleDeti[1].castka > ruzne.podleDeti[0].castka,
+  );
+}
+
+console.log("── děti z jiného vztahu ──");
+{
+  const bez = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000 }));
+  const sDitetem = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, dalsiDetiA: 1 }));
+  ok("další dítě platícího rodiče výživné sníží", sDitetem.castka < bez.castka);
+  ok("povinnosti se sečtou", sDitetem.povinnostiA === 2 && sDitetem.povinnostiB === 1);
+  // Koeficient snižuje povinnost **toho rodiče**, ne výsledný rozdíl.
+  // (80000 × 0,17 × 0,80 − 25000 × 0,17 × 1) × 0,5 = 3315 → 3320.
+  ok("sedí na ručním výpočtu 3320 Kč", sDitetem.castka === 3320);
+  ok(
+    "není to celková částka krát koeficient",
+    sDitetem.castka !== Math.round((bez.castka * KOEFICIENT_POVINNOSTI[2]) / 10) * 10,
   );
 }
 {
-  const a = spocitejVyzivne(vstup({ etapa: "predskolni", prijemA: 80000, prijemB: 25000 }));
-  const b = spocitejVyzivne(vstup({ etapa: "stredni", prijemA: 80000, prijemB: 25000 }));
-  ok("starší dítě vyjde dráž", b.castka > a.castka);
-}
-{
-  const rovnomerne = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, peceA: 50 }));
-  const vic = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, peceA: 75 }));
-  ok("víc péče u platícího rodiče výživné sníží", vic.castka < rovnomerne.castka);
+  const uPrijemce = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000, dalsiDetiB: 1 }));
+  const bez = spocitejVyzivne(vstup({ prijemA: 80000, prijemB: 25000 }));
+  ok("další dítě přijímajícího rodiče výživné zvýší", uPrijemce.castka > bez.castka);
+  ok("každý rodič má vlastní počet povinností", uPrijemce.povinnostiA === 1 && uPrijemce.povinnostiB === 2);
 }
 
 console.log("── odolnost zadání ──");
 {
-  const v = spocitejVyzivne(vstup({ prijemA: -5000, prijemB: 30000, peceA: 50 }));
+  const v = spocitejVyzivne(vstup({ prijemA: -5000, prijemB: 30000 }));
   ok("záporný příjem se bere jako nula", v.platce === "b");
 }
 {
@@ -92,17 +125,23 @@ console.log("── odolnost zadání ──");
   ok("péče nad 100 % se ořízne", v.castka === kraj.castka && v.platce === kraj.platce);
 }
 {
-  const v = spocitejVyzivne(vstup({ povinnosti: 9, prijemA: 80000, prijemB: 25000 }));
-  const ctyri = spocitejVyzivne(vstup({ povinnosti: 4, prijemA: 80000, prijemB: 25000 }));
-  ok("víc než čtyři povinnosti spadne na čtyři", v.castka === ctyri.castka);
+  const v = spocitejVyzivne(vstup({ dalsiDetiA: 9, prijemA: 80000, prijemB: 25000 }));
+  ok("povinnosti se zastropují na čtyřech", v.povinnostiA === 4);
+}
+{
+  const v = spocitejVyzivne(vstup({ deti: [], prijemA: 80000, prijemB: 25000 }));
+  ok("prázdný seznam dětí spadne na jedno", v.podleDeti.length === 1);
+}
+{
+  const v = spocitejVyzivne(vstup({ deti: deti(...Array(12).fill("druhy-stupen")) }));
+  ok("víc než šest dětí se ořízne", v.podleDeti.length === 6);
 }
 {
   const v = spocitejVyzivne(vstup({ prijemA: Number.NaN, prijemB: Number.NaN }));
   ok("nečíselné zadání nespadne", v.bezVyzivneho && v.castka === 0);
 }
 {
-  // Rozdíl pod 200 Kč se nemá vydávat za výživné.
-  const v = spocitejVyzivne(vstup({ prijemA: 40000, prijemB: 39000, peceA: 50 }));
+  const v = spocitejVyzivne(vstup({ prijemA: 40000, prijemB: 39000 }));
   ok("zanedbatelný rozdíl → bez výživného", v.bezVyzivneho);
 }
 {

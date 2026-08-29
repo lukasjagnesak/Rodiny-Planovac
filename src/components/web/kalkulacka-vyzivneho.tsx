@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { Plus, X } from "lucide-react";
 import {
   ETAPY,
+  MAX_DALSICH_DETI,
+  MAX_DETI,
   VYCHOZI_VYZIVNE,
   spocitejVyzivne,
   type VyzivneVstup,
@@ -10,6 +13,15 @@ import {
 import { Field, Input, Select } from "@/components/ui/field";
 
 const kc = (castka: number) => `${castka.toLocaleString("cs-CZ")} Kč`;
+
+const POCTY_DALSICH = Array.from({ length: MAX_DALSICH_DETI + 1 }, (_, i) => i);
+
+function popisDalsich(pocet: number): string {
+  if (pocet === 0) return "Žádné";
+  if (pocet === 1) return "1 dítě";
+  if (pocet < 5) return `${pocet} děti`;
+  return `${pocet} dětí`;
+}
 
 /**
  * Kalkulačka výživného.
@@ -26,23 +38,77 @@ export function KalkulackaVyzivneho() {
   const zmen = <K extends keyof VyzivneVstup>(klic: K, hodnota: VyzivneVstup[K]) =>
     setVstup((stary) => ({ ...stary, [klic]: hodnota }));
 
+  const zmenDite = (poradi: number, etapa: string) =>
+    setVstup((stary) => ({
+      ...stary,
+      deti: stary.deti.map((d, i) => (i === poradi ? { etapa } : d)),
+    }));
+
+  // Nové dítě dědí etapu po posledním — sourozenci bývají blízko věkem
+  // a je to o klik míň.
+  const pridejDite = () =>
+    setVstup((stary) => ({
+      ...stary,
+      deti: [...stary.deti, { etapa: stary.deti[stary.deti.length - 1]?.etapa ?? "druhy-stupen" }],
+    }));
+
+  const odeberDite = (poradi: number) =>
+    setVstup((stary) => ({
+      ...stary,
+      deti: stary.deti.length > 1 ? stary.deti.filter((_, i) => i !== poradi) : stary.deti,
+    }));
+
   const peceB = 100 - vstup.peceA;
 
   return (
     <div className="card p-5 sm:p-6">
       <div className="space-y-5">
-        <Field
-          label="Etapa dítěte"
-          hint="Tabulka pracuje se čtyřmi etapami, ne s přesným věkem."
-        >
-          <Select value={vstup.etapa} onChange={(e) => zmen("etapa", e.target.value)}>
-            {ETAPY.map((etapa) => (
-              <option key={etapa.id} value={etapa.id}>
-                {etapa.popis}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <div className="space-y-2.5">
+          <span className="block text-sm font-medium text-ink">
+            Společné děti
+            <span className="ml-2 font-normal text-ink-subtle">
+              Tabulka pracuje se čtyřmi etapami, ne s přesným věkem.
+            </span>
+          </span>
+
+          {vstup.deti.map((dite, poradi) => (
+            <div key={poradi} className="flex items-center gap-2">
+              <span className="w-6 shrink-0 text-sm text-ink-subtle">{poradi + 1}.</span>
+              <Select
+                aria-label={`Etapa ${poradi + 1}. dítěte`}
+                value={dite.etapa}
+                onChange={(e) => zmenDite(poradi, e.target.value)}
+                className="flex-1"
+              >
+                {ETAPY.map((etapa) => (
+                  <option key={etapa.id} value={etapa.id}>
+                    {etapa.popis}
+                  </option>
+                ))}
+              </Select>
+              {vstup.deti.length > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => odeberDite(poradi)}
+                  aria-label={`Odebrat ${poradi + 1}. dítě`}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-ink-subtle transition-colors hover:bg-surface-2 hover:text-ink"
+                >
+                  <X size={18} />
+                </button>
+              ) : null}
+            </div>
+          ))}
+
+          {vstup.deti.length < MAX_DETI ? (
+            <button
+              type="button"
+              onClick={pridejDite}
+              className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1.5 text-sm font-medium text-brand transition-colors hover:bg-brand-soft"
+            >
+              <Plus size={16} /> Přidat dítě
+            </button>
+          ) : null}
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -107,20 +173,51 @@ export function KalkulackaVyzivneho() {
           </div>
         </div>
 
-        <Field
-          label="Počet vyživovacích povinností rodiče"
-          hint="Včetně tohoto dítěte. Tabulka počítá nejvýš se čtyřmi."
-        >
-          <Select
-            value={String(vstup.povinnosti)}
-            onChange={(e) => zmen("povinnosti", Number(e.target.value))}
-          >
-            <option value="1">1 dítě</option>
-            <option value="2">2 děti</option>
-            <option value="3">3 děti</option>
-            <option value="4">4 děti</option>
-          </Select>
-        </Field>
+        {/* Každý rodič může mít jiný počet vyživovacích povinností —
+            koeficient se proto počítá zvlášť pro každého. */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label htmlFor="dalsi-a" className="block text-sm font-medium text-parent-a-text">
+              Další děti rodiče A
+              <span className="block text-xs font-normal text-ink-subtle">
+                Z jiného vztahu, mimo ty výše
+              </span>
+            </label>
+            <Select
+              id="dalsi-a"
+              value={String(vstup.dalsiDetiA)}
+              onChange={(e) => zmen("dalsiDetiA", Number(e.target.value))}
+              className="border-parent-a/40 bg-parent-a-bg"
+            >
+              {POCTY_DALSICH.map((n) => (
+                <option key={n} value={n}>
+                  {popisDalsich(n)}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="dalsi-b" className="block text-sm font-medium text-parent-b-text">
+              Další děti rodiče B
+              <span className="block text-xs font-normal text-ink-subtle">
+                Z jiného vztahu, mimo ty výše
+              </span>
+            </label>
+            <Select
+              id="dalsi-b"
+              value={String(vstup.dalsiDetiB)}
+              onChange={(e) => zmen("dalsiDetiB", Number(e.target.value))}
+              className="border-parent-b/40 bg-parent-b-bg"
+            >
+              {POCTY_DALSICH.map((n) => (
+                <option key={n} value={n}>
+                  {popisDalsich(n)}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 border-t border-line pt-6" aria-live="polite">
@@ -155,9 +252,29 @@ export function KalkulackaVyzivneho() {
             </p>
             <p className="tnum mt-2 text-sm text-ink-subtle">
               Rozpětí podle tabulky: {kc(vysledek.rozpeti.od)} – {kc(vysledek.rozpeti.do)}
-              {"  ·  "}
-              {vysledek.procenta.od}–{vysledek.procenta.do} % z čistého příjmu
             </p>
+
+            {/* U víc dětí je celková částka bez rozpadu k ničemu — soud
+                stanovuje výživné na každé dítě zvlášť. */}
+            {vysledek.podleDeti.length > 1 ? (
+              <ul className="mt-4 space-y-1.5 border-t border-line pt-3">
+                {vysledek.podleDeti.map((dite, poradi) => (
+                  <li key={poradi} className="flex items-baseline justify-between gap-3 text-sm">
+                    <span className="min-w-0 text-ink-muted">
+                      {poradi + 1}. dítě — {dite.etapa.popis}
+                    </span>
+                    <span className="tnum shrink-0 font-medium text-ink">{kc(dite.castka)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {vysledek.povinnostiA !== vysledek.povinnostiB ? (
+              <p className="mt-3 text-xs text-ink-subtle">
+                Počítáno s {vysledek.povinnostiA} vyživovacími povinnostmi u rodiče A a{" "}
+                {vysledek.povinnostiB} u rodiče B.
+              </p>
+            ) : null}
           </>
         )}
       </div>
