@@ -61,6 +61,11 @@ export default function Zasady() {
               "Do odpojení propojení",
             ],
             [
+              "Údaje o předplatném (stav, období, identifikátor u Stripu)",
+              "Plnění smlouvy a účetnictví",
+              "Po dobu předplatného, doklady dle zákona o účetnictví",
+            ],
+            [
               "Technické záznamy (IP, čas požadavku)",
               "Provoz a bezpečnost — oprávněný zájem",
               "Nejdéle 6 měsíců",
@@ -101,6 +106,15 @@ export default function Zasady() {
             <li>
               <strong>Telegram</strong> — pouze pokud si sami zapnete upozornění; předává se
               text upozornění a identifikátor chatu.
+            </li>
+            <li>
+              <strong>Stripe</strong> — zpracování plateb, pokud si předplatné pořídíte.
+              Předává se e-mail a název rodiny; číslo karty zadáváte přímo Stripu a k nám
+              se nedostane.
+            </li>
+            <li>
+              <strong>Poskytovatel e-mailu</strong> — odesílání pozvánek a zpráv o
+              předplatném; předává se e-mailová adresa příjemce a obsah zprávy.
             </li>
           </ul>
 

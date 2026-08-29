@@ -12,6 +12,7 @@ import { requireSession } from "@/lib/session";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SettingsForms } from "@/components/settings/settings-forms";
+import { NebezpecnaZona } from "@/components/settings/nebezpecna-zona";
 import type { GoogleAccount } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Nastavení" };
@@ -97,6 +98,8 @@ export default async function SettingsPage() {
           ))}
         </ul>
       </Card>
+
+      <NebezpecnaZona session={session} />
     </div>
   );
 }
