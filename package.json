@@ -11,14 +11,15 @@
     "typecheck": "tsc --noEmit",
     "test:rozvrh": "tsc src/lib/rozvrh.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/rozvrh.test.js",
     "test:kalkulacka": "tsc src/lib/kalkulacka.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/kalkulacka.test.js",
-    "test": "npm run test:custody && npm run test:predplatne && npm run test:docx && npm run test:rozvrh && npm run test:kalkulacka && npm run test:import && npm run test:vyzivne && npm run test:mail",
+    "test": "npm run test:custody && npm run test:opakovani && npm run test:predplatne && npm run test:docx && npm run test:rozvrh && npm run test:kalkulacka && npm run test:import && npm run test:vyzivne && npm run test:mail",
     "test:import": "tsc src/lib/import-vydaju.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/import.test.js",
     "test:custody": "tsc src/lib/custody.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/custody.test.js",
     "test:docx": "tsc src/lib/docx.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/docx.test.js",
     "test:predplatne": "tsc src/lib/predplatne-pravidla.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/predplatne.test.js",
     "test:pismo": "node tests/pismo.test.js",
     "test:vyzivne": "tsc src/lib/vyzivne.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/vyzivne.test.js",
-    "test:mail": "tsc src/lib/mail-sablony.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/mail.test.js"
+    "test:mail": "tsc src/lib/mail-sablony.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/mail.test.js",
+    "test:opakovani": "tsc src/lib/opakovani.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/opakovani.test.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

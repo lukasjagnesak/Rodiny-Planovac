@@ -3,6 +3,7 @@ import { dispatchNotifications, planNotifications } from "@/lib/reminders";
 import { syncAllCalendars } from "@/lib/google-sync";
 import { INTERVAL_HODIN, stahniZmeskane } from "@/lib/edupage-sync";
 import { posliPripominkyPredplatneho } from "@/lib/predplatne-pripominky";
+import { vygenerujOpakovaneVydaje } from "@/lib/vydaje-opakovane";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -57,6 +58,16 @@ export async function GET(request: NextRequest) {
       report.edupageIntervalHodin = INTERVAL_HODIN;
     } catch (e) {
       report.edupageError = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  // Pravidelné výdaje — výživné, obědy, kroužky. Zdvojení hlídá
+  // unikátní index, takže na opakovaném běhu nezáleží.
+  if (request.nextUrl.searchParams.get("opakovane") !== "0") {
+    try {
+      report.opakovaneVydaje = await vygenerujOpakovaneVydaje();
+    } catch (e) {
+      report.opakovaneVydajeError = e instanceof Error ? e.message : String(e);
     }
   }
 

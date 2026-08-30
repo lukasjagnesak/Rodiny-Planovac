@@ -19,6 +19,7 @@ aby ji šlo pustit i podruhé, takže když si nejsi jistý, pusť ji znovu.
 | `0017_predplatne.sql` | tabulka `predplatna`, zkušební období 30 dní | aplikace spadne na chybějící tabulce |
 | `0018_paywall.sql` | paywall v RLS | po vypršení by šlo dál zapisovat |
 | `0019_predplatne_pripominka.sql` | datum poslední připomínky | e-mail o konci trialu by chodil každou hodinu |
+| `0020_opakovane_vydaje.sql` | pravidelné výdaje a index proti zdvojení | opakované výdaje nepůjdou založit |
 
 ## 2. Proměnné v `.env` (na serveru)
 
@@ -82,6 +83,8 @@ Ručně pak:
       na „aktivní" (to potvrdí, že webhook dorazil)
 - [ ] pozvánka druhému rodiči přijde e-mailem
 - [ ] v **Nastavení** je dole sekce „Konec s Klidoo"
+- [ ] u výdaje jde zaškrtnout „Opakuje se pravidelně" a šablona se objeví
+      v kartě „Pravidelné výdaje"
 
 ## 5. Co se dělá jen jednou (mimo server)
 

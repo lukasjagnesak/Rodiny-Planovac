@@ -52,10 +52,10 @@ je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
    - `0001_schema.sql` — tabulky
    - `0002_rls.sql` — zabezpečení a RPC funkce
    - `0003_storage.sql` — úložiště na účtenky
-   - `0004`–`0019` — pozdější rozšíření (střídání po sudých týdnech, okresy,
+   - `0004`–`0020` — pozdější rozšíření (střídání po sudých týdnech, okresy,
      dvoutýdenní rozpis, EduPage, rozvrh, víc dětí, zprávy, veřejná kalkulačka,
      kontakty, oznámení, doklady, sběr kontaktů z webu, dělení ceny kroužků
-     a noc na dni předání, předplatné a paywall)
+     a noc na dni předání, předplatné, paywall a opakované výdaje)
 3. V **Project Settings → API** si zkopíruj:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon public` klíč → `NEXT_PUBLIC_SUPABASE_ANON_KEY`

@@ -1,3 +1,5 @@
+import type { Frekvence } from "./opakovani";
+
 export type CustodySide = "a" | "b";
 export type MemberRole = "owner" | "parent" | "guardian" | "viewer";
 export type PatternKind =
@@ -205,7 +207,28 @@ export interface Expense {
   event_id: string | null;
   note: string | null;
   created_at: string;
+  /** Vyplněné, když výdaj vznikl z opakované šablony. */
+  opakovani_id?: string | null;
   receipts?: Receipt[];
+}
+
+/** Šablona pravidelného výdaje — výživné, obědy, kroužky, pojištění. */
+export interface OpakovanyVydaj {
+  id: string;
+  family_id: string;
+  child_id: string | null;
+  category: ExpenseCategory;
+  title: string;
+  amount: number;
+  currency: string;
+  paid_by: string | null;
+  split_percent: number;
+  frekvence: Frekvence;
+  zacina: string;
+  konci: string | null;
+  aktivni: boolean;
+  note: string | null;
+  created_at: string;
 }
 
 export interface Receipt {

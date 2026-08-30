@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
 import { toDateKey } from "@/lib/dates";
 import { ExpensesScreen } from "@/components/expenses/expenses-screen";
-import type { Expense } from "@/lib/types";
+import type { Expense, OpakovanyVydaj } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Výdaje" };
 
@@ -23,19 +23,28 @@ export default async function ExpensesPage({
   const chartFrom = toDateKey(startOfMonth(subMonths(anchor, 5)));
   const to = toDateKey(endOfMonth(anchor));
 
-  const { data } = await supabase
-    .from("expenses")
-    .select("*, receipts(*)")
-    .eq("family_id", session.family.id)
-    .gte("spent_on", chartFrom)
-    .lte("spent_on", to)
-    .order("spent_on", { ascending: false })
-    .order("created_at", { ascending: false });
+  const [{ data }, { data: opakovane }] = await Promise.all([
+    supabase
+      .from("expenses")
+      .select("*, receipts(*)")
+      .eq("family_id", session.family.id)
+      .gte("spent_on", chartFrom)
+      .lte("spent_on", to)
+      .order("spent_on", { ascending: false })
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("vydaje_opakovane")
+      .select("*")
+      .eq("family_id", session.family.id)
+      .order("aktivni", { ascending: false })
+      .order("created_at"),
+  ]);
 
   return (
     <ExpensesScreen
       session={session}
       expenses={(data ?? []) as Expense[]}
+      opakovane={(opakovane ?? []) as OpakovanyVydaj[]}
       monthKey={toDateKey(startOfMonth(anchor)).slice(0, 7)}
       prefillDate={novy ?? null}
     />

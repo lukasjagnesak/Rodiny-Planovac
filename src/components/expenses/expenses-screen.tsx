@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   Paperclip,
   Plus,
+  Repeat,
   Scale,
   Wallet,
 } from "lucide-react";
@@ -24,16 +25,19 @@ import { EXPENSE_CATEGORIES } from "@/lib/constants";
 import { formatDayShort, formatMonth, toDateKey } from "@/lib/dates";
 import { cn, formatMoney } from "@/lib/format";
 import { memberName } from "@/lib/members";
-import type { Expense, ExpenseCategory, SessionContext } from "@/lib/types";
+import { OpakovaneVydaje } from "./opakovane-karta";
+import type { Expense, ExpenseCategory, OpakovanyVydaj, SessionContext } from "@/lib/types";
 
 export function ExpensesScreen({
   session,
   expenses,
+  opakovane,
   monthKey,
   prefillDate,
 }: {
   session: SessionContext;
   expenses: Expense[];
+  opakovane: OpakovanyVydaj[];
   monthKey: string;
   prefillDate: string | null;
 }) {
@@ -204,6 +208,8 @@ export function ExpensesScreen({
           accent={balance >= 0 ? "var(--success)" : "var(--danger)"}
         />
       </div>
+
+      <OpakovaneVydaje session={session} polozky={opakovane} muzeUpravovat={canEdit} />
 
       {perChild.length > 0 ? (
         <Card>
@@ -399,6 +405,13 @@ export function ExpensesScreen({
                               <>
                                 <span>·</span>
                                 <Paperclip className="h-3 w-3" />
+                              </>
+                            ) : null}
+                            {/* Ať je poznat, proč se výdaj objevil sám. */}
+                            {e.opakovani_id ? (
+                              <>
+                                <span>·</span>
+                                <Repeat className="h-3 w-3" aria-label="pravidelný výdaj" />
                               </>
                             ) : null}
                           </span>

@@ -11,6 +11,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { ReceiptImage } from "./receipt-image";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_ORDER } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
+import { FREKVENCE_POPIS, type Frekvence } from "@/lib/opakovani";
 import { formatMoney, hlaskaChyby } from "@/lib/format";
 import type { Expense, ExpenseCategory, Receipt, SessionContext } from "@/lib/types";
 
@@ -54,6 +55,9 @@ export function ExpenseForm({
         split_percent: String(expense.split_percent),
         settled: expense.settled,
         note: expense.note ?? "",
+        opakovat: false,
+        frekvence: "mesicne",
+        konci: "",
       });
       setExistingReceipts(expense.receipts ?? []);
     } else {
@@ -116,6 +120,35 @@ export function ExpenseForm({
         created_by: session.userId,
       };
 
+      // Šablona vzniká jako první, aby na ni šel první výdaj rovnou navázat.
+      // Další termíny pak dogeneruje cron — a unikátní index hlídá,
+      // že se ten dnešní nevytvoří podruhé.
+      let opakovaniId: string | null = null;
+
+      if (!expense && form.opakovat) {
+        const { data, error } = await supabase
+          .from("vydaje_opakovane")
+          .insert({
+            family_id: session.family.id,
+            child_id: payload.child_id,
+            category: payload.category,
+            title: payload.title,
+            amount,
+            currency: payload.currency,
+            paid_by: payload.paid_by,
+            split_percent: payload.split_percent,
+            frekvence: form.frekvence,
+            zacina: form.spent_on,
+            konci: form.konci || null,
+            note: payload.note,
+            created_by: session.userId,
+          })
+          .select("id")
+          .single();
+        if (error) throw error;
+        opakovaniId = data.id;
+      }
+
       let expenseId = expense?.id;
 
       if (expense) {
@@ -124,7 +157,7 @@ export function ExpenseForm({
       } else {
         const { data, error } = await supabase
           .from("expenses")
-          .insert(payload)
+          .insert({ ...payload, opakovani_id: opakovaniId })
           .select("id")
           .single();
         if (error) throw error;
@@ -324,6 +357,43 @@ export function ExpenseForm({
             </div>
           </Field>
 
+          {/* ── Opakování ────────────────────────────────────────── */}
+          {expense ? null : (
+            <div className="rounded-xl border border-line p-3">
+              <Checkbox
+                checked={form.opakovat}
+                onChange={(e) => set("opakovat", e.target.checked)}
+                label="Opakuje se pravidelně"
+                description="Výživné, obědy, kroužky, pojištění. Zapíše se sám, dokud ho nevypneš."
+              />
+
+              {form.opakovat ? (
+                <div className="mt-3 grid gap-3 pl-8 sm:grid-cols-2">
+                  <Field label="Jak často">
+                    <Select
+                      value={form.frekvence}
+                      onChange={(e) => set("frekvence", e.target.value as Frekvence)}
+                    >
+                      {(Object.keys(FREKVENCE_POPIS) as Frekvence[]).map((f) => (
+                        <option key={f} value={f}>
+                          {FREKVENCE_POPIS[f]}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                  <Field label="Do kdy" hint="prázdné = bez konce">
+                    <Input
+                      type="date"
+                      value={form.konci}
+                      min={form.spent_on}
+                      onChange={(e) => set("konci", e.target.value)}
+                    />
+                  </Field>
+                </div>
+              ) : null}
+            </div>
+          )}
+
           {/* ── Účtenky ──────────────────────────────────────────── */}
           <Field label="Účtenky" hint="fotka nebo PDF">
             <div className="flex flex-wrap gap-2">
@@ -435,5 +505,8 @@ function emptyForm(session: SessionContext, defaultDate?: string | null) {
     split_percent: "50",
     settled: false,
     note: "",
+    opakovat: false,
+    frekvence: "mesicne" as Frekvence,
+    konci: "",
   };
 }
