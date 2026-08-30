@@ -68,9 +68,9 @@ export function ProvozScreen({
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile
-          label={`Návštěvníci / ${obdobi} dní`}
+          label={`Návštěvy / ${obdobi} dní`}
           value={<span className="tnum">{formatNumber(navstevnici)}</span>}
-          hint={`${formatNumber(zobrazeni)} zobrazení`}
+          hint={`${formatNumber(zobrazeni)} zobrazení · 1 člověk = 1 návštěva denně`}
           icon={<Eye className="h-3.5 w-3.5" />}
           accent="var(--brand)"
         />
@@ -154,6 +154,13 @@ export function ProvozScreen({
           title="Cesta zákazníka"
           description="Kolik lidí se dostane o krok dál. Procento je podíl na předchozím kroku."
         />
+        {/* Otisk návštěvníka se každý den mění, takže kdo přijde dvakrát
+            v různé dny, je nahoře dvakrát. Konverze je tím spíš
+            podhodnocená než nadsazená — a to je lepší směr. */}
+        <p className="px-4 pt-3 text-xs text-ink-subtle sm:px-5">
+          Vrchol jsou návštěvy, ne lidé: kdo přijde v pondělí a ve středu, počítá se dvakrát.
+          Skutečná konverze je tedy o něco lepší než tahle čísla.
+        </p>
         <CardBody className="space-y-2 pt-3">
           {trychtyr.map((krok, i) => (
             <div key={krok.klic}>
