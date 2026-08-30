@@ -86,6 +86,19 @@ export default function Zasady() {
             výživného navíc probíhá celý ve vašem prohlížeči a příjmy se nikam neodesílají.
           </p>
 
+          <h2>Měření návštěvnosti</h2>
+          <p>
+            Kolik lidí web navštívilo a odkud přišli, si měříme sami — bez Google Analytics
+            a bez jakékoli třetí strany. Neukládáme IP adresu ani nic, čím by šel návštěvník
+            najít: z adresy a prohlížeče se počítá otisk, jehož sůl se každý den mění, takže
+            po půlnoci je z téhož člověka někdo jiný a zpětně to nejde spojit.
+          </p>
+          <p>
+            Z odkazující stránky si necháváme jen doménu, ne celou adresu — u tohohle tématu
+            se v ní občas veze i to, co člověk hledal. Neběží tu žádné reklamní ani sledovací
+            skripty a k měření nepoužíváme cookies, takže po vás nechceme ani souhlas s nimi.
+          </p>
+
           <h2>Komu údaje předáváme</h2>
           <p>
             Nikomu je neprodáváme. Předáváme je jen zpracovatelům, bez kterých by služba

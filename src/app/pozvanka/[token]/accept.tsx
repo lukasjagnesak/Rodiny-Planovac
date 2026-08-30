@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
+import { zmer } from "@/lib/mereni";
 
 export function AcceptInviteButton({ token }: { token: string }) {
   const router = useRouter();
@@ -24,6 +25,8 @@ export function AcceptInviteButton({ token }: { token: string }) {
       setError(error.message);
       return;
     }
+
+    zmer("druhy_rodic");
 
     document.cookie = `${ACTIVE_FAMILY_COOKIE}=${data}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     router.push("/prehled");

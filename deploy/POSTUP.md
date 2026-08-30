@@ -20,6 +20,7 @@ aby ji šlo pustit i podruhé, takže když si nejsi jistý, pusť ji znovu.
 | `0018_paywall.sql` | paywall v RLS | po vypršení by šlo dál zapisovat |
 | `0019_predplatne_pripominka.sql` | datum poslední připomínky | e-mail o konci trialu by chodil každou hodinu |
 | `0020_opakovane_vydaje.sql` | pravidelné výdaje a index proti zdvojení | opakované výdaje nepůjdou založit |
+| `0021_provoz.sql` | měření návštěvnosti a trychtýře | `/provoz` bude prázdný a měření spadne do logu |
 
 ## 2. Proměnné v `.env` (na serveru)
 
@@ -46,6 +47,10 @@ SMTP_PASS=re_…
 SMTP_FROM_NAME=Klidoo
 SMTP_FROM_EMAIL=info@klidoo.cz
 SMTP_REPLY_TO=info@klidoo.cz
+
+# Interní přehled provozu
+ADMIN_EMAILS=info@klidoo.cz
+PROVOZ_SUL=<openssl rand -hex 16>
 ```
 
 Pozor na dvě věci, které skript hlídá a které tiše rozbijí celý start:
@@ -85,6 +90,7 @@ Ručně pak:
 - [ ] v **Nastavení** je dole sekce „Konec s Klidoo"
 - [ ] u výdaje jde zaškrtnout „Opakuje se pravidelně" a šablona se objeví
       v kartě „Pravidelné výdaje"
+- [ ] `/provoz` se otevře tobě a komukoli jinému vrátí 404
 
 ## 5. Co se dělá jen jednou (mimo server)
 

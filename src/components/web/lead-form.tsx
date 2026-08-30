@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
+import { zmer } from "@/lib/mereni";
 
 /**
  * Sběr kontaktu na veřejném webu.
@@ -82,6 +83,7 @@ export function LeadForm({
       }
 
       setStav("hotovo");
+      zmer("lead");
     } catch (potiz) {
       setStav("ceka");
       setChyba(

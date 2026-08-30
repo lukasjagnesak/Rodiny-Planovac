@@ -15,6 +15,7 @@ import { toDateKey } from "@/lib/dates";
 import { startOfWeek } from "date-fns";
 import { WEEK_OPTS } from "@/lib/dates";
 import type { PatternKind } from "@/lib/types";
+import { zmer } from "@/lib/mereni";
 
 interface ChildDraft {
   name: string;
@@ -117,6 +118,8 @@ export function OnboardingWizard({
         fixed_side: kind === "fixed_parent" ? anchorSide : null,
       });
       if (patternError) throw patternError;
+
+      zmer("rodina");
 
       document.cookie = `${ACTIVE_FAMILY_COOKIE}=${familyId}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
       setZalozenaRodina(familyId as string);

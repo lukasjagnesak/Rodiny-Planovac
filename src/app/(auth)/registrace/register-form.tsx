@@ -11,6 +11,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { prettyError } from "../prihlaseni/login-form";
+import { zmer } from "@/lib/mereni";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -53,6 +54,10 @@ export function RegisterForm() {
       setError(prettyError(error.message));
       return;
     }
+
+    // Registrace se počítá i tehdy, když ještě chybí potvrzení e-mailu —
+    // jinak by trychtýř tvrdil, že se nikdo neregistroval.
+    zmer("registrace");
 
     // Když je v Supabase zapnuté potvrzení e-mailu, session zatím není.
     if (!data.session) {

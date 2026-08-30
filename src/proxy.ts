@@ -23,6 +23,7 @@ const PUBLIC_PATHS = [
   "/robots.txt",
   "/api/kalkulacka",
   "/api/lead",
+  "/api/t",
   "/api/checklist",
   "/api/telegram",
   "/api/cron",

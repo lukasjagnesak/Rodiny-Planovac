@@ -19,6 +19,7 @@ import {
 import { cn, hlaskaChyby } from "@/lib/format";
 import type { PatternKind } from "@/lib/types";
 import { BARVA_A, BARVA_B, Vysledek } from "./vysledek";
+import { zmer } from "@/lib/mereni";
 
 const VZORY: PatternKind[] = [
   "iso_week_parity",
@@ -98,6 +99,7 @@ export function Kalkulacka() {
 
     const url = `${window.location.origin}/kalkulacka/${data.token}`;
     setOdkaz(url);
+    zmer("kalkulacka");
 
     // Když nechal e-mail, pošleme mu rovnou přihlašovací odkaz — rozpis se
     // mu po přihlášení sám překlopí do aplikace.

@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Activity,
   Bell,
   Bike,
   BookOpen,
@@ -216,15 +217,17 @@ function VicPanel({
   open,
   onClose,
   email,
+  navic = [],
 }: {
   open: boolean;
   onClose: () => void;
   email?: string;
+  navic?: typeof SECONDARY;
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Víc" description={email ?? undefined}>
       <nav className="grid grid-cols-2 gap-2">
-        {MOBIL_ZBYTEK.map(({ href, label, Icon }) => (
+        {[...MOBIL_ZBYTEK, ...navic].map(({ href, label, Icon }) => (
           <Link
             key={href}
             href={href}
@@ -254,14 +257,20 @@ export function AppShell({
   children,
   novychOznameni = 0,
   pruh,
+  spravce = false,
 }: {
   session: SessionContext;
   children: React.ReactNode;
   novychOznameni?: number;
+  /** Provozovatel navíc vidí přehled návštěvnosti. */
+  spravce?: boolean;
   /** Pruh nad obsahem — konec zkušebního období, neprošlá platba. */
   pruh?: React.ReactNode;
 }) {
   const me = session.members.find((m) => m.userId === session.userId);
+  const druhaSkupina = spravce
+    ? [...SECONDARY, { href: "/provoz", label: "Provoz", Icon: Activity }]
+    : SECONDARY;
   const [vicOteviren, setVicOteviren] = React.useState(false);
 
   return (
@@ -279,7 +288,7 @@ export function AppShell({
             <SidebarLink key={item.href} {...item} />
           ))}
           <div className="my-2 h-px bg-line" />
-          {SECONDARY.map((item) => (
+          {druhaSkupina.map((item) => (
             <SidebarLink key={item.href} {...item} />
           ))}
         </nav>
@@ -357,6 +366,7 @@ export function AppShell({
         open={vicOteviren}
         onClose={() => setVicOteviren(false)}
         email={session.profile.email ?? undefined}
+        navic={spravce ? [{ href: "/provoz", label: "Provoz", Icon: Activity }] : []}
       />
     </div>
   );

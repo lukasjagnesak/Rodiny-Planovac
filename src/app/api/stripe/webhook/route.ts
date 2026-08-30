@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripe, tarifZCeny } from "@/lib/stripe";
+import { zaznamenej } from "@/lib/provoz";
 import type { StavPredplatneho } from "@/lib/predplatne-pravidla";
 
 /**
@@ -143,10 +144,21 @@ async function uloz(predplatne: Stripe.Subscription, zaloha: string | null): Pro
   }
 
   const admin = createAdminClient();
+
+  // Stav před zápisem: podle něj se pozná první zaplacení. Bez toho by se
+  // do trychtýře počítalo i každé měsíční obnovení a čísla by lhala.
+  const { data: predtim } = await admin
+    .from("predplatna")
+    .select("stav")
+    .eq("family_id", familyId)
+    .maybeSingle();
+
+  const novyStav = prelozStav(predplatne.status);
+
   const { error } = await admin
     .from("predplatna")
     .update({
-      stav: prelozStav(predplatne.status),
+      stav: novyStav,
       plati_do: platiDo(predplatne),
       stripe_customer_id:
         typeof predplatne.customer === "string" ? predplatne.customer : predplatne.customer.id,
@@ -157,6 +169,12 @@ async function uloz(predplatne: Stripe.Subscription, zaloha: string | null): Pro
     .eq("family_id", familyId);
 
   if (error) throw new Error(error.message);
+
+  // Poslední krok trychtýře, a jen jednou: při přechodu na zaplaceno.
+  // Bez otisku návštěvníka — tohle chodí ze Stripu, ne z prohlížeče.
+  if (novyStav === "aktivni" && predtim?.stav !== "aktivni") {
+    await zaznamenej("predplatne");
+  }
 }
 
 /** Poslední záchrana: dohledat rodinu podle zákazníka. */
