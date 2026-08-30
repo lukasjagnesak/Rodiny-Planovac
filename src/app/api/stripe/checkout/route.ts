@@ -91,7 +91,9 @@ export async function POST(request: NextRequest) {
     allow_promotion_codes: true,
     locale: "cs",
     billing_address_collection: "auto",
-    success_url: `${siteUrl()}/predplatne?stav=hotovo`,
+    // Veřejná stránka schválně: reklamní skripty běží jen tam a nákup
+    // musí být vidět. Odtud se člověk překlikne do aplikace.
+    success_url: `${siteUrl()}/dekujeme?tarif=${tarif}`,
     cancel_url: `${siteUrl()}/predplatne?stav=zruseno`,
   });
 

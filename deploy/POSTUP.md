@@ -51,7 +51,14 @@ SMTP_REPLY_TO=info@klidoo.cz
 # Interní přehled provozu
 ADMIN_EMAILS=info@klidoo.cz
 PROVOZ_SUL=<openssl rand -hex 16>
+
+# Marketingové měření — načte se až po souhlasu návštěvníka
+NEXT_PUBLIC_GA_ID=G-…
+NEXT_PUBLIC_META_PIXEL_ID=…
 ```
+
+> `NEXT_PUBLIC_*` se zapékají do buildu, takže po jejich změně nestačí
+> restart — musí se přestavět obraz. `deploy/update.sh` to dělá vždy.
 
 Pozor na dvě věci, které skript hlídá a které tiše rozbijí celý start:
 hodnoty **nedávej do uvozovek** a **nepiš do nich `< > | ; & $ ( )`**.
@@ -91,6 +98,10 @@ Ručně pak:
 - [ ] u výdaje jde zaškrtnout „Opakuje se pravidelně" a šablona se objeví
       v kartě „Pravidelné výdaje"
 - [ ] `/provoz` se otevře tobě a komukoli jinému vrátí 404
+- [ ] při první návštěvě webu se ukáže lišta se souhlasem; po „Jen nutné"
+      se v síti neobjeví žádné volání na google ani facebook
+- [ ] po „Přijmout vše" naskočí GA4 v real-time přehledu a Meta Pixel
+      v Events Manageru
 
 ## 5. Co se dělá jen jednou (mimo server)
 

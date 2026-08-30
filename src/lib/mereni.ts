@@ -7,9 +7,18 @@
  */
 
 import { zapamatujPuvod } from "./atribuce";
+import { marketingUdalost } from "./marketing";
 
-export function zmer(druh: string, cesta?: string): void {
+export function zmer(
+  druh: string,
+  cesta?: string,
+  parametry: Record<string, unknown> = {},
+): void {
   if (typeof window === "undefined") return;
+
+  // Reklamní systémy dostanou totéž, ale jen když k tomu je souhlas —
+  // bez něj se jejich skript vůbec nenačetl a volání spadne do prázdna.
+  if (druh !== "zobrazeni") marketingUdalost(druh, parametry);
 
   try {
     const odkud = zapamatujPuvod();

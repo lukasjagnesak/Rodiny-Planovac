@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Logo, Znak } from "@/components/ui/logo";
 import { SledovaniPuvodu } from "@/components/web/puvod";
+import { MereniSkripty } from "@/components/web/mereni-skripty";
+import { SouhlasLista } from "@/components/web/souhlas-lista";
 import { MobilniMenu } from "@/components/web/mobilni-menu";
 import { ZNACKA } from "@/lib/brand";
 
@@ -50,6 +52,8 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-canvas">
       <SledovaniPuvodu />
+      <MereniSkripty />
+      <SouhlasLista />
 
       <header className="safe-top sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center gap-4 px-5 sm:px-6">

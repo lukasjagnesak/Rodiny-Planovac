@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ZnovuNastavitSouhlas } from "@/components/web/znovu-souhlas";
 import { Hero, Sloupec, Tabulka } from "@/components/web/prvky";
 import { PROVOZOVATEL, maIdentifikaci } from "@/lib/provozovatel";
 import { ZNACKA } from "@/lib/brand";
@@ -9,6 +10,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/zasady-ochrany-osobnich-udaju" },
   robots: { index: true, follow: true },
 };
+
+/** Odkaz, který znovu vyvolá lištu se souhlasem. */
+function OdvolatSouhlas() {
+  return <ZnovuNastavitSouhlas />;
+}
 
 export default function Zasady() {
   return (
@@ -88,15 +94,26 @@ export default function Zasady() {
 
           <h2>Měření návštěvnosti</h2>
           <p>
-            Kolik lidí web navštívilo a odkud přišli, si měříme sami — bez Google Analytics
-            a bez jakékoli třetí strany. Neukládáme IP adresu ani nic, čím by šel návštěvník
-            najít: z adresy a prohlížeče se počítá otisk, jehož sůl se každý den mění, takže
-            po půlnoci je z téhož člověka někdo jiný a zpětně to nejde spojit.
+            Měříme dvěma způsoby a je mezi nimi podstatný rozdíl.
           </p>
           <p>
-            Z odkazující stránky si necháváme jen doménu, ne celou adresu — u tohohle tématu
-            se v ní občas veze i to, co člověk hledal. Neběží tu žádné reklamní ani sledovací
-            skripty a k měření nepoužíváme cookies, takže po vás nechceme ani souhlas s nimi.
+            <strong>Vlastní měření</strong> běží vždycky a souhlas nevyžaduje, protože
+            neukládá nic, čím by šel návštěvník najít. Z adresy a prohlížeče se počítá otisk,
+            jehož sůl se každý den mění — po půlnoci je z téhož člověka někdo jiný a zpětně to
+            nejde spojit. Nepoužívá cookies a z odkazující stránky si necháváme jen doménu,
+            ne celou adresu; u tohohle tématu se v ní občas veze i to, co člověk hledal.
+          </p>
+          <p>
+            <strong>Google Analytics a Meta Pixel</strong> se spustí jedině tehdy, když k tomu
+            dáte souhlas v liště, která se ukáže při první návštěvě. Do té doby se nenačte ani
+            jejich skript. Slouží k měření reklamních kampaní a ukládají cookies; oba
+            zpracovatelé mohou údaje předat do Spojených států na základě rozhodnutí Evropské
+            komise o odpovídající ochraně. Souhlas můžete kdykoli odvolat — stačí{" "}
+            <OdvolatSouhlas /> a nastavit volbu znovu.
+          </p>
+          <p>
+            Uvnitř aplikace, tedy tam, kde jsou údaje o dětech, kalendář a doklady, žádné
+            reklamní ani analytické skripty neběží. Ani se souhlasem.
           </p>
 
           <h2>Komu údaje předáváme</h2>
@@ -129,6 +146,12 @@ export default function Zasady() {
               <strong>Poskytovatel e-mailu</strong> — odesílání pozvánek a zpráv o
               předplatném; předává se e-mailová adresa příjemce a obsah zprávy.
             </li>
+            <li>
+              <strong>Google</strong> (Analytics, Ads) a <strong>Meta</strong> — jen se
+              souhlasem a jen na veřejném webu: měření návštěvnosti a účinnosti reklamy.
+              Předává se identifikátor prohlížeče, navštívené stránky veřejného webu a to,
+              jestli došlo k registraci nebo platbě. Nikdy nic o dětech ani obsah aplikace.
+            </li>
           </ul>
 
           <h2>Jaká máte práva</h2>
@@ -152,9 +175,11 @@ export default function Zasady() {
 
           <h2>Cookies a měření</h2>
           <p>
-            Používáme technické cookies nutné pro přihlášení; bez nich by se nedalo služby
-            používat a souhlas nevyžadují. Marketingové ani analytické cookies třetích stran
-            zatím nenasazujeme. Kdybychom je nasadili, zeptáme se předem.
+            Technické cookies nutné pro přihlášení nevyžadují souhlas; bez nich by se služba
+            nedala používat. Analytické a marketingové cookies (Google Analytics, Meta Pixel,
+            Google Ads) nasazujeme jen se souhlasem, o který si říkáme v liště při první
+            návštěvě. Odmítnutí je tam stejně dostupné jako souhlas a nemá na fungování webu
+            žádný vliv.
           </p>
           <p>
             Pokud přijdete přes odkaz s parametrem kampaně nebo partnerským kódem, uložíme si

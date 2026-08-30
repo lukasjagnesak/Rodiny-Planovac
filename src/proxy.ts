@@ -15,6 +15,7 @@ const PUBLIC_PATHS = [
   "/kalkulacka-vyzivneho",
   "/kalkulacka",
   "/cenik",
+  "/dekujeme",
   "/checklist-prvnich-30-dni",
   "/pro-advokaty",
   "/pro-mediatory",

@@ -1,4 +1,7 @@
 import { Logo } from "@/components/ui/logo";
+import { MereniSkripty } from "@/components/web/mereni-skripty";
+import { SouhlasLista } from "@/components/web/souhlas-lista";
+import { SledovaniPuvodu } from "@/components/web/puvod";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,6 +28,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
         {children}
       </div>
+
+      {/* Registrace je konverze, kterou reklamní systémy potřebují vidět. */}
+      <SledovaniPuvodu />
+      <MereniSkripty />
+      <SouhlasLista />
     </div>
   );
 }
