@@ -182,52 +182,98 @@ a pošle ho botovi. Hotovo.
 ### 5b. E-maily (SMTP)
 
 Aplikace posílá pozvánky druhému rodiči, upozornění na konec zkušebního období
-a na neúspěšnou platbu. **Vestavěná pošta Supabase na to nestačí** — má limit
-pár zpráv za hodinu a odesílá z cizí domény, takže pozvánky končí ve spamu.
+a na neúspěšnou platbu. Adresa, ze které to chodí, je `info@klidoo.cz`.
 
-**Poskytovatel.** Stačí cokoli, co umí SMTP. Pro Klidoo dává smysl
-[Resend](https://resend.com) (3 000 zpráv měsíčně zdarma, evropský region,
-DPA) nebo [Brevo](https://brevo.com), pokud chceš data výhradně v EU.
-Přesedlat jinam znamená změnit čtyři proměnné v `.env`.
+Jsou to **dvě různé věci** a je potřeba obojí:
 
-**1. Ověř doménu** u poskytovatele a přidej do DNS `klidoo.cz` záznamy, které
-ti ukáže:
+| | K čemu | Kdo to umí |
+|---|---|---|
+| **Schránka** | aby na `info@klidoo.cz` mohl někdo napsat a ty si to přečetl | poštovní hosting (WEDOS, Zoho, Google Workspace) |
+| **Odesílací relé** | aby aplikace mohla poslat tisíc pozvánek a nespadly do spamu | Resend, Brevo, Mailgun, SES |
 
-| Typ  | Název               | Hodnota                                          |
-|------|---------------------|--------------------------------------------------|
-| TXT  | `@`                 | `v=spf1 include:<poskytovatel> ~all`             |
-| TXT  | `resend._domainkey` | DKIM klíč od poskytovatele                       |
-| TXT  | `_dmarc`            | `v=DMARC1; p=none; rua=mailto:ahoj@klidoo.cz`    |
+Schránka na hostingu zvládne i odesílání, ale s limity a horší doručitelností;
+relé zase neumí příchozí poštu. Proto obojí.
 
-SPF a DKIM nejsou volitelné: bez nich Seznam i Gmail zprávy zahazují. DMARC
-nech zpočátku na `p=none` a zpřísni ho, až uvidíš, že všechno prochází.
+> Vestavěná pošta Supabase na tohle nestačí — má limit pár zpráv za hodinu
+> a odesílá z cizí domény, takže pozvánky končí ve spamu.
 
-**2. Doplň do `.env`:**
+**Kde je doména.** `klidoo.cz` má DNS u **WEDOS** (`ns.wedos.cz`), takže
+všechny záznamy níž se zadávají ve WEDOS → *Domény → klidoo.cz → DNS
+záznamy*. Změna se projeví do pár minut, ale počítej i s hodinou.
+
+Stav ke dni psaní: doména má jen `A` záznam na server. **MX, SPF, DKIM ani
+DMARC zatím neexistují** — dokud nebudou, na `info@klidoo.cz` nic nedojde
+a odchozí zprávy budou končit ve spamu.
+
+#### 1. Schránka info@klidoo.cz
+
+Zvol poskytovatele (WEDOS mail, [Zoho Mail](https://zoho.com/mail) má zdarma
+jednu doménu, Google Workspace stojí kolem 150 Kč měsíčně) a podle jeho návodu
+přidej **MX záznamy na kořenovou doménu** `klidoo.cz`. Pak si ověř, že ti na
+`info@klidoo.cz` dojde zkušební zpráva.
+
+#### 2. Odesílací relé
+
+V [Resendu](https://resend.com) (3 000 zpráv měsíčně zdarma, evropský region)
+přidej doménu `klidoo.cz`. Resend ti vypíše záznamy — obvykle na
+**poddoméně `send.klidoo.cz`**, takže se netlučou s poštovní schránkou na
+kořenové doméně. Zkopíruj je do WEDOS **přesně tak, jak je vypsané** (DKIM
+klíč je citlivý na velikost písmen) a nech doménu ověřit.
+
+#### 3. DMARC
+
+Jeden TXT záznam navíc, který říká, co se má stát s poštou, která se za tvoji
+doménu jen vydává:
+
+| Typ | Název | Hodnota |
+|-----|-------|---------|
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:info@klidoo.cz` |
+
+Nech `p=none`, dokud ti pár týdnů nechodí reporty a nevidíš, že všechno
+prochází. Teprve pak zpřísni na `p=quarantine`.
+
+> **Jedna doména = jeden SPF záznam.** Když ti poštovní hosting i relé dají
+> každý svůj SPF pro kořenovou doménu, **nesmíš vytvořit dva TXT záznamy** —
+> to celý SPF zneplatní. Slouč je do jednoho:
+> `v=spf1 include:jedno.cz include:druhe.cz ~all`
+
+#### 4. Nastav aplikaci
 
 ```bash
 SMTP_HOST=smtp.resend.com
 SMTP_PORT=587
 SMTP_USER=resend
-SMTP_PASS=<API klíč>
+SMTP_PASS=<API klíč z Resendu>
 SMTP_FROM_NAME=Klidoo
-SMTP_FROM_EMAIL=ahoj@klidoo.cz
-SMTP_REPLY_TO=ahoj@klidoo.cz
+SMTP_FROM_EMAIL=info@klidoo.cz
+SMTP_REPLY_TO=info@klidoo.cz
 ```
 
-**3. Ověř po nasazení:**
+Odesílatel je schválně rozdělený na dvě proměnné: `SMTP_FROM=Klidoo
+<info@klidoo.cz>` by rozbilo `source .env` v nasazovacím skriptu, protože
+`<` je v shellu přesměrování.
+
+#### 5. Ověř
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
   "https://klidoo.cz/api/mail/kontrola?komu=tvuj@email.cz"
 ```
 
-Vrátí stav spojení a pošle zkušební zprávu. Bez `?komu=` jen otestuje přihlášení.
+Vrátí stav spojení a pošle zkušební zprávu. Bez `?komu=` jen otestuje
+přihlášení k serveru. Zkušební zprávu si nech přijít na Gmail i na Seznam
+a v obou podmínkách zkontroluj, že nespadla do spamu.
 
-**4. Přepni i přihlašovací e-maily.** V Supabase **Authentication → Emails →
-SMTP Settings** vyplň ty samé údaje. Do té doby chodí potvrzení registrace
-a magic linky ze Supabase, s jejich limitem a jejich doménou.
+#### 6. Přepni i přihlašovací e-maily
+
+V Supabase **Authentication → Emails → SMTP Settings** vyplň ty samé údaje.
+Do té doby chodí potvrzení registrace a magic linky ze Supabase — z jejich
+domény a s jejich limitem.
 
 ### 6. Nasazení na Hetzner
+
+Postup pro **aktualizaci už běžící instance** je v [`deploy/POSTUP.md`](deploy/POSTUP.md)
+— včetně pořadí migrací, kontroly po nasazení a návratu na předchozí verzi.
 
 Stačí nejmenší CX22 (2 vCPU / 4 GB). Ubuntu 24.04.
 

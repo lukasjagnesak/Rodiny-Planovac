@@ -26,6 +26,28 @@ if [[ -n "$NOVE_MIGRACE" ]]; then
   [[ "$odpoved" =~ ^[aAyY]$ ]] || { echo "Zastaveno."; exit 1; }
 fi
 
+# Nová verze často přinese i novou proměnnou. Když chybí, aplikace
+# většinou naběhne a jen tiše nedělá půlku toho, co má — pozvánky se
+# neodešlou, platba se nedokončí. Radši to říct teď než po týdnu.
+CHYBEJICI=""
+while IFS= read -r klic; do
+  grep -q "^${klic}=" .env || CHYBEJICI="$CHYBEJICI $klic"
+done < <(grep -oE '^[A-Z_]+=' .env.example | tr -d '=' | sort -u)
+
+if [[ -n "$CHYBEJICI" ]]; then
+  echo
+  echo "══════════════════════════════════════════════════════════════"
+  echo " V .env chybí proměnné, které zná .env.example:"
+  for klic in $CHYBEJICI; do echo "   $klic"; done
+  echo
+  echo " Bez nich aplikace poběží, ale příslušná část bude mlčet."
+  echo " Popis každé z nich je v .env.example a v README."
+  echo "══════════════════════════════════════════════════════════════"
+  echo
+  read -r -p "Pokračovat i tak? [a/N] " odpoved
+  [[ "$odpoved" =~ ^[aAyY]$ ]] || { echo "Zastaveno. Doplň je:  nano .env"; exit 1; }
+fi
+
 echo "▶ Přestavuji obraz"
 docker compose build
 

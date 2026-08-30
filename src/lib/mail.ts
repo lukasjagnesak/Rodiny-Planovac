@@ -39,14 +39,14 @@ function transport(): Transporter {
 /**
  * Odesílatel se skládá ze dvou proměnných schválně.
  *
- * `SMTP_FROM=Klidoo <ahoj@klidoo.cz>` vypadá pohodlněji, jenže špičaté
+ * `SMTP_FROM=Klidoo <info@klidoo.cz>` vypadá pohodlněji, jenže špičaté
  * závorky jsou v shellu přesměrování — `source .env` na takovém řádku
  * skončí syntaktickou chybou a nasazovací skript spadne dřív, než se
  * k něčemu dostane. Uvozovky to neřeší, ty zase vadí Compose.
  */
 function odesilatel(): string {
   const jmeno = process.env.SMTP_FROM_NAME?.trim() || ZNACKA;
-  const adresa = process.env.SMTP_FROM_EMAIL?.trim() || "ahoj@klidoo.cz";
+  const adresa = process.env.SMTP_FROM_EMAIL?.trim() || "info@klidoo.cz";
   return `${jmeno} <${adresa}>`;
 }
 

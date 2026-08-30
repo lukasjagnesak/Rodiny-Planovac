@@ -13,7 +13,7 @@ export const PROVOZOVATEL = {
   /** Sídlo. */
   adresa: "",
   /** E-mail pro uplatnění práv subjektu údajů. */
-  email: "ahoj@klidoo.cz",
+  email: "info@klidoo.cz",
 } as const;
 
 /** `true`, když jsou vyplněné povinné identifikační údaje. */

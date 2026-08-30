@@ -26,7 +26,7 @@ fi
 log "Kontroluji .env"
 
 # Znaky, které shell bere jako příkaz, ne jako text. `SMTP_FROM=Klidoo
-# <ahoj@klidoo.cz>` vypadá nevinně, ale `<` je přesměrování a `source .env`
+# <info@klidoo.cz>` vypadá nevinně, ale `<` je přesměrování a `source .env`
 # na tom skončí syntaktickou chybou — tenhle skript by spadl dřív, než
 # cokoli zkontroluje. Uvozovky nepomůžou, ty zase vadí Compose.
 if grep -qE '^[A-Z_]+=[^#]*[<>|;&`$()]' .env; then
