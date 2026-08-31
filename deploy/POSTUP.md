@@ -106,9 +106,10 @@ Ručně pak:
 ## 5. Co se dělá jen jednou (mimo server)
 
 - [ ] **Stripe → Webhooks**: endpoint `https://klidoo.cz/api/stripe/webhook`,
-      události `checkout.session.completed`, `customer.subscription.*`,
-      `invoice.paid`, `invoice.payment_failed`. Podpisové tajemství patří
-      do `STRIPE_WEBHOOK_SECRET`.
+      události `checkout.session.completed`, `customer.subscription.*`
+      (včetně `customer.subscription.trial_will_end`), `invoice.paid`,
+      `invoice.payment_failed`. Podpisové tajemství patří do
+      `STRIPE_WEBHOOK_SECRET`.
 - [ ] **Supabase → Authentication → Emails → SMTP**: stejné údaje jako v `.env`.
       Do té doby chodí přihlašovací e-maily ze Supabase, s jejich limitem
       pár zpráv za hodinu.

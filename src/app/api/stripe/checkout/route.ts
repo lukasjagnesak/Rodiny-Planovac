@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient();
   const { data: predplatne } = await admin
     .from("predplatna")
-    .select("stripe_customer_id, stripe_subscription_id, stav")
+    .select("stripe_customer_id, stripe_subscription_id, stav, plati_do")
     .eq("family_id", familyId)
     .maybeSingle();
 
@@ -81,12 +81,34 @@ export async function POST(request: NextRequest) {
       .eq("family_id", familyId);
   }
 
+  /**
+   * Nezaplacené dny se nesmí ztratit.
+   *
+   * Kdo se rozhodne platit pátý den, má dojet zbylých pětadvacet zdarma
+   * a první platba mu má odejít až po nich — jinak si za zkušební období
+   * fakticky zaplatil. Stripe to umí: `trial_end` je okamžik, kdy
+   * proběhne první stržení. Kartu si vezme hned, ale nic z ní nestrhne.
+   *
+   * Stripe vyžaduje, aby konec zkušebního období byl aspoň 48 hodin
+   * v budoucnu. Když zbývá míň, platí se rovnou — o pár hodin nikdo
+   * dohadovat nebude.
+   */
+  const konecZkusebniho =
+    predplatne?.stav === "zkusebni" ? new Date(predplatne.plati_do as string).getTime() : 0;
+  const zbyvaDost = konecZkusebniho > Date.now() + 48 * 60 * 60 * 1000;
+
   const session = await s.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     client_reference_id: familyId,
     line_items: [{ price: cenaId(tarif)!, quantity: 1 }],
-    subscription_data: { metadata: { family_id: familyId, tarif } },
+    subscription_data: {
+      metadata: { family_id: familyId, tarif },
+      ...(zbyvaDost ? { trial_end: Math.floor(konecZkusebniho / 1000) } : {}),
+    },
+    // I se zkušebním obdobím chceme kartu hned — jinak by po jeho konci
+    // nebylo z čeho strhnout a předplatné by rovnou spadlo do nezaplaceno.
+    payment_method_collection: "always",
     metadata: { family_id: familyId, tarif },
     allow_promotion_codes: true,
     locale: "cs",

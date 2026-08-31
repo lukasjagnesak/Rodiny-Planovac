@@ -10,6 +10,7 @@ const {
   escapeHtml,
   pozvankaZprava,
   konecZkusebnihoZprava,
+  prvniPlatbaZprava,
   platbaSelhalaZprava,
 } = require("../.test-build/mail-sablony.js");
 
@@ -67,6 +68,18 @@ console.log("── konec zkušebního období ──");
   ok("slibuje, že se nic nesmaže", z.text.includes("Nic se nesmaže"));
   const zaporne = konecZkusebnihoZprava({ jmeno: "", dni: -2, odkaz: "https://klidoo.cz/predplatne" });
   ok("záporný počet dní nespadne na nesmysl", zaporne.predmet.includes("dnes"));
+}
+
+console.log("── první platba se blíží ──");
+{
+  const z = prvniPlatbaZprava({ dni: 3, castka: "199 Kč", odkaz: "https://klidoo.cz/predplatne" });
+  ok("řekne kdy", z.predmet.includes("za 3 dny"));
+  ok("řekne kolik", z.html.includes("199 Kč") && z.text.includes("199 Kč"));
+  ok("nabídne zrušení", z.text.includes("zruš"));
+  const zitra = prvniPlatbaZprava({ dni: 1, castka: "199 Kč", odkaz: "x" });
+  ok("poslední den má vlastní tvar", zitra.predmet.includes("zítra"));
+  const divne = prvniPlatbaZprava({ dni: 0, castka: "199 Kč", odkaz: "x" });
+  ok("nula dní nespadne na nesmysl", divne.predmet.includes("zítra"));
 }
 
 console.log("── neúspěšná platba ──");

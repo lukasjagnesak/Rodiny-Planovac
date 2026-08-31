@@ -27,6 +27,11 @@ const OTAZKY = [
       "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné, zamkne se jen zapisování. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
   },
   {
+    otazka: "Když zaplatím hned, přijdu o zbytek zkušebního období?",
+    odpoved:
+      "Ne. Karta se strhne až v den, kdy by zkušební období skončilo — tři dny předem ti navíc přijde upozornění. Zaplatit dřív tedy nic nestojí a nic neurychlí, jen máš klid.",
+  },
+  {
     otazka: "Musím zadávat kartu, abych to mohl zkusit?",
     odpoved:
       "Ne. Zkušební období se zapne samo při založení rodiny a nic se z ničeho nestrhává. Kartu zadáváš, až když se rozhodneš pokračovat.",

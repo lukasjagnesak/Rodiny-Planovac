@@ -89,7 +89,11 @@ export default async function PredplatnePage({
         <Card>
           <CardHeader
             title={pristup.muzeZapisovat ? "Pokračovat po zkušebním období" : "Odemknout zápis"}
-            description={`Zkušební období je ${ZKUSEBNI_DNI} dní a platit můžeš kdykoli během něj — dny se neztratí.`}
+            description={
+              pristup.jeZkusebni && pristup.dniDoKonce > 2
+                ? `Zaplatit můžeš hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdeš.`
+                : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebuješ.`
+            }
           />
           <CardBody className="pt-3">
             <VolbaTarifu familyId={session.family.id} brana={stripeJeNastaveny()} />

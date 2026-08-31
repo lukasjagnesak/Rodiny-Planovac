@@ -157,6 +157,46 @@ ${vstup.odkaz}
   return { predmet, html: obalka(predmet, telo), text };
 }
 
+/**
+ * Za tři dny odejde první platba.
+ *
+ * Kdo zadal kartu na začátku zkušebního období, na to za měsíc nemusí
+ * myslet — a nečekané stržení je nejrychlejší cesta ke sporu s bankou.
+ * Radši připomenout a dát šanci zrušit, než řešit chargeback.
+ */
+export function prvniPlatbaZprava(vstup: {
+  dni: number;
+  castka: string;
+  odkaz: string;
+}): Zprava {
+  const dni = Math.max(vstup.dni, 1);
+  const kdy = dni === 1 ? "zítra" : `za ${dni} ${dni <= 4 ? "dny" : "dní"}`;
+  const predmet = `${ZNACKA}: první platba ${kdy}`;
+
+  const telo = `
+<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">Zkušební období končí ${kdy}</h1>
+<p style="margin:0 0 12px 0;">
+  Potom ti z uložené karty strhneme <strong>${escapeHtml(vstup.castka)}</strong> a předplatné
+  začne běžet. Nemusíš dělat nic.
+</p>
+<p style="margin:0 0 12px 0;">
+  Pokud pokračovat nechceš, zruš předplatné do té doby — nic se nestrhne a data ti zůstanou
+  ke čtení.
+</p>
+${tlacitko(vstup.odkaz, "Spravovat předplatné")}`;
+
+  const text = `Zkušební období ${ZNACKA} končí ${kdy}.
+
+Potom ti z uložené karty strhneme ${vstup.castka} a předplatné začne běžet.
+Nemusíš dělat nic. Pokud pokračovat nechceš, zruš ho do té doby — nic se
+nestrhne a data ti zůstanou ke čtení.
+
+${vstup.odkaz}
+`;
+
+  return { predmet, html: obalka(predmet, telo), text };
+}
+
 /** Platba neprošla — Stripe to ještě zkusí, ale karta bývá jen expirovaná. */
 export function platbaSelhalaZprava(vstup: { odkaz: string }): Zprava {
   const predmet = `Platba za ${ZNACKA} neprošla`;

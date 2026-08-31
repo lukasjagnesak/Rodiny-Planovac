@@ -3,6 +3,10 @@ import type Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripe, tarifZCeny } from "@/lib/stripe";
 import { zaznamenej } from "@/lib/provoz";
+import { posliMail } from "@/lib/mail";
+import { prvniPlatbaZprava } from "@/lib/mail-sablony";
+import { korun, tarifPodleId } from "@/lib/tarify";
+import { siteUrl } from "@/lib/google";
 import type { StavPredplatneho } from "@/lib/predplatne-pravidla";
 
 /**
@@ -64,6 +68,13 @@ async function zpracuj(udalost: Stripe.Event): Promise<void> {
     case "customer.subscription.updated":
     case "customer.subscription.deleted": {
       await uloz(udalost.data.object as Stripe.Subscription, null);
+      return;
+    }
+
+    case "customer.subscription.trial_will_end": {
+      // Stripe to posílá tři dny předem. Nečekané stržení je nejrychlejší
+      // cesta ke sporu s bankou, tak radši připomenout.
+      await upozorniNaPrvniPlatbu(udalost.data.object as Stripe.Subscription);
       return;
     }
 
@@ -174,6 +185,39 @@ async function uloz(predplatne: Stripe.Subscription, zaloha: string | null): Pro
   // Bez otisku návštěvníka — tohle chodí ze Stripu, ne z prohlížeče.
   if (novyStav === "aktivni" && predtim?.stav !== "aktivni") {
     await zaznamenej("predplatne");
+  }
+}
+
+/** E-mail „za tři dny odejde první platba" všem správcům rodiny. */
+async function upozorniNaPrvniPlatbu(predplatne: Stripe.Subscription): Promise<void> {
+  const familyId =
+    predplatne.metadata?.family_id ?? (await rodinaPodleZakaznika(predplatne));
+  if (!familyId || !predplatne.trial_end) return;
+
+  const dni = Math.ceil((predplatne.trial_end * 1000 - Date.now()) / (24 * 60 * 60 * 1000));
+  const tarif = tarifPodleId(
+    tarifZCeny(predplatne.items.data[0]?.price?.id) ?? predplatne.metadata?.tarif,
+  );
+
+  const admin = createAdminClient();
+  const { data: clenove } = await admin
+    .from("family_members")
+    .select("profile:profiles(email, full_name)")
+    .eq("family_id", familyId)
+    .in("role", ["owner", "parent"]);
+
+  for (const clen of clenove ?? []) {
+    const profil = clen.profile as unknown as { email: string | null } | null;
+    if (!profil?.email) continue;
+
+    await posliMail(
+      profil.email,
+      prvniPlatbaZprava({
+        dni,
+        castka: tarif ? korun(tarif.cena) : "předplatné",
+        odkaz: `${siteUrl()}/predplatne`,
+      }),
+    );
   }
 }
 
