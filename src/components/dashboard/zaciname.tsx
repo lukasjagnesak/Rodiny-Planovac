@@ -9,12 +9,13 @@ import { cn } from "@/lib/format";
 /**
  * Rozjezd: pár kroků, po kterých z aplikace začne být užitek.
  *
- * Aktivace téhle aplikace není „vyplnil profil", ale „připojil se druhý
- * rodič" — do té doby je to zápisník jednoho člověka. Proto je pozvánka
- * první a zůstává nahoře, dokud se nestane.
+ * Klidoo dává smysl i jednomu rodiči — spousta lidí si ho pořizuje
+ * proto, že v tom chce mít sám pořádek. Druhý rodič je proto nabídka,
+ * ne podmínka, a každý krok jde odmítnout. Ne každý má koho pozvat
+ * a připomínat to napořád je u tohohle tématu krutost, ne aktivace.
  *
- * Karta zmizí sama, jakmile je hotovo, a jde zavřít. Checklist, který
- * visí na přehledu napořád, si lidé odnaučí vidět.
+ * Karta zmizí sama, jakmile je hotovo, a jde zavřít celá. Checklist,
+ * který visí na přehledu napořád, si lidé odnaučí vidět.
  */
 
 export interface Krok {
@@ -29,18 +30,32 @@ export interface Krok {
 
 export function Zaciname({ kroky }: { kroky: Krok[] }) {
   const klic = "klidoo_zaciname_skryto";
+  const klicOdmitnute = "klidoo_zaciname_odmitnute";
   const [skryto, setSkryto] = React.useState(true);
-
-  const hotovych = kroky.filter((k) => k.hotovo).length;
-  const vseHotovo = hotovych === kroky.length;
+  const [odmitnute, setOdmitnute] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     try {
       setSkryto(window.localStorage.getItem(klic) === "1");
+      setOdmitnute(JSON.parse(window.localStorage.getItem(klicOdmitnute) ?? "[]"));
     } catch {
       setSkryto(false);
     }
   }, []);
+
+  function odmitni(krok: string) {
+    const nove = [...odmitnute, krok];
+    setOdmitnute(nove);
+    try {
+      window.localStorage.setItem(klicOdmitnute, JSON.stringify(nove));
+    } catch {
+      /* soukromé okno — vrátí se to při dalším načtení, nevadí */
+    }
+  }
+
+  const viditelne = kroky.filter((k) => !odmitnute.includes(k.klic));
+  const hotovych = viditelne.filter((k) => k.hotovo).length;
+  const vseHotovo = viditelne.length === 0 || hotovych === viditelne.length;
 
   if (skryto || vseHotovo) return null;
 
@@ -50,7 +65,7 @@ export function Zaciname({ kroky }: { kroky: Krok[] }) {
         <div className="min-w-0 flex-1">
           <h2 className="text-base font-semibold tracking-tight text-ink">Než se rozjedeme</h2>
           <p className="mt-0.5 text-sm text-ink-muted">
-            {hotovych} z {kroky.length} hotovo · zbytek zabere pár minut
+            {hotovych} z {viditelne.length} hotovo · zbytek zabere pár minut
           </p>
         </div>
         <button
@@ -73,17 +88,17 @@ export function Zaciname({ kroky }: { kroky: Krok[] }) {
       <div className="mx-4 mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2 sm:mx-5">
         <div
           className="h-full rounded-full bg-brand transition-all duration-500"
-          style={{ width: `${(hotovych / kroky.length) * 100}%` }}
+          style={{ width: `${(hotovych / Math.max(viditelne.length, 1)) * 100}%` }}
         />
       </div>
 
       <CardBody className="space-y-1 pt-3">
-        {kroky.map((krok) => (
+        {viditelne.map((krok) => (
+          <div key={krok.klic} className="group flex items-center gap-1">
           <Link
-            key={krok.klic}
             href={krok.odkaz}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-2 py-2.5 transition-colors",
+              "flex flex-1 items-center gap-3 rounded-xl px-2 py-2.5 transition-colors",
               krok.hotovo ? "opacity-60" : "hover:bg-surface-2",
             )}
           >
@@ -120,6 +135,19 @@ export function Zaciname({ kroky }: { kroky: Krok[] }) {
               <ChevronRight className="h-4 w-4 shrink-0 text-ink-subtle" />
             )}
           </Link>
+
+          {krok.hotovo ? null : (
+            <button
+              type="button"
+              onClick={() => odmitni(krok.klic)}
+              aria-label={`Skrýt krok ${krok.titulek}`}
+              title="Tohle nepotřebuju"
+              className="shrink-0 rounded-lg p-2 text-ink-subtle opacity-60 transition-colors hover:bg-surface-2 hover:text-ink"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+          </div>
         ))}
       </CardBody>
     </Card>

@@ -122,9 +122,10 @@ export default async function DashboardPage() {
 /**
  * Kroky, po kterých z aplikace začne být užitek.
  *
- * Pozvánka je první schválně: dokud je v rodině jeden rodič, je Klidoo
- * zápisník. Jakmile jsou dva, je to společná dohoda — a to je ta chvíle,
- * po které se lidé vracejí.
+ * Pozvánka je první, protože se dvěma rodiči má Klidoo největší cenu.
+ * Není to ale podmínka: sám v tom mít pořádek je plnohodnotný způsob
+ * použití a druhý rodič nemusí chtít, nebo nemusí být komu psát.
+ * Proto jde krok odmítnout a víc se neukáže.
  */
 function rozjezd(stav: {
   druhyRodicJe: boolean;
@@ -140,7 +141,7 @@ function rozjezd(stav: {
       titulek: "Pozvat druhého rodiče",
       popis: stav.pozvankaOdeslana && !stav.druhyRodicJe
         ? "Pozvánka čeká na přijetí"
-        : "Uvidí stejný kalendář. Neplatí nic navíc.",
+        : "Uvidí stejný kalendář a nic neplatí. Nepovinné — Klidoo funguje i pro jednoho.",
       odkaz: "/deti",
       hotovo: stav.druhyRodicJe,
       ceka: stav.pozvankaOdeslana,
