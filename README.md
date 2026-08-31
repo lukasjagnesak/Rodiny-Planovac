@@ -207,10 +207,33 @@ a odchozí zprávy budou končit ve spamu.
 
 #### 1. Schránka info@klidoo.cz
 
-Zvol poskytovatele (WEDOS mail, [Zoho Mail](https://zoho.com/mail) má zdarma
-jednu doménu, Google Workspace stojí kolem 150 Kč měsíčně) a podle jeho návodu
-přidej **MX záznamy na kořenovou doménu** `klidoo.cz`. Pak si ověř, že ti na
-`info@klidoo.cz` dojde zkušební zpráva.
+Vyber poskytovatele a podle jeho návodu přidej **MX záznamy na kořenovou
+doménu** `klidoo.cz`:
+
+| Kde | Cena | Háček |
+|-----|------|-------|
+| **WEDOS mail** | řádově desítky Kč měsíčně | DNS i doména už tam jsou, MX se vyplní samo |
+| **Google Workspace** | kolem 150 Kč / uživatel / měsíc | nejlepší doručitelnost, IMAP, Google účet už máš kvůli kalendáři |
+| **Zoho Mail zdarma** | 0 Kč | **od roku 2025 bez IMAP/POP** — jen přes web, v Mailu na Macu to neotevřeš |
+
+Postup ve WEDOSu (tam má klidoo.cz DNS): *Zákaznické centrum → DNS → vybrat
+doménu → Editace DNS záznamů → Přidat záznam*. Typ `MX`, název nech prázdný
+(platí pro celou doménu), do hodnoty patří jméno serveru **s tečkou na konci**
+a zvlášť priorita (nižší číslo = přednější server).
+
+> **Změny se ve WEDOSu neprojeví, dokud nekliknete na „Aplikovat změny".**
+> Tohle je nejčastější důvod, proč „nastavený" MX záznam nefunguje.
+
+Záznam `A` na server nechej být — `MX` a `A` vedle sebe fungují, jeden je pro
+web a druhý pro poštu.
+
+Ověření z terminálu, do deseti minut po změně:
+
+```bash
+dig +short MX klidoo.cz          # musí vypsat servery poskytovatele
+```
+
+Pak si na `info@klidoo.cz` pošli zkušební zprávu z jiné adresy.
 
 #### 2. Odesílací relé
 
