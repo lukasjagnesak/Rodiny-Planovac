@@ -27,7 +27,7 @@ export async function POST() {
   const admin = createAdminClient();
 
   try {
-    const { hodiny, dnu, chyby } = await fetchEdupageRozvrh(kontext.creds, 14);
+    const { hodiny, dnu, chyby, nedokonceno } = await fetchEdupageRozvrh(kontext.creds, 14);
 
     // Žákovský účet nic nepřepíná, takže hodiny přijdou bez ID dítěte —
     // patří tomu jedinému spárovanému.
@@ -132,6 +132,7 @@ export async function POST() {
       pocet: zapsano,
       dnu,
       deti: podleDitete.size,
+      nedokonceno: nedokonceno.length,
       zmeny: zmenCelkem,
       preskoceno,
       chyby: potize,

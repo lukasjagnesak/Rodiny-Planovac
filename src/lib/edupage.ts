@@ -63,8 +63,11 @@ async function call<T>(path: string, body: Record<string, unknown>): Promise<T> 
         "X-Sidecar-Secret": secret,
       },
       body: JSON.stringify(body),
-      // EduPage bývá pomalé; radši delší strop než uříznutý požadavek.
-      signal: AbortSignal.timeout(60_000),
+      // Vlastní strop musí být delší než ten, který si hlídá služba sama
+      // (STROP_SEKUND v edupage/main.py). Kdyby byl kratší, uřízli bychom
+      // odpověď těsně předtím, než ji služba stihne poslat — a přišli tak
+      // i o data, která už má stažená.
+      signal: AbortSignal.timeout(90_000),
     });
   } catch {
     throw new Error(
@@ -162,12 +165,26 @@ export interface EdupageLesson {
 export async function fetchEdupageRozvrh(
   creds: Credentials,
   dnuDopredu = 14,
-): Promise<{ hodiny: EdupageLesson[]; dnu: number; chyby: string[] }> {
-  const data = await call<{ hodiny: EdupageLesson[]; dnu: number; chyby: string[] }>("/rozvrh", {
-    ...creds,
-    dnu_dopredu: dnuDopredu,
-  });
-  return { hodiny: data.hodiny ?? [], dnu: data.dnu ?? 0, chyby: data.chyby ?? [] };
+): Promise<{
+  hodiny: EdupageLesson[];
+  dnu: number;
+  chyby: string[];
+  /** Dny, na které nezbyl čas. Doplní se při další synchronizaci. */
+  nedokonceno: string[];
+}> {
+  const data = await call<{
+    hodiny: EdupageLesson[];
+    dnu: number;
+    chyby: string[];
+    nedokonceno?: string[];
+  }>("/rozvrh", { ...creds, dnu_dopredu: dnuDopredu });
+
+  return {
+    hodiny: data.hodiny ?? [],
+    dnu: data.dnu ?? 0,
+    chyby: data.chyby ?? [],
+    nedokonceno: data.nedokonceno ?? [],
+  };
 }
 
 /** Poskládá přihlašovací údaje z databázového řádku (heslo je zašifrované). */

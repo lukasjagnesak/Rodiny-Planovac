@@ -18,15 +18,19 @@ bere seznam dětí a vrací výsledky označené tím, komu patří.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import re
+import time as _cas
 from datetime import date, datetime, timedelta
 from typing import Any, Iterator, Optional
 
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException
 from edupage_api.timeline import EventType
+from edupage_api.timetables import Timetables
+from edupage_api.utils import RequestUtil
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
@@ -607,6 +611,76 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
     return {"ok": True, "pocet": len(polozky), "polozky": polozky, "chyby": chyby[:8]}
 
 
+# ─────────────────────────────────────────────────────────────────────
+#  Rozvrh: celý rozsah jedním dotazem
+# ─────────────────────────────────────────────────────────────────────
+
+# Kolik nejdéle smí trvat stahování rozvrhu, než vrátíme, co máme.
+# Plánovač na odpověď čeká a raději dostane deset dní z dvanácti než
+# chybu po minutě čekání.
+STROP_SEKUND = 45
+
+
+def plany_rozsahem(edupage: Edupage, od: date, do: date) -> Optional[dict]:
+    """
+    Stáhne rozvrh na celý rozsah dní jediným dotazem.
+
+    `get_my_timetable()` z knihovny umí jen jeden den a stojí dva
+    požadavky — pro dvě děti a dva týdny to je čtyřicet cest na server
+    a klidně minuta čekání, po které spadne časový limit a nezůstane nic.
+
+    Přitom endpoint EduPage bere `date` i `dateto` a odpověď vrací pod
+    klíčem `dates` rovnou po dnech; knihovna jen pošle dvakrát totéž
+    datum a zbytek zahodí. Tady se ptáme na celý rozsah naráz.
+
+    Vrací mapu `{"2026-09-01": [hodiny…]}`, nebo `None`, když se cokoli
+    nepovede — volající pak spadne zpátky na den po dni.
+    """
+    try:
+        session = edupage.session
+        subdomena = edupage.subdomain
+        uzivatel = edupage.get_user_id()
+
+        csrf = session.get(
+            f"https://{subdomena}.edupage.org/dashboard/eb.php?mode=ttday",
+            timeout=20,
+        )
+        gpid = csrf.text.split("gpid=")[1].split("&")[0]
+        gsh = csrf.text.split("gsh=")[1].split('"')[0]
+
+        odpoved = session.post(
+            f"https://{subdomena}.edupage.org/gcall",
+            data=RequestUtil.encode_form_data(
+                {
+                    "gpid": str(int(gpid) + 1),
+                    "gsh": gsh,
+                    "action": "loadData",
+                    "user": uzivatel,
+                    "changes": "{}",
+                    "date": od.strftime("%Y-%m-%d"),
+                    "dateto": do.strftime("%Y-%m-%d"),
+                    "_LJSL": "4096",
+                }
+            ),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=40,
+        )
+
+        telo = odpoved.text.split(uzivatel + '",')[1].rsplit(",[", 1)[0]
+        dny = json.loads(telo).get("dates")
+        return dny if isinstance(dny, dict) else None
+    except Exception as chyba:  # noqa: BLE001 — na chybu máme záložní cestu
+        log.warning("hromadné stažení rozvrhu selhalo, jedu den po dni: %s", chyba)
+        return None
+
+
+def hodiny_dne(edupage: Edupage, plan: Any) -> list:
+    """Poskládá hodiny z denního plánu knihovnou, ať se logika neduplikuje."""
+    prevod = getattr(Timetables(edupage), "_Timetables__parse_timetable")
+    tabulka = prevod(plan)
+    return tabulka.lessons if tabulka else []
+
+
 @app.post("/rozvrh")
 def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dict:
     """
@@ -621,28 +695,55 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
 
     hodiny = []
     chyby: list[str] = []
+    nedokonceno: list[str] = []
     dnu = 0
+    zacatek_behu = _cas.monotonic()
+
+    dny_rozsahu = [
+        date.today() + timedelta(days=posun)
+        for posun in range(data.dnu_dopredu)
+        # Víkend nemá rozvrh, ať se zbytečně netahá.
+        if (date.today() + timedelta(days=posun)).weekday() < 5
+    ]
 
     for dite_id, potize in po_detech(edupage, data.deti):
         chyby.extend(potize)
 
-        for posun in range(data.dnu_dopredu):
-            den = date.today() + timedelta(days=posun)
-            # Víkend nemá rozvrh, ať se zbytečně netahá.
-            if den.weekday() >= 5:
+        # Jeden dotaz na celý rozsah. Když neprojde, jede se den po dni
+        # jako dřív — pomalu, ale jistě.
+        plany = plany_rozsahem(edupage, dny_rozsahu[0], dny_rozsahu[-1]) if dny_rozsahu else None
+
+        for den in dny_rozsahu:
+            if _cas.monotonic() - zacatek_behu > STROP_SEKUND:
+                nedokonceno.append(den.isoformat())
                 continue
 
-            try:
-                tabulka = edupage.get_my_timetable(den)
-            except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
-                chyby.append(f"{den.isoformat()}: {chyba}")
-                continue
+            lekce_dne: list = []
 
-            if tabulka is None:
+            if plany is not None:
+                zaznam = plany.get(den.isoformat())
+                plan = zaznam.get("plan") if isinstance(zaznam, dict) else None
+                if plan:
+                    try:
+                        lekce_dne = hodiny_dne(edupage, plan)
+                    except Exception as chyba:  # noqa: BLE001
+                        chyby.append(f"{den.isoformat()}: {chyba}")
+                        continue
+            else:
+                try:
+                    tabulka = edupage.get_my_timetable(den)
+                except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
+                    chyby.append(f"{den.isoformat()}: {chyba}")
+                    continue
+                if tabulka is None:
+                    continue
+                lekce_dne = tabulka.lessons
+
+            if not lekce_dne:
                 continue
 
             dnu += 1
-            for lekce in tabulka.lessons:
+            for lekce in lekce_dne:
                 predmet_nazev = jmeno(lekce.subject)
                 if not predmet_nazev:
                     continue
@@ -665,4 +766,17 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
                     }
                 )
 
-    return {"ok": True, "dnu": dnu, "pocet": len(hodiny), "hodiny": hodiny, "chyby": chyby[:8]}
+    if nedokonceno:
+        chyby.append(
+            f"{len(nedokonceno)} dní se nestihlo stáhnout, doplní se při další "
+            "synchronizaci"
+        )
+
+    return {
+        "ok": True,
+        "dnu": dnu,
+        "pocet": len(hodiny),
+        "hodiny": hodiny,
+        "nedokonceno": nedokonceno,
+        "chyby": chyby[:8],
+    }

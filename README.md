@@ -528,7 +528,7 @@ liší, takže se hledá podle tvaru a bez testů by se chyba poznala až tím, 
 rodič nevidí druhé dítě:
 
 ```bash
-cd edupage && python test_deti.py
+cd edupage && python test_deti.py && python test_rozvrh.py
 ```
 
 ### Test databázového zabezpečení
