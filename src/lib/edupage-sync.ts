@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "./supabase/admin";
+import { smiZapisovatUzivatel } from "./predplatne";
 import { credentialsFromRow, fetchEdupageItems } from "./edupage";
 
 export interface EdupageParovani {
@@ -237,6 +238,9 @@ export async function stahniZmeskane(): Promise<VysledekDavky> {
     // toISOString() končí na `Z`, a lexikograficky se to na hraně rozchází.
     const naposledy = ucet.last_sync_at as string | null;
     if (naposledy && new Date(naposledy).getTime() >= hranice) break;
+
+    // Rodině v režimu čtení nic nepřibývá — ani od cronu.
+    if (!(await smiZapisovatUzivatel(ucet.user_id as string))) continue;
 
     try {
       const r = await stahniProUzivatele(ucet.user_id as string);

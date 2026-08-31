@@ -42,6 +42,28 @@ export const ZKUSEBNI_SLIB = {
   ],
 } as const;
 
+/**
+ * Co se změní, když se nezaplatí.
+ *
+ * Bez předplatného se nic nemaže ani neschovává — jen se přestane
+ * zapisovat. Tabulka to říká na rovinu včetně toho, co zůstává: slib
+ * „o data nepřijdeš" je nejsilnější věc, kterou v tuhle chvíli máme,
+ * a schovat ho mezi drobným písmem by bylo hloupé.
+ */
+export const SROVNANI: { co: string; bez: boolean; s: boolean; pozn?: string }[] = [
+  { co: "Kalendář, výdaje, doklady i zprávy — číst", bez: true, s: true },
+  { co: "Přístup pro druhého rodiče a další členy", bez: true, s: true },
+  { co: "Výpis komunikace pro advokáta", bez: true, s: true },
+  { co: "Veřejné kalkulačky a vzory dohod", bez: true, s: true },
+  { co: "Zapisovat a upravovat v kalendáři", bez: false, s: true },
+  { co: "Přidávat výdaje, účtenky a doklady", bez: false, s: true },
+  { co: "Psát zprávy druhému rodiči", bez: false, s: true },
+  { co: "Kroužky, odvozy a pravidelné výdaje", bez: false, s: true },
+  { co: "Automatické stahování z EduPage", bez: false, s: true },
+  { co: "Přenos do Google kalendáře", bez: false, s: true },
+  { co: "Připomínky na další den", bez: true, s: true, pozn: "z toho, co už je zapsané" },
+];
+
 /** Co je v ceně. Jeden seznam pro web i pro stránku předplatného. */
 export const CO_JE_V_CENE = [
   {

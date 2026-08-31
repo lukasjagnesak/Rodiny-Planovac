@@ -3,6 +3,7 @@ import "server-only";
 
 import { addDays, eachDayOfInterval } from "date-fns";
 import { createAdminClient } from "./supabase/admin";
+import { smiZapisovatUzivatel } from "./predplatne";
 import {
   GoogleEventMissing,
   accessTokenFor,
@@ -310,6 +311,9 @@ export async function syncAllCalendars(): Promise<{ users: number; errors: strin
 
   const errors: string[] = [];
   for (const account of accounts ?? []) {
+    // Po vypršení předplatného se do kalendáře nic nepřenáší.
+    if (!(await smiZapisovatUzivatel(account.user_id as string))) continue;
+
     try {
       await syncUserCalendar(account.user_id);
     } catch (e) {

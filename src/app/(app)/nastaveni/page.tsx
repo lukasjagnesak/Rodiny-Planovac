@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   CalendarSync,
+  CreditCard,
   ChevronRight,
   GraduationCap,
   Repeat,
@@ -12,6 +13,7 @@ import { requireSession } from "@/lib/session";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SettingsForms } from "@/components/settings/settings-forms";
+import { nactiPredplatne } from "@/lib/predplatne";
 import { NebezpecnaZona } from "@/components/settings/nebezpecna-zona";
 import type { GoogleAccount } from "@/lib/types";
 
@@ -21,16 +23,34 @@ export default async function SettingsPage() {
   const session = await requireSession();
   const supabase = await createClient();
 
-  const [{ data: google }, { data: edupage }] = await Promise.all([
+  const [{ data: google }, { data: edupage }, pristup] = await Promise.all([
     supabase.from("google_accounts").select("*").eq("user_id", session.userId).maybeSingle(),
     supabase
       .from("edupage_accounts")
       .select("user_id")
       .eq("user_id", session.userId)
       .maybeSingle(),
+    nactiPredplatne(session.family.id),
   ]);
 
+  const stavPredplatneho = !pristup.predplatne
+    ? null
+    : !pristup.muzeZapisovat
+      ? "jen ke čtení"
+      : pristup.jeZkusebni
+        ? `zkušební · ${pristup.dniDoKonce} dní`
+        : pristup.predplatne.stav === "po_splatnosti"
+          ? "platba vázne"
+          : "aktivní";
+
   const links = [
+    {
+      href: "/nastaveni/predplatne",
+      title: "Předplatné",
+      description: "Tarif, platba a faktury",
+      Icon: CreditCard,
+      badge: stavPredplatneho,
+    },
     {
       href: "/nastaveni/stridani",
       title: "Střídání péče",

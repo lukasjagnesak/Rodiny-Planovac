@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Check, CreditCard, Users } from "lucide-react";
 import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
 import { CENIK, CO_JE_V_CENE, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { SrovnaniTarifu } from "@/components/predplatne/srovnani";
 import { ZNACKA } from "@/lib/brand";
 
 export const metadata: Metadata = {
@@ -159,6 +160,19 @@ export default function Cenik() {
               </div>
             ))}
           </div>
+        </Sloupec>
+      </section>
+
+      {/* ── Srovnání ──────────────────────────────────────────────── */}
+      <section className="py-12 sm:py-16">
+        <Sloupec siroky>
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            Co se změní, když se nezaplatí
+          </h2>
+          <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-ink-muted">
+            Nic se nemaže ani neschovává. Po zkušebním období se zamkne zápis — číst můžeš dál.
+          </p>
+          <SrovnaniTarifu className="mt-8" />
         </Sloupec>
       </section>
 

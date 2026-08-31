@@ -14,7 +14,6 @@ import {
   Globe,
   LayoutDashboard,
   Contact,
-  CreditCard,
   MessageSquare,
   FileText,
   MoreHorizontal,
@@ -45,7 +44,6 @@ const SECONDARY = [
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/doklady", label: "Doklady", Icon: FileText },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
-  { href: "/predplatne", label: "Předplatné", Icon: CreditCard },
   { href: "/nastaveni", label: "Nastavení", Icon: Settings },
 ];
 
