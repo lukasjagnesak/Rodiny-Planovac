@@ -26,11 +26,12 @@ aby ji šlo pustit i podruhé, takže když si nejsi jistý, pusť ji znovu.
 
 ```bash
 ssh <server>
-cd ~/klidoo          # tam, kde je docker-compose.yml
+cd ~/klidoo                      # tam, kde je docker-compose.yml
+bash deploy/doplnit-env.sh       # přidá chybějící klíče, staré nepřepíše
 nano .env
 ```
 
-Doplň to, co chybí — popis každé položky je v `.env.example`:
+Doplň to, co skript přidal prázdné — popis každé položky je v `.env.example`:
 
 ```bash
 # Platby
@@ -76,18 +77,12 @@ naběhne. Když do minuty nenaběhne, vypíše, kde je log.
 ## 4. Kontrola po nasazení
 
 ```bash
-# aplikace žije
-curl -sI https://klidoo.cz | head -1
-
-# ceník je veřejně dostupný (nesmí přesměrovat na přihlášení)
-curl -sI https://klidoo.cz/cenik | head -1
-
-# SMTP: spojení a zkušební zpráva
-curl -H "Authorization: Bearer $CRON_SECRET" \
-  "https://klidoo.cz/api/mail/kontrola?komu=tvuj@email.cz"
+bash deploy/kontrola.sh tvuj@email.cz
 ```
 
-Ručně pak:
+Projde veřejné stránky, ověří, že se nepřihlášený nedostane do aplikace,
+že Stripe webhook bez podpisu nic nepustí, otestuje SMTP a pošle zkušební
+zprávu. Co skript ověřit neumí, zbývá ručně:
 
 - [ ] `/cenik` ukazuje 199 Kč a 1 990 Kč
 - [ ] v aplikaci `/predplatne` sedí zbývající dny zkušebního období
