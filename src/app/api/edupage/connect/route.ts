@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizujSubdomenu } from "@/lib/edupage-adresa";
 import { encryptSecret } from "@/lib/crypto";
 import { verifyEdupage } from "@/lib/edupage";
 
@@ -16,7 +17,11 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const email = String(body?.email ?? "").trim();
   const heslo = String(body?.heslo ?? "");
-  const subdomena = String(body?.subdomena ?? "").trim() || null;
+  const adresa = normalizujSubdomenu(String(body?.subdomena ?? ""));
+  if (adresa.chyba) {
+    return NextResponse.json({ error: adresa.chyba }, { status: 400 });
+  }
+  const subdomena = adresa.subdomena;
 
   if (!email || !heslo) {
     return NextResponse.json({ error: "Vyplň e-mail i heslo." }, { status: 400 });

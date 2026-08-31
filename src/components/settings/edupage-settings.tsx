@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { formatDateTime } from "@/lib/dates";
+import { normalizujSubdomenu } from "@/lib/edupage-adresa";
 import type { Child, EdupageDite } from "@/lib/types";
 
 interface Account {
@@ -36,6 +37,10 @@ export function EdupageSettings({
   const [email, setEmail] = React.useState("");
   const [heslo, setHeslo] = React.useState("");
   const [subdomena, setSubdomena] = React.useState("");
+  // Adresa se čistí hned při psaní: celý odkaz z prohlížeče projde,
+  // název školy se zastaví tady, ne až anglickou hláškou od EduPage.
+  const adresa = React.useMemo(() => normalizujSubdomenu(subdomena), [subdomena]);
+  const potizAdresy = subdomena.trim() ? adresa.chyba : null;
   const [rucniId, setRucniId] = React.useState("");
   const [busy, setBusy] = React.useState<
     "connect" | "sync" | "disconnect" | "deti" | "parovani" | null
@@ -54,7 +59,7 @@ export function EdupageSettings({
     const response = await fetch("/api/edupage/connect", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, heslo, subdomena: subdomena || null }),
+      body: JSON.stringify({ email, heslo, subdomena: adresa.subdomena }),
     });
     const data = await response.json();
 
@@ -383,13 +388,21 @@ export function EdupageSettings({
 
             <Field
               label="Adresa školy v EduPage"
-              hint="nepovinné — bez ní se hledá automaticky"
+              hint="nepovinné — bez ní školu najdeme podle e-mailu"
             >
               <Input
                 placeholder="zskomenskeho"
                 value={subdomena}
                 onChange={(e) => setSubdomena(e.target.value)}
               />
+              {potizAdresy ? (
+                <p className="mt-1 text-xs text-danger">{potizAdresy}</p>
+              ) : (
+                <p className="mt-1 text-xs text-ink-subtle">
+                  Část adresy před <code>.edupage.org</code>, ne název školy. Můžeš sem
+                  vložit i celý odkaz z prohlížeče.
+                </p>
+              )}
             </Field>
 
             <Button onClick={connect} disabled={busy === "connect" || !email || !heslo}>

@@ -29,6 +29,7 @@ from typing import Any, Iterator, Optional
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException
 from edupage_api.timeline import EventType
+from edupage_api.login import Login
 from edupage_api.timetables import Timetables
 from edupage_api.utils import RequestUtil
 from fastapi import FastAPI, Header, HTTPException
@@ -138,6 +139,27 @@ def je_rodic(edupage: Edupage) -> bool:
         return False
 
 
+def obnov_kontext(edupage: Edupage) -> None:
+    """
+    Po přepnutí na dítě znovu načte data přihlášení.
+
+    `switch_to_child()` z knihovny jen překlopí cookie na serveru. V paměti
+    ale zůstane, co se načetlo při přihlášení — tedy identita rodiče.
+    Rozvrh se pak stahuje s cizím `user` v požadavku a odpověď se hledá
+    podle cizího identifikátoru; z toho vznikne „list index out of range",
+    protože hledaný text tam prostě není.
+
+    Selhání není fatální: horší, než mít starý kontext, je nemít žádný.
+    """
+    try:
+        sid = edupage.session.cookies.get("PHPSESSID")
+        if not sid:
+            return
+        Login(edupage).reload_data(edupage.subdomain, sid, edupage.username)
+    except Exception as chyba:  # noqa: BLE001
+        log.warning("obnovení kontextu po přepnutí selhalo: %s", chyba)
+
+
 def po_detech(edupage: Edupage, deti: list[int]) -> Iterator[tuple[Optional[int], list[str]]]:
     """
     Projde postupně všechny děti a mezi nimi přepne účet.
@@ -160,6 +182,7 @@ def po_detech(edupage: Edupage, deti: list[int]) -> Iterator[tuple[Optional[int]
             if rodic and index > 0:
                 edupage.switch_to_parent()
             edupage.switch_to_child(dite)
+            obnov_kontext(edupage)
         except Exception as chyba:  # noqa: BLE001
             log.warning("přepnutí na dítě %s selhalo: %s", dite, chyba)
             chyby.append(f"dítě {dite}: přepnutí selhalo ({chyba})")
@@ -620,6 +643,14 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
 # chybu po minutě čekání.
 STROP_SEKUND = 45
 
+# Hláška pro případ, kdy škola vrátí stránku bez rozvrhu. Vysvětlení
+# místo „list index out of range", které svádí hledat chybu v aplikaci.
+POTIZ_ROZVRH = (
+    "Škola nevrátila stránku s denním rozvrhem. Buď ho přes EduPage "
+    "nesdílí, nebo účet nemá k rozvrhu přístup — úkoly a zprávy fungují "
+    "nezávisle na tom."
+)
+
 
 def plany_rozsahem(edupage: Edupage, od: date, do: date) -> Optional[dict]:
     """
@@ -645,6 +676,17 @@ def plany_rozsahem(edupage: Edupage, od: date, do: date) -> Optional[dict]:
             f"https://{subdomena}.edupage.org/dashboard/eb.php?mode=ttday",
             timeout=20,
         )
+
+        # Bez tokenu na stránce nemá smysl pokračovat — a hlavně by z toho
+        # vzniklo „list index out of range", což nikomu nic neřekne.
+        if "gpid=" not in csrf.text or "gsh=" not in csrf.text:
+            log.warning(
+                "stránka s rozvrhem nemá očekávaný tvar (%s znaků, začátek: %r)",
+                len(csrf.text),
+                csrf.text[:200],
+            )
+            raise ValueError(POTIZ_ROZVRH)
+
         gpid = csrf.text.split("gpid=")[1].split("&")[0]
         gsh = csrf.text.split("gsh=")[1].split('"')[0]
 
@@ -733,6 +775,13 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
                 try:
                     tabulka = edupage.get_my_timetable(den)
                 except Exception as chyba:  # noqa: BLE001 — jeden den navíc nesmí shodit celé stažení
+                    # Když je rozbité rovnou první stažení, je rozbité pro
+                    # všechny dny stejně. Deset totožných řádků z toho ale
+                    # nedělá lepší hlášku, tak se říká jednou.
+                    if "list index out of range" in str(chyba):
+                        if POTIZ_ROZVRH not in chyby:
+                            chyby.append(POTIZ_ROZVRH)
+                        break
                     chyby.append(f"{den.isoformat()}: {chyba}")
                     continue
                 if tabulka is None:

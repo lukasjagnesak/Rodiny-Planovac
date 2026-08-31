@@ -109,6 +109,67 @@ ok(
     plany_rozsahem(FalesnyEdupage(PadajiciSession()), date(2026, 9, 1), date(2026, 9, 2)) is None,
 )
 
+print("── obnovení kontextu po přepnutí ──")
+
+
+class SessionSCookie(FalesnaSession):
+    def __init__(self):
+        super().__init__()
+        self.cookies = {"PHPSESSID": "abc123"}
+        self.cookies_get = self.cookies.get
+
+
+class EdupageSPrepnutim(FalesnyEdupage):
+    def __init__(self, sid=True):
+        super().__init__()
+        self.session = SessionSCookie()
+        if not sid:
+            self.session.cookies = {}
+        self.username = "rodic@example.cz"
+        self.obnoveno = False
+
+    class _Cookies(dict):
+        pass
+
+
+import main as modul  # noqa: E402
+
+vysledky = {"volano": False}
+
+
+def falesny_reload(self, subdomena, sid, username):  # noqa: ANN001
+    vysledky["volano"] = True
+    vysledky["sid"] = sid
+    vysledky["username"] = username
+
+
+puvodni_login = modul.Login
+try:
+    class FalesnyLogin:
+        def __init__(self, edupage):
+            self.edupage = edupage
+
+        reload_data = falesny_reload
+
+    modul.Login = FalesnyLogin
+
+    edu = EdupageSPrepnutim()
+    edu.session.cookies = {"PHPSESSID": "abc123"}
+    modul.obnov_kontext(edu)
+    ok("po přepnutí se znovu načte kontext", vysledky["volano"])
+    ok("posílá se aktuální session", vysledky.get("sid") == "abc123")
+    ok("uživatelské jméno zůstává", vysledky.get("username") == "rodic@example.cz")
+
+    # Bez cookie není co obnovovat a nesmí to spadnout.
+    vysledky["volano"] = False
+    bez = EdupageSPrepnutim()
+    bez.session.cookies = {}
+    modul.obnov_kontext(bez)
+    ok("bez session se nic nevolá a nic nespadne", not vysledky["volano"])
+finally:
+    modul.Login = puvodni_login
+
+
 print("── strop ──")
 ok("je kratší než minuta, po které umírá volání z aplikace", STROP_SEKUND < 60)
 
