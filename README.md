@@ -237,6 +237,14 @@ Pak si na `info@klidoo.cz` pošli zkušební zprávu z jiné adresy.
 
 #### 2. Odesílací relé
 
+> **Na začátku se dá přeskočit.** Když si u WEDOSu zřídíš mailhosting,
+> můžeš jeho SMTP použít i pro aplikaci — schránka i odesílání pak jsou
+> na jednom místě a odpadá ověřování druhé domény. Aplikace je na
+> poskytovateli nezávislá, takže přechod na relé je později otázka čtyř
+> proměnných v `.env`. Dělej to, jakmile budeš posílat víc než pár desítek
+> zpráv denně nebo budeš potřebovat vidět, co se nedoručilo — sdílený
+> mailhosting na to nemá ani limity, ani přehledy.
+
 V [Resendu](https://resend.com) (3 000 zpráv měsíčně zdarma, evropský region)
 přidej doménu `klidoo.cz`. Resend ti vypíše záznamy — obvykle na
 **poddoméně `send.klidoo.cz`**, takže se netlučou s poštovní schránkou na
