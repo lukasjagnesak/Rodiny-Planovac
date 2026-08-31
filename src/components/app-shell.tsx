@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Contact,
   CreditCard,
+  MessageSquare,
   FileText,
   MoreHorizontal,
   Settings,
@@ -31,6 +32,7 @@ import type { SessionContext } from "@/lib/types";
 
 const NAV = [
   { href: "/prehled", label: "Přehled", Icon: LayoutDashboard },
+  { href: "/zpravy", label: "Zprávy", Icon: MessageSquare },
   { href: "/kalendar", label: "Kalendář", Icon: CalendarDays },
   { href: "/krouzky", label: "Kroužky", Icon: Bike },
   { href: "/vydaje", label: "Výdaje", Icon: Wallet },
@@ -53,8 +55,13 @@ const SECONDARY = [
  * — rozvrh, kontakty, doklady, pozvánky, nastavení — se stane
  * nedosažitelným. Proto tudy vede cesta úplně všude.
  */
-const MOBIL_HLAVNI = NAV.slice(0, 4);
-const MOBIL_ZBYTEK = [...NAV.slice(4), ...SECONDARY];
+/**
+ * Do spodní lišty se vejdou čtyři. Vybírají se podle toho, co rodič
+ * otevírá denně — kroužky a události se řeší jednou za čas, takže patří
+ * pod „Víc".
+ */
+const MOBIL_HLAVNI = [NAV[0], NAV[2], NAV[1], NAV[4]];
+const MOBIL_ZBYTEK = [NAV[3], ...SECONDARY];
 
 function useActive(href: string) {
   const pathname = usePathname();
@@ -127,10 +134,12 @@ function SidebarLink({
   href,
   label,
   Icon,
+  odznak = 0,
 }: {
   href: string;
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
+  odznak?: number;
 }) {
   const active = useActive(href);
   return (
@@ -145,6 +154,11 @@ function SidebarLink({
     >
       <Icon className="h-[18px] w-[18px] shrink-0" />
       {label}
+      {odznak > 0 ? (
+        <span className="ml-auto rounded-full bg-brand px-1.5 py-0.5 text-[11px] font-semibold text-brand-ink">
+          {odznak > 9 ? "9+" : odznak}
+        </span>
+      ) : null}
     </Link>
   );
 }
@@ -153,10 +167,12 @@ function TabLink({
   href,
   label,
   Icon,
+  odznak = 0,
 }: {
   href: string;
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
+  odznak?: number;
 }) {
   const active = useActive(href);
   return (
@@ -167,10 +183,16 @@ function TabLink({
     >
       <span
         className={cn(
-          "flex h-8 w-14 items-center justify-center rounded-full transition-colors",
+          "relative flex h-8 w-14 items-center justify-center rounded-full transition-colors",
           active ? "bg-brand-soft text-brand" : "text-ink-subtle",
         )}
       >
+        {odznak > 0 ? (
+          <span
+            aria-label={`${odznak} nepřečtených`}
+            className="absolute right-3 top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-surface"
+          />
+        ) : null}
         <Icon className="h-[19px] w-[19px]" />
       </span>
       <span
@@ -256,12 +278,15 @@ export function AppShell({
   session,
   children,
   novychOznameni = 0,
+  neprectenychZprav = 0,
   pruh,
   spravce = false,
 }: {
   session: SessionContext;
   children: React.ReactNode;
   novychOznameni?: number;
+  /** Kolik zpráv od druhého rodiče jsem ještě neviděl. */
+  neprectenychZprav?: number;
   /** Provozovatel navíc vidí přehled návštěvnosti. */
   spravce?: boolean;
   /** Pruh nad obsahem — konec zkušebního období, neprošlá platba. */
@@ -285,7 +310,11 @@ export function AppShell({
 
         <nav className="flex flex-1 flex-col gap-1">
           {NAV.map((item) => (
-            <SidebarLink key={item.href} {...item} />
+            <SidebarLink
+              key={item.href}
+              {...item}
+              odznak={item.href === "/zpravy" ? neprectenychZprav : 0}
+            />
           ))}
           <div className="my-2 h-px bg-line" />
           {druhaSkupina.map((item) => (
@@ -334,7 +363,11 @@ export function AppShell({
       {/* ── Mobilní spodní navigace ─────────────────────────────── */}
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
         {MOBIL_HLAVNI.map((item) => (
-          <TabLink key={item.href} {...item} />
+          <TabLink
+            key={item.href}
+            {...item}
+            odznak={item.href === "/zpravy" ? neprectenychZprav : 0}
+          />
         ))}
         <button
           type="button"

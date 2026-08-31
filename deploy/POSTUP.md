@@ -21,6 +21,7 @@ aby ji šlo pustit i podruhé, takže když si nejsi jistý, pusť ji znovu.
 | `0019_predplatne_pripominka.sql` | datum poslední připomínky | e-mail o konci trialu by chodil každou hodinu |
 | `0020_opakovane_vydaje.sql` | pravidelné výdaje a index proti zdvojení | opakované výdaje nepůjdou založit |
 | `0021_provoz.sql` | měření návštěvnosti a trychtýře | `/provoz` bude prázdný a měření spadne do logu |
+| `0022_zpravy.sql` | komunikace mezi rodiči se záznamem | sekce Zprávy nepůjde otevřít |
 
 ## 2. Proměnné v `.env` (na serveru)
 
@@ -93,6 +94,7 @@ zprávu. Co skript ověřit neumí, zbývá ručně:
 - [ ] u výdaje jde zaškrtnout „Opakuje se pravidelně" a šablona se objeví
       v kartě „Pravidelné výdaje"
 - [ ] `/provoz` se otevře tobě a komukoli jinému vrátí 404
+- [ ] v sekci Zprávy jde odeslat zpráva a stáhnout výpis pro advokáta
 - [ ] při první návštěvě webu se ukáže lišta se souhlasem; po „Jen nutné"
       se v síti neobjeví žádné volání na google ani facebook
 - [ ] po „Přijmout vše" naskočí GA4 v real-time přehledu a Meta Pixel
