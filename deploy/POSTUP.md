@@ -114,6 +114,20 @@ zprávu. Co skript ověřit neumí, zbývá ručně:
       redirect URI `https://klidoo.cz/auth/callback`.
 - [ ] **DNS**: SPF, DKIM a DMARC — bez nich pozvánky končí ve spamu.
 
+## Pozor na `TOKEN_ENCRYPTION_KEY`
+
+Tímhle klíčem jsou v databázi zašifrovaná hesla k EduPage a tokeny ke
+Googlu. **Když se změní, uložená propojení přestanou fungovat** — aplikace
+poběží dál, jen synchronizace bude hlásit, že se údaje nedají rozšifrovat.
+Nová hodnota se nedá „dopočítat"; buď se vrátí ta původní, nebo se každý
+účet musí propojit znovu.
+
+Jestli máš zálohu `.env` (dělá ji `doplnit-env.sh`), porovnání je rychlé:
+
+```bash
+grep TOKEN_ENCRYPTION_KEY .env .env.zaloha-*
+```
+
 ## Když se to pokazí
 
 Aplikace nenaběhne:

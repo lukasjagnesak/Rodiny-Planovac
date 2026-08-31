@@ -28,16 +28,33 @@ export function encryptSecret(plain: string): string {
   return [iv.toString("base64"), tag.toString("base64"), encrypted.toString("base64")].join(".");
 }
 
+/** Hláška, kterou pozná i člověk, co k tomu má sáhnout. */
+export const CHYBA_KLICE =
+  "Uložené přihlašovací údaje nejde rozšifrovat — od jejich uložení se " +
+  "změnil šifrovací klíč serveru. Propoj účet prosím znovu, heslo se uloží " +
+  "nanovo.";
+
 export function decryptSecret(payload: string): string {
   const [ivB64, tagB64, dataB64] = payload.split(".");
-  if (!ivB64 || !tagB64 || !dataB64) throw new Error("Poškozený zašifrovaný token.");
+  if (!ivB64 || !tagB64 || !dataB64) throw new Error(CHYBA_KLICE);
 
-  const decipher = createDecipheriv(ALGORITHM, key(), Buffer.from(ivB64, "base64"));
-  decipher.setAuthTag(Buffer.from(tagB64, "base64"));
-  return Buffer.concat([
-    decipher.update(Buffer.from(dataB64, "base64")),
-    decipher.final(),
-  ]).toString("utf8");
+  try {
+    const decipher = createDecipheriv(ALGORITHM, key(), Buffer.from(ivB64, "base64"));
+    decipher.setAuthTag(Buffer.from(tagB64, "base64"));
+    return Buffer.concat([
+      decipher.update(Buffer.from(dataB64, "base64")),
+      decipher.final(),
+    ]).toString("utf8");
+  } catch (chyba) {
+    // Node hlásí „Unsupported state or unable to authenticate data", což
+    // rodiči v nastavení nic neřekne — a hlavně to svádí hledat chybu
+    // u EduPage nebo Googlu, kde žádná není. Jediná příčina je jiný
+    // TOKEN_ENCRYPTION_KEY, než jakým se šifrovalo.
+    if (chyba instanceof Error && /authenticate|decrypt|bad decrypt/i.test(chyba.message)) {
+      throw new Error(CHYBA_KLICE);
+    }
+    throw chyba;
+  }
 }
 
 /** Krátký lidsky opsatelný kód pro spárování Telegramu. */
