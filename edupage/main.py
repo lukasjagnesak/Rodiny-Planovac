@@ -22,10 +22,12 @@ import json
 import logging
 import os
 import re
+import socket
 import time as _cas
 from datetime import date, datetime, timedelta
 from typing import Any, Iterator, Optional
 
+import urllib3.util.connection as _urllib3_spojeni
 from edupage_api import Edupage
 from edupage_api.exceptions import BadCredentialsException
 from edupage_api.timeline import EventType
@@ -37,6 +39,14 @@ from pydantic import BaseModel, Field
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("edupage")
+
+# EduPage.org má i AAAA záznam, ale kontejner na Hetzneru umí IPv6 jen
+# v knihovně (`socket.has_ipv6` je True) — skutečnou trasu k němu nemá.
+# urllib3 pak zkusí IPv6 první, dostane ENETUNREACH ("Network is
+# unreachable") a na IPv4, které by fungovalo, se v tomhle prostředí
+# spolehlivě nedostane. Vynutíme IPv4 natvrdo — EduPage přes něj jede
+# stejně dobře a odpadne tím celá tahle třída chyb.
+_urllib3_spojeni.allowed_gai_family = lambda: socket.AF_INET
 
 app = FastAPI(title="EduPage most", docs_url=None, redoc_url=None)
 
