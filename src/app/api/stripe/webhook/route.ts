@@ -136,15 +136,37 @@ function prelozStav(stav: Stripe.Subscription.Status): StavPredplatneho {
   }
 }
 
-/** Konec zaplaceného období. V nové verzi API je na položkách, ne na předplatném. */
+/**
+ * Konec zaplaceného období.
+ *
+ * V novějších verzích API sedí na položkách předplatného, ve starších přímo
+ * na předplatném. Který tvar dorazí, se řídí verzí nastavenou u webhooku
+ * ve Stripe — a to je políčko, které se dá při zakládání snadno přehlédnout.
+ * Čteme proto obojí: kdyby se to spletlo, dopadlo by to tak, že by rodině
+ * hned po zaplacení vypršelo předplatné.
+ */
 function platiDo(predplatne: Stripe.Subscription): string {
   const konce = predplatne.items.data
     .map((polozka) => polozka.current_period_end)
     .filter((cas): cas is number => typeof cas === "number");
 
-  const konec = konce.length > 0 ? Math.max(...konce) : predplatne.cancel_at ?? predplatne.ended_at;
+  // Starší tvar odpovědi. V typech už není, v datech ze staršího webhooku ano.
+  const naPredplatnem = (predplatne as unknown as { current_period_end?: number })
+    .current_period_end;
 
-  return new Date((konec ?? Math.floor(Date.now() / 1000)) * 1000).toISOString();
+  const konec =
+    konce.length > 0
+      ? Math.max(...konce)
+      : (naPredplatnem ?? predplatne.trial_end ?? predplatne.cancel_at ?? predplatne.ended_at);
+
+  if (!konec) {
+    // Bez data by rodina po zaplacení skončila v režimu čtení. Radši měsíc
+    // navíc zdarma než rozzlobený zákazník, který právě zaplatil.
+    console.error("[stripe] předplatné bez konce období", predplatne.id);
+    return new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString();
+  }
+
+  return new Date(konec * 1000).toISOString();
 }
 
 async function uloz(predplatne: Stripe.Subscription, zaloha: string | null): Promise<void> {
