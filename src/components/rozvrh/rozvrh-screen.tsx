@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { getISOWeek } from "date-fns";
-import { CalendarX2, Download, MapPin, Plus, Table2 } from "lucide-react";
+import { addDays, addWeeks, getISOWeek, startOfWeek } from "date-fns";
+import { CalendarX2, ChevronLeft, ChevronRight, Download, MapPin, Plus, Table2 } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
   maParitu,
   zacatekVyucovani,
 } from "@/lib/rozvrh";
-import { DOW_SHORT, formatDayShort, relativeDayLabel, toDateKey } from "@/lib/dates";
+import { DOW_SHORT, WEEK_OPTS, formatDayShort, relativeDayLabel, toDateKey } from "@/lib/dates";
 import { cn } from "@/lib/format";
 import type { RozvrhHodina, RozvrhZmena, SessionContext } from "@/lib/types";
 
@@ -49,9 +49,19 @@ export function RozvrhScreen({
   const dnesniDen = denVTydnu(dnes);
   const [den, setDen] = React.useState(DNY.includes(dnesniDen) ? dnesniDen : 1);
 
-  // Náhled týdne — u rozvrhů se sudým/lichým se dá přepnout.
-  const [nahled, setNahled] = React.useState<"sudy" | "lichy">(
-    getISOWeek(dnes) % 2 === 0 ? "sudy" : "lichy",
+  // Posun od aktuálního týdne — 0 = tenhle týden, -1 minulý, 1 příští…
+  // Nahrazuje dřívější přepínač sudý/lichý: ten uměl jen přepnout mezi
+  // dvěma variantami rozvrhu, ne skutečně listovat časem. Sudý/lichý se
+  // teď dopočítá z toho, na jaký týden se rodič dívá.
+  const [tydenPosun, setTydenPosun] = React.useState(0);
+  const pondeliTydne = React.useMemo(
+    () => addWeeks(startOfWeek(dnes, WEEK_OPTS), tydenPosun),
+    [dnes, tydenPosun],
+  );
+  const nahled: "sudy" | "lichy" = getISOWeek(pondeliTydne) % 2 === 0 ? "sudy" : "lichy";
+  const datumDne = React.useCallback(
+    (d: number) => addDays(pondeliTydne, d - 1),
+    [pondeliTydne],
   );
 
   const [formOpen, setFormOpen] = React.useState(false);
@@ -81,13 +91,14 @@ export function RozvrhScreen({
     [viditelne],
   );
 
-  /** Změny od dneška dál — na starší už nikdo nekouká. */
+  /** Změny v zobrazeném týdnu — appka stejně stahuje jen pár týdnů dopředu. */
   const mojeZmeny = React.useMemo(() => {
-    const dnesKlic = toDateKey(dnes);
+    const odKlic = toDateKey(pondeliTydne);
+    const doKlic = toDateKey(addDays(pondeliTydne, 4));
     return zmeny
-      .filter((z) => z.child_id === childId && z.den >= dnesKlic)
+      .filter((z) => z.child_id === childId && z.den >= odKlic && z.den <= doKlic)
       .sort((a, b) => a.den.localeCompare(b.den) || a.poradi - b.poradi);
-  }, [zmeny, childId, dnes]);
+  }, [zmeny, childId, pondeliTydne]);
 
   const dnesKonec = konecVyucovani(moje, dnes);
   const dnesZacatek = zacatekVyucovani(moje, dnes);
@@ -177,21 +188,46 @@ export function RozvrhScreen({
         />
       ) : null}
 
-      {rozlisujeTydny ? (
-        <div className="flex items-center gap-2">
-          <Segmented
-            value={nahled}
-            onChange={setNahled}
-            options={[
-              { value: "sudy", label: "Sudý týden" },
-              { value: "lichy", label: "Lichý týden" },
-            ]}
-          />
-          <span className="text-xs text-ink-subtle">
-            teď je {getISOWeek(dnes)}. ({getISOWeek(dnes) % 2 === 0 ? "sudý" : "lichý"})
+      <div className="flex items-center justify-between gap-2 rounded-xl border border-line bg-surface px-2 py-1.5">
+        <button
+          type="button"
+          onClick={() => setTydenPosun((t) => t - 1)}
+          aria-label="Předchozí týden"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-2 hover:text-ink"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        <div className="flex flex-col items-center">
+          <span className="tnum text-sm font-medium text-ink">
+            {formatDayShort(pondeliTydne)} – {formatDayShort(addDays(pondeliTydne, 4))}
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-ink-subtle">
+            {rozlisujeTydny ? (nahled === "sudy" ? "sudý týden" : "lichý týden") : "tento týden"}
+            {tydenPosun !== 0 ? (
+              <>
+                {" · "}
+                <button
+                  type="button"
+                  onClick={() => setTydenPosun(0)}
+                  className="font-medium text-brand hover:underline"
+                >
+                  Dnes
+                </button>
+              </>
+            ) : null}
           </span>
         </div>
-      ) : null}
+
+        <button
+          type="button"
+          onClick={() => setTydenPosun((t) => t + 1)}
+          aria-label="Další týden"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-2 hover:text-ink"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
 
       {moje.length === 0 ? (
         <Card>
@@ -214,7 +250,9 @@ export function RozvrhScreen({
             <Card>
               <div className="flex items-center gap-2 px-4 pt-3.5">
                 <CalendarX2 className="h-4 w-4 text-warning" />
-                <h2 className="text-sm font-semibold text-ink">Změny na nejbližší dny</h2>
+                <h2 className="text-sm font-semibold text-ink">
+                  {tydenPosun === 0 ? "Změny tento týden" : "Změny v zobrazeném týdnu"}
+                </h2>
               </div>
               <CardBody className="pt-2">
                 <ul className="divide-y divide-line">
@@ -251,17 +289,20 @@ export function RozvrhScreen({
               options={DNY.map((d) => ({
                 value: String(d),
                 label: (
-                  <span className={cn(d === dnesniDen && "font-bold")}>{DOW_SHORT[d % 7]}</span>
+                  <span className={cn(tydenPosun === 0 && d === dnesniDen && "font-bold")}>
+                    {DOW_SHORT[d % 7]}
+                  </span>
                 ),
               }))}
             />
             <DenCard
               den={den}
+              datum={datumDne(den)}
               hodiny={proDen(den)}
               canEdit={canEdit}
               onAdd={() => pridej(den)}
               onEdit={uprav}
-              dnesni={den === dnesniDen}
+              dnesni={tydenPosun === 0 && den === dnesniDen}
             />
           </div>
 
@@ -271,11 +312,12 @@ export function RozvrhScreen({
               <DenCard
                 key={d}
                 den={d}
+                datum={datumDne(d)}
                 hodiny={proDen(d)}
                 canEdit={canEdit}
                 onAdd={() => pridej(d)}
                 onEdit={uprav}
-                dnesni={d === dnesniDen}
+                dnesni={tydenPosun === 0 && d === dnesniDen}
               />
             ))}
           </div>
@@ -299,6 +341,7 @@ export function RozvrhScreen({
 
 function DenCard({
   den,
+  datum,
   hodiny,
   canEdit,
   onAdd,
@@ -306,6 +349,7 @@ function DenCard({
   dnesni,
 }: {
   den: number;
+  datum: Date;
   hodiny: RozvrhHodina[];
   canEdit: boolean;
   onAdd: () => void;
@@ -317,7 +361,9 @@ function DenCard({
   return (
     <Card className={cn(dnesni && "ring-1 ring-brand")}>
       <div className="flex items-baseline justify-between gap-2 px-3 pt-3">
-        <h2 className="text-sm font-semibold text-ink">{NAZVY[den]}</h2>
+        <h2 className="text-sm font-semibold text-ink">
+          {NAZVY[den]} <span className="tnum font-normal text-ink-subtle">{formatDayShort(datum)}</span>
+        </h2>
         {konec ? (
           <span className="tnum text-xs text-ink-subtle">do {konec}</span>
         ) : null}
