@@ -716,6 +716,87 @@ def plany_rozsahem(edupage: Edupage, od: date, do: date) -> Optional[dict]:
         return None
 
 
+def plany_pres_currenttt(
+    edupage: Edupage, dite_id: Optional[int], od: date, do: date
+) -> Optional[dict]:
+    """
+    Druhá cesta k rozvrhu, jiným rozhraním EduPage.
+
+    Nástěnka `eb.php?mode=ttday` není u všech škol zapnutá — pak vrátí
+    stránku bez tokenu a nedá se z ní nic vyčíst. Rozhraní `currenttt`
+    stojí vedle ní, umí rovnou rozsah dní a odpovídá JSONem, takže se
+    nemusí nic vyřezávat z textu.
+
+    Potřebuje ale ID žáka, takže má smysl jen u rodičovského účtu, kde ho
+    známe z párování dětí. Vrací stejný tvar jako `plany_rozsahem`, aby
+    volající nemusel řešit, odkud data přišla.
+    """
+    if dite_id is None:
+        return None
+
+    # Rodičovský účet vozí ID dětí i záporně, ale tabulka žáků je zná
+    # kladná. Zkusíme obojí — jeden dotaz navíc je levnější než rozvrh,
+    # který se nestáhne.
+    for kandidat in dict.fromkeys([dite_id, abs(dite_id)]):
+        vysledek = _currenttt_pokus(edupage, kandidat, od, do)
+        if vysledek:
+            return vysledek
+
+    return None
+
+
+def _currenttt_pokus(edupage: Edupage, dite_id: int, od: date, do: date) -> Optional[dict]:
+    try:
+        odpoved = edupage.session.post(
+            f"https://{edupage.subdomain}.edupage.org"
+            "/timetable/server/currenttt.js?__func=curentttGetData",
+            json={
+                "__args": [
+                    None,
+                    {
+                        "year": edupage.get_school_year(),
+                        "datefrom": od.strftime("%Y-%m-%d"),
+                        "dateto": do.strftime("%Y-%m-%d"),
+                        "table": "students",
+                        "id": str(dite_id),
+                        "showColors": True,
+                        "showIgroupsInClasses": True,
+                        "showOrig": True,
+                        "log_module": "CurrentTTView",
+                    },
+                ],
+                "__gsh": edupage.gsec_hash,
+            },
+            timeout=40,
+        )
+
+        telo = json.loads(odpoved.content.decode())
+        vysledek = telo.get("r") or {}
+
+        if vysledek.get("error"):
+            log.warning("currenttt vrátilo chybu: %s", vysledek.get("error"))
+            return None
+
+        polozky = vysledek.get("ttitems")
+        if not polozky:
+            log.info("currenttt nevrátilo žádné hodiny pro dítě %s", dite_id)
+            return None
+
+        # Odpověď je jeden seznam přes celý rozsah, tak si ho rozdělíme po
+        # dnech do stejného tvaru, jaký vrací nástěnka.
+        po_dnech: dict[str, dict] = {}
+        for polozka in polozky:
+            den = polozka.get("date")
+            if not den:
+                continue
+            po_dnech.setdefault(den, {"plan": []})["plan"].append(polozka)
+
+        return po_dnech or None
+    except Exception as chyba:  # noqa: BLE001 — máme ještě třetí cestu
+        log.warning("currenttt selhalo: %s", chyba)
+        return None
+
+
 def hodiny_dne(edupage: Edupage, plan: Any) -> list:
     """Poskládá hodiny z denního plánu knihovnou, ať se logika neduplikuje."""
     prevod = getattr(Timetables(edupage), "_Timetables__parse_timetable")
@@ -751,9 +832,23 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
     for dite_id, potize in po_detech(edupage, data.deti):
         chyby.extend(potize)
 
-        # Jeden dotaz na celý rozsah. Když neprojde, jede se den po dni
-        # jako dřív — pomalu, ale jistě.
-        plany = plany_rozsahem(edupage, dny_rozsahu[0], dny_rozsahu[-1]) if dny_rozsahu else None
+        # Tři cesty od nejlevnější po nejpomalejší: nástěnka jedním
+        # dotazem, jiné rozhraní taky jedním dotazem, a nakonec den po dni.
+        plany = None
+        odkud = "nic"
+
+        if dny_rozsahu:
+            plany = plany_rozsahem(edupage, dny_rozsahu[0], dny_rozsahu[-1])
+            if plany:
+                odkud = "nástěnka"
+            else:
+                plany = plany_pres_currenttt(
+                    edupage, dite_id, dny_rozsahu[0], dny_rozsahu[-1]
+                )
+                if plany:
+                    odkud = "currenttt"
+
+        log.info("rozvrh dítěte %s: zdroj %s", dite_id, odkud)
 
         for den in dny_rozsahu:
             if _cas.monotonic() - zacatek_behu > STROP_SEKUND:
