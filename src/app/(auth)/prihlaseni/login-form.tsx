@@ -10,22 +10,47 @@ import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 
+/** Důvody, se kterými sem posílá `/auth/callback` neúspěšný odkaz z e-mailu. */
+const HLASKY: Record<string, string> = {
+  "odkaz-vyprsel":
+    "Odkaz už neplatí — platí 60 minut a použít se dá jen jednou. Nech si poslat nový.",
+  "odkaz-neplatny": "Odkaz se nepodařilo ověřit. Nech si poslat nový.",
+};
+
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("dal") || "/prehled";
+  const duvod = params.get("chyba");
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [mode, setMode] = React.useState<"password" | "magic">("password");
+  // Kdo přišel s rozbitým odkazem, chce nový odkaz, ne kolonku na heslo.
+  const [mode, setMode] = React.useState<"password" | "magic">(
+    duvod ? "magic" : "password",
+  );
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [sent, setSent] = React.useState(false);
+  const [zFragmentu, setZFragmentu] = React.useState<string | null>(null);
+  const [duvodSkryt, setDuvodSkryt] = React.useState(false);
+
+  // Supabase posílá důvod dvakrát: v parametrech a ve fragmentu za `#`.
+  // Fragment se na server nikdy nedostane, ale přesměrování ho zachová —
+  // takže když parametr chybí, přečteme ho tady.
+  React.useEffect(() => {
+    if (duvod) return;
+    const kod = new URLSearchParams(window.location.hash.slice(1)).get("error_code");
+    if (kod) setZFragmentu(kod === "otp_expired" ? "odkaz-vyprsel" : "odkaz-neplatny");
+  }, [duvod]);
+
+  const hlaska = error ?? (duvodSkryt ? null : HLASKY[duvod ?? zFragmentu ?? ""]) ?? null;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setDuvodSkryt(true);
 
     const supabase = createClient();
 
@@ -101,7 +126,7 @@ export function LoginForm() {
         </Field>
       ) : null}
 
-      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {hlaska ? <Alert tone="danger">{hlaska}</Alert> : null}
 
       <Button type="submit" size="lg" className="w-full" disabled={busy}>
         {busy ? <Spinner /> : mode === "password" ? "Přihlásit se" : "Poslat odkaz e-mailem"}
@@ -112,6 +137,7 @@ export function LoginForm() {
         onClick={() => {
           setMode((m) => (m === "password" ? "magic" : "password"));
           setError(null);
+          setDuvodSkryt(true);
         }}
         className="w-full text-center text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
       >
