@@ -95,7 +95,6 @@ export function ZpravyScreen({
         ostatni.map((m) => ({
           family_id: session.family.id,
           user_id: m.userId,
-          channel: "telegram",
           title: `Nová zpráva od ${session.profile.full_name || "druhého rodiče"}`,
           body: cisty.slice(0, 300),
         })),

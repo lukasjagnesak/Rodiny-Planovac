@@ -62,8 +62,6 @@ export async function requireSession(): Promise<SessionContext> {
         avatar_url: null,
         phone: null,
         color: "#3f74e0",
-        telegram_chat_id: null,
-        telegram_link_code: null,
         locale: "cs",
       },
     family,

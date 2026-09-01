@@ -7,7 +7,8 @@ import { expandActivities } from "./activities";
 import { toMemberView, sideLabel } from "./members";
 import { EVENT_KINDS } from "./constants";
 import { formatDayLong, formatTime, toDateKey } from "./dates";
-import { escapeHtml, sendTelegramMessage } from "./telegram";
+import { posliPush } from "./push";
+import { odkazPodleDeduplikace } from "./oznameni-odkaz";
 import type {
   Activity,
   ActivityOccurrence,
@@ -120,9 +121,18 @@ export async function planNotifications(): Promise<number> {
       profile: Profile | null;
     })[]).map(toMemberView);
     const children = (childrenRes.data ?? []) as Child[];
-    const withTelegram = members.filter((m) => m.hasTelegram);
 
-    if (withTelegram.length === 0) continue;
+    const { data: odbery } = await admin
+      .from("push_subscriptions")
+      .select("user_id")
+      .in(
+        "user_id",
+        members.map((m) => m.userId),
+      );
+    const maPush = new Set((odbery ?? []).map((o) => o.user_id as string));
+    const sPushem = members.filter((m) => maPush.has(m.userId));
+
+    if (sPushem.length === 0) continue;
 
     // ── 1) Připomínky událostí ──────────────────────────────────
     for (const event of (eventsRes.data ?? []) as FamilyEvent[]) {
@@ -135,8 +145,8 @@ export async function planNotifications(): Promise<number> {
         if (sendAt < now || sendAt > horizon) continue;
 
         const recipients = event.responsible
-          ? withTelegram.filter((m) => m.userId === event.responsible)
-          : withTelegram.filter((m) => editors(members).some((e) => e.userId === m.userId));
+          ? sPushem.filter((m) => m.userId === event.responsible)
+          : sPushem.filter((m) => editors(members).some((e) => e.userId === m.userId));
 
         for (const member of recipients) {
           planned.push({
@@ -144,11 +154,10 @@ export async function planNotifications(): Promise<number> {
             userId: member.userId,
             title: `${meta.emoji} ${event.title}`,
             body:
-              `${meta.emoji} <b>${escapeHtml(event.title)}</b>\n` +
               `${formatDayLong(start)}${event.all_day ? "" : ` v ${formatTime(start)}`}\n` +
-              (child ? `Dítě: ${escapeHtml(child.name)}\n` : "") +
-              (event.location ? `📍 ${escapeHtml(event.location)}\n` : "") +
-              (event.notes ? `\n${escapeHtml(event.notes)}` : ""),
+              (child ? `Dítě: ${child.name}\n` : "") +
+              (event.location ? `📍 ${event.location}\n` : "") +
+              (event.notes ? `\n${event.notes}` : ""),
             sendAt,
             dedupeKey: `event:${event.id}:${offset}`,
           });
@@ -180,7 +189,7 @@ export async function planNotifications(): Promise<number> {
           [instance.driverBack, "zpět"],
         ] as const) {
           if (!driverId) continue;
-          const driver = withTelegram.find((m) => m.userId === driverId);
+          const driver = sPushem.find((m) => m.userId === driverId);
           if (!driver) continue;
 
           planned.push({
@@ -188,10 +197,9 @@ export async function planNotifications(): Promise<number> {
             userId: driver.userId,
             title: `🚗 Zítra vezeš ${direction}`,
             body:
-              `🚗 <b>Zítra vezeš ${direction}</b>\n` +
-              `${escapeHtml(instance.activity.name)}${child ? ` — ${escapeHtml(child.name)}` : ""}\n` +
+              `${instance.activity.name}${child ? ` — ${child.name}` : ""}\n` +
               `⏰ ${formatTime(instance.startsAt)}–${formatTime(instance.endsAt)}\n` +
-              (place ? `📍 ${escapeHtml(place)}` : ""),
+              (place ? `📍 ${place}` : ""),
             sendAt,
             dedupeKey: `ride:${instance.activity.id}:${dayKey}:${direction}`,
           });
@@ -199,14 +207,13 @@ export async function planNotifications(): Promise<number> {
 
         // Nikdo nepřiřazen — připomeneme všem, kdo mohou upravovat.
         if (!instance.driverThere) {
-          for (const member of withTelegram.filter((m) => m.role !== "viewer")) {
+          for (const member of sPushem.filter((m) => m.role !== "viewer")) {
             planned.push({
               familyId: family.id,
               userId: member.userId,
               title: "❓ Zítra chybí řidič",
               body:
-                `❓ <b>Zítra není nikdo na odvoz</b>\n` +
-                `${escapeHtml(instance.activity.name)}${child ? ` — ${escapeHtml(child.name)}` : ""}\n` +
+                `${instance.activity.name}${child ? ` — ${child.name}` : ""}\n` +
                 `⏰ ${formatTime(instance.startsAt)}\n\n` +
                 "Doplň prosím v aplikaci, kdo veze.",
               sendAt,
@@ -232,15 +239,14 @@ export async function planNotifications(): Promise<number> {
       const sendAt = wallClockToInstant(previousDay, EVENING_HOUR, tz);
       if (sendAt < now || sendAt > horizon) continue;
 
-      for (const member of withTelegram) {
+      for (const member of sPushem) {
         planned.push({
           familyId: family.id,
           userId: member.userId,
           title: "🔄 Zítra předání dětí",
           body:
-            "🔄 <b>Zítra předání dětí</b>\n" +
             `${formatDayLong(day.date)}\n` +
-            `Děti přecházejí k: <b>${escapeHtml(sideLabel(members, day.side))}</b>`,
+            `Děti přecházejí k: ${sideLabel(members, day.side)}`,
           sendAt,
           dedupeKey: `handover:${family.id}:${day.key}`,
         });
@@ -255,7 +261,7 @@ export async function planNotifications(): Promise<number> {
     planned.map((p) => ({
       family_id: p.familyId,
       user_id: p.userId,
-      channel: "telegram",
+      channel: "push",
       title: p.title,
       body: p.body,
       send_at: p.sendAt.toISOString(),
@@ -275,7 +281,7 @@ export async function dispatchNotifications(): Promise<{ sent: number; failed: n
 
   const { data: due } = await admin
     .from("notifications")
-    .select("*, profile:profiles(telegram_chat_id)")
+    .select("*")
     .eq("status", "pending")
     .lte("send_at", new Date().toISOString())
     .limit(200);
@@ -284,20 +290,43 @@ export async function dispatchNotifications(): Promise<{ sent: number; failed: n
   let failed = 0;
 
   for (const notification of due ?? []) {
-    const chatId = (notification.profile as { telegram_chat_id: string | null } | null)
-      ?.telegram_chat_id;
+    const { data: odbery } = await admin
+      .from("push_subscriptions")
+      .select("endpoint, p256dh, auth")
+      .eq("user_id", notification.user_id);
 
-    if (!chatId) {
+    if (!odbery || odbery.length === 0) {
       await admin
         .from("notifications")
-        .update({ status: "cancelled", error: "Uživatel nemá propojený Telegram." })
+        .update({ status: "cancelled", error: "Uživatel nemá zapnuté notifikace." })
         .eq("id", notification.id);
       continue;
     }
 
-    const result = await sendTelegramMessage(chatId, notification.body);
+    let doruceno = false;
+    let posledniChyba: string | undefined;
 
-    if (result.ok) {
+    for (const odber of odbery) {
+      const vysledek = await posliPush(odber, {
+        titulek: notification.title,
+        telo: notification.body,
+        odkaz: odkazPodleDeduplikace(notification.dedupe_key),
+        tag: notification.dedupe_key ?? undefined,
+      });
+
+      if (vysledek.ok) {
+        doruceno = true;
+      } else {
+        posledniChyba = vysledek.chyba;
+        // Prohlížeč odběr sám zahodil (odinstalace appky, vymazaná data) —
+        // další pokusy na tenhle endpoint by jen sbíraly stejnou chybu.
+        if (vysledek.gone) {
+          await admin.from("push_subscriptions").delete().eq("endpoint", odber.endpoint);
+        }
+      }
+    }
+
+    if (doruceno) {
       sent += 1;
       await admin
         .from("notifications")
@@ -307,7 +336,7 @@ export async function dispatchNotifications(): Promise<{ sent: number; failed: n
       failed += 1;
       await admin
         .from("notifications")
-        .update({ status: "failed", error: result.error?.slice(0, 300) })
+        .update({ status: "failed", error: posledniChyba?.slice(0, 300) })
         .eq("id", notification.id);
     }
   }

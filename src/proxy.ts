@@ -27,7 +27,6 @@ const PUBLIC_PATHS = [
   "/api/lead",
   "/api/t",
   "/api/checklist",
-  "/api/telegram",
   "/api/cron",
   // Chráněné vlastním tajemstvím, ne přihlášením.
   "/api/mail/kontrola",

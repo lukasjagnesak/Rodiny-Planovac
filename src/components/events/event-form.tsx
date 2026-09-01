@@ -275,7 +275,7 @@ export function EventForm({
             </Select>
           </Field>
 
-          <Field label="Připomenout" hint="pošleme na Telegram">
+          <Field label="Připomenout" hint="notifikace do zařízení">
             <div className="flex flex-wrap gap-1.5">
               {REMINDER_CHOICES.map((r) => {
                 const active = form.reminders.includes(r.value);

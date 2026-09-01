@@ -72,7 +72,7 @@ const FUNKCE = [
     ikona: BellRing,
     nazev: "Připomínky",
     popis:
-      "Notifikace před předávkou, kroužkem i doktorem. Do Telegramu nebo do prohlížeče, ne jen do aplikace, kterou zrovna nemáš otevřenou.",
+      "Notifikace před předávkou, kroužkem i doktorem — přímo do telefonu, i když zrovna nemáš aplikaci otevřenou.",
   },
   {
     ikona: FileText,

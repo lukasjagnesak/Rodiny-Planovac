@@ -39,6 +39,7 @@ export default async function DashboardPage() {
     rozvrhZmeny,
     vsechnyVydaje,
     pozvanky,
+    pushOdbery,
   ] = await Promise.all([
     supabase
       .from("custody_patterns")
@@ -92,6 +93,10 @@ export default async function DashboardPage() {
       .select("id", { count: "exact", head: true })
       .eq("family_id", session.family.id)
       .is("accepted_at", null),
+    supabase
+      .from("push_subscriptions")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", session.userId),
   ]);
 
   const kroky = rozjezd({
@@ -100,7 +105,7 @@ export default async function DashboardPage() {
     detiJsou: session.children.length > 0,
     vydajJe: (vsechnyVydaje.count ?? 0) > 0,
     krouzekJe: (activities.data ?? []).length > 0,
-    pripominkyJsou: Boolean(session.profile.telegram_chat_id),
+    pripominkyJsou: (pushOdbery.count ?? 0) > 0,
   });
 
   return (
@@ -171,7 +176,7 @@ function rozjezd(stav: {
       klic: "pripominky",
       titulek: "Zapnout připomínky",
       popis: "Den předem přijde, co se chystá",
-      odkaz: "/nastaveni/telegram",
+      odkaz: "/nastaveni/notifikace",
       hotovo: stav.pripominkyJsou,
     },
   ];

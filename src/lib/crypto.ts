@@ -56,10 +56,3 @@ export function decryptSecret(payload: string): string {
     throw chyba;
   }
 }
-
-/** Krátký lidsky opsatelný kód pro spárování Telegramu. */
-export function shortCode(length = 6): string {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(length);
-  return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
-}

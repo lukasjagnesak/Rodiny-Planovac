@@ -48,8 +48,6 @@ export interface Profile {
   avatar_url: string | null;
   phone: string | null;
   color: string;
-  telegram_chat_id: string | null;
-  telegram_link_code: string | null;
   locale: string;
 }
 
@@ -75,7 +73,6 @@ export interface MemberView {
   side: CustodySide | null;
   color: string;
   avatarUrl: string | null;
-  hasTelegram: boolean;
 }
 
 export interface FamilyInvite {

@@ -20,17 +20,19 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava a události |
 | **Google kalendář** | Každý člen si propojí **svůj** účet; péče, kroužky i události se přenesou do jeho kalendáře |
 | **EduPage** | Úkoly, písemky, zprávy od učitelů, školní akce a rozvrh ze školního systému. Víc dětí pod jedním účtem, všechno roztříděné podle toho, komu patří (jen rodinná verze) |
-| **Telegram** | Připomínky zdarma přímo do telefonu — kdo zítra veze, kdy je předání, co se blíží |
+| **Push notifikace** | Připomínky zdarma přímo do telefonu i počítače — kdo zítra veze, kdy je předání, co se blíží. Nativně přes prohlížeč, appka se nikam jinam nepřipojuje |
 | **Kalkulačka** | Veřejná stránka `/kalkulacka` bez přihlášení — spočítá rozpis dnů i noci u každého rodiče, jde sdílet odkazem a po přihlášení se rozpis překlopí rovnou do aplikace |
 | **Veřejný web** | Úvodní stránka, průvodce střídavou péčí, vzor dohody, kalkulačka výživného a stránky pro advokáty a mediátory — ve stejném designu jako aplikace, protože berou barvy i písmo ze stejných proměnných |
 | **Rodina** | Pozvánky odkazem, role (správce / rodič / pečující osoba / jen pro čtení), vlastní barvy |
 
-### Proč Telegram a ne WhatsApp
+### Proč Web Push a ne Telegram nebo WhatsApp
 
-WhatsApp Cloud API vyžaduje ověřený Meta Business účet, schvalování šablon zpráv
-a placené konverzace. Telegram bot se založí za dvě minuty přes `@BotFather`,
-je zdarma a bez limitů na tento typ použití. Rozhraní je oddělené v
-`src/lib/telegram.ts`, takže WhatsApp jde doplnit později jako druhý kanál.
+Obě varianty nutí uživatele založit si účet u cizí služby, než mu můžou
+poslat první zprávu. Web Push je standard prohlížečů (Push API) — appka
+si zažádá o povolení a od té chvíle posílá notifikace přímo, bez
+prostředníka, kterého by rodič musel znát nebo mu věřit. Na iPhonu to
+vyžaduje appku přidanou na plochu (Safari jinak Push API nenabízí),
+jinde funguje rovnou.
 
 ---
 
@@ -159,25 +161,20 @@ dne a projeví se i na „dnes končí" na přehledu.
 > stahování se může rozbít, kdykoli EduPage něco změní — pak stačí povýšit
 > `edupage-api` v `edupage/requirements.txt`.
 
-### 5. Telegram notifikace (nepovinné)
+### 5. Push notifikace (nepovinné)
 
-1. V Telegramu napiš [@BotFather](https://t.me/BotFather) → `/newbot`
-2. Token vlož do `.env` jako `TELEGRAM_BOT_TOKEN`
-3. Vymysli si náhodný `TELEGRAM_WEBHOOK_SECRET`
-4. Po nasazení zaregistruj webhook:
+1. Vygeneruj pár klíčů:
 
 ```bash
-curl -X POST "https://api.telegram.org/bot<TOKEN>/setWebhook" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://klidoo.cz/api/telegram/webhook",
-    "secret_token": "<TELEGRAM_WEBHOOK_SECRET>",
-    "allowed_updates": ["message"]
-  }'
+npx web-push generate-vapid-keys
 ```
 
-Každý člen rodiny si pak v **Nastavení → Telegram** vygeneruje šestimístný kód
-a pošle ho botovi. Hotovo.
+2. Veřejný klíč vlož do `.env` jako `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, soukromý
+   jako `VAPID_PRIVATE_KEY`. Veřejný klíč se zapéká do klientského balíčku
+   (build, ne jen restart).
+
+Každý člen rodiny si pak v **Nastavení → Notifikace** zapne notifikace na
+každém svém zařízení tlačítkem — žádný cizí účet, žádné párování.
 
 ### 5b. E-maily (SMTP)
 
@@ -360,7 +357,6 @@ ale rozbijí se přihlašovací odkazy, Google i notifikace:
 |---|---|
 | Supabase → Authentication → URL Configuration | Site URL `https://klidoo.cz`, do Redirect URLs přidat `https://klidoo.cz/auth/callback` |
 | Google Cloud → Credentials → OAuth client | přidat `https://klidoo.cz/api/google/callback` |
-| Telegram | zaregistrovat webhook na ostrou adresu (viz výše) |
 
 A v `.env` musí `NEXT_PUBLIC_SITE_URL` být ostrá adresa — zapéká se do
 klientského balíčku při buildu, takže pozdější změna znamená přestavět obraz.
@@ -394,7 +390,7 @@ src/
 │   ├── (auth)/            přihlášení, registrace
 │   ├── (app)/             přehled, kalendář, kroužky, výdaje, události, nastavení
 │   ├── (web)/             veřejný web: úvodní stránka, obsahové stránky, kalkulačky
-│   ├── api/               Google OAuth + sync, Telegram webhook, cron, sběr kontaktů
+│   ├── api/               Google OAuth + sync, push notifikace, cron, sběr kontaktů
 │   ├── pozvanka/[token]/  přijetí pozvánky do rodiny
 │   └── vitejte/           průvodce prvním nastavením
 ├── components/
@@ -406,7 +402,7 @@ src/
 │   ├── rozvrh/            rozvrh hodin
 │   ├── web/               stavební prvky veřejného webu a sběr kontaktů
 │   ├── family/            děti a členové
-│   └── settings/          profil, střídání, Google, Telegram
+│   └── settings/          profil, střídání, Google, notifikace
 └── lib/
     ├── custody.ts         výpočet, u koho děti kdy jsou
     ├── rozvrh.ts          rozvrh hodin a skládání staženého z EduPage
@@ -505,8 +501,8 @@ nejsou zásady podle GDPR úplné. Podmínky provizí jsou v `src/lib/partneri.t
 - Data jsou oddělená po rodinách přes RLS přímo v Postgresu.
 - Účtenky leží v privátním bucketu, zobrazují se přes dočasné podepsané odkazy
   platné jednu hodinu.
-- `service_role` klíč se používá jen na serveru — v cronu, při synchronizaci
-  s Googlem a v Telegram webhooku.
+- `service_role` klíč se používá jen na serveru — v cronu a při synchronizaci
+  s Googlem.
 - Google refresh tokeny jsou v databázi zašifrované.
 - Caddy posílá bezpečnostní hlavičky včetně HSTS.
 

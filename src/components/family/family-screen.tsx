@@ -167,10 +167,6 @@ export function FamilyScreen({
                 </p>
               </div>
 
-              {m.hasTelegram ? (
-                <Send className="h-4 w-4 shrink-0 text-success" aria-label="Telegram propojen" />
-              ) : null}
-
               {isOwner || m.userId === session.userId ? (
                 <button
                   type="button"

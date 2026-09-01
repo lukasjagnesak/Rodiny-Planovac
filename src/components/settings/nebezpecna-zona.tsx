@@ -207,7 +207,7 @@ function SmazatUcet({ session }: { session: SessionContext }) {
       >
         <div className="space-y-4">
           <Alert tone="danger">
-            Smaže se tvůj profil, přihlášení i propojení s Googlem, EduPage a Telegramem. Rodiny,
+            Smaže se tvůj profil, přihlášení i propojení s Googlem a EduPage. Rodiny,
             ve kterých zůstává někdo další, se nemažou — jen v nich přestaneš být. Pokud jsi v nich
             byl správcem, převezme to nejdéle přítomný člen.
           </Alert>

@@ -134,8 +134,9 @@ export default function Zasady() {
               jen v rozsahu, který synchronizace vyžaduje.
             </li>
             <li>
-              <strong>Telegram</strong> — pouze pokud si sami zapnete upozornění; předává se
-              text upozornění a identifikátor chatu.
+              <strong>Provozovatel push notifikací vašeho prohlížeče</strong> (například Google
+              nebo Apple) — pouze pokud si sami zapnete notifikace; text notifikace k němu
+              putuje zašifrovaný a přečíst ho umí jen vaše zařízení.
             </li>
             <li>
               <strong>Stripe</strong> — zpracování plateb, pokud si předplatné pořídíte.

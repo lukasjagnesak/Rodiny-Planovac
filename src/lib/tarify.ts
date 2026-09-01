@@ -88,7 +88,7 @@ export const CO_JE_V_CENE = [
   },
   {
     nazev: "Připomínky",
-    popis: "Den předem přijde, co se chystá — do Telegramu i do Google kalendáře.",
+    popis: "Den předem přijde, co se chystá — notifikací do telefonu i do Google kalendáře.",
   },
 ] as const;
 

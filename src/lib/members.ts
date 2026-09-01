@@ -22,7 +22,6 @@ export function toMemberView(m: FamilyMember & { profile: Profile | null }): Mem
     side: m.custody_side,
     color: m.color || profile?.color || fallbackColor,
     avatarUrl: profile?.avatar_url ?? null,
-    hasTelegram: Boolean(profile?.telegram_chat_id),
   };
 }
 

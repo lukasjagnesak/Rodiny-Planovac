@@ -5,8 +5,8 @@ import {
   CreditCard,
   ChevronRight,
   GraduationCap,
+  Bell,
   Repeat,
-  Send,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
@@ -23,13 +23,17 @@ export default async function SettingsPage() {
   const session = await requireSession();
   const supabase = await createClient();
 
-  const [{ data: google }, { data: edupage }, pristup] = await Promise.all([
+  const [{ data: google }, { data: edupage }, { count: pocetOdberu }, pristup] = await Promise.all([
     supabase.from("google_accounts").select("*").eq("user_id", session.userId).maybeSingle(),
     supabase
       .from("edupage_accounts")
       .select("user_id")
       .eq("user_id", session.userId)
       .maybeSingle(),
+    supabase
+      .from("push_subscriptions")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", session.userId),
     nactiPredplatne(session.family.id),
   ]);
 
@@ -73,11 +77,11 @@ export default async function SettingsPage() {
       badge: edupage ? "propojeno" : null,
     },
     {
-      href: "/nastaveni/telegram",
-      title: "Telegram notifikace",
+      href: "/nastaveni/notifikace",
+      title: "Notifikace",
       description: "Připomínky, kdo veze a co se blíží",
-      Icon: Send,
-      badge: session.profile.telegram_chat_id ? "propojeno" : null,
+      Icon: Bell,
+      badge: (pocetOdberu ?? 0) > 0 ? "zapnuto" : null,
     },
   ];
 

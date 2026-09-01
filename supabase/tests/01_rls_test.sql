@@ -262,4 +262,41 @@ select count(*) as notifikaci from notifications;
 \echo '--- 18) storage politika umí přečíst family_id z cesty'
 select storage.foldername('33333333-3333-3333-3333-333333333333/abc/uctenka.jpg') as slozky;
 
+-- ══ push_subscriptions — každý smí jen svoje zařízení ═════════════
+set role authenticated;
+set request.jwt.claim.sub = '11111111-1111-1111-1111-111111111111';
+
+\echo '--- 19a) tata si přidá odběr push notifikací'
+insert into push_subscriptions (user_id, endpoint, p256dh, auth)
+values ('11111111-1111-1111-1111-111111111111', 'https://push.example/tata', 'p', 'a')
+returning id as odber_tata \gset
+
+set request.jwt.claim.sub = '22222222-2222-2222-2222-222222222222';
+
+\echo '--- 19b) máma nevidí tátův odběr'
+select count(*) as vidi from push_subscriptions where id = :'odber_tata';
+
+\echo '--- 19c) máma nemůže smazat tátův odběr'
+delete from push_subscriptions where id = :'odber_tata';
+select count(*) as prezil from push_subscriptions where id = :'odber_tata';
+
+\echo '--- 19d) máma nemůže vložit odběr na tátovo jméno'
+do $$
+begin
+  insert into push_subscriptions (user_id, endpoint, p256dh, auth)
+  values ('11111111-1111-1111-1111-111111111111', 'https://push.example/podvrh', 'p', 'a');
+  raise exception 'CHYBA: cizí odběr prošel';
+exception
+  when insufficient_privilege then raise notice 'OK: odběr odmítnut RLS politikou';
+end $$;
+
+set request.jwt.claim.sub = '11111111-1111-1111-1111-111111111111';
+
+\echo '--- 19e) táta svůj odběr smaže sám'
+delete from push_subscriptions where id = :'odber_tata';
+select count(*) as zbylo from push_subscriptions where id = :'odber_tata';
+
+reset role;
+reset request.jwt.claim.sub;
+
 \echo '=== VŠE PROŠLO ==='
