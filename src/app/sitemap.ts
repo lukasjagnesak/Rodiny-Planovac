@@ -21,6 +21,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/pro-advokaty", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-mediatory", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/zasady-ochrany-osobnich-udaju", priorita: 0.2, frekvence: "yearly" },
+  { cesta: "/obchodni-podminky", priorita: 0.2, frekvence: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Check, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { cn } from "@/lib/format";
@@ -21,6 +22,7 @@ export function VolbaTarifu({
   brana: boolean;
 }) {
   const [tarif, setTarif] = React.useState<Tarif>("rocni");
+  const [souhlas, setSouhlas] = React.useState(false);
   const [ceka, setCeka] = React.useState(false);
   const [chyba, setChyba] = React.useState<string | null>(null);
 
@@ -92,7 +94,30 @@ export function VolbaTarifu({
 
       {brana ? (
         <>
-          <Button size="lg" className="w-full" onClick={zaplatit} disabled={ceka}>
+          {/* Bez tohohle souhlasu běží čtrnáctidenní lhůta na odstoupení dál
+              i po zaplacení. Zákon ho chce výslovný, ne schovaný v textu. */}
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line p-3">
+            <input
+              type="checkbox"
+              checked={souhlas}
+              onChange={(e) => setSouhlas(e.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 rounded-md border-line-strong accent-[var(--brand)]"
+            />
+            <span className="text-sm text-ink-muted">
+              Souhlasím s{" "}
+              <Link
+                href="/obchodni-podminky"
+                target="_blank"
+                className="text-brand underline underline-offset-4"
+              >
+                obchodními podmínkami
+              </Link>{" "}
+              a žádám, aby předplatné začalo platit hned. Beru na vědomí, že tím zaniká právo
+              odstoupit od smlouvy do 14 dnů.
+            </span>
+          </label>
+
+          <Button size="lg" className="w-full" onClick={zaplatit} disabled={ceka || !souhlas}>
             {ceka ? <Spinner /> : `Předplatit za ${korun(CENIK.find((t) => t.id === tarif)!.cena)}`}
           </Button>
           <p className="text-center text-xs text-ink-subtle">

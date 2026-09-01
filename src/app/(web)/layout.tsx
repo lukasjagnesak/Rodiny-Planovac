@@ -44,6 +44,7 @@ const PATICKA = [
     odkazy: [
       { href: "/pro-advokaty", popisek: "Pro advokáty" },
       { href: "/pro-mediatory", popisek: "Pro mediátory" },
+      { href: "/obchodni-podminky", popisek: "Obchodní podmínky" },
     ],
   },
 ];

@@ -20,6 +20,7 @@ const PUBLIC_PATHS = [
   "/pro-advokaty",
   "/pro-mediatory",
   "/zasady-ochrany-osobnich-udaju",
+  "/obchodni-podminky",
   "/sitemap.xml",
   "/robots.txt",
   "/api/kalkulacka",
