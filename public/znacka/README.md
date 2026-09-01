@@ -15,7 +15,22 @@ z kódu (`src/components/ui/logo.tsx`), tyhle soubory jsou pro okolní svět.
 
 - rodič A `#2c8671`, rodič B `#cf7b66`, průnik `#24412d`
 - podklad ikony `#fdf7f0`, text loga `#2a2724` (na tmavém `#f7f2ec`)
-- barva značky do formulářů (Stripe „brand color"): `#2c8671`
+- barva akce (tlačítka) `#2c8671` — stejná jako `--brand` v `globals.css`
+
+## Nastavení Stripe
+
+Stripe má dvě dvojice polí a jejich názvy pletou:
+
+| Pole | Co obarví | Naše hodnota |
+| --- | --- | --- |
+| Brand color | tlačítka na účtenkách, fakturách a v zákaznickém portálu | `#2c8671` |
+| Accent color | **podklad** e-mailů a stránek, ne tlačítko | `#fdf7f0` |
+| Checkout → Button color | tlačítko „Zaplatit" | `#2c8671` |
+| Checkout → Background color | podklad platební stránky | `#fdf7f0` |
+
+Terakota do Stripe nepatří. Ve značce je to barva druhého rodiče, ne barva
+akce — a na tlačítku má s bílým textem kontrast 3,14 : 1, což je pod hranicí
+čitelnosti. Zelená má 4,42 : 1.
 
 Průnik koleček vzniká v aplikaci prolnutím barev (multiply na světlém,
 screen na tmavém). V `logo-pruhledne.png` prolnout nejde — pod obrázkem
