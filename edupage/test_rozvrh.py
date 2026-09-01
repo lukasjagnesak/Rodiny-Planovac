@@ -263,5 +263,74 @@ finally:
 print("── strop ──")
 ok("je kratší než minuta, po které umírá volání z aplikace", STROP_SEKUND < 60)
 
+print("── strop patří každému dítěti zvlášť ──")
+# Dřív se čas měřil od začátku celého volání, ne od začátku dítěte. Když
+# první dítě sneslo skoro celý rozpočet (rozbitá nástěnka, jede se den
+# po dni), druhé dítě dostalo strop už vyčerpaný a jeho dny skončily
+# v `nedokonceno`, i když samo o sobě netrvalo skoro nic — v appce to
+# vypadalo, že se rozvrh stáhl jen pro jedno dítě.
+
+import types  # noqa: E402
+from datetime import datetime  # noqa: E402
+
+puvodni_monotonic = modul._cas.monotonic
+puvodni_plany_rozsahem = modul.plany_rozsahem
+puvodni_plany_pres_currenttt = modul.plany_pres_currenttt
+puvodni_hodiny_dne = modul.hodiny_dne
+puvodni_po_detech = modul.po_detech
+puvodni_prihlas = modul.prihlas
+
+hodina_falesna = types.SimpleNamespace(
+    subject=types.SimpleNamespace(name="Matematika"),
+    period=1,
+    classrooms=[],
+    teachers=[],
+    start_time=datetime(2026, 9, 1, 8, 0),
+    end_time=datetime(2026, 9, 1, 8, 45),
+    is_cancelled=False,
+    is_event=False,
+)
+
+cas_faleseny = [0.0]
+
+
+def falesne_plany_rozsahem(edupage, od, do):
+    # Dítě 1 je pomalé — sní skoro celý SVŮJ rozpočet ještě předtím, než
+    # se vůbec začne procházet jednotlivé dny.
+    if getattr(edupage, "aktualni_dite", None) == 1:
+        cas_faleseny[0] += modul.STROP_SEKUND * 2
+    # Klíč podle skutečného prvního dne rozsahu, ať test nezávisí na tom,
+    # jaký den v týdnu zrovna je.
+    return {od.isoformat(): {"plan": [1]}}
+
+
+def falesne_po_detech(edupage, deti):
+    for dite in deti:
+        edupage.aktualni_dite = dite
+        yield dite, []
+
+
+try:
+    modul._cas.monotonic = lambda: cas_faleseny[0]
+    modul.plany_rozsahem = falesne_plany_rozsahem
+    modul.plany_pres_currenttt = lambda *a, **kw: None
+    modul.hodiny_dne = lambda edupage, plan: [hodina_falesna]
+    modul.po_detech = falesne_po_detech
+    modul.prihlas = lambda data: types.SimpleNamespace()
+
+    dotaz = modul.DotazRozvrh(email="rodic@example.cz", heslo="x", deti=[1, 2], dnu_dopredu=7)
+    vysledek = modul.rozvrh(dotaz, modul.SECRET)
+
+    diteId_v_hodinach = {h["diteId"] for h in vysledek["hodiny"]}
+    ok("druhé dítě dostane rozvrh i přes to, že první bylo pomalé", 2 in diteId_v_hodinach)
+    ok("pomalé první dítě volání celé nespadne", vysledek["ok"] is True)
+finally:
+    modul._cas.monotonic = puvodni_monotonic
+    modul.plany_rozsahem = puvodni_plany_rozsahem
+    modul.plany_pres_currenttt = puvodni_plany_pres_currenttt
+    modul.hodiny_dne = puvodni_hodiny_dne
+    modul.po_detech = puvodni_po_detech
+    modul.prihlas = puvodni_prihlas
+
 print("\nVšechno prošlo." if selhalo == 0 else f"\nSelhalo: {selhalo}")
 sys.exit(0 if selhalo == 0 else 1)

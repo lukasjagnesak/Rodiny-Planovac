@@ -820,7 +820,6 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
     chyby: list[str] = []
     nedokonceno: list[str] = []
     dnu = 0
-    zacatek_behu = _cas.monotonic()
 
     dny_rozsahu = [
         date.today() + timedelta(days=posun)
@@ -829,8 +828,16 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
         if (date.today() + timedelta(days=posun)).weekday() < 5
     ]
 
+    # STROP_SEKUND patří KAŽDÉMU dítěti zvlášť, ne celému běhu. Když se
+    # hodiny počítaly od jednoho společného začátku, první dítě, u kterého
+    # nástěnka selhala a stahování sjelo na den po dni, sneslo celý
+    # rozpočet — a rodina se dvěma dětmi dostala rozvrh jen pro jedno
+    # z nich, to druhé mělo `nedokonceno` na každý jediný den.
+    strop_na_dite = STROP_SEKUND / max(len(data.deti), 1)
+
     for dite_id, potize in po_detech(edupage, data.deti):
         chyby.extend(potize)
+        zacatek_ditete = _cas.monotonic()
 
         # Tři cesty od nejlevnější po nejpomalejší: nástěnka jedním
         # dotazem, jiné rozhraní taky jedním dotazem, a nakonec den po dni.
@@ -851,7 +858,7 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
         log.info("rozvrh dítěte %s: zdroj %s", dite_id, odkud)
 
         for den in dny_rozsahu:
-            if _cas.monotonic() - zacatek_behu > STROP_SEKUND:
+            if _cas.monotonic() - zacatek_ditete > strop_na_dite:
                 nedokonceno.append(den.isoformat())
                 continue
 
