@@ -12,7 +12,7 @@
  *
  * Spouští se přes `npm run test:custody`.
  */
-const { resolveCustody, custodyStats } = require("../.test-build/custody.js");
+const { resolveCustody, custodyStats, custodyStatsForRange } = require("../.test-build/custody.js");
 
 let selhalo = 0;
 function ok(popis, podminka) {
@@ -149,6 +149,36 @@ console.log("── celky a krajní případy ──");
 {
   const jeden = custodyStats(rozvrhni("aaaaaaa", { dnu: 1 }));
   ok("jediný den je jedna noc", jeden.daysA === 1 && jeden.nightsA === 1);
+}
+
+console.log("── měsíční součet, když předání padne přesně na poslední den ──");
+{
+  // Středa (idx 2) = a, čtvrtek (idx 3) = b: 30. 9. 2026 je středa,
+  // 1. 10. čtvrtek — hranice měsíce padá přímo na předání.
+  const pattern = vzor("aaabbbb");
+  const zari = { start: new Date("2026-09-01T12:00:00Z"), end: new Date("2026-09-30T12:00:00Z") };
+
+  // Naivní výpočet bez dne navíc — takhle to dřív dělal dashboard a
+  // dostával špatné číslo, protože poslední noc neměl s čím porovnat.
+  const naivneDny = [];
+  for (let d = new Date(zari.start); d <= zari.end; d.setUTCDate(d.getUTCDate() + 1)) {
+    naivneDny.push(new Date(d));
+  }
+  const naivne = custodyStats(
+    resolveCustody({ days: naivneDny, patterns: [pattern], overrides: [], childId: null }),
+  );
+
+  const spravne = custodyStatsForRange({
+    start: zari.start,
+    end: zari.end,
+    patterns: [pattern],
+    overrides: [],
+    childId: null,
+  });
+
+  ok("naivní výpočet dá 30. září straně A (a je to špatně)", naivne.nightsA === 14);
+  ok("custodyStatsForRange přisoudí noc 30. 9. správně straně B", spravne.nightsA === 13);
+  ok("a nikde se neztratí ani nepřidá noc navíc", spravne.nightsTotal === 30);
 }
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);

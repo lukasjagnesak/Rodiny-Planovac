@@ -1,4 +1,11 @@
-import { addWeeks, differenceInCalendarDays, getISOWeek, startOfWeek } from "date-fns";
+import {
+  addDays,
+  addWeeks,
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  getISOWeek,
+  startOfWeek,
+} from "date-fns";
 import { WEEK_OPTS, toDateKey, fromDateKey } from "./dates";
 import type { CustodyOverride, CustodyPattern, CustodySide } from "./types";
 
@@ -267,6 +274,34 @@ export function custodyStats(days: CustodyDay[]): CustodyStats {
     percentA,
     percentB: prirazenychNoci ? 100 - percentA : 0,
   };
+}
+
+/**
+ * `custodyStats` pro uzavřený rozsah dnů (měsíc, rok) — bez téhle obálky
+ * si o poslední noc rozsahu vždycky někdo přijde.
+ *
+ * `resolveCustody` pozná noc dne D podle toho, čí je den D+1. Když je
+ * `end` zároveň posledním dnem v poli, žádné D+1 tam není a funkce noc
+ * radši nechá u toho, kdo má den D — což je špatně vždy, když předání
+ * padne přesně na poslední den měsíce nebo roku. Řešení je vzít si na
+ * půjčku jeden den navíc jen pro tenhle výpočet a do statistiky ho pak
+ * nepočítat.
+ */
+export function custodyStatsForRange(args: {
+  start: Date;
+  end: Date;
+  patterns: CustodyPattern[];
+  overrides: CustodyOverride[];
+  childId: string | null;
+}): CustodyStats {
+  const days = eachDayOfInterval({ start: args.start, end: addDays(args.end, 1) });
+  const resolved = resolveCustody({
+    days,
+    patterns: args.patterns,
+    overrides: args.overrides,
+    childId: args.childId,
+  });
+  return custodyStats(resolved.slice(0, -1));
 }
 
 /** Souvislé bloky pobytu — pro popisky typu „Po 3. 3. – Ne 9. 3. u mámy“. */

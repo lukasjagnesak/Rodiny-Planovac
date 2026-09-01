@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  addDays,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfYear,
-  startOfMonth,
-  startOfYear,
-} from "date-fns";
+import { addDays, endOfMonth, endOfYear, startOfMonth, startOfYear } from "date-fns";
 import {
   ArrowRight,
   Car,
@@ -26,7 +19,7 @@ import { Avatar, Badge, Dot } from "@/components/ui/badge";
 import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, SplitBar } from "@/components/ui/misc";
-import { custodyStats, resolveCustody } from "@/lib/custody";
+import { custodyStatsForRange, resolveCustody } from "@/lib/custody";
 import { expandActivities } from "@/lib/activities";
 import { EXPENSE_CATEGORIES, EVENT_KINDS } from "@/lib/constants";
 import {
@@ -118,17 +111,31 @@ export function Dashboard({
     [patterns, overrides, todayKey],
   );
 
-  const monthStats = React.useMemo(() => {
-    const days = eachDayOfInterval({ start: startOfMonth(today), end: endOfMonth(today) });
-    return custodyStats(resolveCustody({ days, patterns, overrides, childId: null }));
+  const monthStats = React.useMemo(
+    () =>
+      custodyStatsForRange({
+        start: startOfMonth(today),
+        end: endOfMonth(today),
+        patterns,
+        overrides,
+        childId: null,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patterns, overrides, todayKey]);
+    [patterns, overrides, todayKey],
+  );
 
-  const yearStats = React.useMemo(() => {
-    const days = eachDayOfInterval({ start: startOfYear(today), end: endOfYear(today) });
-    return custodyStats(resolveCustody({ days, patterns, overrides, childId: null }));
+  const yearStats = React.useMemo(
+    () =>
+      custodyStatsForRange({
+        start: startOfYear(today),
+        end: endOfYear(today),
+        patterns,
+        overrides,
+        childId: null,
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patterns, overrides, todayKey]);
+    [patterns, overrides, todayKey],
+  );
 
   /** Nejbližší kroužky s dopravou — 7 dní dopředu. */
   const upcomingRides = React.useMemo(() => {
