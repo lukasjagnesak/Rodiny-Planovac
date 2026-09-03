@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     title: `${ZNACKA} — kalendář a výdaje pro střídavou péči`,
     description: POPIS,
     type: "website",
+    url: "/",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: ZNACKA }],
   },
 };
 
@@ -293,7 +295,7 @@ export default async function Domu() {
             Podívej se, do čeho jdeš
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Čtyři obrazovky, ve kterých rodiče tráví skoro všechen čas.
+            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas — a appka umí ještě víc.
           </p>
 
           <div className="mt-10">
@@ -478,6 +480,24 @@ export default async function Domu() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: ZNACKA,
+              url: "https://klidoo.cz",
+              logo: "https://klidoo.cz/icons/icon-512.png",
+              email: "info@klidoo.cz",
+              // Pomáhá Googlu spojit doménu se jménem značky — přesně to,
+              // co chybí, když hledání „klidoo" nenajde vůbec nic. Až
+              // budou sociální sítě, jejich odkazy patří do `sameAs`.
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: ZNACKA,
+              url: "https://klidoo.cz",
+              inLanguage: "cs",
+            },
             {
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",

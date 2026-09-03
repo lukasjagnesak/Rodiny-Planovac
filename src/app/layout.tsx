@@ -27,6 +27,11 @@ const baloo = Baloo_2({
 });
 
 export const metadata: Metadata = {
+  // Bez tohohle Next skládá relativní `canonical`/`og:url` — v produkci
+  // to bez varování spadne na `http://localhost:3000`, což crawlerům
+  // říká, že stránka patří jinam, a klidně to stojí za tím, proč se web
+  // špatně indexuje.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
     default: ZNACKA,
     template: `%s · ${ZNACKA}`,
@@ -42,6 +47,19 @@ export const metadata: Metadata = {
     icon: "/icons/icon.svg",
     apple: "/icons/apple-touch-icon.png",
   },
+  openGraph: {
+    siteName: ZNACKA,
+    locale: "cs_CZ",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: ZNACKA }],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  // Vyplní se sám, jakmile bude v `.env` GOOGLE_SITE_VERIFICATION —
+  // alternativa k TXT záznamu v DNS pro ověření Search Console.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {

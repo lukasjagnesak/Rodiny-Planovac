@@ -5,8 +5,11 @@ import {
   Bike,
   CalendarDays,
   Car,
+  Check,
   LayoutDashboard,
+  MessageCircle,
   Moon,
+  Table2,
   Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/format";
@@ -23,13 +26,15 @@ import { cn } from "@/lib/format";
  * vyšperkovaná ukázka, která nesedí na skutečný provoz, spíš odradí.
  */
 
-type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky";
+type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky" | "zpravy" | "rozvrh";
 
 const ZALOZKY: { id: Obrazovka; popisek: string; Ikona: typeof CalendarDays }[] = [
   { id: "kalendar", popisek: "Kalendář", Ikona: CalendarDays },
   { id: "prehled", popisek: "Dnešek", Ikona: LayoutDashboard },
   { id: "vydaje", popisek: "Výdaje", Ikona: Wallet },
   { id: "krouzky", popisek: "Kroužky", Ikona: Bike },
+  { id: "zpravy", popisek: "Zprávy", Ikona: MessageCircle },
+  { id: "rozvrh", popisek: "Rozvrh", Ikona: Table2 },
 ];
 
 const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
@@ -49,6 +54,14 @@ const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
     nadpis: "Kdo veze tam a kdo zpátky",
     text: "U každého termínu je jméno. Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
   },
+  zpravy: {
+    nadpis: "Zprávu nejde smazat ani přepsat",
+    text: "Domlouvání jde psaním, ne telefonováním — ale s razítkem odeslání i přečtení, které zůstane. Když jde o soud, je vidět, kdo co a kdy napsal.",
+  },
+  rozvrh: {
+    nadpis: "Rozvrh i změny stažené ze školy",
+    text: "Napojí se na EduPage a samo si drží rozvrh, odpadlé hodiny i suplování — pro každé dítě zvlášť, i když chodí na jinou školu.",
+  },
 };
 
 export function UkazkyAplikace() {
@@ -56,7 +69,7 @@ export function UkazkyAplikace() {
   const popisek = POPISKY[aktivni];
 
   return (
-    <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+    <div className="grid items-start gap-10 lg:grid-cols-[1fr_auto]">
       <div className="order-2 lg:order-1">
         <div
           className="flex flex-wrap gap-2"
@@ -92,6 +105,18 @@ export function UkazkyAplikace() {
         <p className="mt-2.5 max-w-lg text-[0.95rem] leading-relaxed text-ink-muted">
           {popisek.text}
         </p>
+
+        {/* Zbylé obrazovky vypsané textem — telefon jich najednou ukáže
+            jen jednu a to necháváme, ale ať je hned vidět, že aplikace
+            není jen těch šest záložek nahoře. */}
+        <ul className="mt-7 grid gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-muted sm:grid-cols-2">
+          {DALSI.map((polozka) => (
+            <li key={polozka} className="flex items-center gap-2">
+              <Check size={14} className="shrink-0 text-brand" aria-hidden />
+              {polozka}
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="order-1 mx-auto lg:order-2">
@@ -100,11 +125,21 @@ export function UkazkyAplikace() {
           {aktivni === "prehled" ? <ObrazovkaPrehled /> : null}
           {aktivni === "vydaje" ? <ObrazovkaVydaje /> : null}
           {aktivni === "krouzky" ? <ObrazovkaKrouzky /> : null}
+          {aktivni === "zpravy" ? <ObrazovkaZpravy /> : null}
+          {aktivni === "rozvrh" ? <ObrazovkaRozvrh /> : null}
         </Telefon>
       </div>
     </div>
   );
 }
+
+/** Co se do šesti záložek nevešlo, ale v appce je. */
+const DALSI = [
+  "Události — škola, lékař, výlety",
+  "Dokumenty rodiny na jednom místě",
+  "Kontakty — škola, lékaři, kroužky",
+  "Notifikace přímo do telefonu",
+];
 
 /** Rám telefonu. Aplikace se používá skoro výhradně na mobilu. */
 function Telefon({ children }: { children: React.ReactNode }) {
@@ -423,12 +458,97 @@ function ObrazovkaKrouzky() {
   );
 }
 
+/* ── Zprávy ───────────────────────────────────────────────────────── */
+
+function ObrazovkaZpravy() {
+  return (
+    <div className="flex flex-1 flex-col">
+      <Lista titulek="Zprávy" podtitulek="Ty a Petra" />
+
+      <div className="flex-1 space-y-2.5 px-3.5 py-3">
+        <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-line bg-surface-2 p-2.5">
+          <p className="text-[11px] text-ink">V pátek to bude o hodinu později, mám poradu.</p>
+          <p className="mt-1 text-[9px] text-ink-subtle">Petra · 17:42</p>
+        </div>
+
+        <div className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-brand-soft p-2.5">
+          <p className="text-[11px] text-ink">V pořádku, počkáme.</p>
+          <p className="mt-1 flex items-center justify-end gap-1 text-[9px] text-ink-subtle">
+            18:03 <Check size={10} className="text-brand" aria-hidden /> přečteno
+          </p>
+        </div>
+      </div>
+
+      <p className="px-3.5 pb-2.5 text-center text-[10px] text-ink-subtle">
+        Zprávu nejde smazat ani upravit — jen odpovědět
+      </p>
+
+      <SpodniLista aktivni="zpravy" />
+    </div>
+  );
+}
+
+/* ── Rozvrh ───────────────────────────────────────────────────────── */
+
+const HODINY_UKAZKY = [
+  { poradi: 1, predmet: "Matematika", cas: "8:00–8:45" },
+  { poradi: 2, predmet: "Český jazyk", cas: "8:55–9:40" },
+  { poradi: 3, predmet: "Tělesná výchova", cas: "9:50–10:35", zruseno: true },
+  { poradi: 4, predmet: "Angličtina", cas: "10:55–11:40" },
+];
+
+function ObrazovkaRozvrh() {
+  return (
+    <div className="flex flex-1 flex-col">
+      <Lista titulek="Rozvrh" podtitulek="Kuba · středa" />
+
+      <div className="space-y-1.5 px-3.5 py-3">
+        {HODINY_UKAZKY.map((h) => (
+          <div
+            key={h.poradi}
+            className="flex items-center gap-2.5 rounded-xl border border-line p-2.5"
+          >
+            <span className="tnum flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-surface-2 text-[10px] font-medium text-ink-subtle">
+              {h.poradi}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span
+                className={cn(
+                  "block truncate text-[12px] font-medium",
+                  h.zruseno ? "text-ink-subtle line-through" : "text-ink",
+                )}
+              >
+                {h.predmet}
+              </span>
+              <span className="tnum text-[10px] text-ink-subtle">
+                {h.zruseno ? "odpadá" : h.cas}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="px-3.5 pb-2.5 text-center text-[10px] text-ink-subtle">
+        Stáhne se samo z EduPage, i s odpadlými hodinami
+      </p>
+
+      <SpodniLista aktivni="rozvrh" />
+    </div>
+  );
+}
+
 /* ── Spodní lišta ─────────────────────────────────────────────────── */
+
+// Spodní lišta má v appce jen čtyři hlavní ikony, zbytek je pod „Více" —
+// stejné čtyři jako tady, ať mockup neklame na to, jak appka doopravdy
+// vypadá. Zprávy a rozvrh se otevírají odjinud, proto tu při nich
+// nesvítí žádná ikona — to je i ve skutečné appce tak.
+const SPODNI_POLOZKY = ZALOZKY.slice(0, 4);
 
 function SpodniLista({ aktivni }: { aktivni: Obrazovka }) {
   return (
     <div className="mt-auto flex border-t border-line px-1 pb-1.5 pt-1.5">
-      {ZALOZKY.map(({ id, popisek, Ikona }) => (
+      {SPODNI_POLOZKY.map(({ id, popisek, Ikona }) => (
         <span
           key={id}
           className={cn(
