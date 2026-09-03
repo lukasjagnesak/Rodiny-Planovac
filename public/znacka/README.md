@@ -10,6 +10,20 @@ z kódu (`src/components/ui/logo.tsx`), tyhle soubory jsou pro okolní svět.
 | `logo-svetle.png` | 1024 × 256 | Stripe *logo*, faktury, cokoli na bílém |
 | `logo-pruhledne.png` | 1024 × 256 | vlastní podklad — pozadí je průhledné |
 | `logo-tmave.png` | 1024 × 256 | tmavý podklad (`#211f1d`) |
+| `podcast-obalka.png` | 3000 × 3000 | obálka podcastu *vklidoo* — Spotify, Apple Podcasts, YouTube |
+
+## Obálka podcastu
+
+Spotify i Apple Podcasts chtějí čtverec **3000 × 3000**, RGB a bez
+průhlednosti — `podcast-obalka.png` to splňuje, nahrává se rovnou.
+Minimum obou platforem je 1400 × 1400, ale menší obálku pak nejde
+nahradit ve vyšším rozlišení bez nového nahrání.
+
+Text je záměrně jen dvouřádkový. V seznamech na mobilu se obálka kreslí
+zhruba **55 px na šířku** a všechno menší než nápis se v té velikosti
+slije — nápis `vklidoo` čitelný zůstává, podtitul už je jen textura.
+Když se bude obálka měnit, tohle je jediná zkouška, na které záleží:
+zmenšit na 55 px a přečíst název.
 
 ## Barvy
 
