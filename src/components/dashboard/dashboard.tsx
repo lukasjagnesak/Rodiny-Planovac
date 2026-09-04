@@ -10,10 +10,14 @@ import {
   Home,
   MapPin,
   Moon,
+  NotebookPen,
+  SlidersHorizontal,
   Sparkles,
   Wallet,
 } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
+import { zapnuteKarty, type KartaId } from "@/lib/prehled-karty";
+import type { EdupageRow } from "@/components/edupage/homework-screen";
 import { Zaciname, type Krok } from "@/components/dashboard/zaciname";
 import { Avatar, Badge, Dot } from "@/components/ui/badge";
 import { hodinyDneSeZmenami } from "@/lib/rozvrh";
@@ -21,7 +25,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, SplitBar } from "@/components/ui/misc";
 import { custodyStatsForRange, resolveCustody } from "@/lib/custody";
 import { expandActivities, kotvaTerminu } from "@/lib/activities";
-import { EXPENSE_CATEGORIES, EVENT_KINDS } from "@/lib/constants";
+import { EDUPAGE_DRUHY, EXPENSE_CATEGORIES, EVENT_KINDS } from "@/lib/constants";
 import {
   DOW_LONG,
   formatDayShort,
@@ -29,7 +33,7 @@ import {
   relativeDayLabel,
   toDateKey,
 } from "@/lib/dates";
-import { cn, formatMoney, nights } from "@/lib/format";
+import { cn, formatMoney, nights, withAlpha } from "@/lib/format";
 import { memberName, sideBg, sideColor, sideLabel } from "@/lib/members";
 import type {
   Activity,
@@ -54,6 +58,7 @@ export function Dashboard({
   expenses,
   rozvrh,
   rozvrhZmeny,
+  ukoly,
 }: {
   session: SessionContext;
   /** Rozjezdový checklist — zmizí sám, až bude hotovo. */
@@ -66,6 +71,7 @@ export function Dashboard({
   expenses: Expense[];
   rozvrh: RozvrhHodina[];
   rozvrhZmeny: RozvrhZmena[];
+  ukoly: EdupageRow[];
 }) {
   const today = new Date();
   const todayKey = toDateKey(today);
@@ -172,24 +178,30 @@ export function Dashboard({
     return sorted[0] ?? null;
   }, [expenses]);
 
+  /** Nesplněné úkoly a písemky s nejbližším termínem. */
+  const ukolyBrzy = React.useMemo(
+    () =>
+      ukoly
+        .filter((u) => (u.druh === "ukol" || u.druh === "pisemka") && !u.hotovo)
+        .sort((a, b) => (a.termin ?? "9999").localeCompare(b.termin ?? "9999"))
+        .slice(0, 5),
+    [ukoly],
+  );
+
   const firstName = (session.profile.full_name || "").trim().split(" ")[0];
 
-  return (
-    <div className="space-y-4">
-      {/* ── Pozdrav ────────────────────────────────────────────── */}
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-          {greeting()}
-          {firstName ? `, ${firstName}` : ""}
-        </h1>
-        <p className="text-sm capitalize text-ink-muted">
-          {DOW_LONG[today.getDay()]} {formatDayShort(today)}
-        </p>
-      </div>
+  /** Rozvržení si rodič skládá sám — viz Nastavení → Přehled. */
+  const karty = React.useMemo(
+    () => zapnuteKarty(session.profile.prehled_karty),
+    [session.profile.prehled_karty],
+  );
 
-      <Zaciname kroky={kroky} />
-
-      {/* ── Kdo má dnes děti ───────────────────────────────────── */}
+  /**
+   * Tělo každé karty. `null` znamená „teď tu není co ukazovat" — karta
+   * se pak nekreslí vůbec, ať přehled nezaplní prázdné rámečky.
+   */
+  const obsah: Partial<Record<KartaId, React.ReactNode>> = {
+    dnes: (
       <Card>
         <div
           className="flex items-center gap-3 p-4"
@@ -233,9 +245,9 @@ export function Dashboard({
           </Link>
         </div>
       </Card>
-
-      {/* ── Dnes ve škole ──────────────────────────────────────── */}
-      {skolaDnes.length > 0 ? (
+    ),
+    skola: (
+      skolaDnes.length > 0 ? (
         <Card>
           <CardBody className="flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
             <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-ink-subtle">
@@ -256,9 +268,9 @@ export function Dashboard({
             </Link>
           </CardBody>
         </Card>
-      ) : null}
-
-      {/* ── Klíčová čísla ──────────────────────────────────────── */}
+      ) : null
+    ),
+    cisla: (
       <div className="grid grid-cols-2 gap-3">
         <StatTile
           label="Útrata / měsíc"
@@ -283,8 +295,8 @@ export function Dashboard({
           accent={colorA}
         />
       </div>
-
-      {/* ── Čas s dětmi ────────────────────────────────────────── */}
+    ),
+    noci: (
       <Card>
         <CardHeader
           title="Čas s dětmi"
@@ -324,146 +336,193 @@ export function Dashboard({
           ))}
         </CardBody>
       </Card>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* ── Doprava ──────────────────────────────────────────── */}
-        <Card>
-          <CardHeader
-            title="Kdo veze"
-            description={
-              myRides.length > 0
-                ? `${myRides.length}× vezeš ty`
-                : "Nejbližší kroužky a doprava"
-            }
-            action={
-              <Link href="/krouzky" className="text-sm text-brand hover:underline">
-                Vše
-              </Link>
-            }
+    ),
+    krouzky: (
+      <Card>
+        <CardHeader
+          title="Kdo veze"
+          description={
+            myRides.length > 0
+              ? `${myRides.length}× vezeš ty`
+              : "Nejbližší kroužky a doprava"
+          }
+          action={
+            <Link href="/krouzky" className="text-sm text-brand hover:underline">
+              Vše
+            </Link>
+          }
+        />
+        {upcomingRides.length === 0 ? (
+          <EmptyState
+            icon={<Car className="h-6 w-6" />}
+            title="Žádné kroužky tento týden"
+            description="Přidej kroužek a naplánuj, kdo veze."
           />
-          {upcomingRides.length === 0 ? (
-            <EmptyState
-              icon={<Car className="h-6 w-6" />}
-              title="Žádné kroužky tento týden"
-              description="Přidej kroužek a naplánuj, kdo veze."
-            />
-          ) : (
-            <ul className="divide-y divide-line">
-              {upcomingRides.map((ride) => {
-                const child = session.children.find((c) => c.id === ride.activity.child_id);
-                const mine =
-                  ride.driverThere === session.userId || ride.driverBack === session.userId;
-                return (
-                  <li
-                    key={ride.key}
-                    className={cn("flex items-center gap-3 px-4 py-3", mine && "bg-brand-soft/40")}
-                  >
-                    <span
-                      className="h-9 w-1 shrink-0 rounded-full"
-                      style={{ backgroundColor: ride.activity.color }}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="truncate font-medium text-ink">
-                          {ride.activity.name}
-                        </span>
-                        {child ? <Badge color={child.color}>{child.name}</Badge> : null}
-                      </div>
-                      <p className="tnum text-sm text-ink-muted">
-                        {relativeDayLabel(ride.day)} · {formatTime(ride.startsAt)}
-                        {ride.activity.location ? ` · ${ride.activity.location}` : ""}
-                      </p>
+        ) : (
+          <ul className="divide-y divide-line">
+            {upcomingRides.map((ride) => {
+              const child = session.children.find((c) => c.id === ride.activity.child_id);
+              const mine =
+                ride.driverThere === session.userId || ride.driverBack === session.userId;
+              return (
+                <li
+                  key={ride.key}
+                  className={cn("flex items-center gap-3 px-4 py-3", mine && "bg-brand-soft/40")}
+                >
+                  <span
+                    className="h-9 w-1 shrink-0 rounded-full"
+                    style={{ backgroundColor: ride.activity.color }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="truncate font-medium text-ink">
+                        {ride.activity.name}
+                      </span>
+                      {child ? <Badge color={child.color}>{child.name}</Badge> : null}
                     </div>
+                    <p className="tnum text-sm text-ink-muted">
+                      {relativeDayLabel(ride.day)} · {formatTime(ride.startsAt)}
+                      {ride.activity.location ? ` · ${ride.activity.location}` : ""}
+                    </p>
+                  </div>
 
-                    {ride.driverThere ? (
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        <Avatar
-                          name={memberName(session.members, ride.driverThere)}
-                          color={
-                            session.members.find((m) => m.userId === ride.driverThere)?.color
-                          }
-                          size={28}
-                        />
-                      </div>
-                    ) : (
-                      <Badge
-                        color="var(--warning)"
-                        href={`/krouzky#${kotvaTerminu(ride.key)}`}
-                        title="Doplnit, kdo veze"
-                      >
-                        bez řidiče
-                      </Badge>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Card>
-
-        {/* ── Nadcházející události ────────────────────────────── */}
-        <Card>
-          <CardHeader
-            title="Co nás čeká"
-            description="Škola, lékař a výlety"
-            action={
-              <Link href="/udalosti" className="text-sm text-brand hover:underline">
-                Vše
-              </Link>
-            }
-          />
-          {upcomingEvents.length === 0 ? (
-            <EmptyState
-              icon={<Sparkles className="h-6 w-6" />}
-              title="Zatím nic naplánovaného"
-              description="Zapiš třídní schůzky nebo prohlídku u lékaře."
-              action={
-                <ButtonLink href="/udalosti" variant="secondary" size="sm">
-                  Přidat událost
-                </ButtonLink>
-              }
-            />
-          ) : (
-            <ul className="divide-y divide-line">
-              {upcomingEvents.map((e) => {
-                const meta = EVENT_KINDS[e.kind];
-                const child = session.children.find((c) => c.id === e.child_id);
-                return (
-                  <li key={e.id} className="flex items-center gap-3 px-4 py-3">
-                    <span
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: `${meta.color}1f` }}
-                      aria-hidden
+                  {ride.driverThere ? (
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <Avatar
+                        name={memberName(session.members, ride.driverThere)}
+                        color={
+                          session.members.find((m) => m.userId === ride.driverThere)?.color
+                        }
+                        size={28}
+                      />
+                    </div>
+                  ) : (
+                    <Badge
+                      color="var(--warning)"
+                      href={`/krouzky#${kotvaTerminu(ride.key)}`}
+                      title="Doplnit, kdo veze"
                     >
-                      {meta.emoji}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="truncate font-medium text-ink">{e.title}</span>
-                        {child ? <Badge color={child.color}>{child.name}</Badge> : null}
-                      </div>
-                      <p className="flex items-center gap-1.5 text-sm text-ink-muted">
-                        {formatDayShort(e.starts_at)}
-                        {!e.all_day ? ` · ${formatTime(e.starts_at)}` : ""}
-                        {e.location ? (
-                          <>
-                            <MapPin className="h-3 w-3" />
-                            <span className="truncate">{e.location}</span>
-                          </>
-                        ) : null}
-                      </p>
+                      bez řidiče
+                    </Badge>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Card>
+    ),
+    udalosti: (
+      <Card>
+        <CardHeader
+          title="Co nás čeká"
+          description="Škola, lékař a výlety"
+          action={
+            <Link href="/udalosti" className="text-sm text-brand hover:underline">
+              Vše
+            </Link>
+          }
+        />
+        {upcomingEvents.length === 0 ? (
+          <EmptyState
+            icon={<Sparkles className="h-6 w-6" />}
+            title="Zatím nic naplánovaného"
+            description="Zapiš třídní schůzky nebo prohlídku u lékaře."
+            action={
+              <ButtonLink href="/udalosti" variant="secondary" size="sm">
+                Přidat událost
+              </ButtonLink>
+            }
+          />
+        ) : (
+          <ul className="divide-y divide-line">
+            {upcomingEvents.map((e) => {
+              const meta = EVENT_KINDS[e.kind];
+              const child = session.children.find((c) => c.id === e.child_id);
+              return (
+                <li key={e.id} className="flex items-center gap-3 px-4 py-3">
+                  <span
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: `${meta.color}1f` }}
+                    aria-hidden
+                  >
+                    {meta.emoji}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="truncate font-medium text-ink">{e.title}</span>
+                      {child ? <Badge color={child.color}>{child.name}</Badge> : null}
                     </div>
-                    <Badge color={meta.color}>{relativeDayLabel(e.starts_at)}</Badge>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+                    <p className="flex items-center gap-1.5 text-sm text-ink-muted">
+                      {formatDayShort(e.starts_at)}
+                      {!e.all_day ? ` · ${formatTime(e.starts_at)}` : ""}
+                      {e.location ? (
+                        <>
+                          <MapPin className="h-3 w-3" />
+                          <span className="truncate">{e.location}</span>
+                        </>
+                      ) : null}
+                    </p>
+                  </div>
+                  <Badge color={meta.color}>{relativeDayLabel(e.starts_at)}</Badge>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Card>
+    ),
+    ukoly: (
+      ukolyBrzy.length > 0 ? (
+        <Card>
+          <CardHeader
+            title="Úkoly a písemky"
+            description="Co je potřeba stihnout"
+            action={
+              <Link href="/ukoly" className="text-sm text-brand hover:underline">
+                Vše
+              </Link>
+            }
+          />
+          <ul className="divide-y divide-line">
+            {ukolyBrzy.map((u) => {
+              const dite = session.children.find((c) => c.id === u.child_id);
+              const poTerminu = u.termin !== null && u.termin < todayKey;
+              return (
+                <li key={u.id} className="flex items-center gap-3 px-4 py-3">
+                  <span
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: withAlpha(EDUPAGE_DRUHY[u.druh].color, 0.14) }}
+                    aria-hidden
+                  >
+                    <NotebookPen
+                      className="h-4 w-4"
+                      style={{ color: EDUPAGE_DRUHY[u.druh].color }}
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="truncate font-medium text-ink">
+                        {u.predmet ?? EDUPAGE_DRUHY[u.druh].label}
+                      </span>
+                      {dite ? <Badge color={dite.color}>{dite.name}</Badge> : null}
+                    </div>
+                    <p className="truncate text-sm text-ink-muted">{u.text}</p>
+                  </div>
+                  {u.termin ? (
+                    <Badge color={poTerminu ? "var(--danger)" : EDUPAGE_DRUHY[u.druh].color}>
+                      {poTerminu ? "po termínu" : relativeDayLabel(u.termin)}
+                    </Badge>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
         </Card>
-      </div>
-
-      {/* ── Útrata po dětech ───────────────────────────────────── */}
-      {perChild.length > 0 ? (
+      ) : null
+    ),
+    vydaje: (
+      perChild.length > 0 ? (
         <Card>
           <CardHeader
             title="Útrata podle dětí"
@@ -490,7 +549,38 @@ export function Dashboard({
             ))}
           </CardBody>
         </Card>
-      ) : (
+      ) : null
+    ),
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* ── Pozdrav ────────────────────────────────────────────── */}
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+            {greeting()}
+            {firstName ? `, ${firstName}` : ""}
+          </h1>
+          <p className="text-sm capitalize text-ink-muted">
+            {DOW_LONG[today.getDay()]} {formatDayShort(today)}
+          </p>
+        </div>
+        <Link
+          href="/nastaveni/prehled"
+          className="shrink-0 rounded-lg p-2 text-ink-subtle transition-colors hover:bg-surface-2 hover:text-ink"
+          title="Co se tu ukazuje a v jakém pořadí"
+          aria-label="Upravit přehled"
+        >
+          <SlidersHorizontal className="h-5 w-5" />
+        </Link>
+      </div>
+
+      <Zaciname kroky={kroky} />
+
+      {/* Bez dětí toho přehled moc neumí a tahle pobídka nesmí zmizet
+          jen proto, že si rodič vypnul kartu s útratou. */}
+      {session.children.length === 0 ? (
         <Card>
           <EmptyState
             icon={<Sparkles className="h-6 w-6" />}
@@ -499,7 +589,21 @@ export function Dashboard({
             action={<ButtonLink href="/deti">Přidat dítě</ButtonLink>}
           />
         </Card>
-      )}
+      ) : null}
+
+      {/* Pořadí i výběr karet si rodič určuje sám. Půlkarty se od `lg`
+          skládají po dvou vedle sebe, celé zabírají řádek. */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {karty.map((karta) => {
+          const telo = obsah[karta.id];
+          if (!telo) return null;
+          return (
+            <div key={karta.id} className={karta.sirka === "plna" ? "lg:col-span-2" : undefined}>
+              {telo}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

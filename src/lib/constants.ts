@@ -1,4 +1,4 @@
-import type { EventKind, ExpenseCategory, MemberRole } from "./types";
+import type { EdupageDruh, EventKind, ExpenseCategory, MemberRole } from "./types";
 
 export const EXPENSE_CATEGORIES: Record<
   ExpenseCategory,
@@ -36,6 +36,18 @@ export const EVENT_KINDS: Record<EventKind, { label: string; emoji: string; colo
   birthday: { label: "Narozeniny", emoji: "🎂", color: "#8a6f9e" },
   holiday: { label: "Prázdniny", emoji: "🌴", color: "#3f7d84" },
   other: { label: "Ostatní", emoji: "📌", color: "#8a8074" },
+};
+
+/**
+ * Druhy položek z EduPage. Barvy jsou tady, ne u obrazovky s úkoly —
+ * kreslí se i na přehledu a dvě sady barev pro touž věc by se dřív nebo
+ * později rozešly.
+ */
+export const EDUPAGE_DRUHY: Record<EdupageDruh, { label: string; color: string }> = {
+  ukol: { label: "Úkol", color: "#5f7a8c" },
+  pisemka: { label: "Písemka", color: "#a8443a" },
+  zprava: { label: "Zpráva", color: "#4a7c6f" },
+  akce: { label: "Akce školy", color: "#b58a3c" },
 };
 
 export const EVENT_KIND_ORDER: EventKind[] = [

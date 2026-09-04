@@ -5,6 +5,7 @@ import {
   CreditCard,
   ChevronRight,
   GraduationCap,
+  LayoutDashboard,
   Bell,
   Repeat,
 } from "lucide-react";
@@ -60,6 +61,13 @@ export default async function SettingsPage() {
       title: "Střídání péče",
       description: "Vzory, výjimky a od kdy platí",
       Icon: Repeat,
+      badge: null as string | null,
+    },
+    {
+      href: "/nastaveni/prehled",
+      title: "Přehled",
+      description: "Co se ukazuje na hlavní stránce a v jakém pořadí",
+      Icon: LayoutDashboard,
       badge: null as string | null,
     },
     {

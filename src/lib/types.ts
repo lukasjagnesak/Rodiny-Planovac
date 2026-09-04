@@ -49,6 +49,8 @@ export interface Profile {
   phone: string | null;
   color: string;
   locale: string;
+  /** Vlastní rozvržení přehledu — viz `lib/prehled-karty.ts`. NULL = výchozí. */
+  prehled_karty: string[] | null;
 }
 
 export interface FamilyMember {

@@ -18,6 +18,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Alert, EmptyState, Segmented, TextSOdkazy } from "@/components/ui/misc";
 import { formatDayShort, formatDateTime, relativeDayLabel, toDateKey } from "@/lib/dates";
 import { cn, hlaskaChyby } from "@/lib/format";
+import { EDUPAGE_DRUHY } from "@/lib/constants";
 import type { EdupageDruh, SessionContext } from "@/lib/types";
 
 export interface EdupageRow {
@@ -36,12 +37,7 @@ export interface EdupageRow {
   event_id: string | null;
 }
 
-const DRUH: Record<EdupageDruh, { label: string; color: string }> = {
-  ukol: { label: "Úkol", color: "#5f7a8c" },
-  pisemka: { label: "Písemka", color: "#a8443a" },
-  zprava: { label: "Zpráva", color: "#4a7c6f" },
-  akce: { label: "Akce školy", color: "#b58a3c" },
-};
+const DRUH = EDUPAGE_DRUHY;
 
 type Zalozka = "aktivni" | "zpravy" | "vse";
 

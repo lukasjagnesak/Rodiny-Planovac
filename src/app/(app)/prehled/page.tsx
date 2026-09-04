@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/session";
 import { toDateKey } from "@/lib/dates";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import type { Krok } from "@/components/dashboard/zaciname";
+import type { EdupageRow } from "@/components/edupage/homework-screen";
 import type {
   Activity,
   ActivityOccurrence,
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
     vsechnyVydaje,
     pozvanky,
     pushOdbery,
+    ukoly,
   ] = await Promise.all([
     supabase
       .from("custody_patterns")
@@ -97,6 +99,17 @@ export default async function DashboardPage() {
       .from("push_subscriptions")
       .select("id", { count: "exact", head: true })
       .eq("user_id", session.userId),
+    // Nesplněné úkoly a písemky s nejbližším termínem. Filtruje se v SQL,
+    // ať se do prohlížeče netahá celý archiv školního roku.
+    supabase
+      .from("edupage_items")
+      .select("*")
+      .eq("family_id", session.family.id)
+      .in("druh", ["ukol", "pisemka"])
+      .eq("hotovo", false)
+      .eq("skryto", false)
+      .order("termin", { nullsFirst: false })
+      .limit(20),
   ]);
 
   const kroky = rozjezd({
@@ -120,6 +133,7 @@ export default async function DashboardPage() {
       expenses={(expenses.data ?? []) as Expense[]}
       rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
       rozvrhZmeny={(rozvrhZmeny.data ?? []) as RozvrhZmena[]}
+      ukoly={(ukoly.data ?? []) as EdupageRow[]}
     />
   );
 }

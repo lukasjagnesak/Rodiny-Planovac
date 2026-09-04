@@ -63,6 +63,7 @@ export async function requireSession(): Promise<SessionContext> {
         phone: null,
         color: "#3f74e0",
         locale: "cs",
+        prehled_karty: null,
       },
     family,
     members,

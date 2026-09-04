@@ -17,7 +17,7 @@ Optimalizované pro mobil (PWA — dá se přidat na plochu), funguje i na deskt
 | **Kroužky** | Opakující se termíny, místo, cena, sezóna. Ke každému termínu se přiřazuje, **kdo veze tam a kdo zpět** — a řidiči přijde připomínka. Cena se dělí mezi rodiče a zaplacené období se zapíše do výdajů |
 | **Události** | Škola v přírodě, třídní schůzky, focení, školní výlety, lékařské prohlídky, narozeniny. Vlastní připomínky u každé události |
 | **Výdaje** | Výživné, kroužky, oblečení, škola, zdraví… Fotka účtenky přímo z foťáku, rozdělení nákladů mezi rodiče, přehled kdo komu dluží |
-| **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava a události |
+| **Přehled** | Kdo má dnes děti, kolik se letos utratilo za které dítě, poměr nocí matka/otec, nejbližší doprava, události a školní úkoly. Karty si každý rodič zapíná a přerovnává sám v **Nastavení → Přehled** |
 | **Google kalendář** | Každý člen si propojí **svůj** účet; péče, kroužky i události se přenesou do jeho kalendáře |
 | **EduPage** | Úkoly, písemky, zprávy od učitelů, školní akce a rozvrh ze školního systému. Víc dětí pod jedním účtem, všechno roztříděné podle toho, komu patří (jen rodinná verze) |
 | **Push notifikace** | Připomínky zdarma přímo do telefonu i počítače — kdo zítra veze, kdy je předání, co se blíží. Nativně přes prohlížeč, appka se nikam jinam nepřipojuje |
