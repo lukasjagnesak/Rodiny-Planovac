@@ -521,10 +521,12 @@ npm run test:pismo  # mají písma české znaky? (potřebuje síť)
 
 Hledání dětí v datech EduPage má vlastní testy — struktura se mezi školami
 liší, takže se hledá podle tvaru a bez testů by se chyba poznala až tím, že
-rodič nevidí druhé dítě:
+rodič nevidí druhé dítě. Totéž platí o přepínání mezi dětmi a o pořadí
+hodin: obojí se pokazí tiše a projeví se to až tím, co rodič v appce
+nevidí.
 
 ```bash
-cd edupage && python test_deti.py && python test_rozvrh.py
+cd edupage && python test_deti.py && python test_rozvrh.py && python test_prepinani.py
 ```
 
 ### Test databázového zabezpečení

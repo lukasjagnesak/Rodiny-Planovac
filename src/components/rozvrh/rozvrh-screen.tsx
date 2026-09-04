@@ -87,7 +87,12 @@ export function RozvrhScreen({
   }, [moje, rozlisujeTydny, nahled]);
 
   const proDen = React.useCallback(
-    (d: number) => viditelne.filter((h) => h.den === d).sort((a, b) => a.poradi - b.poradi),
+    // Podle času, ne podle čísla hodiny — družina a dělené hodiny mají
+    // číslo dopočítané, čas ale vždycky sedí.
+    (d: number) =>
+      viditelne
+        .filter((h) => h.den === d)
+        .sort((a, b) => a.zacatek.localeCompare(b.zacatek) || a.poradi - b.poradi),
     [viditelne],
   );
 

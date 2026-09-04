@@ -24,6 +24,9 @@ export function vychoziCasy(poradi: number): { zacatek: string; konec: string } 
   return ZVONENI[poradi] ?? { zacatek: "08:00", konec: "08:45" };
 }
 
+/** Nejvyšší pořadí, které snese databáze (`poradi between 0 and 12`). */
+export const NEJVYSSI_PORADI = 12;
+
 export const PARITA_LABELS: Record<RozvrhParita, string> = {
   vzdy: "Každý týden",
   sudy: "Jen sudý týden",
@@ -42,12 +45,18 @@ export function paritaPlati(parita: RozvrhParita, date: Date): boolean {
   return parita === "sudy" ? sudy : !sudy;
 }
 
-/** Hodiny pro konkrétní den, seřazené a bez těch z jiné parity týdne. */
+/**
+ * Hodiny pro konkrétní den, seřazené a bez těch z jiné parity týdne.
+ *
+ * Řadí se podle času, ne podle čísla hodiny. Číslo je jen popisek a
+ * u toho, co škola nečísluje — družina, dělené hodiny, akce — se
+ * dopočítává; čas je oproti tomu vždycky ten skutečný.
+ */
 export function hodinyDne(hodiny: RozvrhHodina[], date: Date): RozvrhHodina[] {
   const den = denVTydnu(date);
   return hodiny
     .filter((h) => h.den === den && paritaPlati(h.parita, date))
-    .sort((a, b) => a.poradi - b.poradi);
+    .sort((a, b) => a.zacatek.localeCompare(b.zacatek) || a.poradi - b.poradi);
 }
 
 /**
@@ -57,7 +66,9 @@ export function hodinyDne(hodiny: RozvrhHodina[], date: Date): RozvrhHodina[] {
 export function konecVyucovani(hodiny: RozvrhHodina[], date: Date): string | null {
   const dnesni = hodinyDne(hodiny, date);
   if (dnesni.length === 0) return null;
-  return dnesni[dnesni.length - 1].konec.slice(0, 5);
+  // Nejzazší konec, ne konec poslední hodiny v pořadí. Družina i dělené
+  // hodiny se s vyučováním překrývají a číslo hodiny je u nich dopočítané.
+  return dnesni.reduce((nej, h) => (h.konec > nej ? h.konec : nej), dnesni[0].konec).slice(0, 5);
 }
 
 export function zacatekVyucovani(hodiny: RozvrhHodina[], date: Date): string | null {
@@ -139,9 +150,13 @@ export function slozRozvrh(vsechna: PozorovanaHodina[]): SlozenaHodina[] {
   const tydny = new Set(pozorovani.map((h) => h.tyden));
   const rozlisovat = tydny.size >= 2;
 
+  // Táž hodina napříč týdny se poznává podle času, ne podle čísla.
+  // Číslo se u nečíslovaných hodin dopočítává, takže se mezi týdny
+  // posune, jakmile v jednom z nich přibude třeba družina — a dva různé
+  // sloty by pak vyšly jako jeden.
   const skupiny = new Map<string, PozorovanaHodina[]>();
   for (const h of pozorovani) {
-    const klic = `${h.den}|${h.poradi}`;
+    const klic = `${h.den}|${h.zacatek}`;
     const seznam = skupiny.get(klic);
     if (seznam) seznam.push(h);
     else skupiny.set(klic, [h]);
@@ -177,7 +192,38 @@ export function slozRozvrh(vsechna: PozorovanaHodina[]): SlozenaHodina[] {
     if (lichy) vysledek.push(jako(lichy, "lichy"));
   }
 
-  return vysledek.sort((a, b) => a.den - b.den || a.poradi - b.poradi);
+  return jedinecnaPoradi(
+    vysledek.sort((a, b) => a.den - b.den || a.zacatek.localeCompare(b.zacatek)),
+  );
+}
+
+/**
+ * Zaručí, že se v jednom dni a jedné paritě žádné pořadí neopakuje.
+ *
+ * Databáze má na (dítě, den, pořadí, parita) jedinečnost — dva sloty se
+ * stejným číslem by shodily zápis celého rozvrhu. Číslo ze školy se
+ * proto nechává, dokud je volné; kolizi dostane nejbližší vyšší volné.
+ * Hodina, pro kterou už místo není, se raději vynechá, než aby přepsala
+ * jinou.
+ */
+function jedinecnaPoradi(hodiny: SlozenaHodina[]): SlozenaHodina[] {
+  const obsazeno = new Map<string, Set<number>>();
+  const vysledek: SlozenaHodina[] = [];
+
+  for (const h of hodiny) {
+    const klic = `${h.den}|${h.parita}`;
+    const vzata = obsazeno.get(klic) ?? new Set<number>();
+    obsazeno.set(klic, vzata);
+
+    let poradi = h.poradi;
+    while (poradi <= NEJVYSSI_PORADI && vzata.has(poradi)) poradi += 1;
+    if (poradi > NEJVYSSI_PORADI) continue;
+
+    vzata.add(poradi);
+    vysledek.push(poradi === h.poradi ? h : { ...h, poradi });
+  }
+
+  return vysledek;
 }
 
 /**

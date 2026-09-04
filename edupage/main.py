@@ -184,12 +184,25 @@ def po_detech(edupage: Edupage, deti: list[int]) -> Iterator[tuple[Optional[int]
 
     rodic = je_rodic(edupage)
 
+    # Kontext rodiče se schová dřív, než ho přepíše první dítě.
+    #
+    # `switch_to_parent()` se v knihovně ptá, jestli je přihlášený rodič,
+    # a ptá se `edupage.data["userid"]` — tedy toho, co je zrovna v paměti.
+    # `obnov_kontext()` tam po přepnutí na dítě vloží identitu dítěte, takže
+    # od druhého dítěte dál by cesta zpátky k rodiči skončila výjimkou
+    # „nejsi rodič". Chyba se zachytí, dítě se přeskočí — a rodina se dvěma
+    # dětmi tak dostala rozvrh i zprávy jen pro to první.
+    kontext_rodice = (
+        (edupage.data, getattr(edupage, "gsec_hash", None)) if rodic else None
+    )
+
     for index, dite in enumerate(deti):
         chyby: list[str] = []
         try:
             # Mezi dětmi se musí projít přes rodiče, přímé přepnutí
             # z dítěte na dítě EduPage nenabízí.
-            if rodic and index > 0:
+            if kontext_rodice is not None and index > 0:
+                edupage.data, edupage.gsec_hash = kontext_rodice
                 edupage.switch_to_parent()
             edupage.switch_to_child(dite)
             obnov_kontext(edupage)
@@ -807,6 +820,63 @@ def _currenttt_pokus(edupage: Edupage, dite_id: int, od: date, do: date) -> Opti
         return None
 
 
+# Nejvyšší pořadí, které snese databáze (`poradi between 0 and 12`).
+NEJVYSSI_PORADI = 12
+
+
+def poradi_dne(lekce_dne: list) -> list[Optional[int]]:
+    """
+    Pořadí hodin v rámci jednoho dne, seřazených podle času.
+
+    EduPage číslo hodiny nevyplňuje u všeho — ranní i odpolední družina,
+    školní akce a některé dělené hodiny přijdou bez něj. Dokud se za ně
+    dosazovala nula, spadly všechny do jednoho místa `den|0`: v týdenním
+    rozvrhu z celého dne zbyla jediná hodina a konec vyučování pak vycházel
+    podle ranní družiny, tedy někdy před osmou.
+
+    Skutečná čísla se proto zachovávají a chybějící se dopočítají podle
+    času — hodina před první číslovanou dostane volné číslo pod ní, hodina
+    za poslední číslovanou volné číslo nad ní. Když škola nečísluje vůbec,
+    očísluje se celý den od nuly.
+
+    Vrací čísla ve stejném pořadí jako `lekce_dne`. `None` znamená, že se
+    hodina nikam nevejde — takovou je lepší vynechat než jí přepsat jinou.
+    """
+    cisla = [
+        lekce.period if isinstance(lekce.period, int) and lekce.period >= 0 else None
+        for lekce in lekce_dne
+    ]
+
+    # Škola čísla nedává vůbec — pak je čas jediné, podle čeho jde řadit.
+    if all(c is None for c in cisla):
+        return [n if n <= NEJVYSSI_PORADI else None for n in range(len(cisla))]
+
+    obsazena = {c for c in cisla if c is not None}
+    vysledek: list[Optional[int]] = []
+    predchozi = -1
+
+    for i, c in enumerate(cisla):
+        if c is not None:
+            vysledek.append(c)
+            predchozi = c
+            continue
+
+        # Mezi předchozí a nejbližší další číslovanou hodinou musí zbýt
+        # místo, jinak by se pořadí a čas rozešly.
+        dalsi = next((x for x in cisla[i + 1 :] if x is not None), None)
+        horni = dalsi if dalsi is not None else NEJVYSSI_PORADI + 1
+        volne = next(
+            (n for n in range(predchozi + 1, horni) if n not in obsazena), None
+        )
+
+        vysledek.append(volne)
+        if volne is not None:
+            obsazena.add(volne)
+            predchozi = volne
+
+    return vysledek
+
+
 def hodiny_dne(edupage: Edupage, plan: Any) -> list:
     """Poskládá hodiny z denního plánu knihovnou, ať se logika neduplikuje."""
     prevod = getattr(Timetables(edupage), "_Timetables__parse_timetable")
@@ -903,10 +973,22 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
             if not lekce_dne:
                 continue
 
+            # Hodiny bez názvu předmětu se zahazují dřív, než se čísluje —
+            # jinak by spolykaly pořadí, které patří skutečné hodině.
+            pojmenovane = [lekce for lekce in lekce_dne if jmeno(lekce.subject)]
+            if not pojmenovane:
+                continue
+            pojmenovane.sort(key=lambda lekce: lekce.start_time)
+
             dnu += 1
-            for lekce in lekce_dne:
+            for lekce, poradi in zip(pojmenovane, poradi_dne(pojmenovane)):
                 predmet_nazev = jmeno(lekce.subject)
-                if not predmet_nazev:
+                if poradi is None:
+                    log.info(
+                        "hodina %s v %s nemá kam přijít, vynechává se",
+                        predmet_nazev,
+                        den.isoformat(),
+                    )
                     continue
 
                 hodiny.append(
@@ -915,7 +997,7 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
                         "den": den.isoweekday(),
                         "datum": den.isoformat(),
                         "tyden": den.isocalendar()[1],
-                        "poradi": lekce.period if lekce.period is not None else 0,
+                        "poradi": poradi,
                         "predmet": predmet_nazev,
                         "ucebna": jmeno((lekce.classrooms or [None])[0]),
                         "ucitel": jmeno((lekce.teachers or [None])[0]),

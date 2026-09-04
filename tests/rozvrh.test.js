@@ -10,6 +10,7 @@ const {
   slozRozvrh,
   hodinyDne,
   konecVyucovani,
+  zacatekVyucovani,
   paritaPlati,
   denVTydnu,
   hodinTydne,
@@ -26,6 +27,10 @@ function ok(popis, podminka) {
 // Pondělí týdne 34 je 18. 8. 2025, týdne 35 pak 25. 8. 2025.
 const DATUM = { 34: "2025-08-18", 35: "2025-08-25" };
 
+// Čas se odvíjí od pořadí, protože tak to má i skutečná škola: dvě
+// hodiny téhož dne nezačínají naráz. Slot se přes týdny páruje právě
+// podle času, takže na shodném čase u všech hodin by test neseděl
+// s ničím, co se může doopravdy stát.
 const h = (den, tyden, poradi, predmet, extra = {}) => ({
   den,
   tyden,
@@ -34,8 +39,8 @@ const h = (den, tyden, poradi, predmet, extra = {}) => ({
   predmet,
   ucebna: null,
   ucitel: null,
-  zacatek: "08:00",
-  konec: "08:45",
+  zacatek: `${String(7 + poradi).padStart(2, "0")}:00`,
+  konec: `${String(7 + poradi).padStart(2, "0")}:45`,
   ...extra,
 });
 
@@ -135,6 +140,68 @@ ok(
   "změna z jiného dne se nepoužije",
   hodinyDneSeZmenami(rozvrh, zmenyDne, new Date(2025, 8, 15)).length === 2,
 );
+
+// ── Konec vyučování se počítá z časů, ne z čísel hodin ──────────────
+//
+// Družina, dělené hodiny a školní akce chodí z EduPage bez čísla hodiny.
+// Dokud se za ně dosazovala nula, spadl celý den do jednoho slotu a
+// v rozvrhu z něj zbyla jediná hodina — ranní družina. Konec vyučování
+// pak vycházel na 7:50, i když se učí do 12:45.
+console.log("\n── konec vyučování ──");
+{
+  const sDruzinou = [
+    { den: 1, poradi: 0, predmet: "Družina", zacatek: "06:30:00", konec: "07:50:00", parita: "vzdy" },
+    { den: 1, poradi: 1, predmet: "M", zacatek: "08:00:00", konec: "08:45:00", parita: "vzdy" },
+    { den: 1, poradi: 6, predmet: "Aj", zacatek: "12:00:00", konec: "12:45:00", parita: "vzdy" },
+  ];
+  ok("končí poslední hodinou, ne ranní družinou", konecVyucovani(sDruzinou, pondeli) === "12:45");
+  ok("začíná ranní družinou", zacatekVyucovani(sDruzinou, pondeli) === "06:30");
+
+  // Když škola čísluje jinak, než jak jde čas, rozhoduje čas.
+  const prehazene = [
+    { den: 1, poradi: 9, predmet: "Ranní kroužek", zacatek: "07:00:00", konec: "07:45:00", parita: "vzdy" },
+    { den: 1, poradi: 1, predmet: "M", zacatek: "08:00:00", konec: "12:45:00", parita: "vzdy" },
+  ];
+  ok("rozhoduje čas, ne číslo hodiny", konecVyucovani(prehazene, pondeli) === "12:45");
+  ok("a začátek taky", zacatekVyucovani(prehazene, pondeli) === "07:00");
+}
+
+// ── Slot přes týdny se pozná podle času ─────────────────────────────
+console.log("\n── skládání napříč týdny ──");
+{
+  // Týden 36 má navíc ranní družinu, týden 37 ne. Kdyby se sloty
+  // párovaly podle čísla hodiny, posunula by se celému dni číslování
+  // a matematika ze dvou týdnů by vyšla jako sudá a lichá hodina.
+  const pozorovani = [
+    { den: 1, datum: "2025-09-01", tyden: 36, poradi: 0, predmet: "Družina", zacatek: "06:30:00", konec: "07:50:00", ucebna: null, ucitel: null },
+    { den: 1, datum: "2025-09-01", tyden: 36, poradi: 1, predmet: "M", zacatek: "08:00:00", konec: "08:45:00", ucebna: null, ucitel: null },
+    { den: 1, datum: "2025-09-08", tyden: 37, poradi: 1, predmet: "M", zacatek: "08:00:00", konec: "08:45:00", ucebna: null, ucitel: null },
+  ];
+  const slozeny = slozRozvrh(pozorovani);
+  const matematiky = slozeny.filter((h) => h.predmet === "M");
+  ok("matematika je jedna hodina, ne dvě", matematiky.length === 1);
+  ok("a platí každý týden", matematiky[0]?.parita === "vzdy");
+  ok("družina se neztratí", slozeny.some((h) => h.predmet === "Družina"));
+}
+
+// ── Pořadí v rámci dne a parity musí být jedinečné ──────────────────
+//
+// Databáze má na (dítě, den, pořadí, parita) jedinečnost. Dva sloty se
+// stejným číslem by shodily zápis celého rozvrhu, ne jen jeden řádek.
+console.log("\n── jedinečné pořadí ──");
+{
+  const kolize = [
+    { den: 1, datum: "2025-09-01", tyden: 36, poradi: 0, predmet: "Družina", zacatek: "06:30:00", konec: "07:50:00", ucebna: null, ucitel: null },
+    { den: 1, datum: "2025-09-01", tyden: 36, poradi: 0, predmet: "M", zacatek: "08:00:00", konec: "08:45:00", ucebna: null, ucitel: null },
+    { den: 1, datum: "2025-09-01", tyden: 36, poradi: 0, predmet: "Aj", zacatek: "12:00:00", konec: "12:45:00", ucebna: null, ucitel: null },
+  ];
+  const slozeny = slozRozvrh(kolize);
+  ok("žádná hodina se neztratí", slozeny.length === 3);
+  const klice = slozeny.map((h) => `${h.den}|${h.poradi}|${h.parita}`);
+  ok("a žádné dvě nesdílí místo v databázi", new Set(klice).size === 3);
+  ok("dřívější hodina má nižší pořadí", slozeny[0].predmet === "Družina");
+}
+
 
 console.log(selhalo === 0 ? "\n=== VŠE PROŠLO ===" : `\n=== ${selhalo} SELHALO ===`);
 process.exit(selhalo === 0 ? 0 : 1);

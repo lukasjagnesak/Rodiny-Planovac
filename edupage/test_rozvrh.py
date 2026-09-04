@@ -332,5 +332,63 @@ finally:
     modul.po_detech = puvodni_po_detech
     modul.prihlas = puvodni_prihlas
 
+print("── pořadí hodin, když ho škola nedává ──")
+# Družina, dělené hodiny a školní akce chodí z EduPage bez čísla hodiny.
+# Dokud se za ně dosazovala nula, spadly všechny do jednoho místa `den|0`:
+# z celého dne zbyla v rozvrhu jediná hodina a konec vyučování se pak
+# počítal podle ranní družiny — někdy před osmou, i když se učí do 12:45.
+from datetime import time as _time  # noqa: E402
+
+from main import NEJVYSSI_PORADI, poradi_dne  # noqa: E402
+
+
+class L:
+    def __init__(self, period, zacatek):
+        self.period = period
+        self.start_time = _time(*zacatek)
+
+
+def cisla(*lekce):
+    return poradi_dne(list(lekce))
+
+
+ok(
+    "skutečná čísla ze školy zůstávají",
+    cisla(L(1, (8, 0)), L(2, (8, 55)), L(3, (10, 0))) == [1, 2, 3],
+)
+ok(
+    "ranní družina dostane volné číslo pod první hodinou",
+    cisla(L(None, (6, 30)), L(1, (8, 0)), L(2, (8, 55))) == [0, 1, 2],
+)
+ok(
+    "odpolední družina jde nad poslední hodinu",
+    cisla(L(1, (8, 0)), L(2, (8, 55)), L(None, (13, 0))) == [1, 2, 3],
+)
+ok(
+    "družina ráno i odpoledne najednou",
+    cisla(L(None, (6, 30)), L(1, (8, 0)), L(None, (13, 0))) == [0, 1, 2],
+)
+ok(
+    "když škola nečísluje vůbec, čísluje se časem",
+    cisla(L(None, (6, 30)), L(None, (8, 0)), L(None, (12, 0))) == [0, 1, 2],
+)
+ok(
+    "žádné dvě hodiny dne nesdílí pořadí",
+    len(set(cisla(L(None, (6, 30)), L(0, (7, 0)), L(1, (8, 0)), L(None, (13, 0))))) == 4,
+)
+ok(
+    "pořadí roste s časem",
+    cisla(L(None, (6, 30)), L(2, (8, 55)), L(None, (13, 0))) == [0, 2, 3],
+)
+ok(
+    "nultá hodina obsazená a před ní ještě družina — nemá kam",
+    cisla(L(None, (6, 30)), L(0, (7, 0)))[0] is None,
+)
+ok(
+    "co se nevejde do stropu databáze, se vynechá",
+    cisla(*[L(None, (7 + i, 0)) for i in range(NEJVYSSI_PORADI + 3)]).count(None) == 2,
+)
+
+
 print("\nVšechno prošlo." if selhalo == 0 else f"\nSelhalo: {selhalo}")
 sys.exit(0 if selhalo == 0 else 1)
