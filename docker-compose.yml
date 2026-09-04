@@ -1,0 +1,77 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+        NEXT_PUBLIC_META_PIXEL_ID: ${NEXT_PUBLIC_META_PIXEL_ID:-}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+    image: klidoo:latest
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "3000"
+    networks: [web]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/prihlaseni').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+
+  # Caddy zařizuje HTTPS certifikát od Let's Encrypt automaticky.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    # Bez čekání na zdravou aplikaci by Caddy při prvním startu chvíli
+    # vracel 502 a Let's Encrypt by si to mohl vyložit jako výpadek.
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [web]
+
+  # Každou hodinu spustí připomínky a synchronizaci Google kalendářů.
+  cron:
+    image: alpine:3.20
+    restart: unless-stopped
+    env_file: .env
+    depends_on: [app]
+    networks: [web]
+    command: >
+      sh -c "apk add --no-cache curl >/dev/null &&
+      while true; do
+        sleep 3600;
+        curl -fsS -m 280 -H \"Authorization: Bearer $$CRON_SECRET\" http://app:3000/api/cron/reminders || echo 'cron: pokus selhal';
+      done"
+
+  # EduPage nemá veřejné API — tahle služba napodobuje mobilní aplikaci.
+  # V komerčním nasazení ji prostě nespouštěj:
+  #   docker compose up -d --scale edupage=0
+  edupage:
+    build: ./edupage
+    restart: unless-stopped
+    environment:
+      EDUPAGE_SIDECAR_SECRET: ${EDUPAGE_SIDECAR_SECRET}
+    expose:
+      - "8000"
+    networks: [web]
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:
