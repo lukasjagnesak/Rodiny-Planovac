@@ -605,14 +605,25 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
     polozky = []
     chyby: list[str] = []
 
+    # Kolik toho které dítě vrátilo. Bez tohohle čísla vypadá stažení,
+    # kde druhé dítě mlčí, úplně stejně jako to povedené — a hledá se
+    # pak chyba tři kola dokola.
+    po_detech_pocty: dict[str, dict] = {}
+
     for dite_id, potize in po_detech(edupage, data.deti):
         chyby.extend(potize)
+        klic = str(dite_id)
+        zaznam = {"udalosti": 0, "polozky": 0}
+        po_detech_pocty[klic] = zaznam
 
         try:
             udalosti = edupage.get_notification_history(od)
         except Exception as chyba:  # noqa: BLE001
             chyby.append(f"timeline{f' dítěte {dite_id}' if dite_id else ''}: {chyba}")
+            zaznam["chyba"] = str(chyba)[:120]
             continue
+
+        zaznam["udalosti"] = len(udalosti)
 
         for u in udalosti:
             if u.is_removed:
@@ -653,8 +664,25 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
                 }
             )
 
+    for p in polozky:
+        klic = str(p["diteId"])
+        if klic in po_detech_pocty:
+            po_detech_pocty[klic]["polozky"] += 1
+
+    for klic, z in po_detech_pocty.items():
+        log.info(
+            "timeline dítěte %s: %s událostí, %s použitelných položek",
+            klic, z["udalosti"], z["polozky"],
+        )
+
     polozky.sort(key=lambda p: (p["termin"] or "9999", p["zadano"] or ""))
-    return {"ok": True, "pocet": len(polozky), "polozky": polozky, "chyby": chyby[:8]}
+    return {
+        "ok": True,
+        "pocet": len(polozky),
+        "polozky": polozky,
+        "poDetech": po_detech_pocty,
+        "chyby": chyby[:8],
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -915,9 +943,13 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
     # z nich, to druhé mělo `nedokonceno` na každý jediný den.
     strop_na_dite = STROP_SEKUND / max(len(data.deti), 1)
 
+    po_detech_pocty: dict[str, dict] = {}
+
     for dite_id, potize in po_detech(edupage, data.deti):
         chyby.extend(potize)
         zacatek_ditete = _cas.monotonic()
+        pocty_ditete = {"zdroj": "nic", "dnu": 0, "hodin": 0}
+        po_detech_pocty[str(dite_id)] = pocty_ditete
 
         # Tři cesty od nejlevnější po nejpomalejší: nástěnka jedním
         # dotazem, jiné rozhraní taky jedním dotazem, a nakonec den po dni.
@@ -935,6 +967,7 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
                 if plany:
                     odkud = "currenttt"
 
+        pocty_ditete["zdroj"] = odkud
         log.info("rozvrh dítěte %s: zdroj %s", dite_id, odkud)
 
         for den in dny_rozsahu:
@@ -981,6 +1014,7 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
             pojmenovane.sort(key=lambda lekce: lekce.start_time)
 
             dnu += 1
+            pocty_ditete["dnu"] += 1
             for lekce, poradi in zip(pojmenovane, poradi_dne(pojmenovane)):
                 predmet_nazev = jmeno(lekce.subject)
                 if poradi is None:
@@ -1008,6 +1042,7 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
                         "akce": bool(lekce.is_event),
                     }
                 )
+                pocty_ditete["hodin"] += 1
 
     if nedokonceno:
         chyby.append(
@@ -1015,11 +1050,18 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
             "synchronizaci"
         )
 
+    for klic, z in po_detech_pocty.items():
+        log.info(
+            "rozvrh dítěte %s: zdroj %s, %s dní, %s hodin",
+            klic, z["zdroj"], z["dnu"], z["hodin"],
+        )
+
     return {
         "ok": True,
         "dnu": dnu,
         "pocet": len(hodiny),
         "hodiny": hodiny,
+        "poDetech": po_detech_pocty,
         "nedokonceno": nedokonceno,
         "chyby": chyby[:8],
     }

@@ -101,15 +101,22 @@ export async function verifyEdupage(creds: Credentials): Promise<EdupageAccountI
 }
 
 /** Stáhne úkoly, písemky, zprávy a školní akce z timeline. */
+/** Co která dětská timeline vrátila — klíč je EduPage ID jako řetězec. */
+export type PoDetech = Record<string, { udalosti: number; polozky: number; chyba?: string }>;
+
 export async function fetchEdupageItems(
   creds: Credentials,
   dnuZpet = 30,
-): Promise<{ polozky: EdupageItem[]; chyby: string[] }> {
-  const data = await call<{ polozky: EdupageItem[]; chyby: string[] }>("/ukoly", {
-    ...creds,
-    dnu_zpet: dnuZpet,
-  });
-  return { polozky: data.polozky ?? [], chyby: data.chyby ?? [] };
+): Promise<{ polozky: EdupageItem[]; poDetech: PoDetech; chyby: string[] }> {
+  const data = await call<{ polozky: EdupageItem[]; poDetech?: PoDetech; chyby: string[] }>(
+    "/ukoly",
+    { ...creds, dnu_zpet: dnuZpet },
+  );
+  return {
+    polozky: data.polozky ?? [],
+    poDetech: data.poDetech ?? {},
+    chyby: data.chyby ?? [],
+  };
 }
 
 export interface EdupageDiteInfo {

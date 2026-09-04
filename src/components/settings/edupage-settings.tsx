@@ -164,10 +164,22 @@ export function EdupageSettings({
       setError(data.error);
       return;
     }
+    // U víc dětí se říká, co přišlo kterému. „Staženo 47 položek" vypadá
+    // úplně stejně, ať přišly od obou dětí, nebo jen od jednoho — a přesně
+    // to schovalo chybu v přepínání účtů na několik týdnů.
+    const souhrn = (data.souhrn ?? []) as {
+      jmeno: string;
+      udalosti: number;
+      ulozeno: number;
+    }[];
+    const rozpad =
+      souhrn.length > 1
+        ? " " + souhrn.map((s) => `${s.jmeno}: ${s.udalosti}`).join(", ") + "."
+        : "";
     setMessage(
-      data.zprav > 0
+      (data.zprav > 0
         ? `Staženo ${data.pocet} položek, z toho ${data.zprav} zpráv.`
-        : `Staženo ${data.pocet} položek.`,
+        : `Staženo ${data.pocet} položek.`) + rozpad,
     );
     if (data.chyby?.length > 0) setError(data.chyby.join(" · "));
     router.refresh();

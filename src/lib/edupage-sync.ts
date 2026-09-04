@@ -2,7 +2,8 @@ import "server-only";
 
 import { createAdminClient } from "./supabase/admin";
 import { smiZapisovatUzivatel } from "./predplatne";
-import { credentialsFromRow, fetchEdupageItems } from "./edupage";
+import { credentialsFromRow, fetchEdupageItems, type PoDetech } from "./edupage";
+import { varovaniZeSouhrnu, type SouhrnDitete } from "./edupage-souhrn";
 
 export interface EdupageParovani {
   edupage_id: number;
@@ -100,6 +101,8 @@ export interface VysledekStahovani {
   ulozeno: number;
   zprav: number;
   deti: number;
+  /** Rozpad po dětech — bez něj vypadá mlčící dítě jako povedené stažení. */
+  souhrn: SouhrnDitete[];
   chyby: string[];
 }
 
@@ -134,7 +137,7 @@ export async function stahniProUzivatele(
 
   const podleEdupageId = new Map(kontext.parovani.map((p) => [p.edupage_id, p]));
 
-  const { polozky, chyby } = await fetchEdupageItems(kontext.creds, 45);
+  const { polozky, poDetech, chyby } = await fetchEdupageItems(kontext.creds, 45);
 
   /**
    * Rodičovský účet vidí u každého dítěte tutéž timeline, takže zprávy
@@ -193,14 +196,35 @@ export async function stahniProUzivatele(
     if (error) throw error;
   }
 
-  await zapisVysledek(userId, chyby.length > 0 ? chyby.join("; ") : null);
+  const souhrn = souhrnPoDetech(kontext.parovani, poDetech, radky);
+  const vsechnyChyby = [...chyby, ...varovaniZeSouhrnu(souhrn)];
+
+  await zapisVysledek(userId, vsechnyChyby.length > 0 ? vsechnyChyby.join("; ") : null);
 
   return {
     ulozeno: radky.length,
     zprav: radky.filter((r) => r.druh === "zprava").length,
     deti: kontext.parovani.length,
-    chyby,
+    souhrn,
+    chyby: vsechnyChyby,
   };
+}
+
+/** Spojí počty ze služby s párováním, ať se dá mluvit jmény dětí. */
+function souhrnPoDetech(
+  parovani: EdupageParovani[],
+  poDetech: PoDetech,
+  radky: { child_id: string | null }[],
+): SouhrnDitete[] {
+  return parovani.map((p) => {
+    const ze_sluzby = poDetech[String(p.edupage_id)];
+    return {
+      jmeno: p.jmeno ?? `dítě ${p.edupage_id}`,
+      udalosti: ze_sluzby?.udalosti ?? 0,
+      ulozeno: radky.filter((r) => r.child_id === p.child_id).length,
+      ...(ze_sluzby?.chyba ? { chyba: ze_sluzby.chyba } : {}),
+    };
+  });
 }
 
 export interface VysledekDavky {

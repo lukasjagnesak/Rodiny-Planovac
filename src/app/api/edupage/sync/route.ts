@@ -30,6 +30,7 @@ export async function POST() {
       pocet: vysledek.ulozeno,
       zprav: vysledek.zprav,
       deti: vysledek.deti,
+      souhrn: vysledek.souhrn,
       chyby: vysledek.chyby,
     });
   } catch (e) {
