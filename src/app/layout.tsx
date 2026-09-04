@@ -43,8 +43,17 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: ZNACKA,
   },
+  // Google Search **neumí** SVG favicon — podporuje jen BMP, GIF, ICO, PNG,
+  // JPEG, PPM a TIFF. Dokud tu byl odkaz jen na icon.svg, ukazoval se ve
+  // výsledcích vyhledávání obecný glóbus. Rastrová ikona proto musí být
+  // první; prohlížeče si stejně vezmou SVG, protože je ostřejší.
+  // Google chce čtverec a doporučuje víc než 48 × 48 — 96 je násobek 48.
   icons: {
-    icon: "/icons/icon.svg",
+    icon: [
+      { url: "/icons/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/icons/apple-touch-icon.png",
   },
   openGraph: {
