@@ -20,7 +20,7 @@ import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, SplitBar } from "@/components/ui/misc";
 import { custodyStatsForRange, resolveCustody } from "@/lib/custody";
-import { expandActivities } from "@/lib/activities";
+import { expandActivities, kotvaTerminu } from "@/lib/activities";
 import { EXPENSE_CATEGORIES, EVENT_KINDS } from "@/lib/constants";
 import {
   DOW_LONG,
@@ -386,7 +386,13 @@ export function Dashboard({
                         />
                       </div>
                     ) : (
-                      <Badge color="var(--warning)">bez řidiče</Badge>
+                      <Badge
+                        color="var(--warning)"
+                        href={`/krouzky#${kotvaTerminu(ride.key)}`}
+                        title="Doplnit, kdo veze"
+                      >
+                        bez řidiče
+                      </Badge>
                     )}
                   </li>
                 );

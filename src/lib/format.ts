@@ -54,14 +54,28 @@ export function contrastInk(hex: string): string {
   return luminance > 0.45 ? "#1a1a18" : "#ffffff";
 }
 
-/** Poloprůhledná varianta barvy pro jemné podbarvení buňky kalendáře. */
-export function withAlpha(hex: string, alpha: number): string {
-  const clean = hex.replace("#", "");
-  if (clean.length !== 6) return hex;
-  const a = Math.round(Math.min(Math.max(alpha, 0), 1) * 255)
-    .toString(16)
-    .padStart(2, "0");
-  return `#${clean}${a}`;
+/**
+ * Poloprůhledná varianta barvy pro jemné podbarvení buňky kalendáře.
+ *
+ * Barva sem přijde ze dvou světů: barvy dětí a rodičů jsou hex z databáze,
+ * ale stavové barvy se předávají jako `var(--warning)` a v CSS jsou psané
+ * v `oklch()`. Z proměnné se hex složit nedá — tady se o průhlednost musí
+ * postarat prohlížeč přes `color-mix()`.
+ *
+ * Dřív se v takovém případě vracela barva **nezměněná**, tedy plná. Odznak
+ * si ji pak vzal na podklad i na text a nápis zmizel — stejná barva na
+ * stejné barvě.
+ */
+export function withAlpha(barva: string, alpha: number): string {
+  const podil = Math.min(Math.max(alpha, 0), 1);
+  const clean = barva.replace("#", "");
+  if (/^[0-9a-f]{6}$/i.test(clean)) {
+    const a = Math.round(podil * 255)
+      .toString(16)
+      .padStart(2, "0");
+    return `#${clean}${a}`;
+  }
+  return `color-mix(in srgb, ${barva} ${Math.round(podil * 100)}%, transparent)`;
 }
 
 /**

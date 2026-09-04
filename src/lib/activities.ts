@@ -16,6 +16,16 @@ export interface ActivityInstance {
   occurrenceId: string | null;
 }
 
+/**
+ * Kotva termínu pro adresu `/krouzky#…`.
+ *
+ * `key` je `<uuid>:<datum>`; dvojtečka je v `id` sice povolená, ale
+ * rozbíjí `querySelector`, tak se z ní dělá pomlčka.
+ */
+export function kotvaTerminu(key: string): string {
+  return `krouzek-${key.replace(":", "-")}`;
+}
+
 function inSeason(activity: Activity, dayKey: string): boolean {
   if (activity.season_start > dayKey) return false;
   if (activity.season_end && activity.season_end < dayKey) return false;

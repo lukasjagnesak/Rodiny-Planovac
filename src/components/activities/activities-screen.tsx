@@ -11,7 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/field";
 import { Alert, EmptyState, Segmented } from "@/components/ui/misc";
 import { ActivityForm } from "./activity-form";
-import { expandActivities, monthlyCost, type ActivityInstance } from "@/lib/activities";
+import {
+  expandActivities,
+  kotvaTerminu,
+  monthlyCost,
+  type ActivityInstance,
+} from "@/lib/activities";
 import { DOW_LONG, DOW_ORDER, formatDayShort, formatTime, toDateKey } from "@/lib/dates";
 import { cn, formatMoney, withAlpha, hlaskaChyby } from "@/lib/format";
 import { PRICE_PERIODS } from "@/lib/constants";
@@ -231,7 +236,13 @@ function TransportPlanner({
               {list.map((instance) => {
                 const child = session.children.find((c) => c.id === instance.activity.child_id);
                 return (
-                  <li key={instance.key} className="p-4">
+                  // `scroll-mt` kvůli lepící hlavičce — bez něj by termín,
+                  // na který se přišlo z přehledu, skončil schovaný pod ní.
+                  <li
+                    key={instance.key}
+                    id={kotvaTerminu(instance.key)}
+                    className="scroll-mt-24 p-4"
+                  >
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <Dot color={instance.activity.color} />
                       <span

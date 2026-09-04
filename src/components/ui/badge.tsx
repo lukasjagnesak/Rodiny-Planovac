@@ -1,26 +1,46 @@
 import * as React from "react";
+import Link from "next/link";
 import { cn, contrastInk, initials, withAlpha } from "@/lib/format";
 
+/**
+ * Štítek u položky — jméno dítěte, stav, upozornění.
+ *
+ * S `href` se z něj stane odkaz. Odznak, který hlásí, že něco chybí
+ * („bez řidiče"), by měl vést rovnou tam, kde se to doplní — jinak čte
+ * rodič výtku, se kterou nemá co dělat.
+ */
 export function Badge({
   children,
   color,
   variant = "soft",
+  href,
+  title,
   className,
 }: {
   children: React.ReactNode;
   color?: string;
   variant?: "soft" | "solid" | "outline";
+  href?: string;
+  title?: string;
   className?: string;
 }) {
   const base =
     "inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium whitespace-nowrap";
+  const jakoOdkaz = href ? "transition-opacity hover:opacity-80 focus-visible:outline-2" : "";
 
-  if (!color) {
-    return (
-      <span className={cn(base, "bg-surface-2 text-ink-muted border border-line", className)}>
+  const obsah = (trida: string, style?: React.CSSProperties) =>
+    href ? (
+      <Link href={href} title={title} className={cn(base, jakoOdkaz, trida)} style={style}>
+        {children}
+      </Link>
+    ) : (
+      <span title={title} className={cn(base, trida)} style={style}>
         {children}
       </span>
     );
+
+  if (!color) {
+    return obsah(cn("bg-surface-2 text-ink-muted border border-line", className));
   }
 
   const style: React.CSSProperties =
@@ -28,13 +48,11 @@ export function Badge({
       ? { backgroundColor: color, color: contrastInk(color) }
       : variant === "outline"
         ? { borderColor: color, color, borderWidth: 1 }
-        : { backgroundColor: withAlpha(color, 0.14), color };
+        : // `withAlpha` musí umět i `var(--…)`; jinak by podklad vyšel plný
+          // a text v téže barvě by na něm nebyl vidět.
+          { backgroundColor: withAlpha(color, 0.14), color };
 
-  return (
-    <span className={cn(base, className)} style={style}>
-      {children}
-    </span>
-  );
+  return obsah(cn(className), style);
 }
 
 /** Barevná tečka — legenda kalendáře, seznam dětí. */

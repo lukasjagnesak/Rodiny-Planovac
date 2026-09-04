@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test:rozvrh": "tsc src/lib/rozvrh.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/rozvrh.test.js",
     "test:kalkulacka": "tsc src/lib/kalkulacka.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/kalkulacka.test.js",
-    "test": "npm run test:custody && npm run test:opakovani && npm run test:predplatne && npm run test:docx && npm run test:rozvrh && npm run test:kalkulacka && npm run test:import && npm run test:vyzivne && npm run test:mail && npm run test:provoz && npm run test:zpravy && npm run test:crypto && npm run test:edupage-adresa && npm run test:oznameni-odkaz",
+    "test": "npm run test:custody && npm run test:opakovani && npm run test:predplatne && npm run test:docx && npm run test:rozvrh && npm run test:kalkulacka && npm run test:import && npm run test:vyzivne && npm run test:mail && npm run test:provoz && npm run test:zpravy && npm run test:crypto && npm run test:edupage-adresa && npm run test:oznameni-odkaz && npm run test:barvy",
     "test:import": "tsc src/lib/import-vydaju.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/import.test.js",
     "test:custody": "tsc src/lib/custody.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/custody.test.js",
     "test:docx": "tsc src/lib/docx.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/docx.test.js",
@@ -25,7 +25,8 @@
     "test:zpravy": "tsc src/lib/zpravy.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/zpravy.test.js",
     "test:crypto": "tsc src/lib/crypto.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/crypto.test.js",
     "test:edupage-adresa": "tsc src/lib/edupage-adresa.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/edupage-adresa.test.js",
-    "test:oznameni-odkaz": "tsc src/lib/oznameni-odkaz.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/oznameni-odkaz.test.js"
+    "test:oznameni-odkaz": "tsc src/lib/oznameni-odkaz.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/oznameni-odkaz.test.js",
+    "test:barvy": "tsc src/lib/format.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/barvy.test.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
