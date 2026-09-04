@@ -52,11 +52,27 @@ export function StatTile({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="card relative flex flex-col justify-between gap-2 p-4">
+    <div
+      className={cn(
+        "card relative flex flex-col justify-between gap-2 p-4",
+        // Místo pro proužek, ať se o něj text neotírá.
+        accent && "pl-5",
+      )}
+    >
+      {/*
+        Proužek je pilulka odsazená od okraje, ne obarvená hrana karty.
+        Dřív měl `rounded-l-[inherit]`, tedy poloměr karty — jenže ten je
+        16 px a proužek 4 px široký. Prohlížeč poloměr osekává na polovinu
+        šířky, takže z kulatých rohů zbyly dva pixely, pravá strana zůstala
+        hranatá a celé to vypadalo jako čára useknutá okrajem karty.
+
+        Svislé odsazení je stejné jako vnitřní okraj karty, aby proužek
+        začínal i končil přesně s textem.
+      */}
       {accent ? (
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 w-1 rounded-l-[inherit]"
+          className="absolute inset-y-4 left-2 w-1 rounded-pill"
           style={{ backgroundColor: accent }}
         />
       ) : null}
