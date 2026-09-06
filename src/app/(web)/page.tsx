@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import {
   BellRing,
@@ -247,16 +248,49 @@ export default async function Domu() {
         </div>
       </section>
 
+      {/* ── Pás s fotkou ─────────────────────────────────────────── */}
+      {/* Nad ním jsou samá čísla a rozpisy. Tohle je jediné místo, kde
+          návštěvník uvidí, o koho vlastně jde, ještě než začne číst
+          o problémech. Na mobilu se ořezává na výšku, aby postavy
+          nezmizely v úzkém proužku. */}
+      <section className="pb-4 sm:pb-8">
+        <Sloupec siroky>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9]">
+            <Image
+              src="/foto/cesta-ze-skoly.jpg"
+              alt="Matka jde s dcerou a synem ze školy podzimní ulicí, kluk jí něco vypráví."
+              fill
+              sizes="(min-width: 1024px) 64rem, 100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+        </Sloupec>
+      </section>
+
       {/* ── Co se doopravdy děje ─────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-14 sm:py-16">
         <Sloupec siroky>
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Právní část se vyřeší jednou. Provoz každý týden.
-          </h2>
-          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Rozsudek nebo dohoda je hotová za pár měsíců. To, co rodiče vyčerpá, přijde potom —
-            a nikdo o tom předem nemluví.
-          </p>
+          <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-12">
+            <div>
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                Právní část se vyřeší jednou. Provoz každý týden.
+              </h2>
+              <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
+                Rozsudek nebo dohoda je hotová za pár měsíců. To, co rodiče vyčerpá, přijde
+                potom — a nikdo o tom předem nemluví.
+              </p>
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <Image
+                src="/foto/vecer-doma.jpg"
+                alt="Matka telefonuje u kuchyňské linky, dcera za ní u stolu píše úkoly."
+                fill
+                sizes="(min-width: 1024px) 28rem, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
 
           <div className="mt-9 grid gap-6 sm:grid-cols-3">
             {[
@@ -336,6 +370,18 @@ export default async function Domu() {
         <Sloupec siroky>
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
+              {/* Fotka je tu schválně jednoho rodiče s dítětem: sekce slibuje,
+                  že appka dává smysl i bez druhé strany, a obrázek celé rodiny
+                  by tvrdil pravý opak. */}
+              <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
+                <Image
+                  src="/foto/tata-a-dcera.jpg"
+                  alt="Otec sedí večer u stolu vedle dcery, která kreslí."
+                  fill
+                  sizes="(min-width: 1024px) 32rem, 100vw"
+                  className="object-cover"
+                />
+              </div>
               <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                 Funguje i tehdy, když ho používáš sám
               </h2>
