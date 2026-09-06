@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
+import { PrihlaseniApple } from "@/components/ui/apple-button";
 import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { prettyError } from "../prihlaseni/login-form";
 import { zmer } from "@/lib/mereni";
@@ -94,10 +95,16 @@ export function RegisterForm() {
 
       {/* Přes Google odpadá heslo i potvrzovací e-mail — u pozvánky, kde
           druhý rodič často nechce nic vyplňovat, je to zásadní rozdíl. */}
-      <PrihlaseniGoogle
-        popisek="Zaregistrovat se přes Google"
-        dal={inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte"}
-      />
+      <div className="space-y-2.5">
+        <PrihlaseniGoogle
+          popisek="Zaregistrovat se přes Google"
+          dal={inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte"}
+        />
+        <PrihlaseniApple
+          popisek="Zaregistrovat se přes Apple"
+          dal={inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte"}
+        />
+      </div>
       <Nebo />
 
       <Field label="Jméno" hint="uvidí ho ostatní členové">

@@ -130,8 +130,13 @@ export default function Zasady() {
               <strong>Poskytovatel serveru</strong> — provoz aplikace, servery v Evropské unii.
             </li>
             <li>
-              <strong>Google</strong> — pouze pokud si sami zapnete synchronizaci kalendáře, a
-              jen v rozsahu, který synchronizace vyžaduje.
+              <strong>Google</strong> — pouze pokud si sami zapnete synchronizaci kalendáře nebo
+              se přihlásíte přes Google, a jen v rozsahu, který to vyžaduje.
+            </li>
+            <li>
+              <strong>Apple</strong> — pouze pokud se přihlásíte přes Apple. Apple nám v tom
+              případě předá váš identifikátor a e-mail; když si zvolíte skrytý e-mail,
+              dostaneme přeposílací adresu a tu skutečnou nevidíme.
             </li>
             <li>
               <strong>Provozovatel push notifikací vašeho prohlížeče</strong> (například Google

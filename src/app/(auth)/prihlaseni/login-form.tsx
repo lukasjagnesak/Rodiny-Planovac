@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
+import { PrihlaseniApple } from "@/components/ui/apple-button";
 
 /** Důvody, se kterými sem posílá `/auth/callback` neúspěšný odkaz z e-mailu. */
 const HLASKY: Record<string, string> = {
@@ -98,8 +99,15 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="card space-y-4 p-5 sm:p-6">
       {/* Nahoře schválně: je to nejrychlejší cesta dovnitř a většina lidí
-          si stejně nepamatuje, jestli si zakládala heslo. */}
-      <PrihlaseniGoogle popisek="Přihlásit se přes Google" dal={next} />
+          si stejně nepamatuje, jestli si zakládala heslo.
+
+          Apple musí být stejně velké a stejně vysoko jako Google —
+          pravidla App Storu nedovolují nabídnout cizí přihlášení
+          nápadněji než to jejich. */}
+      <div className="space-y-2.5">
+        <PrihlaseniGoogle popisek="Přihlásit se přes Google" dal={next} />
+        <PrihlaseniApple popisek="Přihlásit se přes Apple" dal={next} />
+      </div>
       <Nebo />
 
       <Field label="E-mail">
