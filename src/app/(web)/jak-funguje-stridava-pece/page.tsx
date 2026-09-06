@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   DalsiCteni,
+  FotoPas,
   Hero,
   Pitch,
   Poznamka,
@@ -30,6 +31,12 @@ export default function JakFungujeStridavaPece() {
         nadtitulek="Průvodce · čtení na 8 minut"
         nadpis="Jak funguje střídavá péče"
         perex="Bez právničiny a bez tvrzení, že je to pro každého. Co musí být splněno, jaké rytmy se v Česku používají a co vás čeká v prvních měsících."
+      />
+
+      <FotoPas
+        src="/foto/kalendar-na-zdi.jpg"
+        alt="Matka ukazuje synovi týden na papírovém kalendáři na zdi kuchyně."
+        prioritni
       />
 
       <Sloupec>

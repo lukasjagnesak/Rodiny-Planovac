@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   DalsiCteni,
+  FotoPas,
   Hero,
   Pitch,
   Poznamka,
@@ -30,6 +31,12 @@ export default function VzorDohody() {
         nadtitulek="Vzor · aktualizováno 2026"
         nadpis="Dohoda o střídavé péči, kterou soud nevrátí"
         perex="Připravený text, do kterého doplníte jména a termíny. Včetně sedmi bodů, na které se nejčastěji zapomíná a kvůli kterým se rodiče o rok později znovu hádají."
+      />
+
+      <FotoPas
+        src="/foto/podpis-dohody.jpg"
+        alt="Ruce dvou rodičů u stolu, jeden podepisuje dohodu."
+        prioritni
       />
 
       <Sloupec>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Handshake } from "lucide-react";
-import { DalsiCteni, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
+import { DalsiCteni, FotoPas, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import {
   MINIMALNI_VYPLATA_KC,
@@ -44,6 +44,12 @@ export default function ProMediatory() {
           Zapojit se do programu
         </Link>
       </Hero>
+
+      <FotoPas
+        src="/foto/mediace.jpg"
+        alt="Mediátorka mluví u kulatého stolu s oběma rodiči."
+        prioritni
+      />
 
       <Sloupec>
         <article className="proza">

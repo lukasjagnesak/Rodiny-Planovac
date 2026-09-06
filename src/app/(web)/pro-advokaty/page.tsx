@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Scale } from "lucide-react";
-import { DalsiCteni, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
+import { DalsiCteni, FotoPas, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { PARTNERSKY_EMAIL } from "@/lib/partneri";
 import { ZNACKA } from "@/lib/brand";
@@ -65,6 +65,12 @@ export default function ProAdvokaty() {
           Domluvit spolupráci
         </Link>
       </Hero>
+
+      <FotoPas
+        src="/foto/advokatka.jpg"
+        alt="Advokátka vysvětluje klientovi dokument u pracovního stolu."
+        prioritni
+      />
 
       <Sloupec>
         <article className="proza">

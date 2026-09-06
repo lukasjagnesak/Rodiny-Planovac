@@ -13,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
+import { Sloupec, Nadtitulek, DalsiCteni, FotoPas } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { UkazkyAplikace } from "@/components/web/ukazky";
 import { POPIS, ZNACKA } from "@/lib/brand";
@@ -251,22 +251,16 @@ export default async function Domu() {
       {/* ── Pás s fotkou ─────────────────────────────────────────── */}
       {/* Nad ním jsou samá čísla a rozpisy. Tohle je jediné místo, kde
           návštěvník uvidí, o koho vlastně jde, ještě než začne číst
-          o problémech. Na mobilu se ořezává na výšku, aby postavy
-          nezmizely v úzkém proužku. */}
-      <section className="pb-4 sm:pb-8">
-        <Sloupec siroky>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9]">
-            <Image
-              src="/foto/cesta-ze-skoly.jpg"
-              alt="Matka jde s dcerou a synem ze školy podzimní ulicí, kluk jí něco vypráví."
-              fill
-              sizes="(min-width: 1024px) 64rem, 100vw"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </Sloupec>
-      </section>
+          o problémech.
+
+          Je tu schválně otec. Appky pro rodiny se vizuálně dělají pro
+          matky a otec ve střídavé péči si zvykl, že na obrázcích není —
+          na nejvýš položené fotce celého webu to má vidět jinak. */}
+      <FotoPas
+        src="/foto/cesta-ze-skoly.jpg"
+        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
+        prioritni
+      />
 
       {/* ── Co se doopravdy děje ─────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-14 sm:py-16">

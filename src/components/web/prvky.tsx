@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/format";
 import { Znak } from "@/components/ui/logo";
 
@@ -232,5 +233,43 @@ export function DalsiCteni({
         </Link>
       ))}
     </div>
+  );
+}
+
+/**
+ * Široký fotografický pás pod hlavičkou stránky.
+ *
+ * Na mobilu se ořezává na 4:3, jinak by z postav v šestnáctce zbyl
+ * proužek, ve kterém nikoho nepoznáš. Fotky jsou ilustrační snímky
+ * cílové skupiny, ne skuteční klienti — proto u nich nikde není jméno
+ * ani citace, ze které by se stala reference.
+ */
+export function FotoPas({
+  src,
+  alt,
+  prioritni = false,
+  className,
+}: {
+  src: string;
+  alt: string;
+  /** Zapni jen u fotky nad ohybem — jinak zdrží vykreslení. */
+  prioritni?: boolean;
+  className?: string;
+}) {
+  return (
+    <section className={cn("pb-4 sm:pb-8", className)}>
+      <Sloupec siroky>
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9]">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            sizes="(min-width: 1024px) 64rem, 100vw"
+            className="object-cover"
+            priority={prioritni}
+          />
+        </div>
+      </Sloupec>
+    </section>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hero, Poznamka, Sloupec } from "@/components/web/prvky";
+import { FotoPas, Hero, Poznamka, Sloupec } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { NastrojeDokumentu } from "@/components/web/kopirovat";
 import {
@@ -44,6 +44,12 @@ export default function Checklist() {
       >
         <NastrojeDokumentu text={textChecklistu()} />
       </Hero>
+
+      <FotoPas
+        src="/foto/prvni-tydny.jpg"
+        alt="Otec si ráno u kuchyňského stolu píše seznam do sešitu."
+        prioritni
+      />
 
       <Sloupec>
         <div className="space-y-8">
