@@ -26,7 +26,9 @@ export const metadata: Metadata = {
   description: POPIS,
   alternates: { canonical: "/" },
   openGraph: {
-    title: `${ZNACKA} — kalendář a výdaje pro střídavou péči`,
+    // Ve vyhledávači vyhrává titulek s klíčovým slovem, na Facebooku
+    // ten, u kterého člověk zpomalí. Proto se tyhle dva liší.
+    title: `${ZNACKA} — konec dohadování, kdo, kdy a za kolik`,
     description: POPIS,
     type: "website",
     url: "/",
@@ -50,8 +52,8 @@ const FUNKCE = [
     ikona: CalendarDays,
     nazev: "Kalendář péče",
     popis:
-      "Sudé a liché týdny, střídání po týdnu, schéma 2-2-3 nebo vlastní rozpis po dnech. " +
-      "Prázdniny a státní svátky se doplní samy podle okresu.",
+      "Sudé a liché týdny, 2-2-3 nebo vlastní rozpis po dnech. Prázdniny a svátky " +
+      "se doplní samy podle okresu. Nikdo už nepočítá na prstech, čí je příští víkend.",
   },
   {
     ikona: Car,
@@ -63,25 +65,29 @@ const FUNKCE = [
     ikona: Receipt,
     nazev: "Výdaje s účtenkami",
     popis:
-      "Vyfotíš účtenku, zadáš částku a klíč rozdělení. Klidoo dopočítá, kdo komu kolik dluží. Import z Excelu umí taky.",
+      "Vyfotíš účtenku, zadáš částku a klíč rozdělení. Na konci měsíce je vidět jedno " +
+      "číslo místo dvou různých vzpomínek. Import z Excelu umí taky.",
   },
   {
     ikona: GraduationCap,
     nazev: "Škola a rozvrh",
     popis:
-      "Rozvrh každého dítěte, školní termíny a zprávy z EduPage. Oba rodiče vidí totéž ve stejnou chvíli.",
+      "Rozvrh každého dítěte, školní termíny a zprávy z EduPage. Konec vět „mně škola " +
+      "nic neposlala“ — oba rodiče vidí totéž ve stejnou chvíli.",
   },
   {
     ikona: BellRing,
     nazev: "Připomínky",
     popis:
-      "Notifikace před předávkou, kroužkem i doktorem — přímo do telefonu, i když zrovna nemáš aplikaci otevřenou.",
+      "Upozornění před předávkou, kroužkem i doktorem přijde do telefonu samo. " +
+      "Zapomenout jde jen na to, co ti nikdo nepřipomene.",
   },
   {
     ikona: FileText,
     nazev: "Doklady dětí",
     popis:
-      "Kartička pojištěnce, občanka, potvrzení ze školy. Nafocené na jednom místě, dostupné z obou domácností.",
+      "Kartička pojištěnce, občanka, potvrzení ze školy. Vyfocené jednou a po ruce " +
+      "i v čekárně u lékaře, ať máš dítě zrovna ty, nebo ne.",
   },
 ];
 
@@ -144,15 +150,24 @@ export default async function Domu() {
       <section className="pb-10 pt-12 sm:pb-16 sm:pt-20">
         <div className="mx-auto grid w-full max-w-5xl items-center gap-12 px-5 sm:px-6 lg:grid-cols-[1.05fr_1fr]">
           <div>
-            <Nadtitulek>Pro rodiny se dvěma domovy</Nadtitulek>
+            <Nadtitulek>Pro rodiče, kteří spolu už nebydlí</Nadtitulek>
+            {/* Nadpis pojmenovává nepřítele, ne produkt. „Kalendář pro
+                střídavou péči" je popis kategorie — takových vět čte
+                člověk ve výsledcích hledání deset a nezastaví se u žádné.
+                U koho jsou tenhle týden a kdo platil obědy pozná jako
+                svoje. */}
             <h1 className="mt-3 font-display text-[2.25rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-[3.25rem]">
-              Kdo, kdy, kam.
+              Konec dohadování,
               <br />
-              Bez dohadování.
+              kdo, kdy a za kolik.
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-muted">
-              Klidoo je kalendář, kroužky a výdaje pro děti, které mají dva domovy. Jeden
-              rozvrh, do kterého vidí oba rodiče — takže se není o čem přít.
+              U koho jsou tenhle týden. Kdo je veze z fotbalu. Kdo zaplatil obědy a jestli
+              se to někdy vyrovná. V Klidoo je to napsané jednou, na jednom místě — a vidí
+              to oba.
+            </p>
+            <p className="mt-4 max-w-lg font-display text-xl font-semibold leading-snug text-ink">
+              Klidoo je od toho, abyste byli v klidu.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -262,6 +277,84 @@ export default async function Domu() {
         prioritni
       />
 
+      {/* ── Kdo za tím stojí ─────────────────────────────────────── */}
+      {/* Tady je jediná věc, kterou konkurence nemůže zkopírovat. Funkce
+          se dají dodělat za měsíc, „psal to někdo, kdo tím prošel“ ne.
+          Proto je to hned pod první fotkou, ne schované v patičce. */}
+      <section className="border-y border-line bg-surface py-14 sm:py-16">
+        <Sloupec siroky>
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
+            <div>
+              <Nadtitulek>Kdo za tím stojí</Nadtitulek>
+              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                Klidoo píše rodič, který tím sám prochází
+              </h2>
+              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
+                Tohle není appka od někoho, kdo si střídavou péči nastudoval z průzkumu
+                trhu. Vznikla proto, že ten samý kolotoč — předávky, kroužky, účtenky,
+                zprávy o tom, kdo koho kdy vyzvedne — potřeboval někdo dostat z hlavy ven.
+              </p>
+              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
+                Každá funkce je tu proto, že něco konkrétního nefungovalo. Nic tu není
+                „protože to mají ostatní“. Když ti něco chybí nebo se ti něco nelíbí,
+                napiš na{" "}
+                <a
+                  href="mailto:info@klidoo.cz"
+                  className="font-medium text-brand underline underline-offset-4"
+                >
+                  info@klidoo.cz
+                </a>
+                . Čte to člověk, který aplikaci píše, ne oddělení podpory.
+              </p>
+            </div>
+
+            <div className="card p-6 sm:p-7">
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Postavené na české střídavé péči
+              </h3>
+              <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
+                Zahraniční aplikace jsou hezké, ale nevědí, co je okres ani tabulka
+                ministerstva. Tohle jsou věci, které bez toho nejdou:
+              </p>
+              <ul className="mt-4 space-y-3.5">
+                {[
+                  {
+                    nazev: "Počítá noci, ne dny",
+                    popis:
+                      "Den předání patří půl na půl. Soud i výživné se baví o nocích — a ty v Klidoo sedí na jednu.",
+                  },
+                  {
+                    nazev: "Zná český školní rok",
+                    popis:
+                      "Jarní prázdniny má každý okres jindy. Doplní se samy i se svátky, takže se o ně v lednu nikdo nepřetahuje.",
+                  },
+                  {
+                    nazev: "Výživné podle tabulky ministerstva",
+                    popis:
+                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
+                  },
+                  {
+                    nazev: "Druhý rodič neplatí nic",
+                    popis:
+                      "Platí jedna domácnost za celou rodinu. Druhý rodič, prarodiče i chůva jsou v ceně.",
+                  },
+                ].map(({ nazev, popis }) => (
+                  <li key={nazev} className="flex gap-3">
+                    <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand" aria-hidden />
+                    <span>
+                      <span className="block font-medium text-ink">{nazev}</span>
+                      <span className="mt-0.5 block text-[0.9rem] leading-relaxed text-ink-muted">
+                        {popis}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Sloupec>
+      </section>
+
       {/* ── Co se doopravdy děje ─────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-14 sm:py-16">
         <Sloupec siroky>
@@ -271,8 +364,8 @@ export default async function Domu() {
                 Právní část se vyřeší jednou. Provoz každý týden.
               </h2>
               <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-                Rozsudek nebo dohoda je hotová za pár měsíců. To, co rodiče vyčerpá, přijde
-                potom — a nikdo o tom předem nemluví.
+                Rozsudek nebo dohoda je hotová za pár měsíců. Co rodiče doopravdy vyčerpá,
+                začne až potom a trvá dalších deset let — a nikdo o tom předem nemluví.
               </p>
             </div>
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
@@ -323,7 +416,8 @@ export default async function Domu() {
             Podívej se, do čeho jdeš
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas — a appka umí ještě víc.
+            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas. Žádné obrázky
+            z fotobanky — je to ta samá aplikace, jen s vymyšlenou rodinou.
           </p>
 
           <div className="mt-10">
@@ -337,7 +431,7 @@ export default async function Domu() {
         <Sloupec siroky>
           <Nadtitulek>Co Klidoo umí</Nadtitulek>
           <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Všechno kolem dětí na jednom místě
+            Šest věcí, které přestanete řešit po telefonu
           </h2>
 
           <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -484,9 +578,20 @@ export default async function Domu() {
               hotovo="Díky. Ozveme se, až bude co říct."
             />
 
+            {/* Poslední věta stránky. Kdo dočetl až sem, už ví, co Klidoo
+                umí — potřebuje důvod začít dnes, ne další výčet funkcí. */}
+            <h2 className="mt-14 font-display text-3xl font-semibold tracking-tight text-ink">
+              Příští týden se to bude řešit znovu
+            </h2>
+            <p className="mt-3 text-lg leading-relaxed text-ink-muted">
+              Kroužky, předávky a účtenky nepočkají, až na to bude klid. Založení rodiny
+              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíš — ani kartu
+              nezadáváš.
+            </p>
+
             <Link
               href="/registrace"
-              className="inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+              className="mt-6 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
             >
               Založit rodinu zdarma
             </Link>
@@ -528,7 +633,7 @@ export default async function Domu() {
               logo: "https://klidoo.cz/icons/icon-512.png",
               email: "info@klidoo.cz",
               // Pomáhá Googlu spojit doménu se jménem značky — přesně to,
-              // co chybí, když hledání „klidoo" nenajde vůbec nic. Až
+              // co chybí, když hledání „klidoo“ nenajde vůbec nic. Až
               // budou sociální sítě, jejich odkazy patří do `sameAs`.
             },
             {

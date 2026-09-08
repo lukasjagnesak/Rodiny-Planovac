@@ -161,6 +161,22 @@ dne a projeví se i na „dnes končí" na přehledu.
 > stahování se může rozbít, kdykoli EduPage něco změní — pak stačí povýšit
 > `edupage-api` v `edupage/requirements.txt`.
 
+### Testy v prohlížeči
+
+Dva testy potřebují běžící aplikaci a Playwright, takže nejsou v `npm test`:
+
+```bash
+npm run dev -- --port 3100
+PLAYWRIGHT=$(npm root -g)/playwright npm run test:souhlas   # cookies
+PLAYWRIGHT=$(npm root -g)/playwright npm run test:mobil     # šířka na mobilu
+```
+
+`test:mobil` hlídá, že stránka není širší než displej. Kdyby byla,
+prohlížeč ji zmenší a všechno na ní vypadá roztaženě — v kódu přitom
+není co poznat. Aby šel změřit i přehled, který jinak chce přihlášení
+a databázi, existuje ve vývojovém režimu `/nahled-mobil` s vymyšlenou
+rodinou. V ostrém provozu ta stránka vrací 404.
+
 ### 4b. Přihlášení přes Google a Apple (nepovinné)
 
 Tlačítka na přihlašovací stránce se ukážou, jen když je v `.env`

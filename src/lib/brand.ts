@@ -12,7 +12,14 @@ export const ZNACKA = "Klidoo";
 /** Krátká věta pod název — hlavička, popisky pro vyhledávače, manifest. */
 export const PODTITUL = "Klid do rodiny, která žije ve dvou domovech";
 
-/** Delší popis pro vyhledávače a sdílení. */
+/**
+ * Delší popis pro vyhledávače a sdílení.
+ *
+ * Ve výsledku hledání soupeří o pozornost s deseti dalšími řádky, takže
+ * začíná tím, co člověk pozná jako svůj problém, a teprve pak říká, co
+ * to je. Výčet funkcí na začátku vypadá jako každý druhý výsledek.
+ */
 export const POPIS =
-  "Kalendář střídavé péče, kroužky a doprava, výdaje s účtenkami, rozvrh " +
-  "a školní termíny na jednom místě. Pro rodiče, jejichž děti mají dva domovy.";
+  "U koho jsou tenhle týden, kdo je veze z kroužku, kdo platil obědy — " +
+  "v Klidoo je to napsané jednou a vidí to oba rodiče. Kalendář střídavé " +
+  "péče, výdaje s účtenkami a školní rozvrh na jednom místě.";
