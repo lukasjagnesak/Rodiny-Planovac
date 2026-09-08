@@ -2,6 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = [
+  // Přehled s vymyšlenými daty pro test rozvržení. V ostrém provozu
+  // se nevykreslí — stránka sama vrací 404, viz `app/nahled-mobil`.
+  "/nahled-mobil",
   "/prihlaseni",
   "/registrace",
   "/pozvanka",

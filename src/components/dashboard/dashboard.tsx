@@ -592,13 +592,27 @@ export function Dashboard({
       ) : null}
 
       {/* Pořadí i výběr karet si rodič určuje sám. Půlkarty se od `lg`
-          skládají po dvou vedle sebe, celé zabírají řádek. */}
-      <div className="grid gap-4 lg:grid-cols-2">
+          skládají po dvou vedle sebe, celé zabírají řádek.
+
+          `grid-cols-1` tam musí být napsané, i když je sloupec stejně
+          jeden. Bez něj si mřížka udělá sloupec šířky `auto` a ten se
+          roztáhne na nejširší obsah — a protože se dlouhá jména ořezávají
+          přes `truncate`, tedy `white-space: nowrap`, je jejich nejmenší
+          šířka celé jméno. Na mobilu z toho byla stránka širší než displej.
+          Tailwindí `grid-cols-*` má sloupce `minmax(0, 1fr)`, které se
+          smrsknou, jak je potřeba.
+
+          `min-w-0` na kartách drží totéž o patro níž — mřížkové položky
+          mají jinak `min-width: auto` se stejným následkem. */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {karty.map((karta) => {
           const telo = obsah[karta.id];
           if (!telo) return null;
           return (
-            <div key={karta.id} className={karta.sirka === "plna" ? "lg:col-span-2" : undefined}>
+            <div
+              key={karta.id}
+              className={cn("min-w-0", karta.sirka === "plna" && "lg:col-span-2")}
+            >
               {telo}
             </div>
           );
