@@ -161,6 +161,46 @@ dne a projeví se i na „dnes končí" na přehledu.
 > stahování se může rozbít, kdykoli EduPage něco změní — pak stačí povýšit
 > `edupage-api` v `edupage/requirements.txt`.
 
+### 4b. Přihlášení přes Google a Apple (nepovinné)
+
+Tlačítka na přihlašovací stránce se ukážou, jen když je v `.env`
+`NEXT_PUBLIC_PRIHLASENI_GOOGLE=1`, resp. `NEXT_PUBLIC_PRIHLASENI_APPLE=1`.
+Bez toho je tam jen e-mail a heslo.
+
+Je to schválně: samotné tlačítko nic nezapíná. Dokud poskytovatel není
+nastavený i v Supabase, skončí kliknutí hláškou `provider is not enabled`
+a člověk se do aplikace nedostane. Vypínač v `.env` znamená „mám to
+hotové i na druhé straně".
+
+**Google.** V *Google Cloud Console → APIs & Services → Credentials*
+založ **OAuth client ID** typu *Web application*:
+
+| Pole | Hodnota |
+|---|---|
+| Authorized JavaScript origins | `https://klidoo.cz` |
+| Authorized redirect URIs | `https://<projekt>.supabase.co/auth/v1/callback` |
+
+Přesnou adresu pro redirect nabízí Supabase dole v dialogu poskytovatele
+jako *Callback URL (for OAuth)* — zkopíruj ji odtamtud, ať se to nerozejde.
+Vygenerované **Client ID** (`…-….apps.googleusercontent.com`) a **Client
+Secret** (`GOCSPX-…`) patří do Supabase → *Authentication → Sign In /
+Providers → Google*, ne do `.env`. Aplikace je nikdy nevidí, celý OAuth
+odbaví Supabase.
+
+> Consent screen musí být *Published*, ne *Testing*. V testovacím režimu
+> pustí Google dovnitř jen ručně vypsané testovací účty a ostatním ukáže
+> chybu.
+
+**Apple.** Vyžaduje placený *Apple Developer Program* (99 USD ročně).
+Client ID je Services ID (`cz.klidoo.web`), tajemství je JWT podepsaný
+klíčem `.p8` a **platí půl roku** — pak se musí vyrobit nový, jinak
+přihlašování přes Apple přestane fungovat. Dokud účet není, nech
+poskytovatele v Supabase vypnutý a proměnnou prázdnou.
+
+> Pro App Store to volitelné nebude: kdo v aplikaci nabízí přihlášení
+> přes jinou službu, musí podle pravidel nabídnout i Apple. Na webu tahle
+> povinnost neplatí.
+
 ### 5. Push notifikace (nepovinné)
 
 1. Vygeneruj pár klíčů:
