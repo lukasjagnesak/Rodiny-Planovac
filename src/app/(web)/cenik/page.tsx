@@ -40,7 +40,7 @@ const OTAZKY = [
   {
     otazka: "Platí druhý rodič taky?",
     odpoved:
-      "Ne. Předplatné platí rodina, ne uživatel. Druhý rodič, prarodiče i chůva mají přístup v ceně — aplikace, do které vidí jen jeden rodič, nedává smysl.",
+      "Ne. Předplatné platí rodina, ne uživatel. Druhý rodič, prarodiče, nový partner, teta i chůva mají přístup v ceně — aplikace, do které vidí jen jeden rodič, nedává smysl.",
   },
   {
     otazka: "Jak předplatné zruším?",
@@ -133,7 +133,8 @@ export default function Cenik() {
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <p className="flex items-start gap-2.5 text-sm text-ink-subtle">
               <Users size={16} className="mt-0.5 shrink-0" aria-hidden />
-              Druhý rodič, prarodiče i chůva jsou v ceně. Platí jedna domácnost.
+              Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně. Platí jedna
+              domácnost, ne každý účet zvlášť.
             </p>
             <p className="flex items-start gap-2.5 text-sm text-ink-subtle">
               <CreditCard size={16} className="mt-0.5 shrink-0" aria-hidden />

@@ -96,7 +96,7 @@ const OTAZKY = [
     otazka: "Kolik to stojí?",
     odpoved:
       "Prvních 30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo " +
-      "1 990 Kč ročně za celou rodinu — ne za člověka. Druhý rodič, prarodiče i chůva jsou v ceně.",
+      "1 990 Kč ročně za celou rodinu — ne za člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.",
   },
   {
     otazka: "Musí Klidoo používat oba rodiče?",
@@ -336,7 +336,7 @@ export default async function Domu() {
                   {
                     nazev: "Druhý rodič neplatí nic",
                     popis:
-                      "Platí jedna domácnost za celou rodinu. Druhý rodič, prarodiče i chůva jsou v ceně.",
+                      "A ani nikdo další. Prarodiče, nový partner, teta, chůva — přidej každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
                   },
                 ].map(({ nazev, popis }) => (
                   <li key={nazev} className="flex gap-3">

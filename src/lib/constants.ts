@@ -111,7 +111,7 @@ export const ROLE_LABELS: Record<MemberRole, string> = {
 export const ROLE_HINTS: Record<MemberRole, string> = {
   owner: "Může vše včetně správy členů a smazání rodiny.",
   parent: "Může přidávat a upravovat kalendář, kroužky i výdaje.",
-  guardian: "Např. prarodič nebo partner — může upravovat záznamy.",
+  guardian: "Prarodič, nový partner, teta, chůva — může upravovat záznamy.",
   viewer: "Vidí data, ale nemůže nic měnit.",
 };
 

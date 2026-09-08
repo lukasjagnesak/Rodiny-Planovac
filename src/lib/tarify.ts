@@ -72,7 +72,7 @@ export const CO_JE_V_CENE = [
   },
   {
     nazev: "Celá rodina v ceně",
-    popis: "Druhý rodič, prarodiče i chůva. Platí jedna domácnost, ne každý účet zvlášť.",
+    popis: "Druhý rodič, prarodiče, nový partner, teta i chůva. Platí jedna domácnost, ne každý účet zvlášť.",
   },
   {
     nazev: "Výdaje a účtenky",
