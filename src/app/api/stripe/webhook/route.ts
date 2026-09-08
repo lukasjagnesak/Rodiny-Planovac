@@ -8,6 +8,7 @@ import { prvniPlatbaZprava } from "@/lib/mail-sablony";
 import { korun, tarifPodleId } from "@/lib/tarify";
 import { siteUrl } from "@/lib/google";
 import type { StavPredplatneho } from "@/lib/predplatne-pravidla";
+import { ohlas } from "@/lib/poplach";
 
 /**
  * Webhook ze Stripe — jediné místo, kde se mění stav předplatného.
@@ -44,8 +45,10 @@ export async function POST(request: NextRequest) {
     await zpracuj(udalost);
   } catch (chyba) {
     // Nevrátíme 500 zbytečně — Stripe by událost opakoval pět dní.
-    // Chybu ale musí být vidět v logu.
-    console.error("[stripe] zpracování selhalo", udalost.type, chyba);
+    // Tohle je ale zároveň nejdražší chyba v aplikaci: rodina zaplatila
+    // a předplatné se jí nezapsalo. Do logu to nestačí, musí to přijít
+    // e-mailem.
+    await ohlas(chyba, { kde: "stripe/webhook", detaily: { typ: udalost.type, id: udalost.id } });
     return NextResponse.json({ chyba: "Zpracování selhalo." }, { status: 500 });
   }
 

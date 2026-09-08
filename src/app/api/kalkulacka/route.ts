@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
 import { zkontrolujVstup, type PlanVstup } from "@/lib/kalkulacka";
 import type { CustodySide, PatternKind } from "@/lib/types";
 
@@ -17,30 +18,7 @@ const KINDS: PatternKind[] = [
  * po restartu se zapomene a při víc instancích platí na každou zvlášť —
  * na veřejnou kalkulačku to stačí, není za čím se schovat.
  */
-const POKUSY = new Map<string, { pocet: number; od: number }>();
-const OKNO_MS = 60 * 60 * 1000;
-const MAX_ZA_HODINU = 20;
-
-function prekrocilLimit(ip: string): boolean {
-  const ted = Date.now();
-  const zaznam = POKUSY.get(ip);
-
-  if (!zaznam || ted - zaznam.od > OKNO_MS) {
-    POKUSY.set(ip, { pocet: 1, od: ted });
-    return false;
-  }
-
-  zaznam.pocet += 1;
-
-  // Ať mapa neroste donekonečna, občas se probere.
-  if (POKUSY.size > 5000) {
-    for (const [klic, hodnota] of POKUSY) {
-      if (ted - hodnota.od > OKNO_MS) POKUSY.delete(klic);
-    }
-  }
-
-  return zaznam.pocet > MAX_ZA_HODINU;
-}
+const LIMIT = new Limit(20, HODINA);
 
 function text(hodnota: unknown, maxDelka: number): string | null {
   if (typeof hodnota !== "string") return null;
@@ -50,12 +28,7 @@ function text(hodnota: unknown, maxDelka: number): string | null {
 
 /** Uloží rozpis z veřejné kalkulačky a vrátí odkaz na něj. */
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    request.headers.get("x-real-ip") ??
-    "neznámá";
-
-  if (prekrocilLimit(ip)) {
+  if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
     return NextResponse.json(
       { error: "Zkoušíš to moc často. Dej tomu chvilku." },
       { status: 429 },

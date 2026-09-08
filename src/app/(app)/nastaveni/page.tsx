@@ -76,6 +76,7 @@ export default async function SettingsPage() {
       description: "Přenos událostí do tvého kalendáře",
       Icon: CalendarSync,
       badge: google ? "propojeno" : null,
+      veVyvoji: true,
     },
     {
       href: "/nastaveni/edupage",
@@ -83,6 +84,7 @@ export default async function SettingsPage() {
       description: "Úkoly, zprávy, rozvrh a školní akce",
       Icon: GraduationCap,
       badge: edupage ? "propojeno" : null,
+      veVyvoji: true,
     },
     {
       href: "/nastaveni/notifikace",
@@ -108,7 +110,7 @@ export default async function SettingsPage() {
       <Card>
         <CardHeader title="Propojení a pravidla" />
         <ul className="mt-2 divide-y divide-line">
-          {links.map(({ href, title, description, Icon, badge }) => (
+          {links.map(({ href, title, description, Icon, badge, veVyvoji }) => (
             <li key={href}>
               <Link
                 href={href}
@@ -121,6 +123,7 @@ export default async function SettingsPage() {
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="font-medium text-ink">{title}</span>
                     {badge ? <Badge color="var(--success)">{badge}</Badge> : null}
+                    {veVyvoji ? <Badge color="var(--warning)">ve vývoji</Badge> : null}
                   </span>
                   <span className="block truncate text-sm text-ink-muted">{description}</span>
                 </span>

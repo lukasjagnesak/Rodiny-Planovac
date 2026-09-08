@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { Alert } from "@/components/ui/misc";
 import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
 import { GoogleSettings } from "@/components/settings/google-settings";
@@ -33,6 +34,17 @@ export default async function GoogleSettingsPage({
       >
         <ChevronLeft className="h-4 w-4" /> Nastavení
       </Link>
+
+      {/* Řečeno rovnou a předem. Rodič, který ví, že je funkce
+          rozpracovaná, počká; ten, komu se to rozbije bez varování,
+          odejde a už se nevrátí. */}
+      <Alert tone="warning">
+        <strong>Tahle část je ve vývoji.</strong>{" "}
+        Propojení s Google kalendářem je zatím rozpracované. Události z Klidoo se do něj přenášejí, ale opačným směrem to nefunguje a synchronizace může občas zaostávat. Kdyby něco nesedělo, napiš na <a href="mailto:info@klidoo.cz" className="underline underline-offset-2">
+          info@klidoo.cz
+        </a>
+        .
+      </Alert>
 
       <GoogleSettings
         account={(data as GoogleAccount | null) ?? null}

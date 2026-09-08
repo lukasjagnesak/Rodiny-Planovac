@@ -4,6 +4,7 @@ import { createAdminClient } from "./supabase/admin";
 import { chybejiciTerminy, type Frekvence } from "./opakovani";
 import { vyhodnot, type Predplatne } from "./predplatne-pravidla";
 import { toDateKey } from "./dates";
+import { ohlas } from "./poplach";
 
 /**
  * Generování výdajů z opakovaných šablon.
@@ -106,7 +107,10 @@ export async function vygenerujOpakovaneVydaje(
 
       // 23505 = ten den už z téhle šablony existuje. Přesně proto ten index.
       if (error && error.code !== "23505") {
-        console.error("[opakovane] vytvoření výdaje selhalo", radek.id, den, error.message);
+        await ohlas(error.message, {
+          kde: "opakovane/vydaj",
+          detaily: { predpis: radek.id, den },
+        });
         continue;
       }
 

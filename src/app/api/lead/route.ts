@@ -1,36 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
 
 /**
  * Sběr kontaktů z veřejného webu.
  *
- * Stejná pojistka proti zaplavení jako u kalkulačky: v paměti procesu,
- * po restartu zapomene. Na veřejný formulář to stačí, není za čím se
- * schovat a nechci kvůli tomu tahat další službu.
+ * Pojistka proti zaplavení je společná pro všechny veřejné koncové body
+ * — viz `lib/limit.ts`. Patnáct odeslání za hodinu je nad rámec toho,
+ * co udělá člověk, a pod tím, co stihne robot.
  */
-const POKUSY = new Map<string, { pocet: number; od: number }>();
-const OKNO_MS = 60 * 60 * 1000;
-const MAX_ZA_HODINU = 15;
-
-function prekrocilLimit(ip: string): boolean {
-  const ted = Date.now();
-  const zaznam = POKUSY.get(ip);
-
-  if (!zaznam || ted - zaznam.od > OKNO_MS) {
-    POKUSY.set(ip, { pocet: 1, od: ted });
-    return false;
-  }
-
-  zaznam.pocet += 1;
-
-  if (POKUSY.size > 5000) {
-    for (const [klic, hodnota] of POKUSY) {
-      if (ted - hodnota.od > OKNO_MS) POKUSY.delete(klic);
-    }
-  }
-
-  return zaznam.pocet > MAX_ZA_HODINU;
-}
+const LIMIT = new Limit(15, HODINA);
 
 function text(hodnota: unknown, maxDelka: number): string | null {
   if (typeof hodnota !== "string") return null;
@@ -39,12 +18,7 @@ function text(hodnota: unknown, maxDelka: number): string | null {
 }
 
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    request.headers.get("x-real-ip") ??
-    "neznámá";
-
-  if (prekrocilLimit(ip)) {
+  if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
     return NextResponse.json(
       { error: "Zkoušíš to moc často. Dej tomu chvilku." },
       { status: 429 },

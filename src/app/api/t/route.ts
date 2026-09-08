@@ -1,7 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DRUHY, otiskNavstevnika, zarizeniZProhlizece, zaznamenej } from "@/lib/provoz";
+import { klicVolajiciho, Limit, MINUTA } from "@/lib/limit";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Každá událost je zápis do databáze, takže tenhle koncový bod je ze
+ * všech veřejných ten nejlákavější — nafouknout někomu statistiky
+ * a zaplnit tabulku jde jedním cyklem v konzoli.
+ *
+ * Šedesát událostí za minutu je nad tím, co nasbírá i rychlé proklikání
+ * webu, a hluboko pod tím, co za minutu pošle skript.
+ */
+const LIMIT = new Limit(60, MINUTA);
 
 /**
  * Sběrné místo měření. Krátká cesta schválně — `/api/analytics` blokují
@@ -29,10 +40,14 @@ export async function POST(request: NextRequest) {
       return new NextResponse(null, { status: 204 });
     }
 
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      request.headers.get("x-real-ip");
+    const ip = klicVolajiciho(request.headers);
     const ua = request.headers.get("user-agent");
+
+    // Odmítnutí vypadá stejně jako přijetí: měření nemá útočníkovi
+    // říkat, jestli se trefil.
+    if (LIMIT.prekrocen(ip ?? "neznámá")) {
+      return new NextResponse(null, { status: 204 });
+    }
 
     // Roboti si stránky prohlížejí taky, ale do trychtýře nepatří.
     if (ua && /bot|crawler|spider|preview|monitor|curl|wget/i.test(ua)) {

@@ -4,6 +4,7 @@ import { syncAllCalendars } from "@/lib/google-sync";
 import { INTERVAL_HODIN, stahniZmeskane } from "@/lib/edupage-sync";
 import { posliPripominkyPredplatneho } from "@/lib/predplatne-pripominky";
 import { vygenerujOpakovaneVydaje } from "@/lib/vydaje-opakovane";
+import { ohlas } from "@/lib/poplach";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -82,6 +83,19 @@ export async function GET(request: NextRequest) {
   }
 
   report.durationMs = Date.now() - started;
+
+  // Cron běží bez diváka: odpověď si nikdo nečte a chyby z jednotlivých
+  // kroků dosud končily jen v tomhle JSONu. Když se něco pokazí, musí
+  // to přijít e-mailem — jinak se to pozná až tím, že rodině nedorazila
+  // připomínka nebo se nevygeneroval opakovaný výdaj.
+  const potize = Object.entries(report).filter(([klic]) => klic.endsWith("Error"));
+  if (potize.length > 0) {
+    await ohlas(potize.map(([klic, hodnota]) => `${klic}: ${hodnota}`).join("\n"), {
+      kde: "cron/reminders",
+      detaily: report,
+    });
+  }
+
   return NextResponse.json(report);
 }
 

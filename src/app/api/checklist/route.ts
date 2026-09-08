@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
 import { vytvorDocx, type Odstavec } from "@/lib/docx";
 import {
   CHECKLIST_PATA,
@@ -14,7 +15,21 @@ import {
  * dvakrát, rozejde se to při první úpravě a lidem přijde něco jiného,
  * než co si přečetli.
  */
-export function GET() {
+/**
+ * Skládání dokumentu stojí procesor, a jde o to samé soubor pořád
+ * dokola. Třicet stažení za hodinu pokryje i člověka, který si to
+ * rozmyslí a stáhne znovu.
+ */
+const LIMIT = new Limit(30, HODINA);
+
+export function GET(request: NextRequest) {
+  if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
+    return NextResponse.json(
+      { error: "Zkoušíš to moc často. Dej tomu chvilku." },
+      { status: 429 },
+    );
+  }
+
   const odstavce: Odstavec[] = [
     { druh: "nadpis1", text: CHECKLIST_TITULEK },
     { druh: "text", text: CHECKLIST_UVOD },
