@@ -25,7 +25,7 @@ import re
 import socket
 import time as _cas
 from datetime import date, datetime, timedelta
-from typing import Any, Iterator, Optional
+from typing import Any, Callable, Iterator, NamedTuple, Optional
 
 import urllib3.util.connection as _urllib3_spojeni
 from edupage_api import Edupage
@@ -170,48 +170,143 @@ def obnov_kontext(edupage: Edupage) -> None:
         log.warning("obnovení kontextu po přepnutí selhalo: %s", chyba)
 
 
-def po_detech(edupage: Edupage, deti: list[int]) -> Iterator[tuple[Optional[int], list[str]]]:
+def popis_vyjimky(chyba: BaseException) -> str:
+    """
+    Text výjimky i tehdy, když žádný nemá.
+
+    `UnknownServerError()` z knihovny se vyhazuje bez argumentu, takže
+    `str(chyba)` je prázdný řetězec — a v logu pak stálo „přepnutí
+    selhalo:" a za tím nic. Hledalo se to podle toho zbytečně dlouho.
+    """
+    text = str(chyba).strip()
+    return f"{type(chyba).__name__}: {text}" if text else type(chyba).__name__
+
+
+class Krok(NamedTuple):
+    """
+    Jedno kolo procházení dětí.
+
+    `stahovat` je `False`, když se na dítě nepovedlo přepnout. Volající
+    má i tak převzít `chyby` — dřív se u nepovedeného dítěte jen zapsal
+    řádek do logu a smyčka pokračovala dál, takže aplikace o problému
+    nevěděla a rodič viděl úspěšné stažení bez poloviny dat.
+    """
+
+    dite: Optional[int]
+    chyby: list[str]
+    edupage: Edupage
+    stahovat: bool
+
+
+def po_detech(
+    edupage: Edupage,
+    deti: list[int],
+    prihlas_znovu: Optional[Callable[[], Edupage]] = None,
+) -> Iterator[Krok]:
     """
     Projde postupně všechny děti a mezi nimi přepne účet.
 
-    Vrací dvojici (ID dítěte, chyby). Když seznam dětí prázdný je, projde
+    Vrací `Krok`. Účet je jeho součástí proto, že se po cestě může
+    vyměnit za nový — kdyby si ho volající nepřevzal, stahoval by dál
+    propadlým sezením. Když je seznam dětí prázdný, projde
     se účet tak, jak je — to je případ žákovského účtu. Chyba u jednoho
     dítěte neshodí ostatní; vrátí se v seznamu a plánovač ji ukáže.
+
+    Přepnutí se zkouší třemi cestami po sobě, protože každá u některé
+    školy selhává:
+
+    1. **Rovnou na dítě.** Sezení pořád patří rodiči, takže `switchchild`
+       obvykle projde i z kontextu jiného dítěte.
+    2. **Přes rodiče.** Vrátit kontext rodiče do paměti a projít
+       `switch_to_parent()`. Tohle bývalo jediné, co se dělalo — jenže
+       EduPage na `edupageChange` u některých účtů odpoví přesměrováním
+       na `EdupageLoginFailed` a knihovna z toho udělá výjimku bez textu.
+    3. **Přihlásit se znovu.** Nejdražší a nejspolehlivější. Nové sezení
+       je zaručeně rodičovské a `switchchild` na něm projde vždycky.
+
+    Bez té třetí cesty tu byla rodina se dvěma dětmi, které se druhé
+    dítě nestahovalo vůbec — a v logu k tomu byla prázdná chyba.
     """
     if not deti:
-        yield None, []
+        yield Krok(None, [], edupage, True)
         return
 
     rodic = je_rodic(edupage)
-
-    # Kontext rodiče se schová dřív, než ho přepíše první dítě.
-    #
-    # `switch_to_parent()` se v knihovně ptá, jestli je přihlášený rodič,
-    # a ptá se `edupage.data["userid"]` — tedy toho, co je zrovna v paměti.
-    # `obnov_kontext()` tam po přepnutí na dítě vloží identitu dítěte, takže
-    # od druhého dítěte dál by cesta zpátky k rodiči skončila výjimkou
-    # „nejsi rodič". Chyba se zachytí, dítě se přeskočí — a rodina se dvěma
-    # dětmi tak dostala rozvrh i zprávy jen pro to první.
     kontext_rodice = (
         (edupage.data, getattr(edupage, "gsec_hash", None)) if rodic else None
     )
 
     for index, dite in enumerate(deti):
         chyby: list[str] = []
+
+        if index > 0:
+            edupage, potiz = prepni_na_dite(
+                edupage, dite, kontext_rodice, prihlas_znovu
+            )
+            if potiz:
+                log.warning("přepnutí na dítě %s selhalo: %s", dite, potiz)
+                chyby.append(f"dítě {dite}: přepnutí selhalo ({potiz})")
+                yield Krok(dite, chyby, edupage, False)
+                continue
+        else:
+            try:
+                edupage.switch_to_child(dite)
+                obnov_kontext(edupage)
+            except Exception as chyba:  # noqa: BLE001
+                potiz = popis_vyjimky(chyba)
+                log.warning("přepnutí na dítě %s selhalo: %s", dite, potiz)
+                chyby.append(f"dítě {dite}: přepnutí selhalo ({potiz})")
+                yield Krok(dite, chyby, edupage, False)
+                continue
+
+        yield Krok(dite, chyby, edupage, True)
+
+
+def prepni_na_dite(
+    edupage: Edupage,
+    dite: int,
+    kontext_rodice: Optional[tuple],
+    prihlas_znovu: Optional[Callable[[], Edupage]],
+) -> tuple[Edupage, Optional[str]]:
+    """
+    Zkusí tři cesty k dítěti a vrátí (účet, chyba). Chyba je `None`,
+    když se to povedlo — účet přitom může být nový, pokud se muselo
+    přihlásit znovu.
+    """
+    potize: list[str] = []
+
+    # 1) Rovnou. Nejlevnější a u většiny škol to stačí.
+    try:
+        edupage.switch_to_child(dite)
+        obnov_kontext(edupage)
+        return edupage, None
+    except Exception as chyba:  # noqa: BLE001
+        potize.append(f"přímo: {popis_vyjimky(chyba)}")
+
+    # 2) Oklikou přes rodiče.
+    if kontext_rodice is not None:
         try:
-            # Mezi dětmi se musí projít přes rodiče, přímé přepnutí
-            # z dítěte na dítě EduPage nenabízí.
-            if kontext_rodice is not None and index > 0:
-                edupage.data, edupage.gsec_hash = kontext_rodice
-                edupage.switch_to_parent()
+            edupage.data, edupage.gsec_hash = kontext_rodice
+            edupage.switch_to_parent()
             edupage.switch_to_child(dite)
             obnov_kontext(edupage)
+            return edupage, None
         except Exception as chyba:  # noqa: BLE001
-            log.warning("přepnutí na dítě %s selhalo: %s", dite, chyba)
-            chyby.append(f"dítě {dite}: přepnutí selhalo ({chyba})")
-            continue
+            potize.append(f"přes rodiče: {popis_vyjimky(chyba)}")
 
-        yield dite, chyby
+    # 3) Nové přihlášení. Stojí to dva požadavky navíc, ale sezení je
+    #    pak zaručeně rodičovské.
+    if prihlas_znovu is not None:
+        try:
+            cerstvy = prihlas_znovu()
+            cerstvy.switch_to_child(dite)
+            obnov_kontext(cerstvy)
+            log.info("dítě %s vyžadovalo nové přihlášení", dite)
+            return cerstvy, None
+        except Exception as chyba:  # noqa: BLE001
+            potize.append(f"nové přihlášení: {popis_vyjimky(chyba)}")
+
+    return edupage, "; ".join(potize)
 
 
 def cas(hodnota: Any) -> Optional[str]:
@@ -610,11 +705,16 @@ def ukoly(data: DotazUkoly, x_sidecar_secret: str = Header(default="")) -> dict:
     # pak chyba tři kola dokola.
     po_detech_pocty: dict[str, dict] = {}
 
-    for dite_id, potize in po_detech(edupage, data.deti):
-        chyby.extend(potize)
+    for krok in po_detech(edupage, data.deti, lambda: prihlas(data)):
+        dite_id, edupage = krok.dite, krok.edupage
+        chyby.extend(krok.chyby)
         klic = str(dite_id)
         zaznam = {"udalosti": 0, "polozky": 0}
         po_detech_pocty[klic] = zaznam
+
+        if not krok.stahovat:
+            zaznam["chyba"] = "přepnutí selhalo"
+            continue
 
         try:
             udalosti = edupage.get_notification_history(od)
@@ -945,11 +1045,16 @@ def rozvrh(data: DotazRozvrh, x_sidecar_secret: str = Header(default="")) -> dic
 
     po_detech_pocty: dict[str, dict] = {}
 
-    for dite_id, potize in po_detech(edupage, data.deti):
-        chyby.extend(potize)
+    for krok in po_detech(edupage, data.deti, lambda: prihlas(data)):
+        dite_id, edupage = krok.dite, krok.edupage
+        chyby.extend(krok.chyby)
         zacatek_ditete = _cas.monotonic()
         pocty_ditete = {"zdroj": "nic", "dnu": 0, "hodin": 0}
         po_detech_pocty[str(dite_id)] = pocty_ditete
+
+        if not krok.stahovat:
+            pocty_ditete["zdroj"] = "přepnutí selhalo"
+            continue
 
         # Tři cesty od nejlevnější po nejpomalejší: nástěnka jedním
         # dotazem, jiné rozhraní taky jedním dotazem, a nakonec den po dni.

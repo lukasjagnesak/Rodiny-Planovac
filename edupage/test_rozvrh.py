@@ -304,10 +304,10 @@ def falesne_plany_rozsahem(edupage, od, do):
     return {od.isoformat(): {"plan": [1]}}
 
 
-def falesne_po_detech(edupage, deti):
+def falesne_po_detech(edupage, deti, prihlas_znovu=None):
     for dite in deti:
         edupage.aktualni_dite = dite
-        yield dite, []
+        yield modul.Krok(dite, [], edupage, True)
 
 
 try:

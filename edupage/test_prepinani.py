@@ -12,6 +12,16 @@ Ty dvě věci se potkaly: od druhého dítěte dál skončil `switch_to_parent()
 výjimkou „nejsi rodič", dítě se přeskočilo a rodina se dvěma dětmi dostala
 rozvrh i zprávy jen pro to první.
 
+Po opravě stráže se ukázalo, že návrat k rodiči selhává i sám o sobě —
+EduPage na `edupageChange` u některých účtů odpoví přesměrováním na
+`EdupageLoginFailed` a knihovna z toho udělá `UnknownServerError()` bez
+argumentu, tedy výjimku s prázdným textem. V logu pak stálo „přepnutí
+selhalo:" a za tím nic.
+
+Přepnutí se proto zkouší třemi cestami: rovnou, přes rodiče a nakonec
+novým přihlášením. Testy níž hlídají všechny tři a taky to, že se prázdná
+výjimka nikdy nezaloguje jako prázdná.
+
 Spuštění:  python edupage/test_prepinani.py
 """
 
@@ -31,6 +41,11 @@ def ok(popis, podminka):
 
 class NeniRodic(Exception):
     pass
+
+
+class PrazdnaVyjimka(Exception):
+    """Napodobuje `UnknownServerError()` z knihovny — vyhozená bez
+    argumentu, takže `str()` je prázdný řetězec."""
 
 
 class FalesnyEdupage:
@@ -75,17 +90,19 @@ try:
     modul.Login = FalesnyLogin
 
     edu = FalesnyEdupage()
-    prosla = [(dite, chyby) for dite, chyby in modul.po_detech(edu, [11, 22])]
+    prosla = [(k.dite, k.chyby) for k in modul.po_detech(edu, [11, 22]) if k.stahovat]
 
     ok("projdou obě děti", [d for d, _ in prosla] == [11, 22])
     ok("žádné dítě nehlásí chybu", all(not chyby for _, chyby in prosla))
-    ok("mezi dětmi se šlo přes rodiče", edu.navstivene == [11, "rodic", 22])
+    # Přímá cesta stačí, takže se k rodiči vůbec nechodí. Ta oklika je
+    # záloha, ne první volba — a právě ona v produkci selhávala.
+    ok("když jde přepnout rovnou, přes rodiče se nechodí", edu.navstivene == [11, 22])
 
     print("── a se třemi, ať to není náhoda ──")
     edu3 = FalesnyEdupage()
-    prosla3 = [d for d, _ in modul.po_detech(edu3, [1, 2, 3])]
+    prosla3 = [k.dite for k in modul.po_detech(edu3, [1, 2, 3]) if k.stahovat]
     ok("projdou všechny tři", prosla3 == [1, 2, 3])
-    ok("k rodiči se chodí mezi každou dvojicí", edu3.navstivene.count("rodic") == 2)
+    ok("a pořád bez okliky", edu3.navstivene == [1, 2, 3])
 
     print("── kontext dítěte se pořád obnovuje ──")
     edu2 = FalesnyEdupage()
@@ -104,13 +121,63 @@ try:
             super().switch_to_child(dite)
 
     edu4 = EdupageSRozbitymDitetem()
-    prosla4 = [(d, ch) for d, ch in modul.po_detech(edu4, [11, 22, 33])]
+    prosla4 = [(k.dite, k.chyby) for k in modul.po_detech(edu4, [11, 22, 33]) if k.stahovat]
     ok("rozbité dítě se přeskočí", [d for d, _ in prosla4] == [11, 33])
     ok("a to poslední se pořád stáhne", 33 in [d for d, _ in prosla4])
 
+    print("── když přímé přepnutí nejde, jde se přes rodiče ──")
+
+    class BezPrimeho(FalesnyEdupage):
+        """Škola, u které `switchchild` z kontextu dítěte neprojde."""
+
+        def switch_to_child(self, dite):
+            if self.data["userid"].startswith("Student"):
+                raise RuntimeError("nelze z dítěte")
+            super().switch_to_child(dite)
+
+    edu6 = BezPrimeho()
+    prosla6 = [k.dite for k in modul.po_detech(edu6, [11, 22]) if k.stahovat]
+    ok("obě děti se stáhnou i tak", prosla6 == [11, 22])
+    ok("a to přes rodiče", "rodic" in edu6.navstivene)
+
+    print("── když selže i rodič, přihlásí se znovu ──")
+
+    class BezRodice(BezPrimeho):
+        """Tohle je přesně produkční případ: `edupageChange` skončí
+        `UnknownServerError()` bez textu."""
+
+        def switch_to_parent(self):
+            raise PrazdnaVyjimka()
+
+    edu7 = BezRodice()
+    novy = FalesnyEdupage()
+    prosla7 = [k.dite for k in modul.po_detech(edu7, [11, 22], lambda: novy) if k.stahovat]
+    ok("druhé dítě projde po novém přihlášení", prosla7 == [11, 22])
+    ok("a jelo se na čerstvém účtu", novy.navstivene == [22])
+
+    print("── bez možnosti přihlásit se znovu ──")
+    edu8 = BezRodice()
+    vysledek8 = [(k.dite, k.chyby, k.stahovat) for k in modul.po_detech(edu8, [11, 22])]
+    ok("druhé dítě se nestahuje", [d for d, _, ok_ in vysledek8 if ok_] == [11])
+    {
+        # Chyba musí říct, co se zkoušelo — jinak se to hledá podle
+        # prázdného řádku v logu, jako minule.
+    }
+    chyba22 = next(ch for d, ch, _ in vysledek8 if d == 22)
+    ok("nepovedené dítě se ohlásí, ne jen zaloguje", len(chyba22) == 1)
+    ok("chyba jmenuje obě cesty", "přímo" in chyba22[0] and "přes rodiče" in chyba22[0])
+    ok("a nikdy není prázdná", "PrazdnaVyjimka" in chyba22[0])
+
+    print("── prázdná výjimka se nezaloguje jako prázdná ──")
+    ok("název třídy zůstane", modul.popis_vyjimky(PrazdnaVyjimka()) == "PrazdnaVyjimka")
+    ok(
+        "s textem se text připojí",
+        modul.popis_vyjimky(RuntimeError("rozbité")) == "RuntimeError: rozbité",
+    )
+
     print("── žákovský účet nic nepřepíná ──")
     edu5 = FalesnyEdupage()
-    ok("bez dětí projde účet tak, jak je", [d for d, _ in modul.po_detech(edu5, [])] == [None])
+    ok("bez dětí projde účet tak, jak je", [k.dite for k in modul.po_detech(edu5, [])] == [None])
     ok("a nikam se nepřepíná", edu5.navstivene == [])
 finally:
     modul.Login = puvodni_login
