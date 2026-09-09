@@ -52,18 +52,25 @@ const SECONDARY = [
 ];
 
 /**
- * Na mobilu se do spodní lišty vejdou čtyři záložky a pátá je „Víc“.
- * Pět položek vedle sebe se na užších telefonech ořízne a zbytek aplikace
- * — rozvrh, kontakty, doklady, pozvánky, nastavení — se stane
- * nedosažitelným. Proto tudy vede cesta úplně všude.
- */
-/**
- * Do spodní lišty se vejdou čtyři. Vybírají se podle toho, co rodič
- * otevírá denně — kroužky a události se řeší jednou za čas, takže patří
- * pod „Víc".
+ * Do spodní lišty se vejdou čtyři a pátá je „Víc". Pět položek vedle sebe
+ * se na užších telefonech ořízne, takže pod „Víc" musí vést cesta úplně
+ * všude — jinak je část aplikace na mobilu nedosažitelná.
+ *
+ * Vybírají se podle toho, co rodič otevírá denně; kroužky a události se
+ * řeší jednou za čas, a patří proto pod „Víc".
  */
 const MOBIL_HLAVNI = [NAV[0], NAV[2], NAV[1], NAV[4]];
-const MOBIL_ZBYTEK = [NAV[3], ...SECONDARY];
+
+/**
+ * Všechno ostatní. Dopočítává se schválně, ručně psaný seznam tu byl
+ * a zapomněl Události — na mobilu se na ně kvůli tomu nedalo dostat
+ * vůbec, ani přes „Víc". Takhle nová položka v `NAV` propadne do panelu
+ * sama a zapomenout na ni nejde.
+ */
+const MOBIL_ZBYTEK = [
+  ...NAV.filter((polozka) => !MOBIL_HLAVNI.includes(polozka)),
+  ...SECONDARY,
+];
 
 function useActive(href: string) {
   const pathname = usePathname();

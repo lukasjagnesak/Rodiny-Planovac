@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { AppShell } from "@/components/app-shell";
 import { Dashboard } from "@/components/dashboard/dashboard";
 
 /**
@@ -14,6 +15,11 @@ import { Dashboard } from "@/components/dashboard/dashboard";
  * opravdový prohlížeč v opravdové šířce. Aby to šlo změřit, musí být
  * přehled dosažitelný bez přihlášení a bez databáze — od toho je tahle
  * stránka. Měří ji `tests/mobil.browser.test.js`.
+ *
+ * Kreslí se i s obalem aplikace, ne jen samotný přehled. Navigace je
+ * druhé místo, kde se chyby poznají až na telefonu: spodní lišta pojme
+ * čtyři položky a zbytek je pod „Víc", takže položka, která vypadne
+ * z obou seznamů, prostě zmizí. Přesně to se stalo Událostem.
  *
  * V ostrém provozu neexistuje: `notFound()` níž. Data jsou smyšlená,
  * ale schválně nepohodlná — dlouhá jména, dlouhé názvy výdajů a
@@ -101,10 +107,8 @@ const ukoly: any = [
 export default function NahledMobil() {
   if (process.env.NODE_ENV === "production") notFound();
 
-  // Stejný obal jako `AppShell`, jinak by se měřila jiná šířka než ta,
-  // ve které přehled doopravdy žije.
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-4 sm:px-6 lg:pb-10 lg:pt-6">
+    <AppShell session={session} novychOznameni={2} neprectenychZprav={1} spravce={false}>
       <Dashboard
         session={session}
         kroky={[]}
@@ -118,6 +122,6 @@ export default function NahledMobil() {
         rozvrhZmeny={[]}
         ukoly={ukoly}
       />
-    </main>
+    </AppShell>
   );
 }
