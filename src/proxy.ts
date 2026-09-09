@@ -89,25 +89,35 @@ export async function proxy(request: NextRequest) {
   // Obnovení session — musí proběhnout před jakýmkoli rozhodnutím o přesměrování.
   // Když je Supabase nedostupná, nechceme shodit celou aplikaci: tváříme se
   // jako nepřihlášený uživatel a stránka se sama postará o chybovou hlášku.
-  let user = null;
+  //
+  // `getClaims()` ověří podpis tokenu rovnou tady, bez volání Supabase —
+  // u projektu s asymetrickými klíči je to čistě místní výpočet. Tohle
+  // běží u KAŽDÉHO požadavku včetně předstahování odkazů, takže jedno
+  // ušetřené volání po síti je znát na každém kliknutí.
+  //
+  // Bezpečnost tím netrpí: tohle rozhodnutí jen posílá nepřihlášeného
+  // na přihlašovací stránku. Kdo se dostane dál, projde `requireSession()`
+  // a hlavně pravidly v databázi, která ho k cizím datům nepustí ani
+  // s platným tokenem.
+  let prihlaseny = false;
   try {
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
+    const { data } = await supabase.auth.getClaims();
+    prihlaseny = Boolean(data?.claims.sub);
   } catch {
-    user = null;
+    prihlaseny = false;
   }
 
   const path = request.nextUrl.pathname;
   const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
 
-  if (!user && !isPublic) {
+  if (!prihlaseny && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/prihlaseni";
     url.searchParams.set("dal", path);
     return NextResponse.redirect(url);
   }
 
-  if (user && (path === "/prihlaseni" || path === "/registrace")) {
+  if (prihlaseny && (path === "/prihlaseni" || path === "/registrace")) {
     const url = request.nextUrl.clone();
     url.pathname = "/prehled";
     url.search = "";

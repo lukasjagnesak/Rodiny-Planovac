@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
@@ -9,20 +10,33 @@ import type { Child, Family, FamilyMember, Profile, SessionContext } from "./typ
 /**
  * Načte kompletní kontext přihlášeného uživatele.
  * Přesměruje na přihlášení nebo na onboarding, pokud kontext chybí.
+ *
+ * Obalené v `cache()`, protože tohle volá jak rozvržení aplikace, tak
+ * skoro každá stránka pod ním. Bez toho běželo celé načtení dvakrát za
+ * jeden požadavek — dvě ověření přihlášení a šest dotazů navíc, které
+ * pokaždé vrátily totéž. `cache()` platí jen v rámci jednoho požadavku,
+ * takže se tím nic nezastarává; jen se nedělá stejná práce dvakrát.
  */
-export async function requireSession(): Promise<SessionContext> {
+export const requireSession = cache(async function requireSession(): Promise<SessionContext> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // `getClaims()` místo `getUser()`: podpis tokenu se dá u projektů
+  // s asymetrickými klíči ověřit rovnou tady, bez volání Supabase. Když
+  // projekt podepisuje starým sdíleným tajemstvím, spadne to uvnitř zpět
+  // na `getUser()`, takže to nikdy není horší — jen to zrychlí, jakmile
+  // se klíče v Supabase přepnou.
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
+  const userEmail = typeof claims?.claims.email === "string" ? claims.claims.email : null;
 
-  if (!user) redirect("/prihlaseni");
+  if (!userId) redirect("/prihlaseni");
 
-  const { data: memberships } = await supabase
-    .from("family_members")
-    .select("*, family:families(*)")
-    .eq("user_id", user.id);
+  // Profil nezávisí na tom, ve které rodině člověk je, takže nemá na co
+  // čekat. Dřív se načítal až ve třetí vlně dotazů.
+  const [{ data: memberships }, { data: profile }] = await Promise.all([
+    supabase.from("family_members").select("*, family:families(*)").eq("user_id", userId),
+    supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+  ]);
 
   if (!memberships || memberships.length === 0) {
     redirect("/vitejte");
@@ -33,7 +47,7 @@ export async function requireSession(): Promise<SessionContext> {
   const active = memberships.find((m) => m.family_id === preferred) ?? memberships[0];
   const family = active.family as unknown as Family;
 
-  const [{ data: rawMembers }, { data: children }, { data: profile }] = await Promise.all([
+  const [{ data: rawMembers }, { data: children }] = await Promise.all([
     supabase
       .from("family_members")
       .select("*, profile:profiles(*)")
@@ -45,7 +59,6 @@ export async function requireSession(): Promise<SessionContext> {
       .eq("family_id", family.id)
       .eq("archived", false)
       .order("birth_date", { nullsFirst: false }),
-    supabase.from("profiles").select("*").eq("id", user.id).single(),
   ]);
 
   const members = ((rawMembers ?? []) as unknown as (FamilyMember & {
@@ -53,12 +66,12 @@ export async function requireSession(): Promise<SessionContext> {
   })[]).map(toMemberView);
 
   return {
-    userId: user.id,
+    userId,
     profile:
-      (profile as Profile) ?? {
-        id: user.id,
-        full_name: user.email ?? "",
-        email: user.email ?? null,
+      (profile as Profile | null) ?? {
+        id: userId,
+        full_name: userEmail ?? "",
+        email: userEmail,
         avatar_url: null,
         phone: null,
         color: "#3f74e0",
@@ -74,6 +87,6 @@ export async function requireSession(): Promise<SessionContext> {
       name: (m.family as unknown as Family).name,
     })),
   };
-}
+});
 
 export { ACTIVE_FAMILY_COOKIE } from "./members";
