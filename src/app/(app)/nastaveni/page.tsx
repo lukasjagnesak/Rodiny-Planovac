@@ -50,7 +50,7 @@ export default async function SettingsPage() {
 
   const links = [
     {
-      href: "/nastaveni/predplatne",
+      href: "/predplatne",
       title: "Předplatné",
       description: "Tarif, platba a faktury",
       Icon: CreditCard,

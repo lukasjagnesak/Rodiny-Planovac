@@ -425,6 +425,16 @@
   .animate-pop-in {
     animation: rp-pop-in 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
   }
+  /* Karusel se posouvá prstem nebo šipkami; vodorovný posuvník pod ním
+     by jen rozbíjel rytmus stránky. Obsah zůstává dosažitelný klávesnicí,
+     protože pás má `tabIndex` a dá se v něm listovat. */
+  .bez-posuvniku {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .bez-posuvniku::-webkit-scrollbar {
+    display: none;
+  }
   .skeleton {
     background: linear-gradient(
       90deg,

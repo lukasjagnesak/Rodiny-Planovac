@@ -2,7 +2,19 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Baby, Check, Copy, Mail, Plus, Send, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Baby,
+  Check,
+  Copy,
+  CreditCard,
+  Mail,
+  Plus,
+  Send,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
@@ -16,6 +28,8 @@ import { startOfWeek } from "date-fns";
 import { WEEK_OPTS } from "@/lib/dates";
 import type { PatternKind } from "@/lib/types";
 import { zmer } from "@/lib/mereni";
+import { VolbaTarifu } from "@/components/predplatne/volba-tarifu";
+import { ZKUSEBNI_DNI } from "@/lib/tarify";
 
 interface ChildDraft {
   name: string;
@@ -31,7 +45,7 @@ interface ChildDraft {
  * je to dohoda. Zároveň ale nesmí stát v cestě k první hodnotě: rodič se
  * nejdřív musí podívat na hotový kalendář, teprve pak má co posílat dál.
  */
-const STEPS = ["Rodina", "Děti", "Střídání", "Druhý rodič"];
+const STEPS = ["Rodina", "Děti", "Střídání", "Druhý rodič", "Platba"];
 const POSLEDNI_NASTAVENI = 2;
 
 /** Zadání přenesené z veřejné kalkulačky. */
@@ -46,10 +60,13 @@ export interface PredvyplnenoZKalkulacky {
 export function OnboardingWizard({
   defaultName,
   predvyplneno,
+  branaJede,
 }: {
   defaultName: string;
   /** Když člověk přišel z kalkulačky, střídání už má vyplněné. */
   predvyplneno?: PredvyplnenoZKalkulacky | null;
+  /** Je platební brána nastavená? Bez ní nemá smysl nabízet placení. */
+  branaJede: boolean;
 }) {
   const router = useRouter();
   const [step, setStep] = React.useState(0);
@@ -422,7 +439,12 @@ export function OnboardingWizard({
             familyId={zalozenaRodina}
             jmeno={otherName}
             strana={mySide === "a" ? "b" : "a"}
+            dal={() => setStep(4)}
           />
+        ) : null}
+
+        {step === 4 && zalozenaRodina ? (
+          <VolbaPlatby familyId={zalozenaRodina} branaJede={branaJede} />
         ) : null}
 
         {error ? <Alert tone="danger">{error}</Alert> : null}
@@ -577,12 +599,14 @@ function PozvaniDruhehoRodice({
   familyId,
   jmeno,
   strana,
+  dal,
 }: {
   familyId: string;
   jmeno: string;
   strana: "a" | "b";
+  /** Kam se jde dál — na krok s platbou, ne rovnou do aplikace. */
+  dal: () => void;
 }) {
-  const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [odkaz, setOdkaz] = React.useState<string | null>(null);
   const [emailem, setEmailem] = React.useState(false);
@@ -623,11 +647,6 @@ function PozvaniDruhehoRodice({
     setBusy(false);
     setEmailem(poslano);
     setOdkaz(`${window.location.origin}/pozvanka/${data.token}`);
-  }
-
-  function dal() {
-    router.push("/prehled");
-    router.refresh();
   }
 
   return (
@@ -715,6 +734,107 @@ function PozvaniDruhehoRodice({
   );
 }
 
+
+/**
+ * Poslední krok: kdy zaplatit.
+ *
+ * Nabídnout zaplacení hned má smysl — část lidí to chce mít z hlavy
+ * a zpátky se k tomu nikdy nedokope. Postavit to ale jako podmínku
+ * vstupu by bylo proti tomu, co slibuje celý web: třicet dní zdarma
+ * a bez karty.
+ *
+ * Proto je zvýrazněné pokračování do aplikace a placení je rovnocenná,
+ * ale druhá volba. Kdo si aplikaci neprošel, nemá jak vědět, jestli za
+ * ni chce platit — a předčasně vytažená karta je nejrychlejší způsob,
+ * jak z registrace udělat vrácenou platbu.
+ */
+function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boolean }) {
+  const router = useRouter();
+  const [platit, setPlatit] = React.useState(false);
+
+  const konecZkusebni = new Date();
+  konecZkusebni.setDate(konecZkusebni.getDate() + ZKUSEBNI_DNI);
+  const datum = konecZkusebni.toLocaleDateString("cs-CZ");
+
+  function doAplikace() {
+    zmer("onboarding-bez-karty");
+    router.push("/prehled");
+    router.refresh();
+  }
+
+  return (
+    <>
+      <div>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+          <ShieldCheck className="h-6 w-6" />
+        </div>
+        <h1 className="mt-3 text-center text-lg font-semibold text-ink">
+          Hotovo. Teď {ZKUSEBNI_DNI} dní zdarma.
+        </h1>
+        <p className="mt-1 text-center text-sm text-ink-muted">
+          Zkušební období běží do <strong className="text-ink">{datum}</strong>. Kartu k němu
+          nepotřebuješ a nic se samo nestrhne — tři dny předem se ozveme.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <Button size="lg" className="w-full" onClick={doAplikace}>
+          Prohlédnout aplikaci <ArrowRight className="h-4 w-4" />
+        </Button>
+
+        {branaJede && !platit ? (
+          <>
+            <div className="flex items-center gap-3 py-1" aria-hidden>
+              <span className="h-px flex-1 bg-line" />
+              <span className="text-xs font-medium uppercase tracking-wider text-ink-subtle">
+                nebo
+              </span>
+              <span className="h-px flex-1 bg-line" />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                zmer("onboarding-karta-hned");
+                setPlatit(true);
+              }}
+              className="flex w-full items-start gap-3 rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-brand"
+            >
+              <CreditCard className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
+              <span>
+                <span className="block font-medium text-ink">Zaplatit rovnou</span>
+                <span className="mt-0.5 block text-sm text-ink-muted">
+                  Karta se strhne až {datum}, takže o zkušební období nepřijdeš. Jen se ti
+                  aplikace nezamkne, až na to zapomeneš.
+                </span>
+              </span>
+            </button>
+          </>
+        ) : null}
+
+        {platit ? (
+          <div className="space-y-3 rounded-2xl border border-line bg-surface p-4">
+            <p className="text-sm text-ink-muted">
+              Platí se za celou rodinu. Druhý rodič, prarodiče ani chůva nic navíc neplatí.
+            </p>
+            <VolbaTarifu familyId={familyId} brana={branaJede} />
+            <button
+              type="button"
+              onClick={doAplikace}
+              className="w-full text-center text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+            >
+              Rozmyslím si to později
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      <p className="text-center text-xs text-ink-subtle">
+        Předplatné jde kdykoli najít v sekci Předplatné a stejně tak zrušit.
+      </p>
+    </>
+  );
+}
 
 /**
  * Pošle pozvánku e-mailem. Selhání se mlčky spolkne — odkaz zůstává

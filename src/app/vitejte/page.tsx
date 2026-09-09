@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { stripeJeNastaveny } from "@/lib/stripe";
 import { OnboardingWizard, type PredvyplnenoZKalkulacky } from "./wizard";
 import type { PatternKind } from "@/lib/types";
 
@@ -78,6 +79,7 @@ export default async function WelcomePage({
     <OnboardingWizard
       defaultName={profile?.full_name ?? ""}
       predvyplneno={predvyplneno}
+      branaJede={stripeJeNastaveny()}
     />
   );
 }

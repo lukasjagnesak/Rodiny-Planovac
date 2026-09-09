@@ -22,15 +22,24 @@ export function SrovnaniTarifu({
     varianta === "aplikace" ? "Po zkušebním období" : `Po ${ZKUSEBNI_DNI} dnech zdarma`;
 
   return (
-    <div className={cn("overflow-x-auto", className)}>
-      <table className="w-full min-w-[30rem] border-collapse text-left text-sm">
+    <div className={cn(className)}>
+      {/* Tabulka měla pevnou nejmenší šířku 30rem, takže se na telefon
+          nevešla a sloupec „s předplatným" — tedy ten, kvůli kterému to
+          celé je — zůstal za okrajem. Kdo neuhodl, že se má obsahem
+          posunout do strany, viděl jenom to, co nedostane.
+
+          Sloupce jsou teď na mobilu úzké a název funkce se zalomí. Je to
+          hustší, ale celé srovnání je vidět naráz. */}
+      <table className="w-full table-fixed border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-line">
-            <th className="py-2.5 pr-3 font-medium text-ink-muted">Co s tím jde dělat</th>
-            <th className="w-32 px-2 py-2.5 text-center font-medium text-ink-muted">
+          <tr className="border-b border-line align-bottom">
+            <th className="py-2.5 pr-2 text-xs font-medium text-ink-muted sm:text-sm">
+              Co s tím jde dělat
+            </th>
+            <th className="w-[4.5rem] px-1 py-2.5 text-center text-xs font-medium leading-tight text-ink-muted sm:w-32 sm:px-2 sm:text-sm">
               {nadpisBez}
             </th>
-            <th className="w-32 px-2 py-2.5 text-center font-semibold text-brand">
+            <th className="w-[4.5rem] px-1 py-2.5 text-center text-xs font-semibold leading-tight text-brand sm:w-32 sm:px-2 sm:text-sm">
               S předplatným
             </th>
           </tr>
@@ -38,16 +47,16 @@ export function SrovnaniTarifu({
         <tbody>
           {SROVNANI.map((radek) => (
             <tr key={radek.co} className="border-b border-line last:border-0">
-              <td className="py-2.5 pr-3 text-ink">
+              <td className="py-2.5 pr-2 text-ink">
                 {radek.co}
                 {radek.pozn ? (
                   <span className="block text-xs text-ink-subtle">{radek.pozn}</span>
                 ) : null}
               </td>
-              <td className="px-2 py-2.5 text-center">
+              <td className="px-1 py-2.5 text-center sm:px-2">
                 <Znacka ano={radek.bez} />
               </td>
-              <td className="bg-brand-soft/40 px-2 py-2.5 text-center">
+              <td className="bg-brand-soft/40 px-1 py-2.5 text-center sm:px-2">
                 <Znacka ano={radek.s} />
               </td>
             </tr>

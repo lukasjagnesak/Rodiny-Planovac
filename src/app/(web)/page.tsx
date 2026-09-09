@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Sloupec, Nadtitulek, DalsiCteni, FotoPas } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { UkazkyAplikace } from "@/components/web/ukazky";
+import { Karusel } from "@/components/web/karusel";
 import { POPIS, ZNACKA } from "@/lib/brand";
 import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 
@@ -434,9 +435,14 @@ export default async function Domu() {
             Šest věcí, které přestanete řešit po telefonu
           </h2>
 
-          <div className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Karusel, ne mřížka. Šest dlaždic pod sebou je na telefonu
+              šest obrazovek scrollování — vedle sebe se projedou palcem. */}
+          <Karusel popis="Co Klidoo umí" className="mt-10">
             {FUNKCE.map(({ ikona: Ikona, nazev, popis }) => (
-              <div key={nazev}>
+              <div
+                key={nazev}
+                className="h-full rounded-2xl border border-line bg-surface p-5"
+              >
                 <span
                   className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
                   aria-hidden
@@ -449,7 +455,7 @@ export default async function Domu() {
                 <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">{popis}</p>
               </div>
             ))}
-          </div>
+          </Karusel>
         </Sloupec>
       </section>
 
