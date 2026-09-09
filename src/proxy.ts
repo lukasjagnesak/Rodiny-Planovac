@@ -131,7 +131,12 @@ export const config = {
   matcher: [
     /*
      * Vše kromě statických souborů a obrázků.
+     *
+     * `offline.html` tu musí být jmenovitě: bez toho ho middleware pošle
+     * na přihlášení a service worker si do mezipaměti uloží přihlašovací
+     * stránku. Rodič bez signálu by pak místo vysvětlení viděl formulář,
+     * který nemá jak odeslat.
      */
-    "/((?!_next/static|_next/image|favicon.ico|icons/|manifest.webmanifest|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icons/|manifest.webmanifest|sw.js|offline.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

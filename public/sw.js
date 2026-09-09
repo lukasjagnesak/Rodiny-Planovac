@@ -1,8 +1,52 @@
 /**
- * Service worker jen pro push notifikace — žádné cachování, žádný offline
- * režim. Ty by měnily, jak appka běžně funguje, a o to nejde; jde jen
- * o to, aby zpráva došla i se zavřenou aplikací.
+ * Service worker: push notifikace a hláška, když vypadne signál.
+ *
+ * Data se schválně necachují. Kalendář péče, u kterého by se ukázal
+ * včerejší stav, je horší než žádný — rodič by podle něj jel pro dítě
+ * ve špatný den. Proto tudy všechny požadavky procházejí rovnou na síť.
+ *
+ * Přesto tu `fetch` je, a to ze dvou důvodů. Chrome bez něj nenabídne
+ * přidání na plochu: kontrola instalovatelnosti vyžaduje service worker
+ * s neprázdným `fetch` obsluhovačem. A druhý důvod je poctivější —
+ * když je člověk v garážích bez signálu, dostane místo dinosaura
+ * stránku, která řekne, co se děje.
  */
+
+/* Verze se mění při každé úpravě tohoto souboru — jinak si prohlížeč
+   nechá starou mezipaměť i s neplatnou offline stránkou. */
+const VERZE = "klidoo-v1";
+const OFFLINE = "/offline.html";
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(VERZE)
+      .then((mezipamet) => mezipamet.addAll([OFFLINE, "/icons/icon-192.png"]))
+      // Nová verze nastupuje hned. U service workeru, který nic
+      // necachuje, není co dohrávat, a čekat na zavření všech karet by
+      // znamenalo, že oprava dorazí za týden.
+      .then(() => self.skipWaiting()),
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((klice) => Promise.all(klice.filter((k) => k !== VERZE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  // Jen otevírání stránek. Data, obrázky ani volání API sem nepatří —
+  // ta ať selžou tak, jak selhat mají, a aplikace si to ošetří sama.
+  if (event.request.mode !== "navigate") return;
+
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(OFFLINE)),
+  );
+});
 
 self.addEventListener("push", (event) => {
   let data = { titulek: "Klidoo", telo: "", odkaz: "/prehled" };

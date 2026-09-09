@@ -98,6 +98,43 @@ const THEME_SCRIPT = `
 })();
 `;
 
+/**
+ * Dvě věci, které musí proběhnout dřív, než se rozjede React.
+ *
+ * Chrome pošle `beforeinstallprompt` hned po načtení stránky. Kdyby na
+ * něj čekala až komponenta, událost by v tu chvíli byla dávno pryč
+ * a tlačítko „Přidat na plochu" by se neukázalo nikdy. Proto se odchytí
+ * tady a schová na `window`; komponenta si pro ni přijde, až se
+ * připojí, a o změně se dozví přes vlastní událost.
+ *
+ * A service worker se registruje pro každého, ne až při zapnutí
+ * notifikací. Chrome bez něj přidání na plochu vůbec nenabídne —
+ * kontrola instalovatelnosti vyžaduje service worker s `fetch`
+ * obsluhovačem, a ten teď v `sw.js` je.
+ */
+const INSTALACE_SCRIPT = `
+(function () {
+  window.__klidooVyzva = null;
+  function oznam() {
+    window.dispatchEvent(new Event('klidoo-instalace'));
+  }
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    window.__klidooVyzva = e;
+    oznam();
+  });
+  window.addEventListener('appinstalled', function () {
+    window.__klidooVyzva = null;
+    oznam();
+  });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    });
+  }
+})();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -109,6 +146,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: INSTALACE_SCRIPT }} />
       </head>
       <body className="min-h-dvh antialiased">{children}</body>
     </html>

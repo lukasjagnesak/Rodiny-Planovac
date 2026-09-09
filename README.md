@@ -232,6 +232,33 @@ npx web-push generate-vapid-keys
 Každý člen rodiny si pak v **Nastavení → Notifikace** zapne notifikace na
 každém svém zařízení tlačítkem — žádný cizí účet, žádné párování.
 
+### 5c. Aplikace na ploše telefonu
+
+Klidoo se dá přidat mezi aplikace v telefonu — ikona na ploše, spuštění
+na celou obrazovku, žádný adresní řádek. Nic se nestahuje z obchodu,
+je to ta samá webová aplikace.
+
+Nastavovat není co, ale je dobré vědět, jak to funguje, protože to na
+každém systému funguje jinak:
+
+| | Jak to probíhá |
+|---|---|
+| **Android, Chrome** | Prohlížeč pošle výzvu, aplikace si ji schová a přehraje po ťuknutí. Jedno ťuknutí, systém se zeptá sám. |
+| **iPhone, iPad** | Apple nic takového nezavedl. Jde to **jen ručně** přes *Sdílet → Přidat na plochu* — aplikace proto ukáže návod se třemi kroky. |
+| **Počítač** | Chrome i Edge nabídnou instalaci stejně jako Android; nabídka se ale schválně nekreslí, tam nemá smysl. |
+
+Nabídka se ukáže jednou nahoře v aplikaci a kdo ji zavře, už ji neuvidí.
+Natrvalo je v **Nastavení → Aplikace na ploše**.
+
+> **Pozor při úpravách `public/sw.js`:** Chrome nenabídne přidání na
+> plochu, když service worker nemá `fetch` obsluhovač. Ten tam je kvůli
+> tomu a kvůli offline stránce — nemazat. Po každé úpravě souboru zvyš
+> `VERZE`, jinak si prohlížeče nechají starou verzi i s neplatnou
+> offline stránkou.
+
+> Data se schválně necachují. Kalendář péče, u kterého by se ukázal
+> včerejší stav, je horší než žádný.
+
 ### 5b. E-maily (SMTP)
 
 Aplikace posílá pozvánky druhému rodiči, upozornění na konec zkušebního období

@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Bell,
   Repeat,
+  Smartphone,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
@@ -92,6 +93,13 @@ export default async function SettingsPage() {
       description: "Připomínky, kdo veze a co se blíží",
       Icon: Bell,
       badge: (pocetOdberu ?? 0) > 0 ? "zapnuto" : null,
+    },
+    {
+      href: "/nastaveni/aplikace",
+      title: "Aplikace na ploše",
+      description: "Přidat Klidoo mezi aplikace v telefonu",
+      Icon: Smartphone,
+      badge: null as string | null,
     },
   ];
 

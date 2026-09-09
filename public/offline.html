@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Klidoo — bez připojení</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 2rem 1.5rem;
+        background: #fdf7f0;
+        color: #2b2521;
+        font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+        text-align: center;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #161310; color: #ece5dd; }
+      }
+      img { width: 56px; height: 56px; }
+      h1 { margin: 1rem 0 0.5rem; font-size: 1.25rem; }
+      p { margin: 0 0 1.5rem; max-width: 22rem; opacity: 0.75; }
+      button {
+        border: 0;
+        border-radius: 12px;
+        background: #2c8671;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <img src="/icons/icon-192.png" alt="" />
+      <h1>Nejsi připojený k internetu</h1>
+      <!-- Schválně se tu netvrdí, že jde něco dělat offline. Klidoo data
+           necachuje, takže by to byla lež — a rodič, který věří, že vidí
+           dnešní rozpis, je horší než rodič, který ví, že nevidí nic. -->
+      <p>
+        Klidoo potřebuje připojení, aby ukázalo aktuální rozpis. Jakmile bude signál,
+        zkus to znovu.
+      </p>
+      <button type="button" onclick="location.reload()">Zkusit znovu</button>
+    </div>
+  </body>
+</html>

@@ -24,6 +24,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
+import { VyzvaInstalace } from "@/components/ui/instalace";
 import { cn } from "@/lib/format";
 import { Avatar } from "@/components/ui/badge";
 import { Logo, Znak } from "@/components/ui/logo";
@@ -365,6 +366,9 @@ export function AppShell({
         {pruh}
 
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-4 sm:px-6 lg:pb-10 lg:pt-6">
+          {/* Jednou, nahoře, a kdo ji zavře, už ji neuvidí. Stálé místo
+              má nabídka v Nastavení → Aplikace. */}
+          <VyzvaInstalace />
           {children}
         </main>
       </div>
