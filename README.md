@@ -232,6 +232,20 @@ npx web-push generate-vapid-keys
 Každý člen rodiny si pak v **Nastavení → Notifikace** zapne notifikace na
 každém svém zařízení tlačítkem — žádný cizí účet, žádné párování.
 
+### 5e. Oslovování mediátorů a advokátů
+
+Texty pro přímé oslovení jsou v `docs/oslovovani-mediatoru.md`.
+**Neposílají se automaticky a nemají patřit do sekvencí** — zapsaných
+mediátorů je v ČR pár set a osobní e-mail u nich převálcuje jakoukoli
+automatizaci. Hromadná rozesílka by navíc poškodila doručitelnost
+domény, a tou chodí i pozvánky druhému rodiči.
+
+> Texty musí sedět se stránkou `/pro-mediatory` a s `lib/partneri.ts`.
+> Když se změní provize nebo platnost doporučení, opraví se i tam.
+
+> Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
+> pracovních dnů**. Automatická odpověď ten slib nenahradí.
+
 ### 5d. E-mailové sekvence pro kontakty z webu
 
 Kdo si na webu stáhne materiál, nechá e-mail kvůli tomu materiálu.
