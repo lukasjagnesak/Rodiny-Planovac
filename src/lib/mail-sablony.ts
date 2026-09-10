@@ -1,6 +1,11 @@
 /**
  * Texty a HTML odchozích e-mailů.
  *
+ * V e-mailech se VYKÁ, i když aplikace i web tykají. Zpráva do schránky
+ * přijde i někomu, kdo Klidoo nezná — druhému rodiči, člověku, který si
+ * jen stáhl vzor dohody — a tykání od neznámé firmy uprostřed rozvodu
+ * působí jinak než tykání v aplikaci, kterou si člověk sám otevřel.
+ *
  * Bez `server-only` a bez závislosti na odesílání, aby se daly otestovat
  * — u e-mailu se chyba pozná až u příjemce, kde už se nedá nic vzít zpět.
  *
@@ -60,7 +65,7 @@ ${telo}
         <tr><td style="padding:16px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:${BARVA_TLUMENA};font-size:12px;line-height:1.5;">
           ${patickaNavic ? `${patickaNavic}<br><br>` : ""}
           ${ZNACKA} — ${escapeHtml(PROVOZOVATEL.nazev || "klid do rodiny, která žije ve dvou domovech")}<br>
-          Napiš nám na <a href="mailto:${PROVOZOVATEL.email}" style="color:${BARVA_TLUMENA};">${PROVOZOVATEL.email}</a>.
+          Napište nám na <a href="mailto:${PROVOZOVATEL.email}" style="color:${BARVA_TLUMENA};">${PROVOZOVATEL.email}</a>.
         </td></tr>
       </table>
     </td></tr>
@@ -92,35 +97,35 @@ export function pozvankaZprava(vstup: {
   const rodina = vstup.rodina.trim() || "rodinný kalendář";
   const jeRodic = (vstup.role ?? "rodic") === "rodic";
 
-  const predmet = `${kdo} tě zve do sdíleného kalendáře dětí`;
+  const predmet = `${kdo} vás zve do sdíleného kalendáře dětí`;
 
   const telo = `
-<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">${escapeHtml(kdo)} tě zve do ${ZNACKA}</h1>
+<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">${escapeHtml(kdo)} vás zve do ${ZNACKA}</h1>
 <p style="margin:0 0 12px 0;">
   Jde o sdílený kalendář rodiny <strong>${escapeHtml(rodina)}</strong> — kdo má děti které dny,
   kdy jsou kroužky, kdo veze tam a kdo zpátky, a kdo co zaplatil.
 </p>
 <p style="margin:0 0 12px 0;">
   ${jeRodic
-    ? "Uvidíš to samé co druhý rodič a můžeš zapisovat. Nic neplatíš — předplatné je jedno na celou rodinu."
-    : "Uvidíš, co se kolem dětí děje. Nic neplatíš."}
+    ? "Uvidíte to samé co druhý rodič a můžete zapisovat. Nic neplatíte — předplatné je jedno na celou rodinu."
+    : "Uvidíte, co se kolem dětí děje. Nic neplatíte."}
 </p>
 ${tlacitko(vstup.odkaz, "Přijmout pozvánku")}
 <p style="margin:16px 0 0 0;font-size:13px;color:${BARVA_TLUMENA};">Odkaz platí 30 dní.</p>`;
 
-  const text = `${kdo} tě zve do ${ZNACKA} — sdíleného kalendáře rodiny ${rodina}.
+  const text = `${kdo} vás zve do ${ZNACKA} — sdíleného kalendáře rodiny ${rodina}.
 
-Uvidíš, kdo má děti které dny, kroužky a odvozy i to, kdo co zaplatil.${
-    jeRodic ? " Nic neplatíš, předplatné je jedno na celou rodinu." : ""
+Uvidíte, kdo má děti které dny, kroužky a odvozy i to, kdo co zaplatil.${
+    jeRodic ? " Nic neplatíte, předplatné je jedno na celou rodinu." : ""
   }
 
-Pozvánku přijmeš tady (platí 30 dní):
+Pozvánku přijmete tady (platí 30 dní):
 ${vstup.odkaz}
 `;
 
   return {
     predmet,
-    html: obalka(predmet, telo, "Tenhle e-mail ti přišel, protože tě někdo pozval do své rodiny."),
+    html: obalka(predmet, telo, "Tenhle e-mail vám přišel, protože vás někdo pozval do své rodiny."),
     text,
   };
 }
@@ -138,7 +143,7 @@ export function konecZkusebnihoZprava(vstup: {
   const telo = `
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">Zkušební období končí ${kdy}</h1>
 <p style="margin:0 0 12px 0;">
-  ${vstup.jmeno.trim() ? `${escapeHtml(vstup.jmeno.trim())}, ` : ""}nic se ti nesmaže.
+  ${vstup.jmeno.trim() ? `${escapeHtml(vstup.jmeno.trim())}, ` : ""}nic se vám nesmaže.
   Po skončení zůstane kalendář, výdaje i doklady čitelné — zamkne se jen zapisování.
 </p>
 <p style="margin:0 0 12px 0;">
@@ -176,20 +181,20 @@ export function prvniPlatbaZprava(vstup: {
   const telo = `
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">Zkušební období končí ${kdy}</h1>
 <p style="margin:0 0 12px 0;">
-  Potom ti z uložené karty strhneme <strong>${escapeHtml(vstup.castka)}</strong> a předplatné
-  začne běžet. Nemusíš dělat nic.
+  Potom vám z uložené karty strhneme <strong>${escapeHtml(vstup.castka)}</strong> a předplatné
+  začne běžet. Nemusíte dělat nic.
 </p>
 <p style="margin:0 0 12px 0;">
-  Pokud pokračovat nechceš, zruš předplatné do té doby — nic se nestrhne a data ti zůstanou
-  ke čtení.
+  Pokud pokračovat nechcete, zrušte předplatné do té doby — nic se nestrhne a data vám
+  zůstanou ke čtení.
 </p>
 ${tlacitko(vstup.odkaz, "Spravovat předplatné")}`;
 
   const text = `Zkušební období ${ZNACKA} končí ${kdy}.
 
-Potom ti z uložené karty strhneme ${vstup.castka} a předplatné začne běžet.
-Nemusíš dělat nic. Pokud pokračovat nechceš, zruš ho do té doby — nic se
-nestrhne a data ti zůstanou ke čtení.
+Potom vám z uložené karty strhneme ${vstup.castka} a předplatné začne běžet.
+Nemusíte dělat nic. Pokud pokračovat nechcete, zrušte ho do té doby — nic se
+nestrhne a data vám zůstanou ke čtení.
 
 ${vstup.odkaz}
 `;
@@ -218,4 +223,69 @@ ${vstup.odkaz}
 `;
 
   return { predmet, html: obalka(predmet, telo), text };
+}
+
+
+/**
+ * První zpráva sekvence po stažení vzoru dohody.
+ *
+ * Poděkovat a nabídnout, ne prodat. Kdo si stahuje vzor dohody, řeší
+ * papír, ne software — a nabídka, která mu skočí do rozjeté věci, se
+ * čte jako obtěžování. Proto zpráva nejdřív pojmenuje, kde ten člověk
+ * je, a aplikaci zmíní až jako to, co přijde potom.
+ *
+ * Předmět neobsahuje slovo rozvod ani rozchod. Chodí to do schránky,
+ * do které může vidět někdo další, a náhled zprávy na zamčené obrazovce
+ * telefonu není místo, kde má tohle téma svítit.
+ */
+export function dikVzorDohodyZprava(vstup: { web: string; odhlaseni: string }): Zprava {
+  const predmet = "Vzor dohody — a co bývá potom";
+  const odkaz = `${vstup.web}/registrace`;
+
+  const telo = `
+<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">Děkujeme za stažení vzoru</h1>
+<p style="margin:0 0 12px 0;">
+  Víme, že tahle situace není jednoduchá a že dohodou celý proces spíš začíná,
+  než končí. Papír vyřeší, kdo má děti kdy. Neřeší už ale úterky, kdy se mění
+  kroužek, ani to, kdo naposledy platil obědy.
+</p>
+<p style="margin:0 0 12px 0;">
+  Přesně na tenhle provoz děláme <strong>${ZNACKA}</strong> — jeden kalendář,
+  do kterého vidí oba rodiče, s kroužky, odvozy a výdaji na jednom místě.
+  Vyzkoušet se dá <strong>30 dní zdarma</strong>, bez zadávání karty
+  a bez závazku.
+</p>
+${tlacitko(odkaz, "Vyzkoušet 30 dní zdarma")}
+<p style="margin:16px 0 0 0;font-size:13px;color:${BARVA_TLUMENA};">
+  Kdyby cokoli, stačí na tenhle e-mail odpovědět. Čte to člověk, který aplikaci píše.
+</p>`;
+
+  const text = `Děkujeme za stažení vzoru dohody.
+
+Víme, že tahle situace není jednoduchá a že dohodou celý proces spíš začíná,
+než končí. Papír vyřeší, kdo má děti kdy. Neřeší už ale úterky, kdy se mění
+kroužek, ani to, kdo naposledy platil obědy.
+
+Přesně na tenhle provoz děláme ${ZNACKA} — jeden kalendář, do kterého vidí
+oba rodiče, s kroužky, odvozy a výdaji na jednom místě. Vyzkoušet se dá
+30 dní zdarma, bez zadávání karty a bez závazku.
+
+${odkaz}
+
+Kdyby cokoli, stačí na tenhle e-mail odpovědět. Čte to člověk, který
+aplikaci píše.
+
+Nechcete-li už žádné zprávy, odhlaste se tady:
+${vstup.odhlaseni}
+`;
+
+  return {
+    predmet,
+    html: obalka(
+      predmet,
+      telo,
+      `Tenhle e-mail vám přišel, protože jste si na klidoo.cz stáhli vzor dohody. <a href="${escapeHtml(vstup.odhlaseni)}" style="color:${BARVA_TLUMENA};">Odhlásit se</a>`,
+    ),
+    text,
+  };
 }

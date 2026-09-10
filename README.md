@@ -232,6 +232,48 @@ npx web-push generate-vapid-keys
 Každý člen rodiny si pak v **Nastavení → Notifikace** zapne notifikace na
 každém svém zařízení tlačítkem — žádný cizí účet, žádné párování.
 
+### 5d. E-mailové sekvence pro kontakty z webu
+
+Kdo si na webu stáhne materiál, nechá e-mail kvůli tomu materiálu.
+Sekvence na to navazuje: poděkuje a nabídne aplikaci.
+
+Nastavovat není co — jede to na hodinovém cronu, který už běží. Ale je
+potřeba vědět tohle:
+
+**Přidat krok** znamená dopsat položku do `kroky` v `lib/sekvence-odesilani.ts`:
+
+```ts
+{ klic: "co-dal", poHodinach: 72, zprava: (v) => mojeSablona(v) }
+```
+
+`klic` se **nikdy nemění** — podle něj se pozná, co už komu odešlo.
+Nový krok dostanou i lidé, kteří v sekvenci už jsou.
+
+**Přidat sekvenci** znamená dopsat položku do `SEKVENCE` a vyjmenovat
+v `magnety`, za které materiály se spouští. Hodnoty odpovídají sloupci
+`leady.magnet`, tedy tomu, co posílá `<LeadForm magnet="…">`.
+
+**Tři pojistky, které se nesmí obejít:**
+
+| | Proč |
+|---|---|
+| Jedinečnost `(lead_id, sekvence, krok)` v databázi | Cron může proběhnout dvakrát. Tohle je jediné místo, kde se dvojí odeslání opravdu zastaví — kód na to nestačí. |
+| Jeden krok na člověka za běh | Po výpadku cronu by jinak spadly do schránky tři zprávy naráz. |
+| `NEJSTARSI_DNY` (14) | Bez toho by v den nasazení nové sekvence dostali „děkujeme za stažení" i lidé z loňska. |
+
+**Odhlášení** je na `/odhlasit` a funguje bez přihlášení — podepsaný
+odkaz, žádná tabulka tokenů, žádná expirace. Odkaz z dva roky staré
+zprávy musí fungovat pořád. Odhlášení platí na **adresu**, ne na jeden
+řádek v `leady`; jeden člověk jich tam má tolik, kolik si stáhl
+materiálů.
+
+> Provozní zprávy — pozvánka do rodiny, platba, konec zkušebního období
+> — chodí i odhlášeným. Nejsou to obchodní sdělení, ale součást služby.
+
+> Text u formuláře musí odpovídat tomu, co se opravdu posílá. Dokud
+> sekvence neexistovala, stálo tam „kontakt použijeme jen k tomu, kvůli
+> čemu jsi ho nechal" — což by po jejím nasazení přestala být pravda.
+
 ### 5c. Aplikace na ploše telefonu
 
 Klidoo se dá přidat mezi aplikace v telefonu — ikona na ploše, spuštění

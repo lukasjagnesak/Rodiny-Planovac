@@ -3,6 +3,7 @@ import { dispatchNotifications, planNotifications } from "@/lib/reminders";
 import { syncAllCalendars } from "@/lib/google-sync";
 import { INTERVAL_HODIN, stahniZmeskane } from "@/lib/edupage-sync";
 import { posliPripominkyPredplatneho } from "@/lib/predplatne-pripominky";
+import { posliSekvence } from "@/lib/sekvence-odesilani";
 import { vygenerujOpakovaneVydaje } from "@/lib/vydaje-opakovane";
 import { ohlas } from "@/lib/poplach";
 
@@ -79,6 +80,17 @@ export async function GET(request: NextRequest) {
       report.predplatne = await posliPripominkyPredplatneho();
     } catch (e) {
       report.predplatneError = e instanceof Error ? e.message : String(e);
+    }
+  }
+
+  // E-mailové sekvence pro kontakty z webu. Jeden krok na člověka za
+  // běh; o to, aby se nic neposlalo dvakrát, se stará jedinečnost
+  // v databázi, ne tenhle soubor.
+  if (request.nextUrl.searchParams.get("sekvence") !== "0") {
+    try {
+      report.sekvence = await posliSekvence();
+    } catch (e) {
+      report.sekvenceError = e instanceof Error ? e.message : String(e);
     }
   }
 

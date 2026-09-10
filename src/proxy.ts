@@ -5,6 +5,9 @@ const PUBLIC_PATHS = [
   // Přehled s vymyšlenými daty pro test rozvržení. V ostrém provozu
   // se nevykreslí — stránka sama vrací 404, viz `app/nahled-mobil`.
   "/nahled-mobil",
+  // Odhlašovací odkaz z e-mailu musí fungovat bez přihlášení — kdo si
+  // stáhl vzor dohody, žádný účet nemá.
+  "/odhlasit",
   "/prihlaseni",
   "/registrace",
   "/pozvanka",

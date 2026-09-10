@@ -38,7 +38,16 @@ console.log("── pozvánka ──");
   ok("odkaz je v HTML", z.html.includes("https://klidoo.cz/pozvanka/abc123"));
   ok("odkaz je i v textu", z.text.includes("https://klidoo.cz/pozvanka/abc123"));
   ok("textová verze není prázdná", z.text.trim().length > 80);
-  ok("říká, že druhý rodič neplatí", z.html.includes("Nic neplatíš"));
+  ok("říká, že druhý rodič neplatí", z.html.includes("Nic neplatíte"));
+  // V e-mailech se vyká, i když web i aplikace tykají — viz hlavička
+  // `mail-sablony.ts`. Zpráva chodí i lidem, kteří Klidoo neznají.
+  // `\b` v JavaScriptu nezná diakritiku, takže „děti které" by se
+  // četlo jako samostatné „ti". Hranice se proto hlídá přes písmena
+  // podle Unicode.
+  ok(
+    "vyká, netyká",
+    !/(?<!\p{L})(tě|ti|tvoje|tvůj|neplatíš|Uvidíš)(?!\p{L})/u.test(z.html),
+  );
   ok("žádné externí obrázky", !/<img/i.test(z.html));
   ok("žádné skripty", !/<script/i.test(z.html));
 }

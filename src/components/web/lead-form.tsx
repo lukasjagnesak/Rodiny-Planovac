@@ -217,7 +217,8 @@ export function LeadForm({
                 tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-subtle",
               )}
             >
-              Kontakt použijeme jen k tomu, kvůli čemu jsi ho nechal. Odhlášení jedním klikem.{" "}
+              Pošleme ti materiál a k tomu pár zpráv o tom, jak Klidoo pomáhá s koordinací.
+              Odhlásit se dá jedním klikem, odkaz je v každé zprávě.{" "}
               <Link
                 href="/zasady-ochrany-osobnich-udaju"
                 className={cn("underline", tmavy ? "text-vyzva-ink" : "text-ink-muted")}
