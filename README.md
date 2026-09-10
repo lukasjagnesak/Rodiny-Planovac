@@ -306,6 +306,32 @@ správné.
 > Při tisku se skrývá `.no-print` a značky `header` a `footer`. Proto má
 > dokument hlavičku i patičku v `div`, ne v těch značkách.
 
+### Oznámení pro správce
+
+Kdo je v `ADMIN_EMAILS`, dostane zprávu, když **rodina poprvé zaplatí**
+nebo když **někdo nechá kontakt na webu**. Chodí to dvěma cestami
+zároveň, protože každá kryje slabinu té druhé:
+
+| | Silné | Slabé |
+|---|---|---|
+| Notifikace do telefonu | dorazí hned | jen na zařízení, kde je zapnutá; dá se odklepnout |
+| E-mail | dojde vždycky a zůstane | všimne si ho člověk až u schránky |
+
+**Aby chodily notifikace do telefonu, musí si je správce zapnout** jako
+kdokoli jiný — Nastavení → Notifikace. Odběr visí na uživateli, takže
+mu přijdou na každé zařízení, kde to udělal. Bez toho zbude e-mail.
+
+Oznámení vede na `/provoz`, kde je i seznam posledních kontaktů
+i s adresami — oznámení, po kterém se nedá odpovědět, je jen vyrušení.
+
+> Chodí jen **první** platba rodiny, ne měsíční obnovení. Oznámení
+> o každém obnovení by se během roku stalo šumem, který se přestane
+> číst — a s ním by zapadlo i to první, na kterém záleží.
+
+> Nic z toho nesmí shodit akci, která to vyvolala. Neodeslané oznámení
+> o platbě je nepříjemné; neproběhlá platba kvůli neodeslanému oznámení
+> je katastrofa.
+
 ### 5d. E-mailové sekvence pro kontakty z webu
 
 Kdo si na webu stáhne materiál, nechá e-mail kvůli tomu materiálu.

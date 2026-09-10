@@ -33,7 +33,7 @@ export default async function ProvozPage({
   const od = subDays(do_, obdobi - 1);
 
   const admin = createAdminClient();
-  const [{ data: udalostiRaw }, rodiny, predplatna, leady] = await Promise.all([
+  const [{ data: udalostiRaw }, rodiny, predplatna, leady, posledniLeady] = await Promise.all([
     admin
       .from("provoz_udalosti")
       .select("druh, cesta, zdroj, utm_source, utm_medium, utm_campaign, ref, zarizeni, navstevnik, created_at")
@@ -42,6 +42,13 @@ export default async function ProvozPage({
     admin.from("families").select("id", { count: "exact", head: true }),
     admin.from("predplatna").select("stav"),
     admin.from("leady").select("id", { count: "exact", head: true }),
+    // Posledních pár kontaktů i s adresou. Oznámení o novém kontaktu
+    // vede sem, a stránka, na které je jenom počet, nedá odpovědět.
+    admin
+      .from("leady")
+      .select("email, magnet, jmeno, organizace, created_at")
+      .order("created_at", { ascending: false })
+      .limit(12),
   ]);
 
   const udalosti = (udalostiRaw ?? []) as Udalost[];
@@ -63,6 +70,12 @@ export default async function ProvozPage({
       stranky={zebricek(udalosti, (u) => u.cesta, "/")}
       zarizeni={zebricek(udalosti, (u) => u.zarizeni, "neznámé", 3)}
       zaklad={zaklad}
+      kontakty={(posledniLeady.data ?? []).map((l) => ({
+        email: String(l.email),
+        magnet: String(l.magnet),
+        kdo: [l.jmeno, l.organizace].filter(Boolean).join(", ") || null,
+        kdy: String(l.created_at),
+      }))}
     />
   );
 }

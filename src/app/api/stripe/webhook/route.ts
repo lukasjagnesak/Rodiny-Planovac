@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ohlasPrvniPlatbu } from "@/lib/spravce-oznameni";
 import { stripe, tarifZCeny } from "@/lib/stripe";
 import { zaznamenej } from "@/lib/provoz";
 import { posliMail } from "@/lib/mail";
@@ -251,6 +252,40 @@ async function uloz(predplatne: Stripe.Subscription, zaloha: string | null): Pro
   // Bez otisku návštěvníka — tohle chodí ze Stripu, ne z prohlížeče.
   if (novyStav === "aktivni" && predtim?.stav !== "aktivni") {
     await zaznamenej("predplatne");
+    // Správci se ozveme jen u prvního zaplacení. Oznámení o každém
+    // měsíčním obnovení by se během roku stalo šumem, který se přestane
+    // číst — a s ním by zapadlo i to první, na kterém záleží.
+    await oznamSpravciPlatbu(familyId, predplatne);
+  }
+}
+
+/** Do telefonu i do schránky: rodina poprvé zaplatila. */
+async function oznamSpravciPlatbu(
+  familyId: string,
+  predplatne: Stripe.Subscription,
+): Promise<void> {
+  try {
+    const admin = createAdminClient();
+    const { data: rodina } = await admin
+      .from("families")
+      .select("name")
+      .eq("id", familyId)
+      .maybeSingle();
+
+    const cena = predplatne.items.data[0]?.price;
+    const tarif = tarifPodleId(
+      tarifZCeny(cena?.id) ?? predplatne.metadata?.tarif,
+    );
+
+    await ohlasPrvniPlatbu({
+      rodina: rodina?.name ? String(rodina.name) : "Rodina",
+      castka: (cena?.unit_amount ?? 0) / 100,
+      mena: (cena?.currency ?? "czk").toUpperCase(),
+      tarif: tarif?.nazev ?? null,
+    });
+  } catch (chyba) {
+    // Oznámení nikdy nesmí shodit zpracování platby.
+    console.error("[stripe] oznámení správci se nepodařilo", chyba);
   }
 }
 

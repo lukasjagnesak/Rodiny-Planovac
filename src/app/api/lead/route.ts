@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
+import { ohlasNovyKontakt } from "@/lib/spravce-oznameni";
 
 /**
  * Sběr kontaktů z veřejného webu.
@@ -65,6 +66,16 @@ export async function POST(request: NextRequest) {
     if (error.code === "23505") return NextResponse.json({ ok: true });
     return NextResponse.json({ error: "Uložení se nepovedlo." }, { status: 500 });
   }
+
+  // Správci do telefonu. Až po úspěšném zápisu, ať se neohlašuje kontakt,
+  // který se neuložil — a bez `await`, protože návštěvník nemá čekat na
+  // odeslání notifikace, aby dostal svůj materiál.
+  void ohlasNovyKontakt({
+    email,
+    magnet,
+    jmeno: text(body?.jmeno, 120),
+    organizace: text(body?.organizace, 160),
+  }).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

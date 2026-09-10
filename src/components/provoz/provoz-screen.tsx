@@ -32,6 +32,7 @@ export function ProvozScreen({
   stranky,
   zarizeni,
   zaklad,
+  kontakty,
 }: {
   obdobi: number;
   dny: Den[];
@@ -40,6 +41,8 @@ export function ProvozScreen({
   stranky: Radek[];
   zarizeni: Radek[];
   zaklad: { rodin: number; platicich: number; vezkusebnim: number; leadu: number };
+  /** Posledních pár kontaktů z webu — sem vede oznámení o novém. */
+  kontakty: { email: string; magnet: string; kdo: string | null; kdy: string }[];
 }) {
   const router = useRouter();
 
@@ -198,6 +201,8 @@ export function ProvozScreen({
         popis={null}
         radky={zarizeni.map((r) => ({ ...r, nazev: NAZEV_ZARIZENI[r.nazev] ?? r.nazev }))}
       />
+
+      <PosledniKontakty kontakty={kontakty} />
     </div>
   );
 }
@@ -235,6 +240,49 @@ function Zebricek({
           ))
         )}
       </CardBody>
+    </Card>
+  );
+}
+
+
+/**
+ * Poslední kontakty z webu.
+ *
+ * Adresa je vidět schválně: u partnerských formulářů se odpovídá ručně
+ * a stránka, na které je jen počet, znamená další hledání v databázi.
+ * Je to interní přehled pro jednoho člověka, ne veřejný výpis.
+ */
+function PosledniKontakty({
+  kontakty,
+}: {
+  kontakty: { email: string; magnet: string; kdo: string | null; kdy: string }[];
+}) {
+  if (kontakty.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader title="Poslední kontakty" description="Kdo nechal e-mail a za co" />
+      <ul className="divide-y divide-line border-t border-line">
+        {kontakty.map((k) => (
+          <li key={`${k.email}-${k.kdy}`} className="flex items-start gap-3 px-4 py-3 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <a
+                href={`mailto:${k.email}`}
+                className="block truncate font-medium text-ink hover:text-brand"
+              >
+                {k.email}
+              </a>
+              <p className="mt-0.5 truncate text-sm text-ink-muted">
+                {k.magnet}
+                {k.kdo ? ` · ${k.kdo}` : ""}
+              </p>
+            </div>
+            <span className="shrink-0 text-xs text-ink-subtle">
+              {new Date(k.kdy).toLocaleDateString("cs-CZ")}
+            </span>
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }
