@@ -16,6 +16,7 @@ import {
   Contact,
   CreditCard,
   MessageSquare,
+  FileBarChart,
   FileText,
   MoreHorizontal,
   Settings,
@@ -45,6 +46,7 @@ const SECONDARY = [
   { href: "/ukoly", label: "Ze školy", Icon: BookOpen },
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/doklady", label: "Doklady", Icon: FileText },
+  { href: "/souhrn", label: "Souhrn pro soud", Icon: FileBarChart },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   // Předplatné bylo schované jako položka v nastavení. Kdo chtěl zaplatit,
   // musel uhodnout, že se platba schovává tam, kde se přepínají notifikace.
@@ -311,7 +313,7 @@ export function AppShell({
   return (
     <div className="min-h-dvh lg:flex">
       {/* ── Desktop sidebar ─────────────────────────────────────── */}
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-surface px-3 py-4 lg:flex">
+      <aside className="no-print sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-line bg-surface px-3 py-4 lg:flex">
         <div className="flex items-center gap-2.5 px-2 pb-4">
           <Znak size={36} />
           <FamilySwitcher session={session} />
@@ -354,7 +356,7 @@ export function AppShell({
       {/* ── Obsah ────────────────────────────────────────────────── */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobilní horní lišta */}
-        <header className="safe-top sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-surface/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
+        <header className="no-print safe-top sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-surface/85 px-4 py-2.5 backdrop-blur-md lg:hidden">
           <Znak size={30} />
           <FamilySwitcher session={session} />
           <Zvonecek pocet={novychOznameni} className="ml-auto" />
@@ -374,7 +376,7 @@ export function AppShell({
       </div>
 
       {/* ── Mobilní spodní navigace ─────────────────────────────── */}
-      <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
+      <nav className="no-print safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
         {MOBIL_HLAVNI.map((item) => (
           <TabLink
             key={item.href}

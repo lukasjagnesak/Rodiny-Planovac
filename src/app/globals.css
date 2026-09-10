@@ -459,6 +459,16 @@
     background: #fff;
     color: #000;
   }
+  /* Obal aplikace se při tisku sbalí, aby listina začínala nahoře na
+     stránce a ne pod odsazením, které drží místo pro spodní lištu. */
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  /* Sekce souhrnu se nemá lámat přes dvě stránky uprostřed tabulky. */
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

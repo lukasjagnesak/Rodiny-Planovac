@@ -246,6 +246,27 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### Souhrn pro soud a advokáta
+
+`/souhrn` složí za zvolené období listinu: noci u každého rodiče, náklady
+podle kategorií a plátců, kolik zbývá dorovnat a kdo kolikrát vezl na
+kroužky. Do PDF se to dostane **tiskem prohlížeče**, ne knihovnou —
+sazbu vidí člověk dřív, než ji uloží, dokument se dá zvětšit i přečíst
+odečítačem obrazovky a neudržuje se druhé rozvržení, které by se s tím
+na obrazovce dřív nebo později rozešlo.
+
+Počítá se v `lib/souhrn.ts`, odděleně od vykreslení, a je to otestované
+(`npm run test:souhrn`). Čísla, o která se někdo opře před soudem, mají
+mít test — špatně spočítané dorovnání vypadá stejně věrohodně jako
+správné.
+
+> **Odstavec v patičce dokumentu se nesmí odstranit.** Říká, že jde
+> o záznamy, které si rodina vede sama, ne o výpis z úřední evidence.
+> Listina, která budí zdání úřednosti, advokátovi nakonec uškodí.
+
+> Při tisku se skrývá `.no-print` a značky `header` a `footer`. Proto má
+> dokument hlavičku i patičku v `div`, ne v těch značkách.
+
 ### 5d. E-mailové sekvence pro kontakty z webu
 
 Kdo si na webu stáhne materiál, nechá e-mail kvůli tomu materiálu.
