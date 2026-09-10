@@ -28,6 +28,8 @@ import { startOfWeek } from "date-fns";
 import { WEEK_OPTS } from "@/lib/dates";
 import type { PatternKind } from "@/lib/types";
 import { zmer } from "@/lib/mereni";
+import { platnyRef } from "@/lib/atribuce";
+import { PLATNOST_DOPORUCENI_DNI } from "@/lib/partneri";
 import { VolbaTarifu } from "@/components/predplatne/volba-tarifu";
 import { ZKUSEBNI_DNI } from "@/lib/tarify";
 
@@ -137,6 +139,18 @@ export function OnboardingWizard({
       if (patternError) throw patternError;
 
       zmer("rodina");
+
+      // Doporučení od mediátora nebo advokáta. Selhání se mlčky spolkne:
+      // rodina je založená a nepustit ji dál kvůli provizi by bylo
+      // obrácené pořadí důležitosti.
+      const kod = platnyRef(PLATNOST_DOPORUCENI_DNI);
+      if (kod) {
+        void fetch("/api/doporuceni", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ kod, familyId }),
+        }).catch(() => {});
+      }
 
       document.cookie = `${ACTIVE_FAMILY_COOKIE}=${familyId}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
       setZalozenaRodina(familyId as string);

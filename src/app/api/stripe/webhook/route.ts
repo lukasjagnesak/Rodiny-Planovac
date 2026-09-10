@@ -94,11 +94,52 @@ async function zpracuj(udalost: Stripe.Event): Promise<void> {
         typeof odkaz === "string" ? odkaz : odkaz.id,
       );
       await uloz(predplatne, null);
+      await zapisPlatbu(faktura, predplatne);
       return;
     }
 
     default:
       return;
+  }
+}
+
+/**
+ * Zaznamená zaplacenou fakturu.
+ *
+ * Jediný podklad, ze kterého jde poctivě spočítat partnerská provize.
+ * Ze stavu předplatného se dá vyčíst jen to, že rodina platí — ne
+ * kolikrát a kolik. Odhad z ceníku by se rozešel se skutečností hned
+ * u první rodiny, která přejde z měsíčního na roční nebo dostane slevu.
+ *
+ * Jedinečnost čísla faktury hlídá databáze: Stripe posílá webhooky
+ * opakovaně a bez toho by se jedna platba započítala třikrát. Kolize
+ * proto není chyba, ale důkaz, že pojistka funguje.
+ */
+async function zapisPlatbu(
+  faktura: Stripe.Invoice,
+  predplatne: Stripe.Subscription,
+): Promise<void> {
+  const familyId =
+    predplatne.metadata?.family_id ?? (await rodinaPodleZakaznika(predplatne));
+  if (!familyId || !faktura.id) return;
+
+  const castka = (faktura.amount_paid ?? 0) / 100;
+  if (castka <= 0) return;
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("platby").insert({
+    family_id: familyId,
+    stripe_invoice_id: faktura.id,
+    castka,
+    mena: (faktura.currency ?? "czk").toUpperCase(),
+    zaplaceno_at: new Date((faktura.status_transitions?.paid_at ?? faktura.created) * 1000)
+      .toISOString(),
+  });
+
+  // 23505 = tuhle fakturu už máme. Všechno ostatní je potřeba vidět,
+  // protože chybějící platba znamená chybějící provizi.
+  if (error && error.code !== "23505") {
+    console.error("[stripe] platbu se nepodařilo zapsat", faktura.id, error);
   }
 }
 

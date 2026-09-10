@@ -232,6 +232,45 @@ npx web-push generate-vapid-keys
 Každý člen rodiny si pak v **Nastavení → Notifikace** zapne notifikace na
 každém svém zařízení tlačítkem — žádný cizí účet, žádné párování.
 
+### Partnerský program: doporučení a provize
+
+Mediátor nebo advokát dostane odkaz `klidoo.cz/?ref=kod`. Kód se
+klientovi uloží v prohlížeči a přežije zavření karty — doporučení platí
+**90 dní**, protože klient si odkaz otevře na sezení a zaregistruje se
+třeba za dva týdny. Při založení rodiny se doporučení zapíše.
+
+**Přidání partnera se dělá v SQL Editoru.** Administrace na to není
+schválně: partnerů jsou desítky, ne tisíce, a každého stejně někdo
+schvaluje ručně.
+
+```sql
+insert into partneri (kod, jmeno, organizace, email, typ)
+values ('jana-novakova', 'Mgr. Jana Nováková', 'Mediační kancelář Brno',
+        'jana@example.cz', 'mediator');
+```
+
+Partner se pak přihlásí **na tenhle e-mail** obyčejným odkazem do
+schránky a portál si ho podle adresy najde na `/partner`. Žádná další
+hesla. Když se přihlásí z jiné adresy, uvidí vysvětlení, ne prázdnou
+stránku.
+
+**Provize se počítá ze skutečně zaplacených faktur**, ne z ceníku.
+Podklad sbírá webhook Stripu do tabulky `platby` — bez toho by se
+odhadovalo a u první rodiny, která přejde z měsíčního na roční nebo
+dostane slevu, by se to rozešlo. Sazbu má každý partner vlastní
+(`provize_procento`), aby individuální domluva nepřepsala minulost
+ostatním.
+
+> **Partner nevidí data rodin a nikdy nesmí.** Vidí počty a částky, což
+> jsou jeho obchodní údaje. U mediátora to není jen ohled na soukromí,
+> ale podmínka jeho práce — mlčenlivost je to, na čem mediace stojí.
+> Když chce klient ukázat, jak péče probíhá, vygeneruje si `/souhrn`
+> a pošle ho sám.
+
+> Rodina patří jednomu partnerovi: jedinečnost na `family_id`. Kdyby
+> klient prošel dva odkazy, platí ten první. Pravidlo, které je předem
+> jasné, je lepší než dohadování o provizi zpětně.
+
 ### 5e. Oslovování mediátorů a advokátů
 
 Texty pro přímé oslovení jsou v `docs/oslovovani-mediatoru.md`.

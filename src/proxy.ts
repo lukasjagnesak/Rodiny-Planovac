@@ -8,6 +8,9 @@ const PUBLIC_PATHS = [
   // Odhlašovací odkaz z e-mailu musí fungovat bez přihlášení — kdo si
   // stáhl vzor dohody, žádný účet nemá.
   "/odhlasit",
+  // Partnerský přehled si přihlášení řeší sám — partner nemusí mít
+  // rodinu a rozvržení aplikace by ho poslalo do průvodce.
+  "/partner",
   "/prihlaseni",
   "/registrace",
   "/pozvanka",
