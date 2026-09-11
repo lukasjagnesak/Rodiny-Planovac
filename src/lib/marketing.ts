@@ -22,6 +22,44 @@ export const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "";
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 
 /**
+ * Google Ads.
+ *
+ * Měření v GA4 na kampaň nestačí. Google Ads potřebuje vlastní
+ * konverzní značku, jinak v rozhraní u každého klíčového slova svítí
+ * nula a nedá se poznat, který dotaz vede k platící rodině — tedy to
+ * jediné, kvůli čemu se reklama pouští.
+ *
+ * Štítek je u každé konverze jiný a vzniká až tím, že se konverze
+ * v Google Ads založí. Proto jsou v prostředí zvlášť: bez štítku se
+ * konverze prostě neposílá a nic se nerozbije.
+ *
+ * Čte se to takhle doslova schválně — sestavovač nahrazuje jen zapsané
+ * `process.env.NEXT_PUBLIC_…`, přes proměnnou by v prohlížeči zbylo
+ * `undefined`.
+ */
+export const ADS_ID = process.env.NEXT_PUBLIC_ADS_ID ?? "";
+
+export const ADS_STITKY: Record<string, string> = {
+  registrace: process.env.NEXT_PUBLIC_ADS_STITEK_REGISTRACE ?? "",
+  rodina: process.env.NEXT_PUBLIC_ADS_STITEK_RODINA ?? "",
+  predplatne: process.env.NEXT_PUBLIC_ADS_STITEK_PREDPLATNE ?? "",
+};
+
+/**
+ * Cíl konverze ve tvaru, kterému rozumí gtag: `AW-123/AbC-def`.
+ * `null` znamená, že se pro tenhle krok nic neposílá.
+ */
+export function adsCil(
+  druh: string,
+  id: string = ADS_ID,
+  stitky: Record<string, string> = ADS_STITKY,
+): string | null {
+  const stitek = stitky[druh];
+  if (!id || !stitek) return null;
+  return `${id}/${stitek}`;
+}
+
+/**
  * Consent Mode v2 — musí se nastavit dřív, než se načte gtag.js,
  * jinak Google prvních pár událostí vyhodnotí podle výchozího stavu
  * (a ten je pro EU „povoleno", což nechceme).
@@ -58,6 +96,16 @@ export function aktualizujConsentMode(volba: { analytika: boolean; marketing: bo
   });
 }
 
+/** gtag musí existovat dřív, než se na něj zavolá. */
+function zajistiGtag(): void {
+  window.dataLayer = window.dataLayer || [];
+  if (!window.gtag) {
+    window.gtag = (...args: unknown[]) => {
+      window.dataLayer!.push(args);
+    };
+  }
+}
+
 /** Načte skript jen jednou, i kdyby se volalo víckrát. */
 function nactiSkript(id: string, src: string, pred?: () => void): void {
   if (document.getElementById(id)) return;
@@ -74,18 +122,27 @@ export function nactiGoogleAnalytics(): void {
   if (!GA_ID) return;
 
   nactiSkript("ga4", `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`);
-
-  window.dataLayer = window.dataLayer || [];
-  if (!window.gtag) {
-    window.gtag = (...args: unknown[]) => {
-      window.dataLayer!.push(args);
-    };
-  }
+  zajistiGtag();
 
   window.gtag!("js", new Date());
   // IP se anonymizuje na straně Googlu; ukládat celou nepotřebujeme
   // a u tohohle publika ani nechceme.
   window.gtag!("config", GA_ID, { anonymize_ip: true });
+}
+
+/**
+ * Google Ads. Načítá se na marketingový souhlas, tedy nezávisle na
+ * analytice — proto si gtag.js v případě potřeby natáhne sám a nespoléhá
+ * na to, že ho už načetlo GA.
+ */
+export function nactiGoogleAds(): void {
+  if (!ADS_ID) return;
+
+  nactiSkript("google-ads", `https://www.googletagmanager.com/gtag/js?id=${ADS_ID}`);
+  zajistiGtag();
+
+  window.gtag!("js", new Date());
+  window.gtag!("config", ADS_ID);
 }
 
 export function nactiMetaPixel(): void {
@@ -137,4 +194,12 @@ export function marketingUdalost(
 
   if (window.gtag && GA_ID) window.gtag("event", mapa.ga, parametry);
   if (window.fbq && mapa.meta) window.fbq("track", mapa.meta, parametry);
+
+  // Google Ads chce vlastní událost s cílem, ne tu z GA4. Hodnota
+  // a měna se přenášejí, takže se v kampaních dá vidět obrat, ne jen
+  // počet konverzí.
+  const cil = adsCil(druh);
+  if (cil && window.gtag) {
+    window.gtag("event", "conversion", { send_to: cil, ...parametry });
+  }
 }

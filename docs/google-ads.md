@@ -7,6 +7,78 @@ Spravuje to agent `google-ads` (`.claude/agents/google-ads.md`).
 
 ---
 
+## Spuštění krok za krokem
+
+Pořadí není libovolné. **Kampaň se nezapíná dřív, než měří konverze** —
+jinak se první týdny utratí naslepo a nedá se z nich nic naučit.
+
+### 1. Účet a fakturace
+
+Google Ads → nový účet → **přepnout do expertního režimu** hned na
+začátku. Zjednodušený režim („Smart“) neumožní ruční CPC ani vypnout
+obsahovou síť, což jsou obě věci, které tady potřebujeme.
+
+Měna **CZK**, časové pásmo **Praha**. Obojí jde nastavit jen jednou a
+měna se pak nedá změnit.
+
+### 2. Konverze
+
+Nástroje → **Konverze** → Nová konverze → Web.
+
+Založ tři, všechny **s ručním označením (gtag)**, ne přes GA4 import:
+
+| Konverze | Kategorie | Počítat | Hodnota |
+|---|---|---|---|
+| Registrace | Sign-up | jednu | bez hodnoty |
+| Založená rodina | Sign-up | jednu | bez hodnoty |
+| Předplatné | Purchase | jednu | z kódu (posílá se) |
+
+**Jako primární nech jen Předplatné.** Zbylé dvě přepni na sekundární:
+jsou to ukazatele, ne cíl. Kdyby se optimalizovalo na registrace, Google
+najde lidi, kteří se rádi registrují a neplatí.
+
+U každé konverze si opiš **štítek** (`AbC-dEf1…`) a z hlavičky účtu
+**ID** (`AW-123456789`) — patří do `.env`, viz README.
+
+### 3. Kampaň
+
+Nová kampaň → **bez cíle** → typ **Vyhledávací síť**.
+
+Nastavení, která se dají snadno přehlédnout a stojí peníze:
+
+- **Obsahovou síť vypnout.** Zapíná se sama a rozpočet zmizí v bannerech
+  na cizích webech.
+- **„Partneři ve vyhledávací síti" vypnout** — dokud nevíme, jak se
+  chová samotné vyhledávání.
+- Lokalita **Česko**, a v upřesnění vybrat **„Přítomnost: lidé v této
+  lokalitě"**. Výchozí nastavení počítá i lidi, kteří o Česku jen hledají.
+- Jazyk čeština.
+- Strategie **ruční CPC**, strop kolem 12 Kč. Automatické strategie
+  potřebují desítky konverzí měsíčně, které zatím nejsou.
+- Rozpočet **165 Kč/den**.
+
+### 4. Sestavy a inzeráty
+
+Sestavy podle kapitoly níž. U každé **frázová a přesná shoda**, volná až
+později. Do každé sestavy aspoň tři nadpisy a dva popisy z hotových
+textů níž.
+
+### 5. Než se to zapne
+
+- [ ] `NEXT_PUBLIC_ADS_ID` a štítky v `.env`, obraz **přestavěný**
+- [ ] Na klidoo.cz přijmout cookies a v Google Ads → Konverze ověřit,
+      že značka hlásí **„Aktivní"** (může trvat pár hodin)
+- [ ] Zkušební registrace → konverze se objeví v přehledu
+- [ ] Negativní klíčová slova nahraná na úrovni účtu
+
+### 6. První týden
+
+Denně sestava **vyhledávacích dotazů** a vylučování. Nic jiného se
+první týden nedělá — na vyhodnocení výkonu je brzy a zásahy do kampaně,
+která se teprve rozjíždí, jen zamotají data.
+
+---
+
 ## Strategie na jednu větu
 
 Sklízet poptávku, která už existuje, ne ji vytvářet. Rozchod má
@@ -195,3 +267,4 @@ Při desítkách konverzí měsíčně nemá smysl A/B testovat — rozdíly jso
 | Datum | Co | Proč |
 |---|---|---|
 | 2026-09-11 | Založen plán, kalkulačka výživného odložena | Dotaz obsazený finančními portály, záměr mimo produkt |
+| 2026-09-11 | Doplněna konverzní značka do aplikace | GA4 na řízení kampaně nestačí, Ads potřebuje vlastní |

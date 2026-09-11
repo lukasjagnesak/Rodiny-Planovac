@@ -285,6 +285,33 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### Google Ads — konverze
+
+Bez vlastní konverzní značky svítí v kampaních u každého klíčového slova
+nula a rozpočet se rozděluje naslepo. GA4 na řízení kampaně nestačí.
+
+Do `.env` patří ID účtu a **štítek ke každé konverzi zvlášť** —
+vzniká až tím, že se konverze v Google Ads založí:
+
+```
+NEXT_PUBLIC_ADS_ID=AW-123456789
+NEXT_PUBLIC_ADS_STITEK_REGISTRACE=
+NEXT_PUBLIC_ADS_STITEK_RODINA=
+NEXT_PUBLIC_ADS_STITEK_PREDPLATNE=
+```
+
+Prázdný štítek znamená, že se ta konverze neposílá — nic se tím
+nerozbije. U předplatného se posílá i hodnota a měna, takže je
+v kampaních vidět obrat, ne jen počet.
+
+> Značka se načítá na **marketingový** souhlas, ne na analytický. Je to
+> reklamní měření, i když jede přes stejný `gtag`.
+
+> `NEXT_PUBLIC_*` se vpéká při sestavení — po vyplnění nestačí restart,
+> musí se přestavět obraz.
+
+> Postup založení kampaně je v `docs/google-ads.md`.
+
 ### Postranní menu musí umět rolovat
 
 Sekcí je patnáct a na notebooku se nevejdou. Když `nav` v postranním

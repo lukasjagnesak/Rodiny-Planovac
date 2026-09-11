@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   aktualizujConsentMode,
   marketingZobrazeni,
+  nactiGoogleAds,
   nactiGoogleAnalytics,
   nactiMetaPixel,
   pripravConsentMode,
@@ -36,7 +37,12 @@ export function MereniSkripty() {
 
     aktualizujConsentMode(souhlas);
     if (souhlas.analytika) nactiGoogleAnalytics();
-    if (souhlas.marketing) nactiMetaPixel();
+    if (souhlas.marketing) {
+      nactiMetaPixel();
+      // Google Ads patří k marketingovému souhlasu, ne k analytickému —
+      // je to reklamní měření, i když jede přes stejný gtag.
+      nactiGoogleAds();
+    }
   }, [souhlas]);
 
   // Next mění stránky bez načtení dokumentu, takže zobrazení musíme
