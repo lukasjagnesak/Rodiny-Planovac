@@ -264,6 +264,13 @@ Při desítkách konverzí měsíčně nemá smysl A/B testovat — rozdíly jso
 
 ## Jak ověřit, že se konverze opravdu odesílá
 
+Nejjednodušší cesta je **Provoz → Kontrola měření** (`/provoz/mereni`,
+jen pro správce). Ukáže, co je nastavené v `.env`, jestli je v tomhle
+prohlížeči marketingový souhlas a jestli se značka načetla — a tlačítkem
+pošle zkušební konverzi a rovnou napíše, jestli odešla.
+
+Zbytek téhle kapitoly je ruční varianta přes vývojářské nástroje.
+
 V DevTools → Network **nefiltruj na `googleads`**. Značka se stahuje
 z `googletagmanager.com`, slovo „googleads“ je až uvnitř jejího kódu,
 takže ten filtr nenajde nic ani při dokonale funkčním měření.
@@ -306,3 +313,4 @@ nedostal data. Zmizí to sama pár hodin po prvním skutečném odeslání.
 | 2026-09-11 | Měření přesunuto do kořenového layoutu | Mimo `(web)` a `(auth)` gtag vůbec neexistoval, takže konverze za založenou rodinu nešla odeslat |
 | 2026-09-11 | Registrace přes Google se dopočítává na `/vitejte` | Prohlížeč odchází na účty Googlu dřív, než by se stihla změřit |
 | 2026-09-11 | Souhlas přestal viset na `NEXT_PUBLIC_GA_ID` | Bez GA se Consent Mode nenastavil a Google konverze z EU zahazoval |
+| 2026-09-11 | Přidána stránka Kontrola měření | Ověřování konverzí přes DevTools se nedá dělat při každé změně v `.env` |

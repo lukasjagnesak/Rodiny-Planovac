@@ -11,9 +11,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Eye, Users, Wallet, Sparkles } from "lucide-react";
+import { Eye, Users, Wallet, Sparkles, Radar } from "lucide-react";
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Segmented } from "@/components/ui/misc";
+import { ButtonLink } from "@/components/ui/button";
 import { formatDayShort } from "@/lib/dates";
 import { formatNumber } from "@/lib/format";
 import type { Den, Hodina, KrokTrychtyre, Radek } from "@/lib/provoz-souhrn";
@@ -61,15 +62,22 @@ export function ProvozScreen({
             Odkud lidé chodí a kam se dostanou. Bez cookies a bez třetí strany.
           </p>
         </div>
-        <Segmented
-          value={String(obdobi)}
-          onChange={(v) => router.push(`/provoz?dny=${v}`)}
-          options={[
-            { value: "7", label: "7 dní" },
-            { value: "30", label: "30 dní" },
-            { value: "90", label: "90 dní" },
-          ]}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Konverze v Ads se lámou tiše, takže kontrola musí být na dosah. */}
+          <ButtonLink href="/provoz/mereni" size="sm" variant="secondary">
+            <Radar className="h-4 w-4" />
+            Kontrola měření
+          </ButtonLink>
+          <Segmented
+            value={String(obdobi)}
+            onChange={(v) => router.push(`/provoz?dny=${v}`)}
+            options={[
+              { value: "7", label: "7 dní" },
+              { value: "30", label: "30 dní" },
+              { value: "90", label: "90 dní" },
+            ]}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
