@@ -285,6 +285,39 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### Co se zamyká bez předplatného
+
+Dělicí čára vede mezi **zapsanými daty** a **listinami, které z nich
+aplikace vyrábí**:
+
+| | Bez předplatného |
+|---|---|
+| Číst kalendář, výdaje, doklady, zprávy | ano, napořád |
+| Zapisovat cokoli | ne |
+| `/souhrn` pro soud | **ne** |
+| Výpis komunikace pro advokáta | **ne** |
+
+Data, která si rodina zapsala, zůstávají čitelná napořád. Je to slib
+z webu i z e-mailů a u lidí, kteří mají důvod nedůvěřovat, je to kotva,
+kterou se nevyplatí utrhnout kvůli pár korunám. Listina je oproti tomu
+produkt — a zároveň chvíle, kdy má rodina k předplatnému nejblíž,
+protože ji potřebuje k soudu tenhle týden.
+
+> **Brána patří na koncový bod, ne na tlačítko.** Schované tlačítko je
+> nápověda, ne zámek: `/api/zpravy/vypis` proto kontroluje předplatné
+> sám a vrací 402.
+
+> Když se dělicí čára posune, musí se opravit i věty na `/cenik`,
+> v `SROVNANI`, v popisu tarifu a na `/predplatne`. Slib „zamkne se jen
+> zapisování" přestal být pravdivý ve chvíli, kdy se zamkly i listiny.
+
+**Jednorázový nákup dokumentu zatím nestavíme.** Rozbil by tu jedinou
+věc, kvůli které se neplatící rodina vrací k předplatnému, a měsíční
+tarif tu roli plní sám — 199 Kč, stáhnout, kdykoli zrušit. Až data
+ukážou, že si lidé kupují měsíc a hned ruší, je to signál postavit to
+pořádně; do té doby by to byl druhý platební tok a druhý produkt
+v katalogu kvůli odhadu.
+
 ### Souhrn pro soud a advokáta
 
 `/souhrn` složí za zvolené období listinu: noci u každého rodiče, náklady

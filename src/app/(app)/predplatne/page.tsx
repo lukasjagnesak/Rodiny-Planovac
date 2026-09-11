@@ -63,7 +63,8 @@ export default async function PredplatnePage({
             </p>
           ) : !pristup.muzeZapisovat ? (
             <p>
-              Zápis je zamčený. Kalendář, výdaje i doklady zůstávají čitelné — nic ti nemažeme.
+              Zápis a vytváření dokumentů je zamčené. Kalendář, výdaje i doklady zůstávají
+              čitelné — nic ti nemažeme.
             </p>
           ) : predplatne.stav === "po_splatnosti" ? (
             <p>

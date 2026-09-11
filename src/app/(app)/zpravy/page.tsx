@@ -26,6 +26,7 @@ export default async function ZpravyPage() {
       session={session}
       zpravy={(data ?? []) as Zprava[]}
       muzePsat={pristup.muzeZapisovat && session.myMembership.role !== "viewer"}
+      muzeStahnout={pristup.muzeZapisovat}
     />
   );
 }

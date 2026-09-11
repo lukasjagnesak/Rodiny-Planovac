@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { eachDayOfInterval } from "date-fns";
 import { requireSession } from "@/lib/session";
+import { nactiPredplatne } from "@/lib/predplatne";
+import { ZamcenyDokument } from "@/components/ui/zamceno";
 import { createClient } from "@/lib/supabase/server";
 import { expandActivities } from "@/lib/activities";
 import { slozSouhrn } from "@/lib/souhrn";
@@ -42,6 +44,30 @@ export default async function SouhrnPage({
   const session = await requireSession();
   const supabase = await createClient();
   const parametry = await searchParams;
+
+  // Listina je produkt, ne zapsaná data. Čísla, ze kterých vzniká,
+  // zůstávají v aplikaci čitelná i bez předplatného; složit z nich
+  // dokument pro soud je to, za co se platí — a je to zároveň chvíle,
+  // kdy má rodina k předplatnému nejblíž.
+  const pristup = await nactiPredplatne(session.family.id);
+  if (!pristup.muzeZapisovat) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-5">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+            Souhrn pro soud a advokáta
+          </h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            Kolik nocí děti u koho byly, co se za ně utratilo a kdo vozil.
+          </p>
+        </div>
+        <ZamcenyDokument
+          nadpis="Souhrn se vytváří s předplatným"
+          popis="Podklad pro soud, advokáta nebo mediátora složí Klidoo z toho, co máte zapsané — noci u rodičů, náklady i odvozy za zvolené období."
+        />
+      </div>
+    );
+  }
 
   const { od, do: doData, klic } = urciObdobi(parametry.od, parametry.do);
   const odKlic = toDateKey(od);

@@ -29,10 +29,13 @@ export function ZpravyScreen({
   session,
   zpravy,
   muzePsat,
+  muzeStahnout,
 }: {
   session: SessionContext;
   zpravy: Zprava[];
   muzePsat: boolean;
+  /** Výpis je listina, ne zapsaná data — vytváří se s předplatným. */
+  muzeStahnout: boolean;
 }) {
   const router = useRouter();
   const [text, setText] = React.useState("");
@@ -117,7 +120,7 @@ export function ZpravyScreen({
             Domluva, která zůstane zapsaná. Zprávy nejdou upravit ani smazat.
           </p>
         </div>
-        {zpravy.length > 0 ? (
+        {zpravy.length > 0 && muzeStahnout ? (
           <ButtonLink href="/api/zpravy/vypis" variant="secondary" size="sm" prefetch={false}>
             <Download className="h-4 w-4" />
             Výpis pro advokáta

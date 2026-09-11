@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/lib/session";
 import { vytvorDocx } from "@/lib/docx";
 import { vypisKomunikace, type Zprava } from "@/lib/zpravy";
+import { nactiPredplatne } from "@/lib/predplatne";
 
 /**
  * Výpis komunikace ke stažení.
@@ -15,6 +16,17 @@ import { vypisKomunikace, type Zprava } from "@/lib/zpravy";
  */
 export async function GET() {
   const session = await requireSession();
+
+  // Brána patří sem, ne na tlačítko. Schované tlačítko je nápověda,
+  // ne zámek — adresa zůstane funkční pro každého, kdo ji jednou viděl.
+  const pristup = await nactiPredplatne(session.family.id);
+  if (!pristup.muzeZapisovat) {
+    return NextResponse.json(
+      { chyba: "Výpis se vytváří s předplatným. Zprávy zůstávají čitelné v aplikaci." },
+      { status: 402 },
+    );
+  }
+
   const supabase = await createClient();
 
   const { data } = await supabase

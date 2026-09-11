@@ -25,7 +25,7 @@ const OTAZKY = [
   {
     otazka: "Co se stane po 30 dnech?",
     odpoved:
-      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné, zamkne se jen zapisování. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
+      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
   },
   {
     otazka: "Když zaplatím hned, přijdu o zbytek zkušebního období?",
@@ -171,7 +171,8 @@ export default function Cenik() {
             Co se změní, když se nezaplatí
           </h2>
           <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-ink-muted">
-            Nic se nemaže ani neschovává. Po zkušebním období se zamkne zápis — číst můžeš dál.
+            Nic se nemaže ani neschovává. Po zkušebním období se zamkne zápis a vytváření
+            dokumentů — číst můžeš dál.
           </p>
           <SrovnaniTarifu className="mt-8" />
         </Sloupec>

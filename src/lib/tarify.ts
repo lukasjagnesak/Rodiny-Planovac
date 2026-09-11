@@ -38,7 +38,7 @@ export const ZKUSEBNI_SLIB = {
     "Všechny funkce, žádná omezená verze.",
     "Bez zadání karty — nic se samo nestrhne.",
     "Druhý rodič se může připojit hned a taky nic neplatí.",
-    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné, zamkne se jen zapisování.",
+    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů.",
   ],
 } as const;
 
@@ -53,8 +53,17 @@ export const ZKUSEBNI_SLIB = {
 export const SROVNANI: { co: string; bez: boolean; s: boolean; pozn?: string }[] = [
   { co: "Kalendář, výdaje, doklady i zprávy — číst", bez: true, s: true },
   { co: "Přístup pro druhého rodiče a další členy", bez: true, s: true },
-  { co: "Výpis komunikace pro advokáta", bez: true, s: true },
   { co: "Veřejné kalkulačky a vzory dohod", bez: true, s: true },
+  // Listiny jsou to jediné, co se zamyká navíc k zápisu. Zapsaná data
+  // zůstávají čitelná napořád — dokument, který z nich aplikace složí,
+  // je produkt, ne uživatelův obsah.
+  {
+    co: "Souhrn péče a nákladů pro soud",
+    bez: false,
+    s: true,
+    pozn: "čísla zůstanou vidět, listina ne",
+  },
+  { co: "Výpis komunikace pro advokáta", bez: false, s: true },
   { co: "Zapisovat a upravovat v kalendáři", bez: false, s: true },
   { co: "Přidávat výdaje, účtenky a doklady", bez: false, s: true },
   { co: "Psát zprávy druhému rodiči", bez: false, s: true },
