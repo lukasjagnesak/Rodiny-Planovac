@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { expandActivities } from "@/lib/activities";
 import { slozSouhrn } from "@/lib/souhrn";
 import { toDateKey } from "@/lib/dates";
-import { VolbaObdobi, urciObdobi } from "@/components/souhrn/volba-obdobi";
+import { VolbaObdobi } from "@/components/souhrn/volba-obdobi";
+import { urciObdobi } from "@/lib/obdobi";
 import { SouhrnDokument } from "@/components/souhrn/dokument";
 import type {
   Activity,

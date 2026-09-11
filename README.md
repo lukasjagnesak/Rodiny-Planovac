@@ -285,6 +285,35 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### Pomocné funkce sdílené serverem a prohlížečem patří do `lib/`
+
+Modul označený `"use client"` **nejde volat ze serverové komponenty.**
+Import projde, `tsc` projde, `npm run build` projde — a stránka spadne
+až při otevření v prohlížeči:
+
+```
+Attempted to call urciObdobi() from the server but urciObdobi is on
+the client.
+```
+
+Takhle se `/souhrn` po nasazení rozbil na 500. Nezachytilo to nic
+z obvyklé kontroly, protože stránka je za přihlášením a `curl` na ni
+dostane jen přesměrování.
+
+> Co potřebuje server i prohlížeč, patří do `lib/`. V komponentě zůstává
+> jen to, co kreslí.
+
+Zbytek projektu se dá prohledat tímhle — hlásí serverové soubory, které
+volají funkci z klientského modulu:
+
+```bash
+npm run kontrola:hranice
+```
+
+> **Po nasazení proklikej stránky za přihlášením.** Chyby na hranici
+> server/klient a chybějící sloupce v databázi se jinak projeví až
+> uživateli.
+
 ### Co se zamyká bez předplatného
 
 Dělicí čára vede mezi **zapsanými daty** a **listinami, které z nich
