@@ -59,12 +59,27 @@ export function adsCil(
   return `${id}/${stitek}`;
 }
 
-/** gtag musí existovat dřív, než se na něj zavolá. */
+/**
+ * gtag musí existovat dřív, než se na něj zavolá.
+ *
+ * **Ta funkce musí být obyčejná a musí tlačit `arguments`.** Ne šipková,
+ * ne rest parametry. Vypadá to jako stylistická drobnost, ale není:
+ * gtag.js si z `dataLayer` bere jen položky, které jsou objekt
+ * `arguments`. Obyčejné pole projde `push` bez chyby, v konzoli se nic
+ * neobjeví — a gtag.js ho mlčky přeskočí.
+ *
+ * Stálo nás to všechno: souhlas, `config` i každou konverzi. Značka se
+ * načetla, Tag Assistant ji našel, a přitom neodeslala jediný požadavek,
+ * protože ani jeden z našich příkazů k ní nedošel.
+ *
+ * Proto je to doslova ten tvar, který má Google ve své dokumentaci.
+ */
 function zajistiGtag(): void {
   window.dataLayer = window.dataLayer || [];
   if (!window.gtag) {
-    window.gtag = (...args: unknown[]) => {
-      window.dataLayer!.push(args);
+    window.gtag = function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer!.push(arguments);
     };
   }
 }

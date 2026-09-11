@@ -8,7 +8,11 @@
  *
  * Spouští se přes `npm run test:ads`.
  */
-const { adsCil } = require("../.test-build/marketing.js");
+// Musí se nastavit dřív, než se modul načte — konstanty se čtou při
+// vyhodnocení souboru.
+process.env.NEXT_PUBLIC_ADS_ID = "AW-123456789";
+
+const { adsCil, pripravConsentMode } = require("../.test-build/marketing.js");
 const { zapisRegistraci } = require("../.test-build/registrace-mereni.js");
 
 let selhalo = 0;
@@ -31,6 +35,21 @@ ok("chybějící štítek", adsCil("rodina", ID, STITKY) === null);
 ok("neznámý druh události", adsCil("neznamy", ID, STITKY) === null);
 ok("chybějící id účtu", adsCil("registrace", "", STITKY) === null);
 ok("nic nenastaveno", adsCil("registrace", "", {}) === null);
+
+console.log("── tvar příkazů pro gtag ──");
+// gtag.js si z dataLayer bere jen položky, které jsou objekt `arguments`.
+// Obyčejné pole `push` přijme, nic se nerozbije a gtag.js ho přeskočí —
+// značka se načte, Tag Assistant ji najde a neodešle jediný požadavek.
+global.window = { dataLayer: [] };
+pripravConsentMode();
+
+ok("souhlas se do fronty vůbec dostal", window.dataLayer.length === 1);
+ok(
+  "a je to arguments, ne pole",
+  Object.prototype.toString.call(window.dataLayer[0]) === "[object Arguments]",
+);
+ok("první příkaz je souhlas", window.dataLayer[0][0] === "consent");
+ok("a je výchozí, tedy odmítnutý", window.dataLayer[0][1] === "default");
 
 console.log("── registrace se nesmí počítat dvakrát ──");
 // Formulář hlásí registraci hned, `/vitejte` dopočítává tu přes Google.

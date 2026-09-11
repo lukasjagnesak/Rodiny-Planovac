@@ -314,3 +314,4 @@ nedostal data. Zmizí to sama pár hodin po prvním skutečném odeslání.
 | 2026-09-11 | Registrace přes Google se dopočítává na `/vitejte` | Prohlížeč odchází na účty Googlu dřív, než by se stihla změřit |
 | 2026-09-11 | Souhlas přestal viset na `NEXT_PUBLIC_GA_ID` | Bez GA se Consent Mode nenastavil a Google konverze z EU zahazoval |
 | 2026-09-11 | Přidána stránka Kontrola měření | Ověřování konverzí přes DevTools se nedá dělat při každé změně v `.env` |
+| 2026-09-11 | Oprava tvaru gtag: `arguments` místo pole | gtag.js bere z dataLayer jen objekt `arguments`, takže značka neodeslala jediný požadavek |
