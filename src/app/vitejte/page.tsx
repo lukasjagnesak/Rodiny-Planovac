@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeJeNastaveny } from "@/lib/stripe";
 import { OnboardingWizard, type PredvyplnenoZKalkulacky } from "./wizard";
+import { ListaUctu } from "@/components/ui/lista-uctu";
 import type { PatternKind } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Vítejte" };
@@ -76,10 +77,15 @@ export default async function WelcomePage({
   const predvyplneno = plan ? await prevezmiPlan(plan, user.id) : null;
 
   return (
-    <OnboardingWizard
-      defaultName={profile?.full_name ?? ""}
-      predvyplneno={predvyplneno}
-      branaJede={stripeJeNastaveny()}
-    />
+    <>
+      {/* Bez tohohle je průvodce slepá ulička: kdo má účet a nemá rodinu,
+          se sem vrací ze všech cest do aplikace i z přihlášení. */}
+      <ListaUctu email={user.email ?? null} />
+      <OnboardingWizard
+        defaultName={profile?.full_name ?? ""}
+        predvyplneno={predvyplneno}
+        branaJede={stripeJeNastaveny()}
+      />
+    </>
   );
 }

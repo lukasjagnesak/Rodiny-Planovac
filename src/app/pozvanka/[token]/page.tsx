@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ButtonLink } from "@/components/ui/button";
 import { AcceptInviteButton } from "./accept";
+import { ListaUctu } from "@/components/ui/lista-uctu";
 
 export const metadata: Metadata = { title: "Pozvánka do rodiny" };
 
@@ -85,11 +86,17 @@ export default async function InvitePage({
   }
 
   return (
-    <InviteMessage
-      title={`Připojit se k rodině ${familyName}`}
-      text={`Přihlášen jako ${user.email}. Po potvrzení uvidíš kalendář, kroužky i výdaje.`}
-      action={<AcceptInviteButton token={token} />}
-    />
+    <>
+      {/* Pozvánka může být pro jinou adresu, než pod kterou je člověk
+          zrovna přihlášený. Bez možnosti odhlásit se by ji buď přijal
+          pod špatným účtem, nebo neměl kam jít. */}
+      <ListaUctu email={user.email ?? null} />
+      <InviteMessage
+        title={`Připojit se k rodině ${familyName}`}
+        text={`Přihlášen jako ${user.email}. Po potvrzení uvidíš kalendář, kroužky i výdaje.`}
+        action={<AcceptInviteButton token={token} />}
+      />
+    </>
   );
 }
 
@@ -103,7 +110,7 @@ function InviteMessage({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4 py-10">
+    <div className="flex min-h-[70dvh] items-center justify-center px-4 py-10">
       <div className="card w-full max-w-md p-6 text-center">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-brand">
           <UserPlus className="h-6 w-6" />
