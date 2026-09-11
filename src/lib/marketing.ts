@@ -59,20 +59,31 @@ export function adsCil(
   return `${id}/${stitek}`;
 }
 
-/**
- * Consent Mode v2 — musí se nastavit dřív, než se načte gtag.js,
- * jinak Google prvních pár událostí vyhodnotí podle výchozího stavu
- * (a ten je pro EU „povoleno", což nechceme).
- */
-export function pripravConsentMode(): void {
-  if (typeof window === "undefined" || !GA_ID) return;
-
+/** gtag musí existovat dřív, než se na něj zavolá. */
+function zajistiGtag(): void {
   window.dataLayer = window.dataLayer || [];
   if (!window.gtag) {
     window.gtag = (...args: unknown[]) => {
       window.dataLayer!.push(args);
     };
   }
+}
+
+/**
+ * Consent Mode v2 — musí se nastavit dřív, než se načte gtag.js,
+ * jinak Google prvních pár událostí vyhodnotí podle výchozího stavu
+ * (a ten je pro EU „povoleno", což nechceme).
+ *
+ * Nesmí to viset na `GA_ID`. Souhlas se týká i Google Ads, a to je
+ * samostatné ID: kdo měl vyplněné jen `NEXT_PUBLIC_ADS_ID`, tomu se
+ * souhlas nikdy nenastavil a konverze z evropského provozu Google
+ * zahodil — bez jediné chyby v konzoli.
+ */
+export function pripravConsentMode(): void {
+  if (typeof window === "undefined") return;
+  if (!GA_ID && !ADS_ID) return;
+
+  zajistiGtag();
 
   window.gtag!("consent", "default", {
     ad_storage: "denied",
@@ -86,24 +97,19 @@ export function pripravConsentMode(): void {
 }
 
 export function aktualizujConsentMode(volba: { analytika: boolean; marketing: boolean }): void {
-  if (typeof window === "undefined" || !window.gtag) return;
+  if (typeof window === "undefined") return;
+  if (!GA_ID && !ADS_ID) return;
 
-  window.gtag("consent", "update", {
+  // Ne `if (!window.gtag) return`: fronta se dá naplnit i dřív, než
+  // gtag.js doběhne, a souhlas musí být ve frontě první.
+  zajistiGtag();
+
+  window.gtag!("consent", "update", {
     ad_storage: volba.marketing ? "granted" : "denied",
     ad_user_data: volba.marketing ? "granted" : "denied",
     ad_personalization: volba.marketing ? "granted" : "denied",
     analytics_storage: volba.analytika ? "granted" : "denied",
   });
-}
-
-/** gtag musí existovat dřív, než se na něj zavolá. */
-function zajistiGtag(): void {
-  window.dataLayer = window.dataLayer || [];
-  if (!window.gtag) {
-    window.gtag = (...args: unknown[]) => {
-      window.dataLayer!.push(args);
-    };
-  }
 }
 
 /** Načte skript jen jednou, i kdyby se volalo víckrát. */

@@ -262,9 +262,47 @@ Při desítkách konverzí měsíčně nemá smysl A/B testovat — rozdíly jso
 
 ---
 
+## Jak ověřit, že se konverze opravdu odesílá
+
+V DevTools → Network **nefiltruj na `googleads`**. Značka se stahuje
+z `googletagmanager.com`, slovo „googleads“ je až uvnitř jejího kódu,
+takže ten filtr nenajde nic ani při dokonale funkčním měření.
+
+Správné filtry:
+
+| Co hledáš | Filtr | Kdy se to objeví |
+|---|---|---|
+| načtení značky | `gtag` | při každém načtení stránky (po souhlasu) |
+| odeslání konverze | `conversion` | jen ve chvíli samotné konverze |
+
+Odeslání konverze jde vynutit ručně, z konzole na kterékoli stránce
+klidoo.cz:
+
+```js
+gtag('event', 'conversion', { send_to: 'AW-…/…' })
+```
+
+- Požadavek odletí → značka i souhlas jsou v pořádku a problém je
+  v tom, že se naše volání nespustilo, nebo chybí štítek v `.env`.
+- Neodletí nic → buď není `window.gtag`, nebo není marketingový
+  souhlas. Obojí se pozná z `document.getElementById('google-ads')`
+  a z `dataLayer`.
+
+Zaškrtni **Keep log**, jinak se požadavek ztratí s přesměrováním,
+které po konverzi většinou následuje.
+
+Dokud konverze ani jednou neproběhla, hlásí u ní Google Ads **„Nesprávně
+nakonfigurováno“**. Není to chyba nastavení konverze — jen ještě nikdy
+nedostal data. Zmizí to sama pár hodin po prvním skutečném odeslání.
+
+---
+
 ## Historie rozhodnutí
 
 | Datum | Co | Proč |
 |---|---|---|
 | 2026-09-11 | Založen plán, kalkulačka výživného odložena | Dotaz obsazený finančními portály, záměr mimo produkt |
 | 2026-09-11 | Doplněna konverzní značka do aplikace | GA4 na řízení kampaně nestačí, Ads potřebuje vlastní |
+| 2026-09-11 | Měření přesunuto do kořenového layoutu | Mimo `(web)` a `(auth)` gtag vůbec neexistoval, takže konverze za založenou rodinu nešla odeslat |
+| 2026-09-11 | Registrace přes Google se dopočítává na `/vitejte` | Prohlížeč odchází na účty Googlu dřív, než by se stihla změřit |
+| 2026-09-11 | Souhlas přestal viset na `NEXT_PUBLIC_GA_ID` | Bez GA se Consent Mode nenastavil a Google konverze z EU zahazoval |

@@ -9,6 +9,7 @@
  * Spouští se přes `npm run test:ads`.
  */
 const { adsCil } = require("../.test-build/marketing.js");
+const { zapisRegistraci } = require("../.test-build/registrace-mereni.js");
 
 let selhalo = 0;
 function ok(popis, podminka) {
@@ -30,6 +31,34 @@ ok("chybějící štítek", adsCil("rodina", ID, STITKY) === null);
 ok("neznámý druh události", adsCil("neznamy", ID, STITKY) === null);
 ok("chybějící id účtu", adsCil("registrace", "", STITKY) === null);
 ok("nic nenastaveno", adsCil("registrace", "", {}) === null);
+
+console.log("── registrace se nesmí počítat dvakrát ──");
+// Formulář hlásí registraci hned, `/vitejte` dopočítává tu přes Google.
+// Obě cesty potkají stejného člověka a bez téhle značky by Google dostal
+// dvě konverze za jednu registraci.
+const ulozene = new Map();
+global.window = {
+  localStorage: {
+    getItem: (k) => (ulozene.has(k) ? ulozene.get(k) : null),
+    setItem: (k, v) => ulozene.set(k, v),
+  },
+};
+
+ok("první nahlášení projde", zapisRegistraci("uzivatel-1") === true);
+ok("druhé už ne", zapisRegistraci("uzivatel-1") === false);
+ok("jiný člověk je jiná konverze", zapisRegistraci("uzivatel-2") === true);
+ok("bez id se hlásí vždycky", zapisRegistraci(null) === true);
+
+// Zakázané úložiště v anonymním okně nesmí měření umlčet.
+global.window = {
+  localStorage: {
+    getItem: () => {
+      throw new Error("zakázáno");
+    },
+    setItem: () => {},
+  },
+};
+ok("nedostupné úložiště měření nezruší", zapisRegistraci("uzivatel-3") === true);
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\n${selhalo} selhalo.`);
 process.exit(selhalo === 0 ? 0 : 1);

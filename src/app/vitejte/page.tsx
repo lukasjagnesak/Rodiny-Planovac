@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { stripeJeNastaveny } from "@/lib/stripe";
 import { OnboardingWizard, type PredvyplnenoZKalkulacky } from "./wizard";
 import { ListaUctu } from "@/components/ui/lista-uctu";
+import { ZmerRegistraci } from "./zmer-registraci";
 import type { PatternKind } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Vítejte" };
@@ -76,8 +77,15 @@ export default async function WelcomePage({
 
   const predvyplneno = plan ? await prevezmiPlan(plan, user.id) : null;
 
+  // Čerstvě založený účet. Okno je široké schválně — dvojímu započítání
+  // brání značka u uživatele, tohle jen drží stranou ty, kdo tu mají účet
+  // od loňska a rodinu si nikdy nezaložili.
+  const novyUcet =
+    Date.now() - Date.parse(user.created_at) < 24 * 60 * 60 * 1000;
+
   return (
     <>
+      <ZmerRegistraci userId={user.id} novy={novyUcet} />
       {/* Bez tohohle je průvodce slepá ulička: kdo má účet a nemá rodinu,
           se sem vrací ze všech cest do aplikace i z přihlášení. */}
       <ListaUctu email={user.email ?? null} />

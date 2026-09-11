@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { POPIS, ZNACKA } from "@/lib/brand";
+import { MereniSkripty } from "@/components/web/mereni-skripty";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -148,7 +149,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: INSTALACE_SCRIPT }} />
       </head>
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh antialiased">
+        {/*
+          Měření patří sem, ne do jednotlivých skupin.
+
+          Dokud viselo jen na `(web)` a `(auth)`, neexistoval gtag nikde
+          jinde — a `/vitejte` do žádné z nich nepatří. Konverze
+          „Přihlášení rodiny", tedy ten jediný krok, kde rodina opravdu
+          vznikne, se proto nikdy neodeslala. Totéž platilo o pozvánce
+          druhého rodiče a o všem uvnitř aplikace.
+
+          Bez souhlasu se pořád nenačte nic; komponenta si ho čte sama.
+        */}
+        <MereniSkripty />
+        {children}
+      </body>
     </html>
   );
 }

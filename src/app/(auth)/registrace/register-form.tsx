@@ -12,6 +12,7 @@ import { SocialniPrihlaseni } from "@/components/ui/socialni-prihlaseni";
 import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { prettyError } from "../prihlaseni/login-form";
 import { zmer } from "@/lib/mereni";
+import { zapisRegistraci } from "@/lib/registrace-mereni";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -57,7 +58,11 @@ export function RegisterForm() {
 
     // Registrace se počítá i tehdy, když ještě chybí potvrzení e-mailu —
     // jinak by trychtýř tvrdil, že se nikdo neregistroval.
-    zmer("registrace");
+    //
+    // Značka se zapisuje tady i na `/vitejte`, kam se vracejí registrace
+    // přes Google. Tahle podmínka je to jediné, co drží obě cesty od
+    // dvojího započítání téhož člověka.
+    if (zapisRegistraci(data.user?.id ?? null)) zmer("registrace");
 
     // Když je v Supabase zapnuté potvrzení e-mailu, session zatím není.
     if (!data.session) {
