@@ -13,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Sloupec, Nadtitulek, DalsiCteni, FotoPas } from "@/components/web/prvky";
+import { Sloupec, Nadtitulek, DalsiCteni, FotoPas, VyzvaPas } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { UkazkyAplikace } from "@/components/web/ukazky";
 import { Karusel } from "@/components/web/karusel";
@@ -427,6 +427,11 @@ export default async function Domu() {
         </Sloupec>
       </section>
 
+      <VyzvaPas
+        nadpis="Takhle to vypadá i u vás"
+        text="Založení rodiny trvá dvě minuty. Kalendář se naklikne, zbytek se doplní časem."
+      />
+
       {/* ── Funkce ───────────────────────────────────────────────── */}
       <section className="py-14 sm:py-20">
         <Sloupec siroky>
@@ -510,6 +515,12 @@ export default async function Domu() {
           </div>
         </Sloupec>
       </section>
+
+      <VyzvaPas
+        nadpis="Začít můžeš sám, hned teď"
+        text="Druhého rodiče nemusíš nikam přemlouvat. Přidá se, až bude chtít — a nic tím platit nebude."
+        tlacitko="Založit rodinu zdarma"
+      />
 
       {/* ── Rozcestník na obsah ──────────────────────────────────── */}
       <section className="py-14 sm:py-20">

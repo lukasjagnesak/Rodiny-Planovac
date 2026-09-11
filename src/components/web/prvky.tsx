@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/format";
 import { Znak } from "@/components/ui/logo";
+import { ZKUSEBNI_SLIB } from "@/lib/tarify";
 
 /**
  * Stavební prvky veřejného webu.
@@ -270,6 +271,52 @@ export function FotoPas({
           />
         </div>
       </Sloupec>
+    </section>
+  );
+}
+
+
+/**
+ * Pás s výzvou uprostřed stránky.
+ *
+ * Na dlouhé stránce se člověk rozhodne jinde, než kde stránka končí —
+ * jeden po ukázkách aplikace, druhý až když se dozví, že to funguje
+ * i bez druhého rodiče. Dokud byla výzva jen v hlavičce a úplně dole,
+ * musel ten, koho zaujal prostředek stránky, hledat, kam kliknout.
+ *
+ * Slib o zkušebním období je součástí pásu schválně. Tlačítko
+ * „Vyzkoušet zdarma" bez věty o tom, že se nezadává karta, vyvolá
+ * u člověka po rozchodu spíš ostražitost než chuť kliknout.
+ */
+export function VyzvaPas({
+  nadpis,
+  text,
+  tlacitko = "Vyzkoušet zdarma",
+}: {
+  nadpis: string;
+  text: string;
+  tlacitko?: string;
+}) {
+  return (
+    <section className="px-5 py-10 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-line bg-surface px-6 py-8 text-center sm:px-10 sm:py-10">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          {nadpis}
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-[1.0625rem] leading-relaxed text-ink-muted">
+          {text}
+        </p>
+        <Link
+          href="/registrace"
+          className="mt-6 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+        >
+          {tlacitko}
+        </Link>
+        <p className="mt-3 text-sm text-ink-subtle">
+          {ZKUSEBNI_SLIB.dni} dní zdarma, bez zadávání karty. Platí jedna domácnost za celou
+          rodinu.
+        </p>
+      </div>
     </section>
   );
 }
