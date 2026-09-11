@@ -4,7 +4,7 @@ import { subDays } from "date-fns";
 import { requireSession } from "@/lib/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { jeSpravce } from "@/lib/provoz";
-import { kanal, poDnech, trychtyr, zebricek, type Udalost } from "@/lib/provoz-souhrn";
+import { kanal, poDnech, poHodinach, trychtyr, zebricek, type Udalost } from "@/lib/provoz-souhrn";
 import { toDateKey } from "@/lib/dates";
 import { ProvozScreen } from "@/components/provoz/provoz-screen";
 
@@ -53,6 +53,10 @@ export default async function ProvozPage({
 
   const udalosti = (udalostiRaw ?? []) as Udalost[];
 
+  // Ze stejné dávky událostí, bez dalšího dotazu — posledních 24 hodin
+  // je podmnožina každého zvoleného období.
+  const hodiny = poHodinach(udalosti);
+
   const stavy = (predplatna.data ?? []) as { stav: string }[];
   const zaklad = {
     rodin: rodiny.count ?? 0,
@@ -65,6 +69,7 @@ export default async function ProvozPage({
     <ProvozScreen
       obdobi={obdobi}
       dny={poDnech(udalosti, toDateKey(od), toDateKey(do_))}
+      hodiny={hodiny}
       trychtyr={trychtyr(udalosti)}
       kanaly={zebricek(udalosti, kanal)}
       stranky={zebricek(udalosti, (u) => u.cesta, "/")}

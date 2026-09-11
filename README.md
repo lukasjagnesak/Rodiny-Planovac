@@ -285,6 +285,20 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### Postranní menu musí umět rolovat
+
+Sekcí je patnáct a na notebooku se nevejdou. Když `nav` v postranním
+menu neumí rolovat, poslední položky se prostě useknou pod okrajem okna
+a nejde se k nim dostat — takhle správcům zmizel **Provoz**, hned jak
+menu narostlo o dvě položky.
+
+Drží to `overflow-y-auto` **spolu s `min-h-0`**. Samotné `overflow` na
+položce uvnitř `flex` nestačí: bez `min-h-0` se položka odmítne
+zmenšit pod výšku svého obsahu a rolovat nezačne.
+
+> `/nahled-mobil` kreslí menu správce (`spravce`) schválně — je
+> nejdelší, takže se na něm pozná, když se položky přestanou vejít.
+
 ### Pomocné funkce sdílené serverem a prohlížečem patří do `lib/`
 
 Modul označený `"use client"` **nejde volat ze serverové komponenty.**

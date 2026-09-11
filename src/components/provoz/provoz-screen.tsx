@@ -16,7 +16,7 @@ import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Segmented } from "@/components/ui/misc";
 import { formatDayShort } from "@/lib/dates";
 import { formatNumber } from "@/lib/format";
-import type { Den, KrokTrychtyre, Radek } from "@/lib/provoz-souhrn";
+import type { Den, Hodina, KrokTrychtyre, Radek } from "@/lib/provoz-souhrn";
 
 /** V databázi jsou klíče bez diakritiky, na obrazovce patří česky. */
 const NAZEV_ZARIZENI: Record<string, string> = {
@@ -27,6 +27,7 @@ const NAZEV_ZARIZENI: Record<string, string> = {
 export function ProvozScreen({
   obdobi,
   dny,
+  hodiny,
   trychtyr,
   kanaly,
   stranky,
@@ -36,6 +37,8 @@ export function ProvozScreen({
 }: {
   obdobi: number;
   dny: Den[];
+  /** Posledních 24 hodin — nezávisle na zvoleném období. */
+  hodiny: Hodina[];
   trychtyr: KrokTrychtyre[];
   kanaly: Radek[];
   stranky: Radek[];
@@ -202,6 +205,8 @@ export function ProvozScreen({
         radky={zarizeni.map((r) => ({ ...r, nazev: NAZEV_ZARIZENI[r.nazev] ?? r.nazev }))}
       />
 
+      <PoslednichDvacetCtyri hodiny={hodiny} />
+
       <PosledniKontakty kontakty={kontakty} />
     </div>
   );
@@ -283,6 +288,68 @@ function PosledniKontakty({
           </li>
         ))}
       </ul>
+    </Card>
+  );
+}
+
+
+/**
+ * Posledních 24 hodin po hodinách.
+ *
+ * Denní graf je na krátké okno slepý: kampaň spuštěná v poledne,
+ * výpadek v noci i příspěvek, který se chytil, v něm vypadají stejně.
+ * Tohle je jediné místo v přehledu, kde je vidět dnešek — a při zapnuté
+ * reklamě je to ta informace, kvůli které se sem chodí.
+ *
+ * Zvolené období na tuhle kartu nemá vliv. Je to schválně: „posledních
+ * 24 hodin" je otázka, na kterou se člověk ptá nezávisle na tom, jestli
+ * si zrovna prohlíží týden nebo čtvrtletí.
+ */
+function PoslednichDvacetCtyri({ hodiny }: { hodiny: Hodina[] }) {
+  const celkem = hodiny.reduce((s, h) => s + h.zobrazeni, 0);
+  const nejvic = Math.max(1, ...hodiny.map((h) => h.zobrazeni));
+
+  return (
+    <Card>
+      <CardHeader
+        title="Posledních 24 hodin"
+        description={
+          celkem === 0
+            ? "Za posledních 24 hodin nikdo nepřišel."
+            : `${formatNumber(celkem)} zobrazení po hodinách`
+        }
+      />
+      <CardBody className="pt-3">
+        <div className="flex h-28 items-end gap-[3px]">
+          {hodiny.map((h) => (
+            <div
+              key={h.zpet}
+              className="group relative flex h-full flex-1 items-end"
+              title={`${h.popisek} — ${h.zobrazeni} zobrazení, ${h.navstevnici} lidí`}
+            >
+              {/* Nulová hodina má nechat stopu, jinak z pauzy vznikne
+                  mezera, která vypadá jako chybějící data. */}
+              <div
+                className="w-full rounded-t-[3px] bg-brand/80 transition-colors group-hover:bg-brand"
+                style={{
+                  height: h.zobrazeni === 0 ? "2px" : `${Math.max(6, (h.zobrazeni / nejvic) * 100)}%`,
+                  opacity: h.zobrazeni === 0 ? 0.25 : 1,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Popisky jen po šesti hodinách — dvacet čtyři čísel vedle sebe
+            se na mobilu slije v šedý pruh. */}
+        <div className="mt-2 flex gap-[3px] text-[11px] text-ink-subtle">
+          {hodiny.map((h) => (
+            <span key={h.zpet} className="flex-1 text-center">
+              {h.zpet % 6 === 0 ? h.popisek : "\u00a0"}
+            </span>
+          ))}
+        </div>
+      </CardBody>
     </Card>
   );
 }

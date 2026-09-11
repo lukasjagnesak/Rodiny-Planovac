@@ -156,3 +156,67 @@ export function kanal(u: Udalost): string | null {
   if (u.utm_source) return u.utm_medium ? `${u.utm_source} / ${u.utm_medium}` : u.utm_source;
   return u.zdroj;
 }
+
+
+export interface Hodina {
+  /** Začátek hodiny v místním čase, „14:00". */
+  popisek: string;
+  /** Kolikátá hodina zpětně: 0 = probíhající, 23 = nejstarší. */
+  zpet: number;
+  zobrazeni: number;
+  navstevnici: number;
+}
+
+/**
+ * Rozpad posledních 24 hodin po hodinách.
+ *
+ * Denní graf je na krátké okno slepý: kampaň spuštěná v poledne, výpadek
+ * v noci nebo příspěvek, který se chytil, vypadají v denním sloupci
+ * stejně. Tohle je jediné místo, kde je vidět, co se stalo dnes — a při
+ * zapnuté reklamě je to ta informace, kvůli které se do přehledu chodí.
+ *
+ * Počítá se v místním čase, ne v UTC. Rozdíl je v Česku hodina nebo dvě
+ * a „v kolik chodí lidi" je otázka na jejich hodinky, ne na servery.
+ *
+ * Hodiny bez návštěvy zůstávají v řadě jako nuly. Vynechat je by ze
+ * tříhodinové pauzy udělalo souvislou čáru a noc by vypadala jako den.
+ */
+export function poHodinach(udalosti: Udalost[], ted = new Date()): Hodina[] {
+  // Začátek probíhající hodiny — od něj se počítá 24 kroků zpátky.
+  const zacatek = new Date(ted);
+  zacatek.setMinutes(0, 0, 0);
+
+  const mapa = new Map<number, { zobrazeni: number; lide: Set<string> }>();
+
+  for (const u of udalosti) {
+    if (u.druh !== "zobrazeni") continue;
+    const kdy = new Date(u.created_at);
+    if (Number.isNaN(kdy.getTime())) continue;
+
+    // Kolik hodin zpátky událost patří. Cokoli od začátku probíhající
+    // hodiny dál je koš 0; starší se zaokrouhlí nahoru, protože událost
+    // deset minut před celou patří do hodiny předchozí, ne do téhle.
+    const rozdil = zacatek.getTime() - kdy.getTime();
+    const kos = rozdil <= 0 ? 0 : Math.ceil(rozdil / (60 * 60 * 1000));
+    if (kos > 23) continue;
+
+    const zaznam = mapa.get(kos) ?? { zobrazeni: 0, lide: new Set<string>() };
+    zaznam.zobrazeni += 1;
+    if (u.navstevnik) zaznam.lide.add(u.navstevnik);
+    mapa.set(kos, zaznam);
+  }
+
+  const vysledek: Hodina[] = [];
+  for (let zpet = 23; zpet >= 0; zpet -= 1) {
+    const kdy = new Date(zacatek.getTime() - zpet * 60 * 60 * 1000);
+    const zaznam = mapa.get(zpet);
+    vysledek.push({
+      popisek: `${String(kdy.getHours()).padStart(2, "0")}:00`,
+      zpet,
+      zobrazeni: zaznam?.zobrazeni ?? 0,
+      navstevnici: zaznam?.lide.size ?? 0,
+    });
+  }
+
+  return vysledek;
+}

@@ -108,7 +108,9 @@ export default function NahledMobil() {
   if (process.env.NODE_ENV === "production") notFound();
 
   return (
-    <AppShell session={session} novychOznameni={2} neprectenychZprav={1} spravce={false}>
+    // `spravce` je zapnutý schválně: menu správce je nejdelší, takže se
+    // na něm pozná, když se položky přestanou vejít na obrazovku.
+    <AppShell session={session} novychOznameni={2} neprectenychZprav={1} spravce>
       <Dashboard
         session={session}
         kroky={[]}

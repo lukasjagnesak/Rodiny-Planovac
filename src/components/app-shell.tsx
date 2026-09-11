@@ -320,7 +320,12 @@ export function AppShell({
           <Zvonecek pocet={novychOznameni} />
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1">
+        {/* `min-h-0` a rolování nejsou kosmetika: bez nich se položky,
+            které se nevejdou, jen useknou pod okrajem okna a nedá se
+            k nim dostat. Přesně tak zmizel na notebooku Provoz, když
+            menu narostlo o dvě položky. Posuvník je skrytý, protože se
+            objevuje jen na krátkých obrazovkách. */}
+        <nav className="bez-posuvniku flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
           {NAV.map((item) => (
             <SidebarLink
               key={item.href}
