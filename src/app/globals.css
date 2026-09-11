@@ -23,6 +23,15 @@
    nesou tlumené varianty `-bg`, jinak je mřížka nečitelná.
    ─────────────────────────────────────────────────────────── */
 :root {
+  /*
+   * Výška mobilní spodní lišty bez bezpečné zóny telefonu.
+   *
+   * Je tu proto, aby ji znala lišta i všechno, co nad ní plave. Dokud
+   * bylo odsazení plovoucího tlačítka napsané zvlášť, schovalo se pod
+   * lištu, jakmile lišta o kousek povyrostla.
+   */
+  --lista-vyska: 4.75rem;
+
   --canvas: oklch(98% 0.012 75);
   --surface: oklch(99.3% 0.006 75);
   --surface-2: oklch(95.5% 0.014 75);
@@ -372,6 +381,27 @@
     display: none;
   }
 
+  /*
+   * Cokoli, co na mobilu plave nad spodní lištou.
+   *
+   * Odsazení bylo dřív napsané číslem („76 px"), které se odhadlo od
+   * oka a nepočítalo s bezpečnou zónou telefonu. Na iPhonu s domovským
+   * indikátorem je lišta o dalších ~34 px vyšší, takže plovoucí
+   * tlačítko skončilo uvnitř ní — a protože má lišta vyšší vrstvu,
+   * překreslila ho úplně.
+   *
+   * Teď to vychází ze stejné proměnné, jakou má lišta jako svou nejmenší
+   * výšku, takže se ty dvě věci nemůžou rozejít.
+   */
+  .nad-listou {
+    bottom: calc(var(--lista-vyska) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  }
+  @media (min-width: 1024px) {
+    /* Na počítači žádná spodní lišta není. */
+    .nad-listou {
+      bottom: 1.5rem;
+    }
+  }
   .safe-bottom {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
   }

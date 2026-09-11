@@ -295,7 +295,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
             ))}
           </ul>
 
-          <div className="safe-bottom sticky bottom-20 flex gap-2 lg:bottom-4">
+          <div className="nad-listou sticky flex gap-2">
             <Button
               size="lg"
               className="flex-1 shadow-[var(--shadow-pop)]"

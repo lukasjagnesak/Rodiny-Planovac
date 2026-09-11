@@ -376,7 +376,7 @@ export function AppShell({
       </div>
 
       {/* ── Mobilní spodní navigace ─────────────────────────────── */}
-      <nav className="no-print safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
+      <nav className="no-print safe-bottom fixed inset-x-0 bottom-0 z-40 flex min-h-[var(--lista-vyska)] border-t border-line bg-surface/95 px-1 pt-1 backdrop-blur-md lg:hidden">
         {MOBIL_HLAVNI.map((item) => (
           <TabLink
             key={item.href}

@@ -455,7 +455,7 @@ export function ExpensesScreen({
             setFormOpen(true);
           }}
           aria-label="Přidat výdaj"
-          className="fixed bottom-[76px] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-[var(--shadow-pop)] transition-transform active:scale-95 lg:bottom-6 lg:right-6"
+          className="nad-listou fixed right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-[var(--shadow-pop)] transition-transform active:scale-95 lg:right-6"
         >
           <Plus className="h-6 w-6" />
         </button>
