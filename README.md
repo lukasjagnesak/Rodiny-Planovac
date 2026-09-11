@@ -163,12 +163,13 @@ dne a projeví se i na „dnes končí" na přehledu.
 
 ### Testy v prohlížeči
 
-Dva testy potřebují běžící aplikaci a Playwright, takže nejsou v `npm test`:
+Tři testy potřebují běžící aplikaci a Playwright, takže nejsou v `npm test`:
 
 ```bash
 npm run dev -- --port 3100
 PLAYWRIGHT=$(npm root -g)/playwright npm run test:souhlas   # cookies
 PLAYWRIGHT=$(npm root -g)/playwright npm run test:mobil     # šířka na mobilu
+PLAYWRIGHT=$(npm root -g)/playwright npm run test:instalace-karta  # nabídka na plochu
 ```
 
 `test:mobil` hlídá, že stránka není širší než displej. Kdyby byla,
@@ -176,6 +177,12 @@ prohlížeč ji zmenší a všechno na ní vypadá roztaženě — v kódu přit
 není co poznat. Aby šel změřit i přehled, který jinak chce přihlášení
 a databázi, existuje ve vývojovém režimu `/nahled-mobil` s vymyšlenou
 rodinou. V ostrém provozu ta stránka vrací 404.
+
+`test:instalace-karta` hlídá nabídku „Klidoo na ploše" na přehledu.
+Nejde otestovat jinak než v prohlížeči — rozhoduje o ní `display-mode`,
+dotyková obrazovka a výzva od Chromu. Kromě toho, že se vůbec ukáže,
+kontroluje, že je na stránce **jedna**: byly doby, kdy se kreslila
+dvakrát.
 
 ### 4b. Přihlášení přes Google a Apple (nepovinné)
 

@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Check, Download, Plus, Share, X } from "lucide-react";
+import { Check, Download, Plus, Share, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
-import { cn } from "@/lib/format";
 import { zmer } from "@/lib/mereni";
+import { Card, CardBody } from "@/components/ui/card";
 import {
   jeApple,
+  jeOdlozeno,
   jeSpustenaJakoAplikace,
   zpusobInstalace,
   type ZpusobInstalace,
@@ -226,62 +227,83 @@ export function StavInstalace() {
   );
 }
 
-const KLIC_SKRYTO = "klidoo_instalace_skryto";
-
 /**
- * Nenápadná nabídka nahoře v aplikaci.
+ * Klíč je nový schválně.
  *
- * Ukáže se jednou. Kdo ji odklikne, už ji neuvidí — a tlačítko zůstane
- * v nastavení, kde si ho najde, až bude chtít. Vyskakovací okno u každého
- * otevření by z aplikace pro klidnější rodičovství udělalo něco, co
- * otravuje jako všechno ostatní.
+ * Původní `klidoo_instalace_skryto` držel „1" a znamenal navždycky.
+ * Kdo tehdy minul křížek, nabídku už nikdy neuviděl — a to je právě ten
+ * stav, který se tímhle ruší. Starý klíč se proto nečte; kdo má
+ * aplikaci na ploše, stejně nic neuvidí, protože se nabídka nekreslí.
  */
-export function VyzvaInstalace() {
-  const { zpusob } = useZpusob();
-  const [skryto, setSkryto] = React.useState(true);
+const KLIC_ODKLAD = "klidoo_instalace_odlozeno";
+
+/** Sdílené „teď ne" pro kartu na přehledu i pro pruh nad stránkou. */
+function useOdklad(): { odlozeno: boolean; odloz: () => void } {
+  // Výchozí `true`: než se úložiště přečte, radši nic, aby nabídka
+  // po načtení stránky nepodskočila.
+  const [odlozeno, setOdlozeno] = React.useState(true);
 
   React.useEffect(() => {
     try {
-      setSkryto(window.localStorage.getItem(KLIC_SKRYTO) === "1");
+      setOdlozeno(jeOdlozeno(window.localStorage.getItem(KLIC_ODKLAD), Date.now()));
     } catch {
-      setSkryto(false);
+      setOdlozeno(false);
     }
   }, []);
 
-  if (skryto || zpusob === null || zpusob === "nic") return null;
-
-  function zaviri() {
-    setSkryto(true);
+  const odloz = React.useCallback(() => {
+    setOdlozeno(true);
     try {
-      window.localStorage.setItem(KLIC_SKRYTO, "1");
+      window.localStorage.setItem(KLIC_ODKLAD, String(Date.now()));
     } catch {
       /* soukromé okno — vrátí se to, a to nevadí */
     }
-  }
+  }, []);
+
+  return { odlozeno, odloz };
+}
+
+/**
+ * Karta na přehledu.
+ *
+ * Tohle je to místo, kde se o přidání na plochu má člověk dozvědět.
+ * Přehled je první obrazovka po přihlášení a jediná, kterou uvidí každý;
+ * nenápadný pruh nad stránkou se dal přehlédnout tak snadno, že se to
+ * dalo poznat na číslech.
+ *
+ * Nekreslí se na počítači s prohlížečem, který přidávání neumí, ani
+ * nikomu, kdo aplikaci na ploše už má — o obojí se stará
+ * `zpusobInstalace`, takže tady žádná podmínka navíc není.
+ */
+export function KartaInstalace() {
+  const { zpusob } = useZpusob();
+  const { odlozeno, odloz } = useOdklad();
+
+  if (odlozeno || zpusob === null || zpusob === "nic") return null;
 
   return (
-    <div
-      className={cn(
-        "mb-4 flex items-center gap-3 rounded-2xl border border-line bg-surface p-3",
-        // Na počítači se aplikace na plochu nepřidává, tam je to zbytečné.
-        "lg:hidden",
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-ink">Klidoo na ploše</p>
-        <p className="mt-0.5 text-xs text-ink-muted">
-          Otevře se jedním ťuknutím, bez hledání v prohlížeči.
-        </p>
-      </div>
-      <TlacitkoInstalace popisek="Přidat" className="shrink-0" />
-      <button
-        type="button"
-        onClick={zaviri}
-        aria-label="Skrýt nabídku"
-        className="shrink-0 rounded-lg p-1.5 text-ink-subtle hover:bg-surface-2 hover:text-ink"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
+    <Card className="mb-4">
+      <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-brand">
+          <Smartphone className="h-5 w-5" />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-ink">Klidoo na ploše</p>
+          <p className="mt-1 text-sm text-ink-muted">
+            Otevře se jedním ťuknutím, na celou obrazovku a bez adresního řádku.
+            Nic se nestahuje z obchodu a nezabírá to místo — ikona se jen objeví
+            mezi ostatními aplikacemi.
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <TlacitkoInstalace />
+          <Button variant="ghost" size="md" onClick={odloz}>
+            Teď ne
+          </Button>
+        </div>
+      </CardBody>
+    </Card>
   );
 }

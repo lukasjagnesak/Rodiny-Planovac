@@ -39,7 +39,8 @@
     "test:barvy": "tsc src/lib/format.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/barvy.test.js",
     "test:prehled": "tsc src/lib/prehled-karty.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/prehled.test.js",
     "test:edupage-souhrn": "tsc src/lib/edupage-souhrn.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/edupage-souhrn.test.js",
-    "test:limit": "tsc src/lib/limit.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/limit.test.js"
+    "test:limit": "tsc src/lib/limit.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck && node tests/limit.test.js",
+    "test:instalace-karta": "node tests/instalace.browser.test.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

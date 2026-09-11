@@ -12,6 +12,8 @@ const {
   jeSpustenaJakoAplikace,
   jeApple,
   zpusobInstalace,
+  jeOdlozeno,
+  ODKLAD_DNI,
 } = require("../.test-build/instalace.js");
 
 let selhalo = 0;
@@ -64,6 +66,28 @@ ok(
   "prohlížeč bez podpory nenabízí nic",
   zpusobInstalace({ jakoAplikace: false, maVyzvu: false, apple: false }) === "nic",
 );
+
+console.log("── odklad nabídky ──");
+// „Teď ne" nesmí znamenat „nikdy". Přesně tím se stalo, že nabídku
+// skoro nikdo neviděl.
+const DEN = 24 * 60 * 60 * 1000;
+const TED = Date.UTC(2026, 8, 11);
+
+ok("kdo nic nezavřel, nabídku vidí", jeOdlozeno(null, TED) === false);
+ok("hned po zavření se neukáže", jeOdlozeno(String(TED - 1000), TED) === true);
+ok(
+  "den před koncem odkladu pořád mlčí",
+  jeOdlozeno(String(TED - (ODKLAD_DNI - 1) * DEN), TED) === true,
+);
+ok(
+  "po odkladu se vrátí",
+  jeOdlozeno(String(TED - (ODKLAD_DNI + 1) * DEN), TED) === false,
+);
+
+// Stará verze ukládala řetězec „1". Takový podpis znamená „zavřeno
+// napořád" a právě ten se ruší — po aktualizaci má nabídku vidět znovu.
+ok("starý zápis odklad nedrží", jeOdlozeno("1", TED) === false);
+ok("nesmysl v úložišti nabídku neschová", jeOdlozeno("nesmysl", TED) === false);
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\n${selhalo} selhalo.`);
 process.exit(selhalo === 0 ? 0 : 1);

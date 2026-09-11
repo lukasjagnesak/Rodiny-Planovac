@@ -67,3 +67,31 @@ export function zpusobInstalace(stav: {
   if (stav.apple) return "navod-ios";
   return "nic";
 }
+
+/**
+ * Odklad nabídky.
+ *
+ * „Teď ne" nesmí znamenat „nikdy". Kdo si aplikaci nepřidá napoprvé,
+ * obvykle ještě neví, jestli mu Klidoo bude k něčemu — a za dva týdny
+ * už to ví. Napořád zavřená nabídka byla důvod, proč ji skoro nikdo
+ * neviděl: stačilo jednou minout křížek.
+ *
+ * Kdo aplikaci opravdu nainstaluje, žádný odklad neřeší — nabídka se mu
+ * přestane kreslit sama, protože `zpusobInstalace` vrátí `nic`.
+ */
+export const ODKLAD_DNI = 14;
+
+export function jeOdlozeno(
+  ulozene: string | null,
+  ted: number,
+  dni: number = ODKLAD_DNI,
+): boolean {
+  if (!ulozene) return false;
+
+  const kdy = Number(ulozene);
+  // Nečitelná hodnota není důvod nabídku schovat. Spíš naopak: něco se
+  // pokazilo a jediná škoda, která z toho plyne, je nabídka navíc.
+  if (!Number.isFinite(kdy) || kdy <= 0) return false;
+
+  return ted - kdy < dni * 24 * 60 * 60 * 1000;
+}

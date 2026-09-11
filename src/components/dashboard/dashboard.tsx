@@ -19,6 +19,7 @@ import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { zapnuteKarty, type KartaId } from "@/lib/prehled-karty";
 import type { EdupageRow } from "@/components/edupage/homework-screen";
 import { Zaciname, type Krok } from "@/components/dashboard/zaciname";
+import { KartaInstalace } from "@/components/ui/instalace";
 import { Avatar, Badge, Dot } from "@/components/ui/badge";
 import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { ButtonLink } from "@/components/ui/button";
@@ -577,6 +578,11 @@ export function Dashboard({
       </div>
 
       <Zaciname kroky={kroky} />
+
+      {/* Přehled je jediná obrazovka, kterou uvidí opravdu každý.
+          Jinde se nabídka na plochu dala přehlédnout tak spolehlivě,
+          že ji skoro nikdo nenašel. */}
+      <KartaInstalace />
 
       {/* Bez dětí toho přehled moc neumí a tahle pobídka nesmí zmizet
           jen proto, že si rodič vypnul kartu s útratou. */}
