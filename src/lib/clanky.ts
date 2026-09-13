@@ -18,11 +18,10 @@ import { dohoda } from "../obsah/clanky/dohoda";
 import { prazdniny } from "../obsah/clanky/prazdniny";
 import { ctyriMesice } from "../obsah/clanky/ctyri-mesice";
 import { vanoce } from "../obsah/clanky/vanoce";
-import { prvniVanoce } from "../obsah/clanky/prvni-vanoce";
 import { konecRoku } from "../obsah/clanky/konec-roku";
 import { tydenniProvoz } from "../obsah/clanky/tydenni-provoz";
-import { nechteliJsme } from "../obsah/clanky/nechteli-jsme";
-import { neniToNapul } from "../obsah/clanky/neni-to-napul";
+import { penize } from "../obsah/clanky/penize";
+import { vanoceRozhovor } from "../obsah/clanky/vanoce-rozhovor";
 import { novaPartnerka } from "../obsah/clanky/nova-partnerka";
 
 export const VSECHNY: Clanek[] = [
@@ -31,11 +30,10 @@ export const VSECHNY: Clanek[] = [
   prazdniny,
   ctyriMesice,
   vanoce,
-  prvniVanoce,
   konecRoku,
   tydenniProvoz,
-  nechteliJsme,
-  neniToNapul,
+  penize,
+  vanoceRozhovor,
   novaPartnerka,
 ];
 

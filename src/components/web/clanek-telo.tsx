@@ -89,6 +89,9 @@ function Kus({ blok }: { blok: Blok }) {
     case "odpoved":
       return (
         <p className="mt-3 leading-relaxed text-ink-muted">
+          {blok.kdo ? (
+            <span className="mr-1.5 font-semibold text-ink">{blok.kdo}:</span>
+          ) : null}
           <Text text={blok.text} />
         </p>
       );

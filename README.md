@@ -320,6 +320,12 @@ kdyby to byl jen odstavec v textu, jednou by se na něj zapomnělo.
 > obchodních praktik bez ohledu na to, jak jsou míněné. Hlídá to
 > `npm run test:clanky`.
 
+Rozhovory se píšou jako **konverzace, ne jako scénka**. Žádná teze,
+žádný oblouk, žádná pointa na konci; víc hlasů (`odpoved` má `kdo`),
+odpovědi, které si protiřečí, a konec uprostřed řeči. Text, který někam
+míří, čtenář pozná a přestane mu věřit — a u tohohle publika se to
+nevrací.
+
 > Nová veřejná stránka musí do `PUBLIC_PATHS` v `src/proxy.ts`, jinak ji
 > middleware pošle na přihlášení a nevidí ji ani návštěvník
 > z vyhledávače, ani robot — přitom v mapě webu je. Hlídá to

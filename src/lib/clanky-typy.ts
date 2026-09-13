@@ -16,7 +16,12 @@ export type Blok =
   | { typ: "citace"; text: string; kdo?: string }
   /** Otázka a odpověď v příbězích psaných jako rozhovor. */
   | { typ: "otazka"; text: string }
-  | { typ: "odpoved"; text: string }
+  /**
+   * `kdo` je u rozhovoru s víc lidmi povinné v praxi, i když ne v typu:
+   * bez jména se nepozná, kdo mluví, a odpovědi dvou lidí splynou
+   * v jeden hlas. Jednoho zpovídaného jde nechat bez jména.
+   */
+  | { typ: "odpoved"; text: string; kdo?: string }
   /** Vyčnívající rámeček — praktická poznámka, ne ozdoba. */
   | { typ: "poznamka"; text: string };
 

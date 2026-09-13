@@ -248,12 +248,12 @@ mu pomůže, ne nabídku.
 
 **Út 29. 9. · rozhovor**
 
-> „Co se u vás musí za týden domluvit?“
+> „Co se řešilo tenhle týden?“
 >
-> „Míň, než si lidi myslí. Kroužky jsou dané, ty se řeší jednou v září.
-> Skutečná práce je v odchylkách: ve středu ředitelské volno, v pátek
-> narozeniny a odvoz, v neděli vystoupení. Plus věci, co přijdou
-> v pondělí ráno — teplota, zapomenutý úbor, změna v rozvrhu.“
+> **Ondřej:** Nic zvláštního. Ve středu mělo být ředitelské volno, tak
+> jsme to přehazovali. A starší chce jít v sobotu k někomu na přespání.
+>
+> **Tereza:** A ztratil se cvičební úbor. To se řeší každý týden.
 
 *Odkaz: `/clanky/jak-vypada-vsedni-tyden-ve-dvou-domovech`*
 
@@ -324,17 +324,20 @@ Nejvděčnější měsíc na návody.
 
 **Čt 15. 10. · rozhovor**
 
-> „Čeho jste se bál nejvíc?“
+> „Co tedy problém byl?“
 >
-> „Že to malého rozhodí. Že bude mít dva pokoje a ani jeden domov.“
+> **Markéta:** Všechno kolem. Boty, brýle, lyžák, kroužky, školní fotky.
+> Platila jsem to já, protože to bylo u mě a bylo to rychlejší, než se
+> ptát.
 >
-> „A jak to dopadlo?“
+> „Jak dlouho to tak bylo?“
 >
-> „Rozhodilo ho něco jiného. Ne stěhování — na to si zvykl za dva
-> měsíce. Rozhodil ho půlrok, kdy jsme spolu neuměli mluvit a on byl
-> mezi námi jako pošťák. ‚Řekni tátovi, že…‘ To bylo to špatné.“
+> **Markéta:** Rok. Možná víc.
+>
+> **David:** Netušil jsem, kolik toho je. To říkám na svou obhajobu
+> i na svou hanbu.
 
-*Odkaz: `/clanky/stridavou-peci-jsme-nechteli-ani-jeden`*
+*Odkaz: `/clanky/rozhovor-o-penezich-ve-dvou-domovech`*
 
 **Ne 18. 10. · scéna**
 
@@ -461,16 +464,14 @@ Ve dvou týdnech jsou proto čtyři příspěvky místo tří — schválně.
 
 **Út 10. 11. · rozhovor**
 
-> „U nás to není napůl a dlouho jsem se za to styděla.“
+> „Řeší to okolí?“
 >
-> „Všude se mluví o střídavce jako o tom správném řešení. Když jsem
-> někde řekla, jak to máme my, měla jsem pocit, že se musím obhajovat —
-> buď jsem mu bránila, nebo on nechtěl. Ani jedno není pravda.“
+> **Markéta:** Když někde řeknu, jak to máme, mám pocit, že se musím
+> obhajovat. Buď jsem mu bránila, nebo on nechtěl. Ani jedno není pravda.
 >
-> Nerovné rozdělení péče není selhání. Je to často jediná varianta,
-> která dává smysl při té práci a těch vzdálenostech, co doopravdy máte.
+> **David:** Mě se nikdo neptá.
 
-*Odkaz: `/clanky/u-nas-to-neni-napul`*
+*Odkaz: `/clanky/rozhovor-o-penezich-ve-dvou-domovech`*
 
 **Čt 12. 11. · rozhovor**
 
@@ -518,15 +519,21 @@ Ve dvou týdnech jsou proto čtyři příspěvky místo tří — schválně.
 > Odpověď obvykle není „přesně půlka“. Bývá to „nikdo se nehádal a vědělo
 > se, co bude“.
 
-**Ne 22. 11. · příběh**
+**Ne 22. 11. · rozhovor**
 
-> Modelový příběh o prvních Vánocích ve dvou domovech — a o tom, že jediná
-> chyba nebyla v tom, na čem se ti dva domluvili, ale kdy.
+> „Kdy jste loni začali řešit Vánoce?“
 >
-> Devatenáctého prosince to byl rozhovor o tom, kdo komu co vzal.
-> O rok později, čtvrtého listopadu, to byl jeden telefonát.
+> **Martin:** Devatenáctého prosince.
+>
+> **Petra:** Osmnáctého. Psal jsi mi osmnáctého večer.
+>
+> „Co děláte letos jinak?“
+>
+> **Martin:** Domlouvali jsme se čtvrtého listopadu.
+>
+> **Petra:** Trvalo to jeden telefonát.
 
-*Odkaz: `/clanky/prvni-vanoce-ve-dvou-domovech`*
+*Odkaz: `/clanky/rozhovor-o-vanocich`*
 
 **Út 24. 11. · mikro-návod**
 
@@ -564,15 +571,19 @@ v komentářích.
 
 **Čt 3. 12. · rozhovor**
 
-> „Jsem ta nová partnerka a taky vozím na kroužky.“
+> „Co vás na tom nejvíc štvalo?“
 >
-> Role, kterou žádný papír nezná, a přitom drží půlku provozu. Vozí,
-> krmí a čeká s dětmi u zubaře — a informace se dozvídá poslední.
+> **Lucie:** Že jsem se věci dozvídala poslední. On si to domluvil s ní,
+> řekl mi to večer, a to už jsem měla domluvenou schůzku na dobu, kdy se
+> mělo někam jet.
 >
-> „Vidím teď kalendář stejně jako on. Nic víc: nerozhoduju o ničem, jen
-> vím. Ukázalo se, že ‚jen vědět‘ řešilo skoro všechno, co mě štvalo.“
+> **Petr:** To mě upřímně nenapadlo.
+>
+> „Rozhodujete o něčem?“
+>
+> **Lucie:** Ne. Jen vím.
 
-*Odkaz: `/clanky/jsem-ta-nova-partnerka`*
+*Odkaz: `/clanky/rozhovor-s-novou-partnerkou`*
 
 **Ne 6. 12. · scéna**
 
@@ -675,7 +686,7 @@ Sekce `/clanky` běží na **plánovaném vydávání**: text má datum a do toh
 dne se nikde neobjeví — ani ve výpisu, ani v mapě webu, a na přímý odkaz
 vrátí 404. Je to kalendář, ne archiv.
 
-Jedenáct textů je napsaných do konce roku. Příspěvek na sítích nesmí
+Deset textů je napsaných do konce roku. Příspěvek na sítích nesmí
 odkazovat na článek, který ještě nevyšel — data jsou v
 `src/obsah/clanky/`.
 
@@ -684,7 +695,7 @@ odkazovat na článek, který ještě nevyšel — data jsou v
 jména jsou vymyšlená. Vykresluje to komponenta podle typu, ne autor při
 psaní, takže se na to nedá zapomenout.
 
-Ta věta o recenzi tam není navíc. Pět z těch příběhů je psaných jako
+Ta věta o recenzi tam není navíc. Čtyři z těch příběhů jsou psané jako
 rozhovor s rodinou, která Klidoo používá, a takový text má blízko
 k doporučení — vymyšlené zákaznické recenze zakazuje evropská úprava
 nekalých obchodních praktik bez ohledu na to, jak jsou míněné.
@@ -710,3 +721,4 @@ slabé místo.
 | 2026-09-13 | Kalendář příspěvků do konce roku a sedm článků | Listopad patří celý Vánocům, prosinec se ubírá — v nejcitlivějším měsíci působí nabídka necitlivě |
 | 2026-09-13 | Pseudo-rozhovory jako označené modelové příběhy | Vymyšlený rozhovor podaný jako skutečný je u produktu stojícího na důvěře trvalá škoda |
 | 2026-09-13 | Rozhovory s rodiči jako modelové příběhy, ne doporučení | Vymyšlená zákaznická recenze je zakázaná i s označením; hrdinou je provoz rodiny, ne aplikace |
+| 2026-09-13 | Rozhovory přepsané jako konverzace, ne jako scénky | Text s tezí, obloukem a pointou na konci není rozhovor, ale inscenace — a je to poznat |

@@ -75,6 +75,21 @@ ok(
   VSECHNY.filter((c) => c.druh === "clanek").every((c) => !/modelov/i.test(c.perex)),
 );
 
+console.log("── odkazy mezi texty ──");
+// Slug se dá přejmenovat nebo text smazat a odkaz z jiného článku pak
+// vede na 404, kterou nikdo neuvidí, dokud si na ni někdo neklikne.
+const slugy = new Set(VSECHNY.map((c) => c.slug));
+const vnitrni = VSECHNY.flatMap((c) =>
+  (c.dalsi ?? [])
+    .filter((d) => d.odkaz.startsWith("/clanky/"))
+    .map((d) => ({ z: c.slug, kam: d.odkaz.replace("/clanky/", "") })),
+);
+
+ok(`nějaké odkazy mezi texty existují (${vnitrni.length})`, vnitrni.length > 0);
+for (const { z, kam } of vnitrni) {
+  ok(`${z} → ${kam}`, slugy.has(kam));
+}
+
 console.log("── označení se nedá obejít ──");
 // Tohle je jediná část, kde selhání není kosmetické. Část příběhů je
 // psaná jako rozhovor s rodinou, která Klidoo používá — takový text má
