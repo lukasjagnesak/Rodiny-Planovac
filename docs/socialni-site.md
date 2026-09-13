@@ -33,11 +33,12 @@ patnáct.**
 |---|---|---|
 | **Facebook** | 70 % | Tady je publikum. Českým rodičům mezi 30 a 45 lety je Facebook pořád hlavní síť a rodičovské skupiny mají desítky tisíc členů. |
 | **Instagram** | 25 % | Mladší, vizuální. Dobré pro krátká videa z aplikace a pro důvěryhodnost. Dosah bez placení je malý. |
-| **X** | 5 % | V Česku je to menšinová síť s jiným publikem — technologie a politika, ne rodičovství. Nestojí za vlastní obsah. |
+| **X** | 5 % | V Česku je to menšinová síť s jiným publikem — technologie a politika, ne rodičovství. Vlastní texty má, ale je to pátá kolej: patnáct minut týdně. |
 
-**Na X jen překlápěj** to, co vzniklo jinam, a neřeš výsledky. Zrušit ho
-ale nemá cenu: účet se jménem značky je lepší mít obsazený, než ho
-jednoho dne najít u někoho cizího.
+**Na X nepřeklápěj** facebookové příspěvky — jiná délka i rytmus,
+vypadá to jako zeď textu. Má vlastní kapitolu níž. Ani tak z něj nečekej
+registrace; hodnota je v tom, že účet se jménem značky je lepší mít
+obsazený, než ho jednoho dne najít u někoho cizího.
 
 ---
 
@@ -101,7 +102,7 @@ tábory. Na každý z nich se dá napsat něco užitečného dva týdny předem.
 
 - **Facebook:** 3× týdně — úterý, čtvrtek, neděle
 - **Instagram:** 2× týdně — z toho aspoň jedno krátké video
-- **X:** co se hodí, bez rozvrhu
+- **X:** 2× týdně z vlastní zásoby, bez rozvrhu
 
 Nejlepší čas je **po deváté večer**. Tohle publikum má do té doby děti,
 úkoly a nádobí.
@@ -680,6 +681,216 @@ podívej, které tři příspěvky měly nejvíc sdílení, a piš víc takovýc
 
 ---
 
+## X — samostatné texty
+
+Na X se příspěvky z Facebooku nedají překlápět. Jiná délka, jiný rytmus,
+jiné čtení. Facebookový příspěvek na X vypadá jako zeď textu, kterou
+nikdo nedočte.
+
+**Pravidla:**
+
+- **280 znaků**, včetně mezer. Kratší je lepší.
+- **Jedna myšlenka na příspěvek.** Žádné „a ještě k tomu".
+- **Žádné hashtagy.** V češtině nefungují a vypadají jako marketing.
+- **Odkaz do odpovědi na vlastní příspěvek**, ne do něj. Příspěvek
+  s odkazem má výrazně menší dosah.
+- **Vlákna fungují** líp než jednotlivé příspěvky. Návod rozepsaný do
+  pěti kroků se čte a sdílí, tentýž návod v jednom odstavci ne.
+
+Pořád platí, že je to pátá kolej: v Česku je na X jiné publikum a tohle
+téma tam skoro není. Ber to jako **zásobu na patnáct minut týdně**, ne
+jako kanál.
+
+### Jednotlivé příspěvky
+
+Patnáct kusů, pouštěj je v libovolném pořadí, dva týdně.
+
+> Den strávíte s dítětem oba. Ráno ho jeden vypraví, odpoledne ho druhý
+> vyzvedne. Noc má jen jeden.
+>
+> Proto se ve střídavé péči počítají noci, ne dny.
+
+---
+
+> „Mně nikdo nic neřekl.“
+>
+> Nejčastější věta v rodinách se dvěma domovy. A skoro vždycky pravdivá —
+> někdo to řekl, jen někomu jinému.
+
+---
+
+> Jarní prázdniny se v Česku dělí po okresech. Mezi dvěma sousedními může
+> být rozdíl šesti týdnů.
+>
+> „Jarní prázdniny dělíme napůl“ je proto v dohodě věta o ničem.
+
+---
+
+> Spor o peníze mezi rozvedenými rodiči skoro nikdy není o výživném.
+>
+> Je o kroužku za osm tisíc, o kterém jeden z nich rozhodl sám.
+
+---
+
+> Nedělte Štědrý den mezi dva domovy. Střídejte celé Vánoce po letech.
+>
+> Dítě má jedny celé místo dvou polovičních a nestráví půl dne v autě.
+
+---
+
+> Ředitelské volno: dva dny uprostřed týdne, pár týdnů výstrahy, někdo si
+> musí vzít v práci volno.
+>
+> Pravidlo, které drží: bere ho ten, u koho dítě zrovna je. Nepočítá se.
+
+---
+
+> Střídání po týdnu vypadá jako přesná půlka. Skoro nikdy nevyjde.
+>
+> Přehozený víkend kvůli svatbě. Tři dny nemoci u toho, kdo měl volno.
+> Prázdniny u toho, kdo měl dovolenou.
+
+---
+
+> Dohody o střídavé péči se nerozbíjejí na velkých věcech.
+>
+> Rozbíjejí se na tom, že v nich něco chybí a každý si to doplnil jinak.
+
+---
+
+> „Řekni tátovi, že…“
+>
+> Nejrychlejší cesta k tomu, aby si dítě připadalo zodpovědné za to, jak
+> spolu rodiče vycházejí. To v osmi letech neunese nikdo.
+
+---
+
+> Vánoce ve dvou domovech se domlouvají v listopadu.
+>
+> Listopadový rozhovor je o kalendáři. Prosincový je o vině.
+
+---
+
+> Předávání dětí ve škole zní neosobně.
+>
+> V prvním roce po rozchodu je to často to nejlaskavější řešení, jaké
+> existuje: nikdo nemusí mluvit, když na to zrovna nemá.
+
+---
+
+> Tábory na léto se přihlašují v lednu. Ty oblíbené bývají plné do konce
+> února.
+>
+> Kdo to řeší v květnu, řeší to draho a bez výběru.
+
+---
+
+> Většina rodičů, kteří si poprvé spočítají noci, zjistí, že to sedí líp,
+> než si mysleli.
+>
+> Pocit křivdy bývá o dojmu z posledních dvou týdnů, ne o číslech za rok.
+
+---
+
+> Střídavá péče je v Česku pořád menšinové uspořádání, i když z internetu
+> to tak nevypadá.
+>
+> Nerovné rozdělení není selhání. Bývá to jediná varianta, která sedí na
+> skutečnou práci a skutečné vzdálenosti.
+
+---
+
+> Rozpis péče je asi desetina toho, co rodina se dvěma domovy potřebuje
+> sladit.
+>
+> Zbytek je provoz: kdo veze, kdo platí, kdo to řekne škole.
+
+### Vlákna
+
+Tři. Každé vydrží na měsíc a dá se pustit znovu.
+
+**Vlákno 1 — Co patří do dohody**
+
+> 1/ Pět vět, které do dohody o střídavé péči patří a skoro nikdy tam
+> nejsou. Ani jedna z nich není o rozpisu.
+
+> 2/ Kdo dítě předává a kde. Ne „po vzájemné dohodě“ — to znamená, že se
+> budete dohadovat pokaždé znovu. Konkrétní místo a čas.
+
+> 3/ Do kdy se hlásí změna. Třeba 48 hodin, s výslovnou výjimkou pro
+> nemoc. Bez lhůty je každá změna vyjednáváním o tom, jestli přišla včas.
+
+> 4/ Od jaké částky se výdaj domlouvá předem. U většiny rodin funguje
+> tisícovka. Pod ni platí ten, u koho výdaj vznikl.
+
+> 5/ Podle kterého okresu se řídí jarní prázdniny. Nejpraktičtější je
+> okres školy — dítě má volno podle ní, ne podle bydliště rodiče.
+
+> 6/ Jak se předávají informace ze školy. Oba rodiče v kontaktech
+> u třídního učitele a přístup do školního systému pro oba.
+
+> 7/ Nesnažte se ošetřit všechno. Dohoda na dvanáct stran není
+> bezpečnější, jen nepoužitelná. Jde o to mít oporu tam, kde se spory
+> opakují.
+
+**Vlákno 2 — Kde se rozpis láme**
+
+> 1/ Rozpis péče se skoro nikdy nerozbije v běžném týdnu. Rozbije se na
+> dnech, které do rytmu nezapadají. Ve školním roce jich je šest druhů.
+
+> 2/ Podzimní prázdniny. Dva dny u státního svátku. Zapomíná se na ně,
+> protože je nikdo nepovažuje za prázdniny, dokud nepřijde zpráva ze
+> školy.
+
+> 3/ Vánoce. Jediné období, které se vyplatí řešit samostatně, ne jako
+> součást obecného pravidla. A řešit se má v listopadu.
+
+> 4/ Jarní prázdniny. Dělí se po okresech, rozdíl mezi sousedními může
+> být šest týdnů. Do dohody patří konkrétní okres.
+
+> 5/ Velikonoce. Pohyblivý svátek, každý rok padne jinam v rytmu.
+> Buď se střídají po letech, nebo se výslovně napíše, že platí běžný
+> rozpis. Nejhorší je to neřešit.
+
+> 6/ Ředitelské volno. Dva dny uprostřed týdne a někdo si musí vzít
+> volno. Bere ho ten, u koho dítě zrovna je.
+
+> 7/ Letní prázdniny. Neplánují se v červnu, ale na jaře. Osvědčuje se
+> rozdělit léto na bloky po čtrnácti dnech a střídavě si vybírat.
+
+> 8/ Ve všech šesti případech platí totéž: kdo to napíše do společného
+> kalendáře, ten spor nemá. Ne proto, že by měl navrch — protože se
+> o tom nedá mluvit zpětně.
+
+**Vlákno 3 — Vánoce**
+
+> 1/ Vánoce jsou v rodinách se dvěma domovy nejvyhrocenější období roku.
+> Ne proto, že by rodiče byli v prosinci horší lidé.
+
+> 2/ Sejde se všechno najednou: očekávání prarodičů, srovnávání dárků,
+> tradice, které dřív držely rodinu pohromadě, a tři dny, které nejdou
+> rozdělit napůl.
+
+> 3/ Víc než cokoli jiného rozhoduje, kdy se o tom začne mluvit.
+> Listopadový rozhovor je o kalendáři. Prosincový je o vině.
+
+> 4/ Nedělte Štědrý den. Oběd u jednoho a večeře u druhého je to nejhorší
+> z obou světů — dítě stráví půl dne v autě a obojí zažije napůl.
+
+> 5/ Střídejte celé Vánoce po letech a zapište si, který rok je sudý.
+> „Letos u mě, příští u tebe“ vydrží do prvního roku, kdy si to každý
+> pamatuje jinak.
+
+> 6/ Spolu s termínem domluvte tři věci: strop na dárky, kdo co kupuje
+> a konkrétní čas a místo předání. Každá z nich stojí jednu zprávu
+> v listopadu a jednu hádku v prosinci.
+
+> 7/ Užitečnější otázka než „co je spravedlivé“: co si z těch Vánoc
+> odnese dítě? Odpověď obvykle není „přesně půlka“. Bývá to „nikdo se
+> nehádal a vědělo se, co bude“.
+
+---
+
 ## Články na webu
 
 Sekce `/clanky` běží na **plánovaném vydávání**: text má datum a do toho
@@ -722,3 +933,4 @@ slabé místo.
 | 2026-09-13 | Pseudo-rozhovory jako označené modelové příběhy | Vymyšlený rozhovor podaný jako skutečný je u produktu stojícího na důvěře trvalá škoda |
 | 2026-09-13 | Rozhovory s rodiči jako modelové příběhy, ne doporučení | Vymyšlená zákaznická recenze je zakázaná i s označením; hrdinou je provoz rodiny, ne aplikace |
 | 2026-09-13 | Rozhovory přepsané jako konverzace, ne jako scénky | Text s tezí, obloukem a pointou na konci není rozhovor, ale inscenace — a je to poznat |
+| 2026-09-13 | X dostal vlastní texty místo překlápění | Facebookový příspěvek je na X zeď textu; 280 znaků a vlákna jsou jiný formát, ne kratší verze |

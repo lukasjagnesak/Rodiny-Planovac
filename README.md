@@ -335,7 +335,7 @@ nevrací.
 
 Plán, tón a hotové příspěvky do konce roku jsou v `docs/socialni-site.md`.
 
-Těžiště je na Facebooku, Instagram je doplněk a X jen obsazené jméno —
+Těžiště je na Facebooku, Instagram je doplněk a X pátá kolej —
 v Česku tam tohle publikum není. Sítě se přitom nevedou jako kanál
 akvizice: nástroj na střídavou péči si člověk pořizuje ve chvíli, kdy má
 problém, a tu chvíli sbírá vyhledávání. Profily mají hlavně dokázat, že
