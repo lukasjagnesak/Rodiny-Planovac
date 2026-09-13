@@ -59,6 +59,12 @@ export function formatDayLong(date: Date | string): string {
   return format(d, "EEEE d. MMMM yyyy", { locale: cs });
 }
 
+/** „13. září 2026" — datum bez dne v týdnu, pro texty na webu. */
+export function formatDatum(date: Date | string): string {
+  const d = typeof date === "string" ? fromDateKey(date.slice(0, 10)) : date;
+  return format(d, "d. MMMM yyyy", { locale: cs });
+}
+
 export function formatMonth(date: Date): string {
   return format(date, "LLLL yyyy", { locale: cs });
 }

@@ -18,6 +18,7 @@ const NAVIGACE = [
   { href: "/kalkulacka-vyzivneho", popisek: "Výživné" },
   { href: "/kalkulacka", popisek: "Kalkulačka péče" },
   { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody" },
+  { href: "/clanky", popisek: "Články" },
   { href: "/cenik", popisek: "Ceník" },
 ];
 
@@ -28,6 +29,7 @@ const PATICKA = [
       { href: "/jak-funguje-stridava-pece", popisek: "Jak funguje střídavá péče" },
       { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody o střídavé péči" },
       { href: "/checklist-prvnich-30-dni", popisek: "Checklist prvních 30 dní" },
+      { href: "/clanky", popisek: "Články" },
     ],
   },
   {

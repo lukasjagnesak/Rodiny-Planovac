@@ -292,9 +292,36 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
-### 5f. Sociální sítě
+### 5f. Články na webu
 
-Plán, tón a hotové příspěvky jsou v `docs/socialni-site.md`.
+Sekce `/clanky` je v datech, ne v markdownu: projekt nemá knihovnu na
+jeho vykreslení a kvůli pár textům by se do sestavení tahal parser,
+sanitizace a starost o bezpečnost. Bloky jsou typované, takže překlep
+shodí `tsc`, ne až stránku.
+
+Texty jsou v `src/obsah/clanky/`, seznam v `src/lib/clanky.ts`.
+
+**Vydávání je plánované.** Text s datem v budoucnu se nikde neobjeví —
+ani ve výpisu, ani v mapě webu, a na přímý odkaz vrátí 404. Stránky mají
+`revalidate = 3600`, aby nový článek vyšel sám a nečekal na nasazení.
+
+> Vyhledávač text najde až v den vydání, takže na vyšplhání ve výsledcích
+> má míň času. Když je to u konkrétního článku důležitější než
+> načasování, stačí u něj posunout `datum` dozadu.
+
+**Modelové příběhy** (`druh: "pribeh"`) dostanou nad text natvrdo
+označení, že nejde o záznam skutečného rozhovoru a že jména jsou
+vymyšlená. Vypisuje ho komponenta podle typu — kdyby to byl jen odstavec
+v textu, jednou by se na něj zapomnělo.
+
+> Nová veřejná stránka musí do `PUBLIC_PATHS` v `src/proxy.ts`, jinak ji
+> middleware pošle na přihlášení a nevidí ji ani návštěvník
+> z vyhledávače, ani robot — přitom v mapě webu je. Hlídá to
+> `npm run test:verejne-cesty`.
+
+### 5g. Sociální sítě
+
+Plán, tón a hotové příspěvky do konce roku jsou v `docs/socialni-site.md`.
 
 Těžiště je na Facebooku, Instagram je doplněk a X jen obsazené jméno —
 v Česku tam tohle publikum není. Sítě se přitom nevedou jako kanál

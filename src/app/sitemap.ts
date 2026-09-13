@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { vydane } from "@/lib/clanky";
 
 /** Adresa webu bez lomítka na konci. */
 function zaklad(): string {
@@ -17,6 +18,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/kalkulacka-vyzivneho", priorita: 0.9, frekvence: "monthly" },
   { cesta: "/kalkulacka", priorita: 0.8, frekvence: "monthly" },
   { cesta: "/cenik", priorita: 0.8, frekvence: "monthly" },
+  { cesta: "/clanky", priorita: 0.7, frekvence: "weekly" },
   { cesta: "/checklist-prvnich-30-dni", priorita: 0.6, frekvence: "yearly" },
   { cesta: "/pro-advokaty", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-mediatory", priorita: 0.5, frekvence: "yearly" },
@@ -28,10 +30,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const url = zaklad();
   const ted = new Date();
 
-  return STRANKY.map(({ cesta, priorita, frekvence }) => ({
+  const stranky = STRANKY.map(({ cesta, priorita, frekvence }) => ({
     url: `${url}${cesta}`,
     lastModified: ted,
     changeFrequency: frekvence,
     priority: priorita,
   }));
+
+  // Naplánované texty do mapy nepatří — vyhledávač by na ně poslal
+  // robota dřív, než vyjdou, a dostal by 404.
+  const clanky = vydane().map((clanek) => ({
+    url: `${url}/clanky/${clanek.slug}`,
+    lastModified: new Date(clanek.datum),
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
+  }));
+
+  return [...stranky, ...clanky];
 }
