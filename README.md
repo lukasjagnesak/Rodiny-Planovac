@@ -292,6 +292,21 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### 5f. Sociální sítě
+
+Plán, tón a hotové příspěvky jsou v `docs/socialni-site.md`.
+
+Těžiště je na Facebooku, Instagram je doplněk a X jen obsazené jméno —
+v Česku tam tohle publikum není. Sítě se přitom nevedou jako kanál
+akvizice: nástroj na střídavou péči si člověk pořizuje ve chvíli, kdy má
+problém, a tu chvíli sbírá vyhledávání. Profily mají hlavně dokázat, že
+za aplikací někdo je, a vyrobit obsah, se kterým se dá chodit do
+rodičovských skupin.
+
+> Každý odkaz ze sítí musí nést `utm_source`, `utm_medium`
+> a `utm_campaign`, jinak v `/provoz` splyne s přímými návštěvami.
+> Tvary odkazů jsou v dokumentu.
+
 ### Google Ads — konverze
 
 Bez vlastní konverzní značky svítí v kampaních u každého klíčového slova
