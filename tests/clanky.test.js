@@ -75,6 +75,27 @@ ok(
   VSECHNY.filter((c) => c.druh === "clanek").every((c) => !/modelov/i.test(c.perex)),
 );
 
+console.log("── označení se nedá obejít ──");
+// Tohle je jediná část, kde selhání není kosmetické. Část příběhů je
+// psaná jako rozhovor s rodinou, která Klidoo používá — takový text má
+// blízko k doporučení a vymyšlené zákaznické recenze zakazuje evropská
+// úprava nekalých obchodních praktik. Čte se to ze souboru: komponentu
+// nejde spustit bez Reactu a Nextu a překládat je kvůli jednomu odstavci
+// by test zdražilo víc, než je zdrávo.
+const telo = require("node:fs").readFileSync(
+  require("node:path").join(__dirname, "..", "src/components/web/clanek-telo.tsx"),
+  "utf8",
+);
+
+ok("označení v komponentě existuje", /export function OznaceniPribehu/.test(telo));
+ok("říká, že nejde o skutečný rozhovor", /Není to\s+záznam skutečného rozhovoru/.test(telo));
+ok("i že nejde o zákaznickou recenzi", /zákaznická recenze/.test(telo));
+ok("a že jména jsou vymyšlená", /jména jsou vymyšlená/.test(telo));
+ok(
+  "vykresluje se podle druhu, ne rozhodnutím autora",
+  /clanek\.druh === "pribeh" \? <OznaceniPribehu \/> : null/.test(telo),
+);
+
 console.log("── tučný text ──");
 ok(
   "rozloží se na kusy",

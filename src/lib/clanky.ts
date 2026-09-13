@@ -20,6 +20,10 @@ import { ctyriMesice } from "../obsah/clanky/ctyri-mesice";
 import { vanoce } from "../obsah/clanky/vanoce";
 import { prvniVanoce } from "../obsah/clanky/prvni-vanoce";
 import { konecRoku } from "../obsah/clanky/konec-roku";
+import { tydenniProvoz } from "../obsah/clanky/tydenni-provoz";
+import { nechteliJsme } from "../obsah/clanky/nechteli-jsme";
+import { neniToNapul } from "../obsah/clanky/neni-to-napul";
+import { novaPartnerka } from "../obsah/clanky/nova-partnerka";
 
 export const VSECHNY: Clanek[] = [
   noci,
@@ -29,6 +33,10 @@ export const VSECHNY: Clanek[] = [
   vanoce,
   prvniVanoce,
   konecRoku,
+  tydenniProvoz,
+  nechteliJsme,
+  neniToNapul,
+  novaPartnerka,
 ];
 
 /** Vyšlo už to? Porovnává se na dny, ne na hodiny. */

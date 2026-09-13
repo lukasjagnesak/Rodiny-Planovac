@@ -310,9 +310,15 @@ ani ve výpisu, ani v mapě webu, a na přímý odkaz vrátí 404. Stránky maj�
 > načasování, stačí u něj posunout `datum` dozadu.
 
 **Modelové příběhy** (`druh: "pribeh"`) dostanou nad text natvrdo
-označení, že nejde o záznam skutečného rozhovoru a že jména jsou
-vymyšlená. Vypisuje ho komponenta podle typu — kdyby to byl jen odstavec
-v textu, jednou by se na něj zapomnělo.
+označení, že nejde o záznam skutečného rozhovoru ani o zákaznickou
+recenzi a že jména jsou vymyšlená. Vypisuje ho komponenta podle typu —
+kdyby to byl jen odstavec v textu, jednou by se na něj zapomnělo.
+
+> Věta o recenzi tam je proto, že část příběhů je psaná jako rozhovor
+> s rodinou, která Klidoo používá. Takový text má blízko k doporučení
+> a vymyšlené zákaznické recenze zakazuje evropská úprava nekalých
+> obchodních praktik bez ohledu na to, jak jsou míněné. Hlídá to
+> `npm run test:clanky`.
 
 > Nová veřejná stránka musí do `PUBLIC_PATHS` v `src/proxy.ts`, jinak ji
 > middleware pošle na přihlášení a nevidí ji ani návštěvník

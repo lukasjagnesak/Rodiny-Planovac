@@ -113,14 +113,20 @@ function Kus({ blok }: { blok: Blok }) {
  * příběh podaný jako záznam skutečného rozhovoru je u produktu pro
  * rodiče v rozchodu krátkodobý zisk a trvalá škoda.
  *
+ * Věta o zákaznické recenzi tam není navíc. Část příběhů je psaná jako
+ * rozhovor s rodinou, která Klidoo používá, a takový text má blízko
+ * k doporučení — vymyšlené zákaznické recenze zakazuje evropská úprava
+ * nekalých obchodních praktik bez ohledu na to, jak jsou míněné.
+ *
  * Je nahoře, ne v patičce. Čtenář to má vědět dřív, než text přečte.
  */
 export function OznaceniPribehu() {
   return (
     <p className="mt-6 rounded-2xl border border-line bg-surface p-4 text-sm leading-relaxed text-ink-muted">
       <strong className="font-semibold text-ink">Modelový příběh.</strong> Není to
-      záznam skutečného rozhovoru. Situace jsou složené z toho, co slýcháme od
-      rodičů a mediátorů; jména jsou vymyšlená a nepatří konkrétním lidem.
+      záznam skutečného rozhovoru ani zákaznická recenze. Situace jsou složené
+      z toho, co slýcháme od rodičů a mediátorů; jména jsou vymyšlená a nepatří
+      konkrétním lidem.
     </p>
   );
 }

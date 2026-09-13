@@ -246,7 +246,18 @@ mu pomůže, ne nabídku.
 >
 > Dítě navíc nezažije žádné předávání. Jen jde do školy a ze školy.
 
-**Út 29. 9. · scéna**
+**Út 29. 9. · rozhovor**
+
+> „Co se u vás musí za týden domluvit?“
+>
+> „Míň, než si lidi myslí. Kroužky jsou dané, ty se řeší jednou v září.
+> Skutečná práce je v odchylkách: ve středu ředitelské volno, v pátek
+> narozeniny a odvoz, v neděli vystoupení. Plus věci, co přijdou
+> v pondělí ráno — teplota, zapomenutý úbor, změna v rozvrhu.“
+
+*Odkaz: `/clanky/jak-vypada-vsedni-tyden-ve-dvou-domovech`*
+
+**Čt 1. 10. · scéna**
 
 > Tři roky jsme si psali o všem v esemeskách.
 >
@@ -262,7 +273,7 @@ mu pomůže, ne nabídku.
 Školní rok běží, provoz se usazuje a vyplouvají první opakované problémy.
 Nejvděčnější měsíc na návody.
 
-**Čt 1. 10. · mikro-návod**
+**Ne 4. 10. · mikro-návod**
 
 > **Ředitelské volno je nejpodceňovanější položka roku.**
 >
@@ -272,7 +283,7 @@ Nejvděčnější měsíc na návody.
 > Pravidlo, které drží: volno bere ten, u koho dítě zrovna je. Je to nudné
 > a právě proto to funguje — nedá se o tom vyjednávat.
 
-**Ne 4. 10. · scéna**
+**Út 6. 10. · scéna**
 
 > Dcera se mě zeptala, jestli si mám zapsat, že ve středu nemá kroužek.
 >
@@ -280,7 +291,7 @@ Nejvděčnější měsíc na návody.
 >
 > To byl den, kdy mi došlo, že si to pamatuje za nás oba.
 
-**Út 6. 10. · mikro-návod**
+**Čt 8. 10. · mikro-návod**
 
 > **Jarní prázdniny nejsou pro celé Česko stejné.**
 >
@@ -293,14 +304,14 @@ Nejvděčnější měsíc na návody.
 
 *Odkaz: `/clanky/prazdniny-a-volno-ve-skolnim-roce`*
 
-**Čt 8. 10. · z aplikace**
+**Ne 11. 10. · z aplikace**
 
 > České školní prázdniny jsou v Klidoo rovnou v kalendáři. Včetně jarních
 > podle okresu.
 >
 > Nemusíte je opisovat z webu školy ani hlídat, kdy vyjdou.
 
-**Ne 11. 10. · mikro-návod**
+**Út 13. 10. · mikro-návod**
 
 > **Kdo chodí na třídní schůzky?**
 >
@@ -311,7 +322,21 @@ Nejvděčnější měsíc na návody.
 > do školního systému pro oba. Škola obojí běžně umožní — jen se o to musí
 > někdo přihlásit.
 
-**Út 13. 10. · scéna**
+**Čt 15. 10. · rozhovor**
+
+> „Čeho jste se bál nejvíc?“
+>
+> „Že to malého rozhodí. Že bude mít dva pokoje a ani jeden domov.“
+>
+> „A jak to dopadlo?“
+>
+> „Rozhodilo ho něco jiného. Ne stěhování — na to si zvykl za dva
+> měsíce. Rozhodil ho půlrok, kdy jsme spolu neuměli mluvit a on byl
+> mezi námi jako pošťák. ‚Řekni tátovi, že…‘ To bylo to špatné.“
+
+*Odkaz: `/clanky/stridavou-peci-jsme-nechteli-ani-jeden`*
+
+**Ne 18. 10. · scéna**
 
 > Napsala mi: „Tak to jsi mi neřekl.“
 >
@@ -321,7 +346,7 @@ Nejvděčnější měsíc na návody.
 > Měl jsem pravdu a nebylo mi to k ničemu. Četla ji unavená, v jedenáct
 > večer, mezi dvěma jinými.
 
-**Čt 15. 10. · mikro-návod**
+**Út 20. 10. · mikro-návod**
 
 > **Spor o peníze skoro nikdy není o výživném.**
 >
@@ -331,7 +356,7 @@ Nejvděčnější měsíc na návody.
 > funguje tisícovka: do ní platí ten, u koho výdaj vznikl, nad ni se to
 > domlouvá.
 
-**Ne 18. 10. · rozhovor**
+**Čt 22. 10. · rozhovor**
 
 > „Druhý rodič nic nechce používat. Má vůbec smysl si něco zakládat sám?“
 >
@@ -344,7 +369,7 @@ Nejvděčnější měsíc na návody.
 
 *Odkaz: `/clanky/ctyri-mesice-po-rozchodu`*
 
-**Út 20. 10. · mikro-návod**
+**Ne 25. 10. · mikro-návod**
 
 > **Podzimní prázdniny jsou příští týden.**
 >
@@ -354,7 +379,7 @@ Nejvděčnější měsíc na návody.
 > Nejjednodušší pravidlo: připadnou tomu, kdo má podle rytmu ten týden,
 > a nepřepočítává se.
 
-**Čt 22. 10. · scéna**
+**Út 27. 10. · scéna**
 
 > Rok jsme se dohadovali, kdo veze na plavání.
 >
@@ -363,7 +388,7 @@ Nejvděčnější měsíc na návody.
 > Od té doby jsme to neřešili ani jednou. Ne proto, že bychom se usmířili.
 > Protože nebylo o čem mluvit.
 
-**Ne 25. 10. · mikro-návod**
+**Čt 29. 10. · mikro-návod**
 
 > **Začněte řešit Vánoce. Ne v prosinci — teď.**
 >
@@ -372,29 +397,13 @@ Nejvděčnější měsíc na návody.
 >
 > Listopadový rozhovor je o kalendáři. Prosincový je o vině.
 
-**Út 27. 10. · rozhovor**
-
-> „Nevypadá vedení takových záznamů jako sbírání munice proti druhému?“
->
-> Rozumím, proč to tak může vypadat. Rozdíl je v tom, že záznam vidí oba
-> a vzniká průběžně. Munice se sbírá tajně a vytahuje se zpětně.
->
-> Společný kalendář naopak většinu sporů ukončí dřív, než začnou —
-> protože není o čem mluvit po paměti.
-
-**Čt 29. 10. · z aplikace**
-
-> Výdaj se dá v Klidoo rozdělit klíčem, na kterém jste se dohodli. Ne
-> vždycky napůl — někdy 60/40, u kroužků jinak než u oblečení.
->
-> Součet za rok pak není překvapení, ale jen součet.
-
 ---
 
 ### Listopad — měsíc Vánoc
 
 Celý měsíc jedno téma. Není to přemíra: je to jediné období roku, kdy
 tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
+Ve dvou týdnech jsou proto čtyři příspěvky místo tří — schválně.
 
 **Ne 1. 11. · mikro-návod**
 
@@ -429,6 +438,16 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 > Ani jeden z nás to nikdy nevyslovil nahlas. Oba jsme si mysleli, že to
 > je jasné.
 
+**Pá 6. 11. · rozhovor**
+
+> „Nevypadá vedení takových záznamů jako sbírání munice proti druhému?“
+>
+> Rozumím, proč to tak může vypadat. Rozdíl je v tom, že záznam vidí oba
+> a vzniká průběžně. Munice se sbírá tajně a vytahuje se zpětně.
+>
+> Společný kalendář naopak většinu sporů ukončí dřív, než začnou —
+> protože není o čem mluvit po paměti.
+
 **Ne 8. 11. · mikro-návod**
 
 > **Strop na dárky.**
@@ -442,6 +461,19 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 
 **Út 10. 11. · rozhovor**
 
+> „U nás to není napůl a dlouho jsem se za to styděla.“
+>
+> „Všude se mluví o střídavce jako o tom správném řešení. Když jsem
+> někde řekla, jak to máme my, měla jsem pocit, že se musím obhajovat —
+> buď jsem mu bránila, nebo on nechtěl. Ani jedno není pravda.“
+>
+> Nerovné rozdělení péče není selhání. Je to často jediná varianta,
+> která dává smysl při té práci a těch vzdálenostech, co doopravdy máte.
+
+*Odkaz: `/clanky/u-nas-to-neni-napul`*
+
+**Čt 12. 11. · rozhovor**
+
 > „Co je ta jedna věc, která rodinám pomůže nejvíc?“
 >
 > Přestat si věci pamatovat. Myslím to vážně.
@@ -453,7 +485,14 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 > Nemusí to být Klidoo. Funguje i sdílený kalendář a jeden dokument. Jenom
 > to musí být na jednom místě.
 
-**Čt 12. 11. · mikro-návod**
+**Pá 13. 11. · z aplikace**
+
+> Výdaj se dá v Klidoo rozdělit klíčem, na kterém jste se dohodli. Ne
+> vždycky napůl — někdy 60/40, u kroužků jinak než u oblečení.
+>
+> Součet za rok pak není překvapení, ale jen součet.
+
+**Ne 15. 11. · mikro-návod**
 
 > **Prarodiče a nová rodina.**
 >
@@ -463,14 +502,14 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 > Tyhle tlaky se nedají vyřešit rozpisem. Dají se vyřešit tím, že se
 > o nich mluví nahlas a předem.
 
-**Ne 15. 11. · scéna**
+**Út 17. 11. · scéna**
 
 > Šestiletá se ve školce zeptala paní učitelky, jestli Ježíšek ví, že mají
 > dva domovy.
 >
 > Doma jsme to řešili pátý večer v řadě. Ona to slyšela.
 
-**Út 17. 11. · mikro-návod**
+**Čt 19. 11. · mikro-návod**
 
 > **Otázka, která zabere líp než „co je spravedlivé“.**
 >
@@ -479,7 +518,7 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 > Odpověď obvykle není „přesně půlka“. Bývá to „nikdo se nehádal a vědělo
 > se, co bude“.
 
-**Čt 19. 11. · příběh**
+**Ne 22. 11. · příběh**
 
 > Modelový příběh o prvních Vánocích ve dvou domovech — a o tom, že jediná
 > chyba nebyla v tom, na čem se ti dva domluvili, ale kdy.
@@ -489,31 +528,24 @@ tohle publikum opravdu hledá pomoc a kdy má cenu být vidět každý týden.
 
 *Odkaz: `/clanky/prvni-vanoce-ve-dvou-domovech`*
 
-**Ne 22. 11. · mikro-návod**
+**Út 24. 11. · mikro-návod**
 
 > **Když se nedomluvíte, je listopad poslední rozumná chvíle na mediátora.**
 >
 > Tenhle typ sporu se dá odbavit za jedno až dvě sezení. V prosinci na to
 > ale mediátoři nemají kapacitu — termíny bývají plné už koncem října.
 
-**Út 24. 11. · mikro-návod**
+**Čt 26. 11. · mikro-návod**
 
 > **Konkrétní čas a místo předání.**
 >
 > Ne „někdy odpoledne“. Čtyřiadvacátého prosince odpoledne není doba na
 > zjišťování, kde se sejdeme.
 
-**Čt 26. 11. · z aplikace**
+**Ne 29. 11. · z aplikace**
 
 > Vánoční týden se dá v kalendáři péče nastavit odchylkou od běžného
 > rytmu. Nemusíte kvůli němu měnit celý rozpis a v lednu ho vracet zpátky.
-
-**Ne 29. 11. · scéna**
-
-> „A co budeme dělat příští rok?“
->
-> Nejlepší otázka, jakou si můžete na konci Vánoc položit. A jediná doba
-> v roce, kdy na ni oba znáte přesnou odpověď.
 
 ---
 
@@ -530,13 +562,25 @@ v komentářích.
 > Do Štědrého dne zbývají tři týdny. To je pořád dost na rozhovor
 > o kalendáři. Za deset dní už to bude rozhovor o něčem jiném.
 
-**Čt 3. 12. · scéna**
+**Čt 3. 12. · rozhovor**
+
+> „Jsem ta nová partnerka a taky vozím na kroužky.“
+>
+> Role, kterou žádný papír nezná, a přitom drží půlku provozu. Vozí,
+> krmí a čeká s dětmi u zubaře — a informace se dozvídá poslední.
+>
+> „Vidím teď kalendář stejně jako on. Nic víc: nerozhoduju o ničem, jen
+> vím. Ukázalo se, že ‚jen vědět‘ řešilo skoro všechno, co mě štvalo.“
+
+*Odkaz: `/clanky/jsem-ta-nova-partnerka`*
+
+**Ne 6. 12. · scéna**
 
 > Letos poprvé jsme si napsali, kdo co koupí.
 >
 > Trvalo to čtyři zprávy a ušetřilo to dvě stejné stavebnice.
 
-**Ne 6. 12. · mikro-návod**
+**Út 8. 12. · mikro-návod**
 
 > **Tábory na léto se přihlašují v lednu.**
 >
@@ -546,7 +590,7 @@ v komentářích.
 > Domluvte se teď, kdo přihlašuje a jak se to platí. V lednu na to nebude
 > čas.
 
-**Út 8. 12. · z aplikace**
+**Čt 10. 12. · z aplikace**
 
 > Konec roku je dobrá chvíle spočítat tři věci: kolik nocí bylo u koho, co
 > se za rok utratilo a kdo to platil.
@@ -556,14 +600,14 @@ v komentářích.
 
 *Odkaz: `/clanky/konec-roku-co-spocitat`*
 
-**Čt 10. 12. · scéna**
+**Ne 13. 12. · scéna**
 
 > Prosinec je jediný měsíc, kdy si rodiče ve dvou domovech přejí, aby bylo
 > po Vánocích.
 >
 > A leden je jediný, kdy si přejí, aby si to byli líp rozmysleli.
 
-**Ne 13. 12. · mikro-návod**
+**Út 15. 12. · mikro-návod**
 
 > **Co dělat, když to letos nevyšlo.**
 >
@@ -572,7 +616,7 @@ v komentářích.
 > Jedna věc, kterou pro dítě můžete udělat i tak: nemluvit o tom před ním.
 > Ne proto, že by to nevědělo. Protože pak nemusí mít pocit, že za to může.
 
-**Út 15. 12. · z aplikace**
+**Čt 17. 12. · z aplikace**
 
 > Přehled za rok v Klidoo umí vygenerovat souhrn: noci u každého rodiče,
 > výdaje po kategoriích, vyrovnání, četnost odvozů.
@@ -580,14 +624,14 @@ v komentářích.
 > Dokument uvádí, že jde o záznamy vedené rodinou. Netváří se jako
 > posudek, protože jím není.
 
-**Čt 17. 12. · scéna**
+**Ne 20. 12. · scéna**
 
 > Poslední školní den před prázdninami.
 >
 > Rodiče, kteří se po předání dítěte na sebe usmáli, budou mít klidnější
 > Vánoce než ti, kteří mají lepší rozpis.
 
-**Ne 20. 12. · krátké**
+**Út 22. 12. · krátké**
 
 > Ať už to letos vyšlo jakkoli — klidné Vánoce.
 >
@@ -596,11 +640,19 @@ v komentářích.
 
 *Bez odkazu. Tenhle příspěvek nic neprodává a nemá.*
 
-**22. 12. – 1. 1. · ticho**
+**23. 12. – 1. 1. · ticho**
 
 Nepiš. Odpovídej v komentářích a ve zprávách, pokud přijdou, a nic
 nezveřejňuj. Značka, která mezi svátky mlčí, působí líp než značka, která
 v nich nabízí předplatné.
+
+**První příspěvek v novém roce** ať je tenhle — je to jediná doba v roce,
+kdy na tu otázku oba znají přesnou odpověď:
+
+> „A co budeme dělat příští rok?“
+>
+> Nejlepší otázka, jakou si můžete položit na konci Vánoc. Zapište si
+> odpověď hned, dokud ji máte. V listopadu už si ji nikdo nevybaví.
 
 ## Na co se dívat
 
@@ -623,15 +675,24 @@ Sekce `/clanky` běží na **plánovaném vydávání**: text má datum a do toh
 dne se nikde neobjeví — ani ve výpisu, ani v mapě webu, a na přímý odkaz
 vrátí 404. Je to kalendář, ne archiv.
 
-Sedm textů je napsaných do konce roku. Příspěvek na sítích nesmí
+Jedenáct textů je napsaných do konce roku. Příspěvek na sítích nesmí
 odkazovat na článek, který ještě nevyšel — data jsou v
 `src/obsah/clanky/`.
 
 **Modelové příběhy** (`druh: "pribeh"`) mají nad textem natvrdo napsané,
-že nejde o záznam skutečného rozhovoru a že jména jsou vymyšlená.
-Vykresluje to komponenta podle typu, ne autor při psaní, takže se na to
-nedá zapomenout. Vymyšlený rozhovor podaný jako skutečný by u produktu
-pro rodiče v rozchodu byl krátkodobý zisk a trvalá škoda.
+že nejde o záznam skutečného rozhovoru **ani o zákaznickou recenzi** a že
+jména jsou vymyšlená. Vykresluje to komponenta podle typu, ne autor při
+psaní, takže se na to nedá zapomenout.
+
+Ta věta o recenzi tam není navíc. Pět z těch příběhů je psaných jako
+rozhovor s rodinou, která Klidoo používá, a takový text má blízko
+k doporučení — vymyšlené zákaznické recenze zakazuje evropská úprava
+nekalých obchodních praktik bez ohledu na to, jak jsou míněné.
+
+Proto v nich platí ještě jedno pravidlo, které se do kódu zapsat nedá:
+**hrdinou je provoz rodiny, ne aplikace.** Klidoo se v nich mihne jako
+nástroj, ne jako to, co někomu zachránilo život. Čte se to líp a nemá to
+slabé místo.
 
 > Skutečné rozhovory s mediátory by fungovaly líp než modelové příběhy
 > a dveře k nim otevírá `docs/oslovovani-mediatoru.md`. Až nějaký
@@ -648,3 +709,4 @@ pro rodiče v rozchodu byl krátkodobý zisk a trvalá škoda.
 | 2026-09-13 | Sítě vedené jako důvěra a zásoba do skupin, ne jako akvizice | Nástroj na střídavou péči se kupuje ve chvíli problému, a tu sbírá vyhledávání |
 | 2026-09-13 | Kalendář příspěvků do konce roku a sedm článků | Listopad patří celý Vánocům, prosinec se ubírá — v nejcitlivějším měsíci působí nabídka necitlivě |
 | 2026-09-13 | Pseudo-rozhovory jako označené modelové příběhy | Vymyšlený rozhovor podaný jako skutečný je u produktu stojícího na důvěře trvalá škoda |
+| 2026-09-13 | Rozhovory s rodiči jako modelové příběhy, ne doporučení | Vymyšlená zákaznická recenze je zakázaná i s označením; hrdinou je provoz rodiny, ne aplikace |
