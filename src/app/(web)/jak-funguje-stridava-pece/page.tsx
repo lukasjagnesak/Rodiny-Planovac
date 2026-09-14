@@ -12,10 +12,10 @@ import {
 import { LeadForm } from "@/components/web/lead-form";
 import { ZNACKA } from "@/lib/brand";
 
-const TITULEK = "Jak funguje střídavá péče: podmínky, rytmus a výživné";
+const TITULEK = "Jak funguje střídavá péče: podmínky, rytmus a výživné";
 const POPISEK =
-  "Jak střídavá péče funguje v praxi — podmínky, jaké rytmy střídání se používají, " +
-  "jak je to s výživným a trvalým bydlištěm. Srozumitelně a bez právničiny.";
+  "Jak střídavá péče funguje v praxi — podmínky, jaké rytmy střídání se používají, " +
+  "jak je to s výživným a trvalým bydlištěm. Srozumitelně a bez právničiny.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -30,7 +30,7 @@ export default function JakFungujeStridavaPece() {
       <Hero
         nadtitulek="Průvodce · čtení na 8 minut"
         nadpis="Jak funguje střídavá péče"
-        perex="Bez právničiny a bez tvrzení, že je to pro každého. Co musí být splněno, jaké rytmy se v Česku používají a co vás čeká v prvních měsících."
+        perex="Bez právničiny a bez tvrzení, že je to pro každého. Co musí být splněno, jaké rytmy se v Česku používají a co vás čeká v prvních měsících."
       />
 
       <FotoPas
@@ -142,9 +142,9 @@ export default function JakFungujeStridavaPece() {
         <LeadForm
           magnet="checklist-30-dni"
           nadpis="Checklist prvních 30 dní"
-          popis="Devatenáct věcí, které je potřeba zařídit v prvním měsíci střídavé péče — od zdvojení věcí přes školu až po daňové zvýhodnění. Jedna strana k vytištění na lednici."
+          popis="Devatenáct věcí, které je potřeba zařídit v prvním měsíci střídavé péče — od zdvojení věcí přes školu až po daňové zvýhodnění. Jedna strana k vytištění na lednici."
           tlacitko="Chci checklist"
-          hotovo="Díky. Checklist je připravený k otevření i vytištění — a dáme vědět, až přibude něco dalšího."
+          hotovo="Díky. Checklist je připravený k otevření i vytištění — a dáme vědět, až přibude něco dalšího."
           odkaz={{ href: "/checklist-prvnich-30-dni", popisek: "Otevřít checklist" }}
         />
 
@@ -182,13 +182,13 @@ export default function JakFungujeStridavaPece() {
           odkazy={[
             {
               href: "/vzor-dohody-o-stridave-peci",
-              nazev: "Vzor dohody o střídavé péči",
-              popis: "Co musí obsahovat, aby ji soud schválil, a sedm bodů, na které se zapomíná.",
+              nazev: "Vzor dohody o střídavé péči",
+              popis: "Co musí obsahovat, aby ji soud schválil, a sedm bodů, na které se zapomíná.",
             },
             {
               href: "/kalkulacka-vyzivneho",
               nazev: "Kalkulačka výživného",
-              popis: "Podle tabulky ministerstva, s příjmy obou rodičů i rozsahem péče.",
+              popis: "Podle tabulky ministerstva, s příjmy obou rodičů i rozsahem péče.",
             },
           ]}
         />
@@ -200,16 +200,16 @@ export default function JakFungujeStridavaPece() {
         polozky={[
           {
             nazev: "Jeden týden, dvě barvy",
-            popis: "Na první pohled víte, u koho dítě je a kdo ho kam veze.",
+            popis: "Na první pohled víte, u koho dítě je a kdo ho kam veze.",
           },
           {
             nazev: "Nic se neztratí",
             popis:
-              "Zprávy ze školy, doklady od lékaře, potvrzení o platbě — všechno na jednom místě.",
+              "Zprávy ze školy, doklady od lékaře, potvrzení o platbě — všechno na jednom místě.",
           },
           {
             nazev: "Připomínky předem",
-            popis: "Notifikace před předávkou i před kroužkem. Oběma rodičům.",
+            popis: "Notifikace před předávkou i před kroužkem. Oběma rodičům.",
           },
           {
             nazev: "Druhý rodič zdarma",

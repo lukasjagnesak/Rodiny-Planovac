@@ -11,7 +11,7 @@ import {
 import { ZNACKA } from "@/lib/brand";
 
 const POPISEK =
-  "Devatenáct věcí, které je potřeba zařídit v prvním měsíci střídavé péče — " +
+  "Devatenáct věcí, které je potřeba zařídit v prvním měsíci střídavé péče — " +
   "škola, lékař, doklady, peníze, provoz. Ke stažení ve Wordu, zdarma.";
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ export default function Checklist() {
 
       <FotoPas
         src="/foto/prvni-tydny.jpg"
-        alt="Otec si ráno u kuchyňského stolu píše seznam do sešitu."
+        alt="Otec si ráno u kuchyňského stolu píše seznam do sešitu."
         prioritni
       />
 
@@ -77,9 +77,9 @@ export default function Checklist() {
         <LeadForm
           magnet="checklist-30-dni"
           nadpis="Stáhnout ve Wordu"
-          popis="Celý checklist v jednom souboru se zaškrtávacími políčky — k vytištění na lednici nebo k poslání druhému rodiči. Otevře se v Wordu, Pages i Google Dokumentech."
+          popis="Celý checklist v jednom souboru se zaškrtávacími políčky — k vytištění na lednici nebo k poslání druhému rodiči. Otevře se v Wordu, Pages i Google Dokumentech."
           tlacitko="Chci soubor"
-          hotovo="Díky. Soubor se stáhne tlačítkem níž — a dáme vědět, až přibude něco dalšího."
+          hotovo="Díky. Soubor se stáhne tlačítkem níž — a dáme vědět, až přibude něco dalšího."
           odkaz={{
             href: "/api/checklist",
             popisek: "Stáhnout checklist (.docx)",

@@ -5,10 +5,10 @@ import { NastrojeDokumentu } from "@/components/web/kopirovat";
 import { ZNACKA } from "@/lib/brand";
 import { VZOR_DOHODY } from "./vzor";
 
-const TITULEK = "Vzor dohody o střídavé péči — celý text";
+const TITULEK = "Vzor dohody o střídavé péči — celý text";
 const POPISEK =
-  "Úplný text vzorové dohody o střídavé péči k okopírování do Wordu. " +
-  "S poznámkami u míst, kde se nejčastěji chybuje.";
+  "Úplný text vzorové dohody o střídavé péči k okopírování do Wordu. " +
+  "S poznámkami u míst, kde se nejčastěji chybuje.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -20,9 +20,9 @@ export default function VzorText() {
   return (
     <>
       <Hero
-        nadtitulek="Vzor k okopírování"
-        nadpis="Dohoda o střídavé péči — text"
-        perex="Zkopírujte do Wordu, doplňte údaje v hranatých závorkách a poznámky smažte. Než to podáte k soudu, nechte text projít advokátem."
+        nadtitulek="Vzor k okopírování"
+        nadpis="Dohoda o střídavé péči — text"
+        perex="Zkopírujte do Wordu, doplňte údaje v hranatých závorkách a poznámky smažte. Než to podáte k soudu, nechte text projít advokátem."
       >
         <NastrojeDokumentu text={VZOR_DOHODY} />
       </Hero>

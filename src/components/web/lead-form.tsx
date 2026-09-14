@@ -156,7 +156,7 @@ export function LeadForm({
                   name="jmeno"
                   type="text"
                   required
-                  placeholder="Jméno a příjmení"
+                  placeholder="Jméno a příjmení"
                   autoComplete="name"
                   className={poleTridy}
                 />

@@ -292,6 +292,33 @@ domény, a tou chodí i pozvánky druhému rodiči.
 > Formulář na `/pro-mediatory` slibuje, že **se ozve člověk do dvou
 > pracovních dnů**. Automatická odpověď ten slib nenahradí.
 
+### 5e2. Česká typografie a jazyk textů
+
+`npm run typografie` opraví v textech to, co žádný sestavovač nepohlídá
+a co čtenář v Česku pozná:
+
+- jednopísmenná předložka se pevnou mezerou drží u dalšího slova,
+- výpustka je znak `…`, ne tři tečky,
+- schéma se píše pomlčkou: `2–2–3`,
+- v částce se neláme mezera mezi řády ani před `Kč`.
+
+`npm run kontrola:typografie` je totéž bez oprav a je součástí
+`npm test`, aby se to po jednom průchodu nerozjelo zpátky.
+
+> Pevné mezery jsou ve zdroji neviditelné. Nepiš je ručně — nech to na
+> skriptu, jinak se v souboru střídají oba druhy mezer a nikdo nepozná
+> proč.
+
+**Jazyk textů.** Tři návyky, které z textu udělají „to psala AI“,
+i když je obsah v pořádku:
+
+- **pomlčka místo tečky.** Čtyři vsuvky na odstavec nejsou styl, ale
+  manýra. Hlavní stránka jich měla šestnáct.
+- **aforismus na konci odstavce.** „Zapomenout jde jen na to, co ti
+  nikdo nepřipomene.“ Zní chytře, po přečtení neznamená nic.
+- **protiklad jako šablona.** „Není to X, je to Y.“ Jednou je to důraz,
+  potřetí na stránce je to vzorec.
+
 ### 5f. Články na webu
 
 Sekce `/clanky` je v datech, ne v markdownu: projekt nemá knihovnu na

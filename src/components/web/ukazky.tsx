@@ -39,28 +39,28 @@ const ZALOZKY: { id: Obrazovka; popisek: string; Ikona: typeof CalendarDays }[] 
 
 const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
   kalendar: {
-    nadpis: "Kalendář, kde je vidět i noc předání",
-    text: "Každý den má barvu rodiče, u kterého dítě spí. Den předání je přepůlený diagonálně směrem k tomu, kdo dítě přebírá — proto sedí počet nocí, ne jen zaškrtnutých dnů. Prázdniny mají vlastní pruh.",
+    nadpis: "Kalendář, kde je vidět i noc předání",
+    text: "Každý den má barvu rodiče, u kterého dítě spí. Den předání je přepůlený diagonálně směrem k tomu, kdo dítě přebírá — proto sedí počet nocí, ne jen zaškrtnutých dnů. Prázdniny mají vlastní pruh.",
   },
   prehled: {
-    nadpis: "Ráno otevřeš a víš, co dnes je",
-    text: "U koho děti spí, kdy končí škola, kdo veze na kroužek a co se chystá zítra. Bez ptaní se druhého rodiče.",
+    nadpis: "Ráno otevřeš a víš, co dnes je",
+    text: "U koho děti spí, kdy končí škola, kdo veze na kroužek a co se chystá zítra. Bez ptaní se druhého rodiče.",
   },
   vydaje: {
     nadpis: "Účtenka se vyfotí, vyrovnání se spočítá",
     text: "Každý výdaj má svůj podíl — půl na půl nebo jak jste se dohodli. Na konci měsíce je vidět jedno číslo místo dvou různých vzpomínek.",
   },
   krouzky: {
-    nadpis: "Kdo veze tam a kdo zpátky",
-    text: "U každého termínu je jméno. Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
+    nadpis: "Kdo veze tam a kdo zpátky",
+    text: "U každého termínu je jméno. Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
   },
   zpravy: {
     nadpis: "Zprávu nejde smazat ani přepsat",
-    text: "Domlouvání jde psaním, ne telefonováním — ale s razítkem odeslání i přečtení, které zůstane. Když jde o soud, je vidět, kdo co a kdy napsal.",
+    text: "Domlouvání jde psaním, ne telefonováním — ale s razítkem odeslání i přečtení, které zůstane. Když jde o soud, je vidět, kdo co a kdy napsal.",
   },
   rozvrh: {
-    nadpis: "Rozvrh i změny stažené ze školy",
-    text: "Napojí se na EduPage a samo si drží rozvrh, odpadlé hodiny i suplování — pro každé dítě zvlášť, i když chodí na jinou školu.",
+    nadpis: "Rozvrh i změny stažené ze školy",
+    text: "Napojí se na EduPage a samo si drží rozvrh, odpadlé hodiny i suplování — pro každé dítě zvlášť, i když chodí na jinou školu.",
   },
 };
 

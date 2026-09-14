@@ -53,42 +53,42 @@ const FUNKCE = [
     ikona: CalendarDays,
     nazev: "Kalendář péče",
     popis:
-      "Sudé a liché týdny, 2-2-3 nebo vlastní rozpis po dnech. Prázdniny a svátky " +
-      "se doplní samy podle okresu. Nikdo už nepočítá na prstech, čí je příští víkend.",
+      "Sudé a liché týdny, 2–2–3 nebo vlastní rozpis po dnech. Prázdniny a svátky " +
+      "se doplní samy podle okresu, ve kterém dítě chodí do školy.",
   },
   {
     ikona: Car,
-    nazev: "Kroužky a doprava",
+    nazev: "Kroužky a doprava",
     popis:
-      "U každé aktivity je napsané, kdo veze a kdo vyzvedává. Konec zpráv „vyzvedneš ji dneska ty?“ ve tři odpoledne.",
+      "U každé aktivity je napsané, kdo veze a kdo vyzvedává. Včetně toho, kdo to má příští týden.",
   },
   {
     ikona: Receipt,
-    nazev: "Výdaje s účtenkami",
+    nazev: "Výdaje s účtenkami",
     popis:
-      "Vyfotíš účtenku, zadáš částku a klíč rozdělení. Na konci měsíce je vidět jedno " +
-      "číslo místo dvou různých vzpomínek. Import z Excelu umí taky.",
+      "Vyfotíš účtenku, zadáš částku a klíč rozdělení. Na konci měsíce je vidět, " +
+      "kolik kdo zaplatil a kolik z toho připadá na koho. Umí i import z Excelu.",
   },
   {
     ikona: GraduationCap,
-    nazev: "Škola a rozvrh",
+    nazev: "Škola a rozvrh",
     popis:
-      "Rozvrh každého dítěte, školní termíny a zprávy z EduPage. Konec vět „mně škola " +
-      "nic neposlala“ — oba rodiče vidí totéž ve stejnou chvíli.",
+      "Rozvrh každého dítěte, školní termíny a zprávy z EduPage. Oba rodiče je vidí " +
+      "ve stejnou chvíli, bez přeposílání.",
   },
   {
     ikona: BellRing,
     nazev: "Připomínky",
     popis:
-      "Upozornění před předávkou, kroužkem i doktorem přijde do telefonu samo. " +
-      "Zapomenout jde jen na to, co ti nikdo nepřipomene.",
+      "Upozornění před předávkou, kroužkem i doktorem přijde do telefonu. Kdy má " +
+      "dorazit, si nastavíš u každého typu zvlášť.",
   },
   {
     ikona: FileText,
     nazev: "Doklady dětí",
     popis:
-      "Kartička pojištěnce, občanka, potvrzení ze školy. Vyfocené jednou a po ruce " +
-      "i v čekárně u lékaře, ať máš dítě zrovna ty, nebo ne.",
+      "Kartička pojištěnce, občanka, potvrzení ze školy. Vyfocené jednou a dostupné " +
+      "i ve chvíli, kdy je originál v druhé domácnosti.",
   },
 ];
 
@@ -96,39 +96,39 @@ const OTAZKY = [
   {
     otazka: "Kolik to stojí?",
     odpoved:
-      "Prvních 30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo " +
-      "1 990 Kč ročně za celou rodinu — ne za člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.",
+      "Prvních 30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo " +
+      "1 990 Kč ročně za celou rodinu, ne za jednoho člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.",
   },
   {
     otazka: "Musí Klidoo používat oba rodiče?",
     odpoved:
-      "Nemusí. Spousta lidí si ho pořizuje proto, že v tom chce mít sám pořádek — kalendář, " +
-      "výdaje a školní termíny dávají smysl i bez druhé strany. Když se druhý rodič přidá, " +
+      "Nemusí. Spousta lidí si ho pořizuje proto, že v tom chce mít sám pořádek. Kalendář, " +
+      "výdaje a školní termíny dávají smysl i bez druhé strany. Když se druhý rodič přidá, " +
       "ušetří to zprávy oběma. Jeho přístup je zdarma, platí jedna domácnost.",
   },
   {
     otazka: "Vidí druhý rodič všechno, co si zapíšu?",
     odpoved:
-      "Vidí to, co je společné: kalendář péče, kroužky, události a výdaje, které do rodiny " +
-      "zadáš. Nastavení, propojení s Googlem nebo EduPage a tvoje notifikace jsou tvoje.",
+      "Vidí to, co je společné: kalendář péče, kroužky, události a výdaje, které do rodiny " +
+      "zadáš. Nastavení, propojení s Googlem nebo EduPage a tvoje notifikace jsou tvoje.",
   },
   {
-    otazka: "Umí to sudé a liché týdny?",
+    otazka: "Umí to sudé a liché týdny?",
     odpoved:
-      "Ano, a taky střídání po týdnu, čtrnáctidenní cyklus, schéma 2-2-3 nebo vlastní rozpis, " +
-      "kde si naklikáš konkrétní dny. Rozpis může být jednotýdenní i dvoutýdenní.",
+      "Ano, a taky střídání po týdnu, čtrnáctidenní cyklus, schéma 2–2–3 nebo vlastní rozpis, " +
+      "kde si naklikáš konkrétní dny. Rozpis může být jednotýdenní i dvoutýdenní.",
   },
   {
-    otazka: "Propojím to s kalendářem v telefonu?",
+    otazka: "Propojím to s kalendářem v telefonu?",
     odpoved:
-      "Ano, přes Google Kalendář. Péče, kroužky i události se ti pak zobrazí vedle pracovních " +
-      "schůzek, takže si na týden u dětí nenaplánuješ služebku.",
+      "Ano, přes Google Kalendář. Péče, kroužky i události se ti pak zobrazí vedle pracovních " +
+      "schůzek, takže si na týden u dětí nenaplánuješ služebku.",
   },
   {
     otazka: "Kde jsou data uložená?",
     odpoved:
-      "Na evropských serverech. Fotky účtenek a dokladů leží v úložišti, ke kterému se " +
-      "dostane jen tvoje rodina — přístup hlídá databáze, ne jen aplikace.",
+      "Na evropských serverech. Fotky účtenek a dokladů leží v úložišti, ke kterému se " +
+      "dostane jen tvoje rodina. Přístup hlídá databáze, ne jen aplikace.",
   },
 ];
 
@@ -164,11 +164,8 @@ export default async function Domu() {
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-muted">
               U koho jsou tenhle týden. Kdo je veze z fotbalu. Kdo zaplatil obědy a jestli
-              se to někdy vyrovná. V Klidoo je to napsané jednou, na jednom místě — a vidí
+              se to někdy vyrovná. V Klidoo je to napsané jednou, na jednom místě, a vidí
               to oba.
-            </p>
-            <p className="mt-4 max-w-lg font-display text-xl font-semibold leading-snug text-ink">
-              Klidoo je od toho, abyste byli v klidu.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -191,11 +188,11 @@ export default async function Domu() {
             <p className="mt-4 flex items-start gap-2 text-sm text-ink-subtle">
               <Users size={16} className="mt-0.5 shrink-0" aria-hidden />
               <span>
-                {ZKUSEBNI_SLIB.dni} dní zdarma se vším všudy, bez karty. Potom{" "}
+                {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Potom{" "}
                 <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
                   {korun(CENIK[0].cena)} měsíčně
                 </Link>{" "}
-                za celou rodinu — druhý rodič neplatí nic.
+                za celou rodinu. Druhý rodič neplatí nic.
               </span>
             </p>
           </div>
@@ -236,7 +233,7 @@ export default async function Domu() {
                     {den}
                   </span>
                   <span className="truncate text-sm text-ink-muted">
-                    {poznamka ?? (strana === "a" ? "U tebe" : "U druhého rodiče")}
+                    {poznamka ?? (strana === "a" ? "U tebe" : "U druhého rodiče")}
                   </span>
                 </div>
               ))}
@@ -274,7 +271,7 @@ export default async function Domu() {
           na nejvýš položené fotce celého webu to má vidět jinak. */}
       <FotoPas
         src="/foto/cesta-ze-skoly.jpg"
-        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
+        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
         prioritni
       />
 
@@ -291,21 +288,21 @@ export default async function Domu() {
                 Klidoo píše rodič, který tím sám prochází
               </h2>
               <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Tohle není appka od někoho, kdo si střídavou péči nastudoval z průzkumu
-                trhu. Vznikla proto, že ten samý kolotoč — předávky, kroužky, účtenky,
-                zprávy o tom, kdo koho kdy vyzvedne — potřeboval někdo dostat z hlavy ven.
+Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
+                a zprávy o tom, kdo koho kdy vyzvedne, z hlavy někam, kde to uvidí
+                oba rodiče.
               </p>
               <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Každá funkce je tu proto, že něco konkrétního nefungovalo. Nic tu není
-                „protože to mají ostatní“. Když ti něco chybí nebo se ti něco nelíbí,
-                napiš na{" "}
+                Každá funkce v aplikaci řeší něco, co v provozu dvou domácností
+                opakovaně drhlo. Když vám něco chybí nebo něco nefunguje, napište
+                na{" "}
                 <a
                   href="mailto:info@klidoo.cz"
                   className="font-medium text-brand underline underline-offset-4"
                 >
                   info@klidoo.cz
                 </a>
-                . Čte to člověk, který aplikaci píše, ne oddělení podpory.
+                . Odpovídám na to sám.
               </p>
             </div>
 
@@ -314,30 +311,30 @@ export default async function Domu() {
                 Postavené na české střídavé péči
               </h3>
               <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
-                Zahraniční aplikace jsou hezké, ale nevědí, co je okres ani tabulka
-                ministerstva. Tohle jsou věci, které bez toho nejdou:
+                Několik věcí ve střídavé péči má v Česku vlastní pravidla. Bez nich
+                se rozpis počítá špatně:
               </p>
               <ul className="mt-4 space-y-3.5">
                 {[
                   {
                     nazev: "Počítá noci, ne dny",
                     popis:
-                      "Den předání patří půl na půl. Soud i výživné se baví o nocích — a ty v Klidoo sedí na jednu.",
+                      "Den strávíte s dítětem oba, noc má jen jeden. Poměr péče se proto počítá z nocí a tak ho počítá i Klidoo.",
                   },
                   {
                     nazev: "Zná český školní rok",
                     popis:
-                      "Jarní prázdniny má každý okres jindy. Doplní se samy i se svátky, takže se o ně v lednu nikdo nepřetahuje.",
+                      "Jarní prázdniny připadají podle okresu na jiný týden. Doplní se samy, včetně svátků a ředitelského volna.",
                   },
                   {
                     nazev: "Výživné podle tabulky ministerstva",
                     popis:
-                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
+                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
                   },
                   {
                     nazev: "Druhý rodič neplatí nic",
                     popis:
-                      "A ani nikdo další. Prarodiče, nový partner, teta, chůva — přidej každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
+                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidej každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
                   },
                 ].map(({ nazev, popis }) => (
                   <li key={nazev} className="flex gap-3">
@@ -366,13 +363,13 @@ export default async function Domu() {
               </h2>
               <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
                 Rozsudek nebo dohoda je hotová za pár měsíců. Co rodiče doopravdy vyčerpá,
-                začne až potom a trvá dalších deset let — a nikdo o tom předem nemluví.
+                začne až potom a trvá dalších deset let. Nikdo o tom předem nemluví.
               </p>
             </div>
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
               <Image
                 src="/foto/vecer-doma.jpg"
-                alt="Matka telefonuje u kuchyňské linky, dcera za ní u stolu píše úkoly."
+                alt="Matka telefonuje u kuchyňské linky, dcera za ní u stolu píše úkoly."
                 fill
                 sizes="(min-width: 1024px) 28rem, 100vw"
                 className="object-cover"
@@ -385,17 +382,17 @@ export default async function Domu() {
               {
                 nazev: "Informace se ztrácejí",
                 popis:
-                  "Škola napíše jednomu, druhý o tom neví. Zubař, plavky, výlet, souhlas s focením.",
+                  "Škola napíše jednomu, druhý o tom neví. Zubař, plavky, výlet, souhlas s focením.",
               },
               {
                 nazev: "Peníze se nepočítají",
                 popis:
-                  "Kdo zaplatil lyžák, kdo brusle, kdo tábor. Za rok si to nikdo nepamatuje a zůstane pocit křivdy.",
+                  "Kdo zaplatil lyžák, kdo brusle, kdo tábor. Za rok si to nikdo nepamatuje a zůstane pocit křivdy.",
               },
               {
                 nazev: "Domlouvání bere energii",
                 popis:
-                  "Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
+                  "Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
               },
             ].map(({ nazev, popis }) => (
               <div key={nazev} className="border-l-2 border-line-strong pl-4">
@@ -418,7 +415,7 @@ export default async function Domu() {
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
             Šest obrazovek, ve kterých rodiče tráví skoro všechen čas. Žádné obrázky
-            z fotobanky — je to ta samá aplikace, jen s vymyšlenou rodinou.
+            z fotobanky. Je to ta samá aplikace, jen s vymyšlenou rodinou.
           </p>
 
           <div className="mt-10">
@@ -428,7 +425,7 @@ export default async function Domu() {
       </section>
 
       <VyzvaPas
-        nadpis="Takhle to vypadá i u vás"
+        nadpis="Takhle to vypadá i u vás"
         text="Založení rodiny trvá dvě minuty. Kalendář se naklikne, zbytek se doplní časem."
       />
 
@@ -475,7 +472,7 @@ export default async function Domu() {
               <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
                 <Image
                   src="/foto/tata-a-dcera.jpg"
-                  alt="Otec sedí večer u stolu vedle dcery, která kreslí."
+                  alt="Otec sedí večer u stolu vedle dcery, která kreslí."
                   fill
                   sizes="(min-width: 1024px) 32rem, 100vw"
                   className="object-cover"
@@ -487,7 +484,7 @@ export default async function Domu() {
               <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
                 Nemusíš druhého rodiče nikam přemlouvat. Kalendář, výdaje a školní termíny
                 dávají smysl už proto, že v tom chceš mít konečně pořádek ty. Když se druhý
-                rodič později přidá, uvidí stejný týden — a psaní ubude oběma.
+                rodič později přidá, uvidí stejný týden a psaní ubude oběma.
               </p>
             </div>
             <div className="card p-6">
@@ -496,7 +493,7 @@ export default async function Domu() {
               </h3>
               <ul className="mt-4 space-y-3">
                 {[
-                  "Předávky, kroužky a doktoři jsou v jednom rozpisu, ne ve dvou hlavách.",
+                  "Předávky, kroužky a doktoři jsou v jednom rozpisu, ne ve dvou hlavách.",
                   "Výdaje se dělí podle klíče, na kterém jste se domluvili, ne podle paměti.",
                   "Změnu vidí druhý rodič hned, bez zprávy „prosím tě, ještě…“.",
                   "Přístup druhého rodiče je zdarma.",
@@ -518,7 +515,7 @@ export default async function Domu() {
 
       <VyzvaPas
         nadpis="Začít můžeš sám, hned teď"
-        text="Druhého rodiče nemusíš nikam přemlouvat. Přidá se, až bude chtít — a nic tím platit nebude."
+        text="Druhého rodiče nemusíš nikam přemlouvat. Přidá se, až bude chtít, a nic tím platit nebude."
         tlacitko="Založit rodinu zdarma"
       />
 
@@ -537,18 +534,18 @@ export default async function Domu() {
               {
                 href: "/jak-funguje-stridava-pece",
                 nazev: "Jak funguje střídavá péče",
-                popis: "Podmínky, rytmy střídání, výživné a trvalé bydliště. Bez právničiny.",
+                popis: "Podmínky, rytmy střídání, výživné a trvalé bydliště. Bez právničiny.",
               },
               {
                 href: "/vzor-dohody-o-stridave-peci",
                 nazev: "Vzor dohody",
-                popis: "Co musí obsahovat, aby ji soud schválil, a na co se zapomíná.",
+                popis: "Co musí obsahovat, aby ji soud schválil, a na co se zapomíná.",
               },
               {
                 href: "/kalkulacka-vyzivneho",
                 nazev: "Kalkulačka výživného",
                 popis:
-                  "Podle tabulky ministerstva. Počítá s příjmy obou rodičů i s rozsahem péče.",
+                  "Podle tabulky ministerstva. Počítá s příjmy obou rodičů i s rozsahem péče.",
               },
             ].map(({ href, nazev, popis }) => (
               <Link
@@ -590,7 +587,7 @@ export default async function Domu() {
             <LeadForm
               magnet="newsletter"
               nadpis="Chceš vědět, co přibude?"
-              popis="Píšeme jen tehdy, když je co říct — nová funkce, mobilní aplikace, změna v pravidlech střídavé péče. Pár e-mailů za rok."
+              popis="Píšeme jen tehdy, když je co říct: nová funkce, mobilní aplikace, změna v pravidlech střídavé péče. Pár e-mailů za rok."
               tlacitko="Odebírat"
               hotovo="Díky. Ozveme se, až bude co říct."
             />
@@ -602,7 +599,7 @@ export default async function Domu() {
             </h2>
             <p className="mt-3 text-lg leading-relaxed text-ink-muted">
               Kroužky, předávky a účtenky nepočkají, až na to bude klid. Založení rodiny
-              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíš — ani kartu
+              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíš. Ani kartu
               nezadáváš.
             </p>
 
@@ -626,12 +623,12 @@ export default async function Domu() {
               {
                 href: "/pro-advokaty",
                 nazev: "Pro advokáty",
-                popis: "Klienti odcházejí s režimem, který funguje i po rozsudku.",
+                popis: "Klienti odcházejí s režimem, který funguje i po rozsudku.",
               },
               {
                 href: "/pro-mediatory",
                 nazev: "Pro mediátory",
-                popis: "Provize za doporučení a nástroj, který dohodu udrží naživu.",
+                popis: "Provize za doporučení a nástroj, který dohodu udrží naživu.",
               },
             ]}
           />

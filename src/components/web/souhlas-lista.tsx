@@ -10,7 +10,7 @@ import { prectiSouhlas, ulozSouhlas, type Souhlas } from "@/lib/souhlas";
 /**
  * Lišta se souhlasem.
  *
- * „Jen nutné" je stejně velké a stejně blízko jako „Přijmout vše" —
+ * „Jen nutné" je stejně velké a stejně blízko jako „Přijmout vše" —
  * schované odmítnutí je podle úřadu vada, ne optimalizace, a u publika,
  * které řeší rozvod, je to navíc rychlá cesta ke ztrátě důvěry.
  *
@@ -67,19 +67,19 @@ export function SouhlasLista() {
               disabled
               readOnly
               label="Nutné"
-              description="Přihlášení a základní chod webu. Bez nich to nejde vypnout."
+              description="Přihlášení a základní chod webu. Bez nich to nejde vypnout."
             />
             <Checkbox
               checked={analytika}
               onChange={(e) => setAnalytika(e.target.checked)}
               label="Analytika"
-              description="Google Analytics — které stránky lidé čtou a kde odcházejí."
+              description="Google Analytics — které stránky lidé čtou a kde odcházejí."
             />
             <Checkbox
               checked={marketing}
               onChange={(e) => setMarketing(e.target.checked)}
               label="Marketing"
-              description="Meta Pixel a Google Ads — měření reklam a jejich cílení."
+              description="Meta Pixel a Google Ads — měření reklam a jejich cílení."
             />
           </div>
         ) : null}

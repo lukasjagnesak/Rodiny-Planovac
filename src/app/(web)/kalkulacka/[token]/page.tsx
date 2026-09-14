@@ -10,7 +10,7 @@ import type { CustodySide, PatternKind } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Rozpis střídavé péče",
-  description: "Sdílený rozpis, u koho jsou děti který den.",
+  description: "Sdílený rozpis, u koho jsou děti který den.",
   // Sdílené rozpisy do vyhledávače nepatří.
   robots: { index: false, follow: false },
 };

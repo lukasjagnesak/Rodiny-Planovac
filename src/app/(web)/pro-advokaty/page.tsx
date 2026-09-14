@@ -9,7 +9,7 @@ import { ZNACKA } from "@/lib/brand";
 const TITULEK = "Pro advokáty: co klientům zbyde po rozsudku";
 const POPISEK =
   "Klidoo pro advokátní kanceláře specializované na rodinné právo. Materiály pro klienty, " +
-  "doložitelný přehled výdajů a nástroj, díky kterému se klienti nevracejí s provozními spory.";
+  "doložitelný přehled výdajů a nástroj, díky kterému se klienti nevracejí s provozními spory.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -22,26 +22,26 @@ const CO_NABIZIME = [
   {
     nazev: "Přístup pro kancelář zdarma",
     popis:
-      "Účet, ve kterém si režim naklikáte s klientem přímo na schůzce. Ukázat rytmus " +
+      "Účet, ve kterém si režim naklikáte s klientem přímo na schůzce. Ukázat rytmus " +
       "střídání na kalendáři trvá minutu; vysvětlovat ho slovy dvacet.",
   },
   {
     nazev: "Materiály pro klienty",
     popis:
-      "Vzor dohody, checklist prvních 30 dní a kalkulačky. Můžete je posílat jako přílohu " +
-      "k e-mailu nebo odkazem — jsou zdarma a bez registrace.",
+      "Vzor dohody, checklist prvních 30 dní a kalkulačky. Můžete je posílat jako přílohu " +
+      "k e-mailu nebo odkazem — jsou zdarma a bez registrace.",
   },
   {
     nazev: "Doložitelný přehled výdajů",
     popis:
-      "Klient vám u sporu o mimořádné výdaje přinese soupis s doklady a datem, ne pytel " +
-      "účtenek a tvrzení proti tvrzení. Export do tabulky je součástí.",
+      "Klient vám u sporu o mimořádné výdaje přinese soupis s doklady a datem, ne pytel " +
+      "účtenek a tvrzení proti tvrzení. Export do tabulky je součástí.",
   },
   {
-    nazev: "Zpětná vazba k vzorům",
+    nazev: "Zpětná vazba k vzorům",
     popis:
-      "Naše vzory čtou tisíce rodičů. Když v nich uvidíte nepřesnost, opravíme ji a uvedeme " +
-      "vás jako odborného garanta — pokud o to stojíte.",
+      "Naše vzory čtou tisíce rodičů. Když v nich uvidíte nepřesnost, opravíme ji a uvedeme " +
+      "vás jako odborného garanta — pokud o to stojíte.",
   },
 ];
 
@@ -56,7 +56,7 @@ export default function ProAdvokaty() {
           </>
         }
         nadpis="Spor skončí rozsudkem. Klientovi začne provoz."
-        perex="Rodinné právo má nepříjemnou vlastnost: velká část klientů se vrací s věcmi, které nejsou právní. Kdo zaplatil lyžák, kdo nepřevzal dítě včas, kdo se nedozvěděl o zubaři. Klidoo tuhle vrstvu odstraní."
+        perex="Rodinné právo má nepříjemnou vlastnost: velká část klientů se vrací s věcmi, které nejsou právní. Kdo zaplatil lyžák, kdo nepřevzal dítě včas, kdo se nedozvěděl o zubaři. Klidoo tuhle vrstvu odstraní."
       >
         <Link
           href="#spoluprace"
@@ -68,7 +68,7 @@ export default function ProAdvokaty() {
 
       <FotoPas
         src="/foto/advokatka.jpg"
-        alt="Advokátka vysvětluje klientovi dokument u pracovního stolu."
+        alt="Advokátka vysvětluje klientovi dokument u pracovního stolu."
         prioritni
       />
 
@@ -94,19 +94,19 @@ export default function ProAdvokaty() {
           hlavicka={["Typická situace", "Čím se obvykle dokládá", "S Klidoo"]}
           radky={[
             [
-              "Spor o mimořádné výdaje",
-              "Pytel účtenek, výpisy z účtu",
-              "Soupis s doklady, daty a rozdělením",
+              "Spor o mimořádné výdaje",
+              "Pytel účtenek, výpisy z účtu",
+              "Soupis s doklady, daty a rozdělením",
             ],
             [
-              "Tvrzení o nedodržování rytmu",
-              "Zprávy v telefonu, svědci",
-              "Historie kalendáře a předávek",
+              "Tvrzení o nedodržování rytmu",
+              "Zprávy v telefonu, svědci",
+              "Historie kalendáře a předávek",
             ],
             [
-              "„O tom mi nikdo neřekl“",
+              "„O tom mi nikdo neřekl“",
               "Screenshoty konverzací",
-              "Společný záznam události u obou rodičů",
+              "Společný záznam události u obou rodičů",
             ],
             [
               "Návrh na změnu poměrů",
@@ -145,7 +145,7 @@ export default function ProAdvokaty() {
           partner
           varianta="svetly"
           nadpis="Ozveme se do dvou pracovních dnů"
-          popis="Napište, jestli chcete přístup pro kancelář, materiály pro klienty, nebo si o tom nejdřív povídat. Ozve se člověk, ne automat."
+          popis="Napište, jestli chcete přístup pro kancelář, materiály pro klienty, nebo si o tom nejdřív povídat. Ozve se člověk, ne automat."
           tlacitko="Odeslat"
           hotovo="Díky, máme to. Ozveme se do dvou pracovních dnů."
         />
@@ -168,7 +168,7 @@ export default function ProAdvokaty() {
             {
               href: "/vzor-dohody-o-stridave-peci",
               nazev: "Náš vzor dohody",
-              popis: "To, co posíláme klientům. Rádi ho probereme s vámi.",
+              popis: "To, co posíláme klientům. Rádi ho probereme s vámi.",
             },
           ]}
         />

@@ -27,7 +27,7 @@ const PATICKA = [
     nadpis: "Pro rodiče",
     odkazy: [
       { href: "/jak-funguje-stridava-pece", popisek: "Jak funguje střídavá péče" },
-      { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody o střídavé péči" },
+      { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody o střídavé péči" },
       { href: "/checklist-prvnich-30-dni", popisek: "Checklist prvních 30 dní" },
       { href: "/clanky", popisek: "Články" },
     ],

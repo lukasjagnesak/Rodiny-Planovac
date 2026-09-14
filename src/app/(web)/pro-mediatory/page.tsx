@@ -15,7 +15,7 @@ import { ZNACKA } from "@/lib/brand";
 const TITULEK = "Pro mediátory: provize za doporučení";
 const POPISEK =
   `Partnerský program Klidoo pro mediátory. ${PROVIZE_PROCENTO} % z předplatného ` +
-  "doporučených rodin a nástroj, díky kterému dohoda vydrží i po skončení mediace.";
+  "doporučených rodin a nástroj, díky kterému dohoda vydrží i po skončení mediace.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -35,7 +35,7 @@ export default function ProMediatory() {
           </>
         }
         nadpis="Dohoda vydrží tak dlouho, jak dlouho podle ní jde žít"
-        perex="Odejdou od vás domluvení. Za tři měsíce se pohádají o to, kdo veze na kroužek a kdo zaplatil tábor — protože rytmus, na kterém jste se shodli, existuje jen na papíře. Klidoo z něj udělá provoz."
+        perex="Odejdou od vás domluvení. Za tři měsíce se pohádají o to, kdo veze na kroužek a kdo zaplatil tábor — protože rytmus, na kterém jste se shodli, existuje jen na papíře. Klidoo z něj udělá provoz."
       >
         <Link
           href="#program"
@@ -47,7 +47,7 @@ export default function ProMediatory() {
 
       <FotoPas
         src="/foto/mediace.jpg"
-        alt="Mediátorka mluví u kulatého stolu s oběma rodiči."
+        alt="Mediátorka mluví u kulatého stolu s oběma rodiči."
         prioritni
       />
 
@@ -84,7 +84,7 @@ export default function ProMediatory() {
               ],
               ["Výplata", `${VYPLATA_OBDOBI}, od ${MINIMALNI_VYPLATA_KC.toLocaleString("cs-CZ")} Kč`],
               ["Přístup pro vás", "Zdarma, včetně ukázkové rodiny pro práci na sezení"],
-              ["Materiály", "Vzor dohody, checklist a kalkulačky pod vaším odkazem"],
+              ["Materiály", "Vzor dohody, checklist a kalkulačky pod vaším odkazem"],
               ["Závazek", "Žádný. Program lze kdykoli opustit"],
             ]}
           />
@@ -132,9 +132,9 @@ export default function ProMediatory() {
           partner
           varianta="svetly"
           nadpis="Přihlásit se do programu"
-          popis="Pošleme partnerský odkaz, přístup zdarma a materiály pro klienty. Ozve se člověk, ne automat."
+          popis="Pošleme partnerský odkaz, přístup zdarma a materiály pro klienty. Ozve se člověk, ne automat."
           tlacitko="Odeslat"
-          hotovo="Díky, máme to. Ozveme se do dvou pracovních dnů s partnerským odkazem."
+          hotovo="Díky, máme to. Ozveme se do dvou pracovních dnů s partnerským odkazem."
         />
 
         <p className="text-sm text-ink-subtle">
@@ -150,7 +150,7 @@ export default function ProMediatory() {
             {
               href: "/pro-advokaty",
               nazev: "Pro advokáty",
-              popis: "Bez provizí — kanceláře mají jiná pravidla a jiný užitek.",
+              popis: "Bez provizí — kanceláře mají jiná pravidla a jiný užitek.",
             },
             {
               href: "/vzor-dohody-o-stridave-peci",

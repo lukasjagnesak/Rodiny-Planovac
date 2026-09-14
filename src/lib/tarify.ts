@@ -37,8 +37,8 @@ export const ZKUSEBNI_SLIB = {
   body: [
     "Všechny funkce, žádná omezená verze.",
     "Bez zadání karty — nic se samo nestrhne.",
-    "Druhý rodič se může připojit hned a taky nic neplatí.",
-    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů.",
+    "Druhý rodič se může připojit hned a taky nic neplatí.",
+    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů.",
   ],
 } as const;
 
@@ -51,53 +51,53 @@ export const ZKUSEBNI_SLIB = {
  * a schovat ho mezi drobným písmem by bylo hloupé.
  */
 export const SROVNANI: { co: string; bez: boolean; s: boolean; pozn?: string }[] = [
-  { co: "Kalendář, výdaje, doklady i zprávy — číst", bez: true, s: true },
-  { co: "Přístup pro druhého rodiče a další členy", bez: true, s: true },
-  { co: "Veřejné kalkulačky a vzory dohod", bez: true, s: true },
+  { co: "Kalendář, výdaje, doklady i zprávy — číst", bez: true, s: true },
+  { co: "Přístup pro druhého rodiče a další členy", bez: true, s: true },
+  { co: "Veřejné kalkulačky a vzory dohod", bez: true, s: true },
   // Listiny jsou to jediné, co se zamyká navíc k zápisu. Zapsaná data
   // zůstávají čitelná napořád — dokument, který z nich aplikace složí,
   // je produkt, ne uživatelův obsah.
   {
-    co: "Souhrn péče a nákladů pro soud",
+    co: "Souhrn péče a nákladů pro soud",
     bez: false,
     s: true,
     pozn: "čísla zůstanou vidět, listina ne",
   },
   { co: "Výpis komunikace pro advokáta", bez: false, s: true },
-  { co: "Zapisovat a upravovat v kalendáři", bez: false, s: true },
-  { co: "Přidávat výdaje, účtenky a doklady", bez: false, s: true },
+  { co: "Zapisovat a upravovat v kalendáři", bez: false, s: true },
+  { co: "Přidávat výdaje, účtenky a doklady", bez: false, s: true },
   { co: "Psát zprávy druhému rodiči", bez: false, s: true },
-  { co: "Kroužky, odvozy a pravidelné výdaje", bez: false, s: true },
-  { co: "Automatické stahování z EduPage", bez: false, s: true },
+  { co: "Kroužky, odvozy a pravidelné výdaje", bez: false, s: true },
+  { co: "Automatické stahování z EduPage", bez: false, s: true },
   { co: "Přenos do Google kalendáře", bez: false, s: true },
-  { co: "Připomínky na další den", bez: true, s: true, pozn: "z toho, co už je zapsané" },
+  { co: "Připomínky na další den", bez: true, s: true, pozn: "z toho, co už je zapsané" },
 ];
 
 /** Co je v ceně. Jeden seznam pro web i pro stránku předplatného. */
 export const CO_JE_V_CENE = [
   {
     nazev: "Kalendář střídavé péče",
-    popis: "Vzory střídání, výjimky, prázdniny a noci předání — s počtem nocí u každého rodiče.",
+    popis: "Vzory střídání, výjimky, prázdniny a noci předání — s počtem nocí u každého rodiče.",
   },
   {
-    nazev: "Celá rodina v ceně",
-    popis: "Druhý rodič, prarodiče, nový partner, teta i chůva. Platí jedna domácnost, ne každý účet zvlášť.",
+    nazev: "Celá rodina v ceně",
+    popis: "Druhý rodič, prarodiče, nový partner, teta i chůva. Platí jedna domácnost, ne každý účet zvlášť.",
   },
   {
-    nazev: "Výdaje a účtenky",
-    popis: "Kdo co zaplatil, jak se to dělí a kolik z toho plyne vyrovnání. Účtenku stačí vyfotit.",
+    nazev: "Výdaje a účtenky",
+    popis: "Kdo co zaplatil, jak se to dělí a kolik z toho plyne vyrovnání. Účtenku stačí vyfotit.",
   },
   {
-    nazev: "Kroužky a odvozy",
-    popis: "Kdo veze tam a kdo zpátky, u každého termínu jménem. Cenu lze rozdělit mezi rodiče.",
+    nazev: "Kroužky a odvozy",
+    popis: "Kdo veze tam a kdo zpátky, u každého termínu jménem. Cenu lze rozdělit mezi rodiče.",
   },
   {
     nazev: "Škola",
-    popis: "Rozvrh každého dítěte, úkoly a zprávy z EduPage, které se samy stahují.",
+    popis: "Rozvrh každého dítěte, úkoly a zprávy z EduPage, které se samy stahují.",
   },
   {
     nazev: "Připomínky",
-    popis: "Den předem přijde, co se chystá — notifikací do telefonu i do Google kalendáře.",
+    popis: "Den předem přijde, co se chystá — notifikací do telefonu i do Google kalendáře.",
   },
 ] as const;
 
@@ -108,7 +108,7 @@ export const CENIK: Cenik[] = [
     cena: 199,
     mesicne: 199,
     obdobi: "měsíc",
-    popis: "Zrušíš kdykoli, hned v aplikaci.",
+    popis: "Zrušíš kdykoli, hned v aplikaci.",
     usetri: 0,
   },
   {

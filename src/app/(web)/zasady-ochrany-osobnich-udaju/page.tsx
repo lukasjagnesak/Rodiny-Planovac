@@ -47,8 +47,8 @@ export default function Zasady() {
           hlavicka={["Údaje", "Proč", "Jak dlouho"]}
           radky={[
             [
-              "E-mail a heslo",
-              "Přihlášení a obnova přístupu — plnění smlouvy",
+              "E-mail a heslo",
+              "Přihlášení a obnova přístupu — plnění smlouvy",
               "Po dobu existence účtu",
             ],
             [
@@ -57,23 +57,23 @@ export default function Zasady() {
               "Do smazání rodiny nebo účtu",
             ],
             [
-              "E-mail z formuláře na webu",
-              "Zaslání materiálu a informací o službě — souhlas",
+              "E-mail z formuláře na webu",
+              "Zaslání materiálu a informací o službě — souhlas",
               "Do odvolání souhlasu, nejdéle 3 roky",
             ],
             [
-              "Přístupový token ke Googlu a EduPage",
+              "Přístupový token ke Googlu a EduPage",
               "Synchronizace, kterou si sami zapnete — souhlas",
               "Do odpojení propojení",
             ],
             [
-              "Údaje o předplatném (stav, období, identifikátor u Stripu)",
-              "Plnění smlouvy a účetnictví",
-              "Po dobu předplatného, doklady dle zákona o účetnictví",
+              "Údaje o předplatném (stav, období, identifikátor u Stripu)",
+              "Plnění smlouvy a účetnictví",
+              "Po dobu předplatného, doklady dle zákona o účetnictví",
             ],
             [
               "Technické záznamy (IP, čas požadavku)",
-              "Provoz a bezpečnost — oprávněný zájem",
+              "Provoz a bezpečnost — oprávněný zájem",
               "Nejdéle 6 měsíců",
             ],
           ]}

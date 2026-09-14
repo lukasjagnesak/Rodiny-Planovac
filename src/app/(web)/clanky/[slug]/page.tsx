@@ -72,7 +72,7 @@ export default async function ClanekStranka({
 
       <VyzvaPas
         nadpis="Napsané jednou, vidí to oba"
-        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě. 30 dní zdarma, bez zadání karty."
+        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě. 30 dní zdarma, bez zadání karty."
       />
     </>
   );

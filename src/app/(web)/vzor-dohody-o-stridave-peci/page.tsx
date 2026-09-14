@@ -12,10 +12,10 @@ import {
 import { LeadForm } from "@/components/web/lead-form";
 import { ZNACKA } from "@/lib/brand";
 
-const TITULEK = "Vzor dohody o střídavé péči (2026)";
+const TITULEK = "Vzor dohody o střídavé péči (2026)";
 const POPISEK =
-  "Vzor dohody o střídavé péči k okopírování. Co musí obsahovat, aby ji soud schválil, " +
-  "a na co se nejčastěji zapomíná. Zdarma.";
+  "Vzor dohody o střídavé péči k okopírování. Co musí obsahovat, aby ji soud schválil, " +
+  "a na co se nejčastěji zapomíná. Zdarma.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -29,13 +29,13 @@ export default function VzorDohody() {
     <>
       <Hero
         nadtitulek="Vzor · aktualizováno 2026"
-        nadpis="Dohoda o střídavé péči, kterou soud nevrátí"
-        perex="Připravený text, do kterého doplníte jména a termíny. Včetně sedmi bodů, na které se nejčastěji zapomíná a kvůli kterým se rodiče o rok později znovu hádají."
+        nadpis="Dohoda o střídavé péči, kterou soud nevrátí"
+        perex="Připravený text, do kterého doplníte jména a termíny. Včetně sedmi bodů, na které se nejčastěji zapomíná a kvůli kterým se rodiče o rok později znovu hádají."
       />
 
       <FotoPas
         src="/foto/podpis-dohody.jpg"
-        alt="Ruce dvou rodičů u stolu, jeden podepisuje dohodu."
+        alt="Ruce dvou rodičů u stolu, jeden podepisuje dohodu."
         prioritni
       />
 
@@ -59,8 +59,8 @@ export default function VzorDohody() {
           <Tabulka
             hlavicka={["Náležitost", "Musí být"]}
             radky={[
-              ["Označení dítěte i obou rodičů", "vždy"],
-              ["Rytmus střídání a přesný den i hodina předání", "vždy"],
+              ["Označení dítěte i obou rodičů", "vždy"],
+              ["Rytmus střídání a přesný den i hodina předání", "vždy"],
               ["Místo předávání", "vždy"],
               ["Výživné, nebo výslovné ujednání, že se neplatí", "vždy"],
               ["Prázdniny, svátky, narozeniny", "vždy"],
@@ -110,9 +110,9 @@ export default function VzorDohody() {
           id="stahnout"
           magnet="vzor-dohody"
           nadpis="Vzor dohody — celý text"
-          popis="Text k okopírování do Wordu, s poznámkami u míst, kde se nejčastěji chybuje. Otevře se rovnou tady, nic nemusíte hledat v příloze."
+          popis="Text k okopírování do Wordu, s poznámkami u míst, kde se nejčastěji chybuje. Otevře se rovnou tady, nic nemusíte hledat v příloze."
           tlacitko="Chci vzor"
-          hotovo="Díky. Vzor je připravený — otevřete si ho, zkopírujte do Wordu a doplňte údaje."
+          hotovo="Díky. Vzor je připravený — otevřete si ho, zkopírujte do Wordu a doplňte údaje."
           odkaz={{ href: "/vzor-dohody-o-stridave-peci/text", popisek: "Otevřít vzor dohody" }}
         />
 
@@ -141,7 +141,7 @@ export default function VzorDohody() {
             {
               href: "/jak-funguje-stridava-pece",
               nazev: "Jak funguje střídavá péče",
-              popis: "Podmínky, rytmy, výživné a trvalé bydliště. Bez právničiny.",
+              popis: "Podmínky, rytmy, výživné a trvalé bydliště. Bez právničiny.",
             },
             {
               href: "/checklist-prvnich-30-dni",
@@ -154,15 +154,15 @@ export default function VzorDohody() {
 
       <Pitch
         nadpis="Dohoda je papír. Klidoo je ten týden."
-        perex="Kalendář pro dvě domácnosti, kde oba rodiče vidí totéž. Kdo veze dítě na kroužek, kdy je předávka, co se zaplatilo. Bez dohadování a bez zpráv ve dvě ráno."
+        perex="Kalendář pro dvě domácnosti, kde oba rodiče vidí totéž. Kdo veze dítě na kroužek, kdy je předávka, co se zaplatilo. Bez dohadování a bez zpráv ve dvě ráno."
         polozky={[
           {
             nazev: "Rozvrh na dvě domácnosti",
             popis: "Každý den má barvu podle toho, kdo má dítě. Vidíte to na první pohled.",
           },
           {
-            nazev: "Kroužky a vyzvedávání",
-            popis: "U každé aktivity je jasně napsáno, kdo veze a kdo vyzvedává.",
+            nazev: "Kroužky a vyzvedávání",
+            popis: "U každé aktivity je jasně napsáno, kdo veze a kdo vyzvedává.",
           },
           {
             nazev: "Sdílené výdaje",

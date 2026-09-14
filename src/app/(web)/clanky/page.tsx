@@ -7,8 +7,8 @@ import { formatDatum } from "@/lib/dates";
 import { ZNACKA } from "@/lib/brand";
 
 const POPISEK =
-  "Praktické texty o provozu rodiny se dvěma domovy — noci, prázdniny, " +
-  "dohoda, Vánoce. Bez rad, jak vychovávat, a bez právního poučování.";
+  "Praktické texty o provozu rodiny se dvěma domovy — noci, prázdniny, " +
+  "dohoda, Vánoce. Bez rad, jak vychovávat, a bez právního poučování.";
 
 export const metadata: Metadata = {
   title: "Články",
@@ -31,8 +31,8 @@ export default function Clanky() {
     <>
       <Hero
         nadtitulek="Články"
-        nadpis="O provozu dvou domovů"
-        perex="Co se počítá, co patří do dohody a kdy se má domlouvat co. Píšeme jen o tom, čemu rozumíme — výchovné rady ani právní poučení tu nenajdete."
+        nadpis="O provozu dvou domovů"
+        perex="Co se počítá, co patří do dohody a kdy se má domlouvat co. Píšeme jen o tom, čemu rozumíme — výchovné rady ani právní poučení tu nenajdete."
       />
 
       <Sloupec>
@@ -72,7 +72,7 @@ export default function Clanky() {
 
       <VyzvaPas
         nadpis="Přestaňte si to pamatovat"
-        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě — a vidí to oba rodiče. 30 dní zdarma, bez zadání karty."
+        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě — a vidí to oba rodiče. 30 dní zdarma, bez zadání karty."
       />
     </>
   );

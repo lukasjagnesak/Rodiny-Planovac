@@ -11,10 +11,10 @@ import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
 import { LeadForm } from "@/components/web/lead-form";
 import { ZNACKA } from "@/lib/brand";
 
-const TITULEK = "Kalkulačka výživného 2026 — i pro střídavou péči";
+const TITULEK = "Kalkulačka výživného 2026 — i pro střídavou péči";
 const POPISEK =
   "Spočítejte orientační výši výživného podle doporučující tabulky Ministerstva " +
-  "spravedlnosti. Zohledňuje příjmy obou rodičů i rozsah střídavé péče.";
+  "spravedlnosti. Zohledňuje příjmy obou rodičů i rozsah střídavé péče.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -25,41 +25,41 @@ export const metadata: Metadata = {
 
 const OTAZKY = [
   {
-    otazka: "Platí se výživné i při střídavé péči?",
+    otazka: "Platí se výživné i při střídavé péči?",
     odpoved:
       "Ano, pokud mají rodiče výrazně odlišné příjmy. Dítě má právo na srovnatelnou životní " +
-      "úroveň v obou domácnostech, takže rodič s vyšším příjmem obvykle přispívá i tehdy, " +
-      "když se rodiče střídají po týdnu. Při podobných příjmech a rovnoměrném střídání se " +
+      "úroveň v obou domácnostech, takže rodič s vyšším příjmem obvykle přispívá i tehdy, " +
+      "když se rodiče střídají po týdnu. Při podobných příjmech a rovnoměrném střídání se " +
       "výživné často nestanoví vůbec.",
   },
   {
     otazka: "Podle čeho kalkulačka počítá?",
     odpoved:
       "Podle doporučující tabulky Ministerstva spravedlnosti, která udává rozpětí procent " +
-      "z čistého příjmu podle životní etapy dítěte. Od povinnosti každého rodiče se odečte " +
-      "to, co už pokrývá tím, že má dítě fyzicky u sebe. Výživné je rozdíl mezi rodiči.",
+      "z čistého příjmu podle životní etapy dítěte. Od povinnosti každého rodiče se odečte " +
+      "to, co už pokrývá tím, že má dítě fyzicky u sebe. Výživné je rozdíl mezi rodiči.",
   },
   {
     otazka: "Je výsledek závazný?",
     odpoved:
       "Ne. Tabulka je pomůcka, kterou soudy používají jen podpůrně — konkrétní částku určuje " +
-      "soud podle odůvodněných potřeb dítěte a možností obou rodičů. Kalkulačka navíc " +
+      "soud podle odůvodněných potřeb dítěte a možností obou rodičů. Kalkulačka navíc " +
       "nepočítá kontrolní částku, tedy minimum, které musí platícímu rodiči zůstat.",
   },
   {
     otazka: "Co když máme víc společných dětí?",
     odpoved:
-      "Přidejte je tlačítkem a u každého vyberte etapu — procenta z tabulky se s věkem liší, " +
-      "takže starší sourozenec vyjde dráž. Výsledek uvidíte celkem i rozepsaný po dětech; " +
+      "Přidejte je tlačítkem a u každého vyberte etapu — procenta z tabulky se s věkem liší, " +
+      "takže starší sourozenec vyjde dráž. Výsledek uvidíte celkem i rozepsaný po dětech; " +
       "soud stanovuje výživné na každé dítě zvlášť.",
   },
   {
-    otazka: "A když má jeden z rodičů dítě z jiného vztahu?",
+    otazka: "A když má jeden z rodičů dítě z jiného vztahu?",
     odpoved:
-      "Vyplňte to u něj do „dalších dětí“. Koeficient se řídí celkovým počtem vyživovacích " +
-      "povinností, a ten může být u každého rodiče jiný — další dítě platícího rodiče výživné " +
+      "Vyplňte to u něj do „dalších dětí“. Koeficient se řídí celkovým počtem vyživovacích " +
+      "povinností, a ten může být u každého rodiče jiný — další dítě platícího rodiče výživné " +
       "sníží, další dítě toho přijímajícího ho naopak zvýší. Používáme koeficient, ne " +
-      "samostatnou řadu z tabulky; je to zjednodušení.",
+      "samostatnou řadu z tabulky; je to zjednodušení.",
   },
 ];
 
@@ -69,7 +69,7 @@ export default function KalkulackaVyzivnehoStranka() {
       <Hero
         nadtitulek="Kalkulačka · doporučující tabulka MSp"
         nadpis="Kolik vyjde výživné"
-        perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
+        perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
       />
 
       <Sloupec>
@@ -150,7 +150,7 @@ export default function KalkulackaVyzivnehoStranka() {
         <LeadForm
           magnet="vyzivne"
           nadpis="Ať vám neuteče, co se změní"
-          popis="Tabulka ministerstva se čas od času mění a soudní praxe s ní. Dáme vědět, když se změní něco, co ovlivní váš výpočet."
+          popis="Tabulka ministerstva se čas od času mění a soudní praxe s ní. Dáme vědět, když se změní něco, co ovlivní váš výpočet."
           tlacitko="Dát vědět"
           hotovo="Díky. Ozveme se, až se tabulka nebo praxe změní."
         />
@@ -160,12 +160,12 @@ export default function KalkulackaVyzivnehoStranka() {
             {
               href: "/kalkulacka",
               nazev: "Kalkulačka střídavé péče",
-              popis: "Kolik nocí stráví děti u každého rodiče — podle vašeho rytmu střídání.",
+              popis: "Kolik nocí stráví děti u každého rodiče — podle vašeho rytmu střídání.",
             },
             {
               href: "/jak-funguje-stridava-pece",
               nazev: "Jak funguje střídavá péče",
-              popis: "Podmínky, rytmy, trvalé bydliště a dávky. Bez právničiny.",
+              popis: "Podmínky, rytmy, trvalé bydliště a dávky. Bez právničiny.",
             },
           ]}
         />
@@ -173,15 +173,15 @@ export default function KalkulackaVyzivnehoStranka() {
 
       <Pitch
         nadpis="Výživné je jedna položka. Zbytek si pamatuje Klidoo."
-        perex="Zapíšete výdaj, vyfotíte účtenku a Klidoo dopočítá, kdo komu kolik dluží. Bez tabulek v Excelu a bez dohadování po roce."
+        perex="Zapíšete výdaj, vyfotíte účtenku a Klidoo dopočítá, kdo komu kolik dluží. Bez tabulek v Excelu a bez dohadování po roce."
         polozky={[
           {
             nazev: "Sdílené výdaje",
             popis: "Škola, lékař, kroužky. Rozdělení podle vašeho klíče, ne po paměti.",
           },
           {
-            nazev: "Doklady u výdaje",
-            popis: "Účtenka nebo faktura rovnou u položky. Dohledatelné kdykoli.",
+            nazev: "Doklady u výdaje",
+            popis: "Účtenka nebo faktura rovnou u položky. Dohledatelné kdykoli.",
           },
           {
             nazev: "Rozvrh na dvě domácnosti",

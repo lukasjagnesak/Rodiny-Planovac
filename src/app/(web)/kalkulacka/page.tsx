@@ -10,10 +10,10 @@ import { Kalkulacka } from "@/components/kalkulacka/kalkulacka";
 import { LeadForm } from "@/components/web/lead-form";
 import { ZNACKA } from "@/lib/brand";
 
-const TITULEK = "Kalkulačka střídavé péče — kolik nocí u koho";
+const TITULEK = "Kalkulačka střídavé péče — kolik nocí u koho";
 const POPISEK =
-  "Spočítejte, u koho jsou děti který den a kolik nocí za rok stráví u každého rodiče. " +
-  "Sudý a lichý týden, střídání po týdnu, schéma 2-2-3 i vlastní rozpis. Zdarma a bez registrace.";
+  "Spočítejte, u koho jsou děti který den a kolik nocí za rok stráví u každého rodiče. " +
+  "Sudý a lichý týden, střídání po týdnu, schéma 2–2–3 i vlastní rozpis. Zdarma a bez registrace.";
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -27,35 +27,35 @@ const OTAZKY = [
   {
     otazka: "Jak se počítají noci ve střídavé péči?",
     odpoved:
-      "Noc ze dne na den patří tomu rodiči, u kterého dítě ten večer usíná. Kalkulačka to " +
-      "počítá stejně — proto ti u střídání po týdnu nevyjde přesně půl na půl každý měsíc, " +
+      "Noc ze dne na den patří tomu rodiči, u kterého dítě ten večer usíná. Kalkulačka to " +
+      "počítá stejně — proto ti u střídání po týdnu nevyjde přesně půl na půl každý měsíc, " +
       "ale za rok se to srovná.",
   },
   {
-    otazka: "Proč u sudých a lichých týdnů někdy vyjdou dva týdny po sobě?",
+    otazka: "Proč u sudých a lichých týdnů někdy vyjdou dva týdny po sobě?",
     odpoved:
       "Protože některé roky mají 53 kalendářních týdnů. Na přelomu takového roku naváže " +
-      "lichý týden na lichý a jeden rodič má děti dva týdny v kuse. Není to chyba výpočtu, " +
-      "je to vlastnost číslování týdnů — a je dobré na to myslet dopředu.",
+      "lichý týden na lichý a jeden rodič má děti dva týdny v kuse. Není to chyba výpočtu, " +
+      "je to vlastnost číslování týdnů — a je dobré na to myslet dopředu.",
   },
   {
-    otazka: "Co je schéma 2-2-3?",
+    otazka: "Co je schéma 2–2–3?",
     odpoved:
-      "Dva dny u jednoho rodiče, dva u druhého a víkend se střídá. Děti tak nejsou od " +
-      "žádného rodiče déle než tři dny, což se doporučuje u menších dětí. Cyklus se opakuje " +
+      "Dva dny u jednoho rodiče, dva u druhého a víkend se střídá. Děti tak nejsou od " +
+      "žádného rodiče déle než tři dny, což se doporučuje u menších dětí. Cyklus se opakuje " +
       "po dvou týdnech.",
   },
   {
     otazka: "Můžeme mít rozpis, který nesedí na celé týdny?",
     odpoved:
-      "Ano. Vyber Vlastní rozpis dnů a naklikej, který den patří komu. Rozpis může být " +
-      "jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
+      "Ano. Vyber Vlastní rozpis dnů a naklikej, který den patří komu. Rozpis může být " +
+      "jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
   },
   {
     otazka: "Ukládáte jména dětí?",
     odpoved:
-      "Ne. Ke kalkulačce je nezadáváš a nikam se neukládají. Samotný výpočet navíc " +
-      "probíhá u tebe v prohlížeči — na server se něco pošle až ve chvíli, kdy si rozpis " +
+      "Ne. Ke kalkulačce je nezadáváš a nikam se neukládají. Samotný výpočet navíc " +
+      "probíhá u tebe v prohlížeči — na server se něco pošle až ve chvíli, kdy si rozpis " +
       "sám uložíš.",
   },
 ];
@@ -64,9 +64,9 @@ export default function KalkulackaPage() {
   return (
     <>
       <Hero
-        nadtitulek="Kalkulačka · rozpis dnů a nocí"
-        nadpis="Kolik nocí u koho"
-        perex="Zadej, jak se u vás střídáte, a hned uvidíš rozpis dnů i to, kolik nocí stráví děti u každého z rodičů. Zdarma, bez registrace."
+        nadtitulek="Kalkulačka · rozpis dnů a nocí"
+        nadpis="Kolik nocí u koho"
+        perex="Zadej, jak se u vás střídáte, a hned uvidíš rozpis dnů i to, kolik nocí stráví děti u každého z rodičů. Zdarma, bez registrace."
         siroky
       />
 
@@ -126,7 +126,7 @@ export default function KalkulackaPage() {
         <LeadForm
           magnet="stridava-pece"
           nadpis="Ať vám neuteče, co se změní"
-          popis="Číslování týdnů, doporučené rozsahy péče i soudní praxe se čas od času mění. Dáme vědět, když se změní něco, co ovlivní váš rozpis."
+          popis="Číslování týdnů, doporučené rozsahy péče i soudní praxe se čas od času mění. Dáme vědět, když se změní něco, co ovlivní váš rozpis."
           tlacitko="Dát vědět"
           hotovo="Díky. Ozveme se, až se něco změní."
         />
@@ -136,12 +136,12 @@ export default function KalkulackaPage() {
             {
               href: "/kalkulacka-vyzivneho",
               nazev: "Kalkulačka výživného",
-              popis: "Kolik vyjde výživné podle tabulky ministerstva — i při střídavé péči.",
+              popis: "Kolik vyjde výživné podle tabulky ministerstva — i při střídavé péči.",
             },
             {
               href: "/jak-funguje-stridava-pece",
               nazev: "Jak funguje střídavá péče",
-              popis: "Podmínky, rytmy, trvalé bydliště a dávky. Bez právničiny.",
+              popis: "Podmínky, rytmy, trvalé bydliště a dávky. Bez právničiny.",
             },
           ]}
         />
@@ -149,18 +149,18 @@ export default function KalkulackaPage() {
 
       <Pitch
         nadpis={`Rozpis je začátek. ${ZNACKA} pamatuje zbytek.`}
-        perex="Kalendář s nocí předání, kdo veze na kroužek a kdo zaplatil co za dítě — na jednom místě, ne ve dvou hlavách."
+        perex="Kalendář s nocí předání, kdo veze na kroužek a kdo zaplatil co za dítě — na jednom místě, ne ve dvou hlavách."
         polozky={[
           {
-            nazev: "Kalendář s nocí předání",
-            popis: "Stejný výpočet jako tady, ale rovnou v appce a s ručními výjimkami.",
+            nazev: "Kalendář s nocí předání",
+            popis: "Stejný výpočet jako tady, ale rovnou v appce a s ručními výjimkami.",
           },
           {
-            nazev: "Kroužky a odvoz",
-            popis: "U každého termínu jméno, kdo veze tam a kdo zpátky.",
+            nazev: "Kroužky a odvoz",
+            popis: "U každého termínu jméno, kdo veze tam a kdo zpátky.",
           },
           {
-            nazev: "Výdaje s účtenkou",
+            nazev: "Výdaje s účtenkou",
             popis: "Vyfotíš, appka spočítá, kdo komu kolik dluží.",
           },
           {

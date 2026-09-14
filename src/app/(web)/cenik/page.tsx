@@ -9,7 +9,7 @@ import { ZNACKA } from "@/lib/brand";
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo 1 990 Kč ročně za celou rodinu — druhý rodič neplatí nic.",
+    "30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo 1 990 Kč ročně za celou rodinu — druhý rodič neplatí nic.",
   alternates: { canonical: "/cenik" },
 };
 
@@ -25,27 +25,27 @@ const OTAZKY = [
   {
     otazka: "Co se stane po 30 dnech?",
     odpoved:
-      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
+      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
   },
   {
-    otazka: "Když zaplatím hned, přijdu o zbytek zkušebního období?",
+    otazka: "Když zaplatím hned, přijdu o zbytek zkušebního období?",
     odpoved:
-      "Ne. Karta se strhne až v den, kdy by zkušební období skončilo — tři dny předem ti navíc přijde upozornění. Zaplatit dřív tedy nic nestojí a nic neurychlí, jen máš klid.",
+      "Ne. Karta se strhne až v den, kdy by zkušební období skončilo — tři dny předem ti navíc přijde upozornění. Zaplatit dřív tedy nic nestojí a nic neurychlí, jen máš klid.",
   },
   {
     otazka: "Musím zadávat kartu, abych to mohl zkusit?",
     odpoved:
-      "Ne. Zkušební období se zapne samo při založení rodiny a nic se z ničeho nestrhává. Kartu zadáváš, až když se rozhodneš pokračovat.",
+      "Ne. Zkušební období se zapne samo při založení rodiny a nic se z ničeho nestrhává. Kartu zadáváš, až když se rozhodneš pokračovat.",
   },
   {
     otazka: "Platí druhý rodič taky?",
     odpoved:
-      "Ne. Předplatné platí rodina, ne uživatel. Druhý rodič, prarodiče, nový partner, teta i chůva mají přístup v ceně — aplikace, do které vidí jen jeden rodič, nedává smysl.",
+      "Ne. Předplatné platí rodina, ne uživatel. Druhý rodič, prarodiče, nový partner, teta i chůva mají přístup v ceně — aplikace, do které vidí jen jeden rodič, nedává smysl.",
   },
   {
     otazka: "Jak předplatné zruším?",
     odpoved:
-      "V aplikaci v sekci Předplatné jedním kliknutím, bez psaní podpoře. Do konce zaplaceného období všechno běží dál a pak se přepne do režimu čtení.",
+      "V aplikaci v sekci Předplatné jedním kliknutím, bez psaní podpoře. Do konce zaplaceného období všechno běží dál a pak se přepne do režimu čtení.",
   },
   {
     otazka: "Proč je roční tarif levnější?",
@@ -218,7 +218,7 @@ export default function Cenik() {
               {
                 href: "/jak-funguje-stridava-pece",
                 nazev: "Jak funguje střídavá péče",
-                popis: "Modely střídání, co říká zákon a na čem se rodiny nejčastěji zaseknou.",
+                popis: "Modely střídání, co říká zákon a na čem se rodiny nejčastěji zaseknou.",
               },
               {
                 href: "/kalkulacka",
@@ -239,7 +239,7 @@ export default function Cenik() {
               "@type": "Product",
               name: ZNACKA,
               description:
-                "Sdílený kalendář střídavé péče, výdaje a kroužky pro rodiny se dvěma domovy.",
+                "Sdílený kalendář střídavé péče, výdaje a kroužky pro rodiny se dvěma domovy.",
               offers: CENIK.map((tarif) => ({
                 "@type": "Offer",
                 name: tarif.nazev,
