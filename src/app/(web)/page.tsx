@@ -66,7 +66,7 @@ const FUNKCE = [
     ikona: Receipt,
     nazev: "Výdaje s účtenkami",
     popis:
-      "Vyfotíš účtenku, zadáš částku a klíč rozdělení. Na konci měsíce je vidět, " +
+      "Vyfotíte účtenku, zadáte částku a klíč rozdělení. Na konci měsíce je vidět, " +
       "kolik kdo zaplatil a kolik z toho připadá na koho. Umí i import z Excelu.",
   },
   {
@@ -81,7 +81,7 @@ const FUNKCE = [
     nazev: "Připomínky",
     popis:
       "Upozornění před předávkou, kroužkem i doktorem přijde do telefonu. Kdy má " +
-      "dorazit, si nastavíš u každého typu zvlášť.",
+      "dorazit, si nastavíte u každého typu zvlášť.",
   },
   {
     ikona: FileText,
@@ -110,25 +110,25 @@ const OTAZKY = [
     otazka: "Vidí druhý rodič všechno, co si zapíšu?",
     odpoved:
       "Vidí to, co je společné: kalendář péče, kroužky, události a výdaje, které do rodiny " +
-      "zadáš. Nastavení, propojení s Googlem nebo EduPage a tvoje notifikace jsou tvoje.",
+      "zadáte. Nastavení, propojení s Googlem nebo EduPage a vaše notifikace jsou vaše.",
   },
   {
     otazka: "Umí to sudé a liché týdny?",
     odpoved:
       "Ano, a taky střídání po týdnu, čtrnáctidenní cyklus, schéma 2–2–3 nebo vlastní rozpis, " +
-      "kde si naklikáš konkrétní dny. Rozpis může být jednotýdenní i dvoutýdenní.",
+      "kde si naklikáte konkrétní dny. Rozpis může být jednotýdenní i dvoutýdenní.",
   },
   {
     otazka: "Propojím to s kalendářem v telefonu?",
     odpoved:
-      "Ano, přes Google Kalendář. Péče, kroužky i události se ti pak zobrazí vedle pracovních " +
-      "schůzek, takže si na týden u dětí nenaplánuješ služebku.",
+      "Ano, přes Google Kalendář. Péče, kroužky i události se vám pak zobrazí vedle pracovních " +
+      "schůzek, takže si na týden u dětí nenaplánujete služebku.",
   },
   {
     otazka: "Kde jsou data uložená?",
     odpoved:
       "Na evropských serverech. Fotky účtenek a dokladů leží v úložišti, ke kterému se " +
-      "dostane jen tvoje rodina. Přístup hlídá databáze, ne jen aplikace.",
+      "dostane jen vaše rodina. Přístup hlídá databáze, ne jen aplikace.",
   },
 ];
 
@@ -233,7 +233,7 @@ export default async function Domu() {
                     {den}
                   </span>
                   <span className="truncate text-sm text-ink-muted">
-                    {poznamka ?? (strana === "a" ? "U tebe" : "U druhého rodiče")}
+                    {poznamka ?? (strana === "a" ? "U vás" : "U druhého rodiče")}
                   </span>
                 </div>
               ))}
@@ -246,7 +246,7 @@ export default async function Domu() {
                   style={{ backgroundColor: "var(--parent-a)" }}
                   aria-hidden
                 />
-                U tebe · 16 nocí
+                U vás · 16 nocí
               </span>
               <span className="flex items-center gap-1.5">
                 <span
@@ -334,7 +334,7 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
                   {
                     nazev: "Druhý rodič neplatí nic",
                     popis:
-                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidej každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
+                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidejte každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
                   },
                 ].map(({ nazev, popis }) => (
                   <li key={nazev} className="flex gap-3">
@@ -479,11 +479,11 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
                 />
               </div>
               <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                Funguje i tehdy, když ho používáš sám
+                Funguje i tehdy, když ho používáte bez druhého rodiče
               </h2>
               <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Nemusíš druhého rodiče nikam přemlouvat. Kalendář, výdaje a školní termíny
-                dávají smysl už proto, že v tom chceš mít konečně pořádek ty. Když se druhý
+                Nemusíte druhého rodiče nikam přemlouvat. Kalendář, výdaje a školní termíny
+                dávají smysl už proto, že v tom chcete mít konečně pořádek ty. Když se druhý
                 rodič později přidá, uvidí stejný týden a psaní ubude oběma.
               </p>
             </div>
@@ -514,8 +514,8 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
       </section>
 
       <VyzvaPas
-        nadpis="Začít můžeš sám, hned teď"
-        text="Druhého rodiče nemusíš nikam přemlouvat. Přidá se, až bude chtít, a nic tím platit nebude."
+        nadpis="Začít můžete i bez druhého rodiče"
+        text="Druhého rodiče nemusíte nikam přemlouvat. Přidá se, až bude chtít, a nic tím platit nebude."
         tlacitko="Založit rodinu zdarma"
       />
 
@@ -586,7 +586,7 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
 
             <LeadForm
               magnet="newsletter"
-              nadpis="Chceš vědět, co přibude?"
+              nadpis="Chcete vědět, co přibude?"
               popis="Píšeme jen tehdy, když je co říct: nová funkce, mobilní aplikace, změna v pravidlech střídavé péče. Pár e-mailů za rok."
               tlacitko="Odebírat"
               hotovo="Díky. Ozveme se, až bude co říct."
@@ -599,8 +599,8 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
             </h2>
             <p className="mt-3 text-lg leading-relaxed text-ink-muted">
               Kroužky, předávky a účtenky nepočkají, až na to bude klid. Založení rodiny
-              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíš. Ani kartu
-              nezadáváš.
+              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíte. Ani kartu
+              nezadáváte.
             </p>
 
             <Link

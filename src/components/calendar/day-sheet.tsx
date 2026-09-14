@@ -177,7 +177,7 @@ export function DaySheet({
 
           {mixed ? (
             <Alert tone="warning">
-              Děti jsou tento den u různých rodičů. Vyber konkrétní dítě nahoře v kalendáři a den
+              Děti jsou tento den u různých rodičů. Vyberte konkrétní dítě nahoře v kalendáři a den
               uprav zvlášť.
             </Alert>
           ) : (

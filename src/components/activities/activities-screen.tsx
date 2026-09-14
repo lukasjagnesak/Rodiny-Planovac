@@ -85,7 +85,7 @@ export function ActivitiesScreen({
           <EmptyState
             icon={<Bike className="h-6 w-6" />}
             title="Zatím žádné kroužky"
-            description="Přidej první kroužek — objeví se v kalendáři a můžeš k němu plánovat, kdo veze."
+            description="Přidejte první kroužek — objeví se v kalendáři a můžete k němu plánovat, kdo veze."
             action={
               canEdit ? (
                 <Button onClick={openNew}>
@@ -197,7 +197,7 @@ function TransportPlanner({
         <EmptyState
           icon={<Car className="h-6 w-6" />}
           title="V nejbližších dvou týdnech žádný kroužek není"
-          description="Zkontroluj, jestli kroužky mají správně nastavené období."
+          description="Zkontrolujte, jestli kroužky mají správně nastavené období."
         />
       </Card>
     );

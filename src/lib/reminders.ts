@@ -195,7 +195,7 @@ export async function planNotifications(): Promise<number> {
           planned.push({
             familyId: family.id,
             userId: driver.userId,
-            title: `🚗 Zítra vezeš ${direction}`,
+            title: `🚗 Zítra vezete ${direction}`,
             body:
               `${instance.activity.name}${child ? ` — ${child.name}` : ""}\n` +
               `⏰ ${formatTime(instance.startsAt)}–${formatTime(instance.endsAt)}\n` +

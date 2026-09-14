@@ -25,7 +25,7 @@ const LIMIT = new Limit(30, HODINA);
 export function GET(request: NextRequest) {
   if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
     return NextResponse.json(
-      { error: "Zkoušíš to moc často. Dej tomu chvilku." },
+      { error: "Zkoušíte to moc často. Dej tomu chvilku." },
       { status: 429 },
     );
   }

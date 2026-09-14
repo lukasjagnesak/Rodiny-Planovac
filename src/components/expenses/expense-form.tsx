@@ -92,7 +92,7 @@ export function ExpenseForm({
   async function save() {
     const amount = Number(form.amount.replace(",", "."));
     if (!Number.isFinite(amount) || amount < 0) {
-      setError("Zadej platnou částku.");
+      setError("Zadejte platnou částku.");
       return;
     }
     if (!form.title.trim()) {
@@ -364,7 +364,7 @@ export function ExpenseForm({
                 checked={form.opakovat}
                 onChange={(e) => set("opakovat", e.target.checked)}
                 label="Opakuje se pravidelně"
-                description="Výživné, obědy, kroužky, pojištění. Zapíše se sám, dokud ho nevypneš."
+                description="Výživné, obědy, kroužky, pojištění. Zapíše se sám, dokud ho nevypnete."
               />
 
               {form.opakovat ? (

@@ -62,7 +62,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
       // s nimi musí něco udělat, místo aby propadly do přehledu.
       setRadky(prectene.map((r) => ({ ...r, vybrano: r.chyba === null })));
     } catch {
-      setError("Soubor se nepodařilo přečíst. Ulož ho z Excelu jako CSV.");
+      setError("Soubor se nepodařilo přečíst. Uložte ho z Excelu jako CSV.");
     }
   }
 
@@ -130,14 +130,14 @@ export function ImportScreen({ session }: { session: SessionContext }) {
           Import z tabulky
         </h1>
         <p className="text-sm text-ink-muted">
-          Nahraj CSV a před uložením zkontroluj, co se z něj přečetlo.
+          Nahraj CSV a před uložením zkontrolujte, co se z něj přečetlo.
         </p>
       </div>
 
       {error ? <Alert tone="danger">{error}</Alert> : null}
       {hotovo !== null ? (
         <Alert tone="success">
-          Uloženo {hotovo} výdajů. Najdeš je v přehledu.
+          Uloženo {hotovo} výdajů. Najdete je v přehledu.
         </Alert>
       ) : null}
 
@@ -179,7 +179,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
               <p>
                 Datum může být <code>15.3.2026</code> i <code>2026-03-15</code>, částka{" "}
                 <code>1 890 Kč</code> i <code>1890,50</code>. Kategorii se pokusím
-                uhodnout z popisu a před uložením ji můžeš opravit.
+                uhodnout z popisu a před uložením ji můžete opravit.
               </p>
             </CardBody>
           </Card>
@@ -217,7 +217,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
                       value={hromadna}
                       onChange={(e) => setHromadna(e.target.value as ExpenseCategory)}
                     >
-                      <option value="">— vyber —</option>
+                      <option value="">— vyberte —</option>
                       {EXPENSE_CATEGORY_ORDER.map((k) => (
                         <option key={k} value={k}>
                           {EXPENSE_CATEGORIES[k].emoji} {EXPENSE_CATEGORIES[k].label}

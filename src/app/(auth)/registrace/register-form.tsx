@@ -83,7 +83,7 @@ export function RegisterForm() {
         <h2 className="mt-3 font-semibold text-ink">Ještě potvrzení e-mailu</h2>
         <p className="mt-1 text-sm text-ink-muted">
           Poslali jsme potvrzovací odkaz na <strong className="text-ink">{email}</strong>. Po
-          kliknutí tě rovnou pustíme dovnitř.
+          kliknutí vás rovnou pustíme dovnitř.
         </p>
       </div>
     );
@@ -93,7 +93,7 @@ export function RegisterForm() {
     <form onSubmit={onSubmit} className="card space-y-4 p-5 sm:p-6">
       {inviteToken ? (
         <Alert tone="info">
-          Registruješ se na základě pozvánky. Po dokončení tě rovnou přidáme do rodiny.
+          Registrujete se na základě pozvánky. Po dokončení vás rovnou přidáme do rodiny.
         </Alert>
       ) : null}
 
@@ -154,7 +154,7 @@ export function RegisterForm() {
       </p>
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
-        Už máš účet?{" "}
+        Už máte účet?{" "}
         <Link href="/prihlaseni" className="font-medium text-brand hover:underline">
           Přihlas se
         </Link>

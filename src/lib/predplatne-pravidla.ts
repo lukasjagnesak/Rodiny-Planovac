@@ -82,10 +82,10 @@ export function vyhodnot(predplatne: Predplatne | null): StavPristupu {
 
   if (!muzeZapisovat) {
     upozorneni = jeZkusebni
-      ? "Zkušební období skončilo. Zapisovat můžeš po předplacení, číst zůstává."
-      : "Předplatné skončilo. Zapisovat můžeš po obnovení, číst zůstává.";
+      ? "Zkušební období skončilo. Zapisovat můžete po předplacení, číst zůstává."
+      : "Předplatné skončilo. Zapisovat můžete po obnovení, číst zůstává.";
   } else if (predplatne.stav === "po_splatnosti") {
-    upozorneni = "Platba neprošla. Zkusíme to znovu — zkontroluj prosím kartu.";
+    upozorneni = "Platba neprošla. Zkusíme to znovu — zkontrolujte prosím kartu.";
   } else if (jeZkusebni && dni <= UPOZORNIT_OD_DNI) {
     upozorneni =
       dni <= 1

@@ -51,7 +51,7 @@ export function SouhlasLista() {
         <p className="text-sm leading-relaxed text-ink-muted">
           <strong className="text-ink">Můžeme měřit, co na webu funguje?</strong> Návštěvnost si
           počítáme sami anonymně a k tomu souhlas nepotřebujeme. Google Analytics a Meta nám
-          navíc řeknou, které reklamy mají smysl — ty bez tvého svolení nespustíme.{" "}
+          navíc řeknou, které reklamy mají smysl — ty bez vašeho svolení nespustíme.{" "}
           <Link
             href="/zasady-ochrany-osobnich-udaju"
             className="underline underline-offset-4 hover:text-ink"

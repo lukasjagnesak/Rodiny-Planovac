@@ -87,7 +87,7 @@ export function FamilyScreen({
           <EmptyState
             icon={<Baby className="h-6 w-6" />}
             title="Zatím žádné děti"
-            description="Přidej dítě — teprve pak dávají kalendář a výdaje smysl."
+            description="Přidejte dítě — teprve pak dávají kalendář a výdaje smysl."
           />
         ) : (
           <ul className="mt-2 divide-y divide-line">
@@ -154,7 +154,7 @@ export function FamilyScreen({
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-medium text-ink">{m.name}</span>
-                  {m.userId === session.userId ? <Badge color="var(--brand)">to jsi ty</Badge> : null}
+                  {m.userId === session.userId ? <Badge color="var(--brand)">to jste ty</Badge> : null}
                   {m.side ? (
                     <Badge color={m.color}>
                       <Dot color={m.color} /> strana {m.side.toUpperCase()}
@@ -326,7 +326,7 @@ function InviteSheet({
 
   async function create() {
     if (!email.includes("@")) {
-      setError("Zadej platný e-mail.");
+      setError("Zadejte platný e-mail.");
       return;
     }
     setBusy(true);
@@ -373,7 +373,7 @@ function InviteSheet({
       open={open}
       onClose={onClose}
       title="Pozvat do rodiny"
-      description="Vytvoříme odkaz, který pošleš, jak chceš — SMS, e-mailem, přes Messenger."
+      description="Vytvoříme odkaz, který pošlete, jak chcete — SMS, e-mailem, přes Messenger."
       footer={
         link ? (
           <Button className="flex-1" onClick={onClose}>
@@ -398,7 +398,7 @@ function InviteSheet({
           <>
             <Alert tone="success">
               {emailem
-                ? "Pozvánku jsme poslali e-mailem. Odkaz platí 30 dní — pro jistotu ho můžeš poslat i sám."
+                ? "Pozvánku jsme poslali e-mailem. Odkaz platí 30 dní; pro jistotu ho můžete přeposlat i vy."
                 : "Pozvánka vytvořena. Odkaz platí 30 dní."}
             </Alert>
             <div className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 p-3">

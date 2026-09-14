@@ -51,7 +51,7 @@ export function DokumentyScreen({
 
   async function nahraj() {
     if (!soubor) {
-      setError("Vyber soubor.");
+      setError("Vyberte soubor.");
       return;
     }
 
@@ -152,7 +152,7 @@ export function DokumentyScreen({
           <EmptyState
             icon={<FileText className="h-6 w-6" />}
             title="Zatím žádné doklady"
-            description="Vyfoť kartičku pojištěnce. Až ji budeš na pohotovosti potřebovat, budeš ji mít."
+            description="Vyfoťte kartičku pojištěnce. Až ji budete na pohotovosti potřebovat, budete ji mít."
           />
         </Card>
       ) : (

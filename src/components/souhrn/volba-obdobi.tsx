@@ -31,8 +31,8 @@ export function VolbaObdobi({
           Souhrn pro soud a advokáta
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
-          Kolik nocí děti u koho byly, co se za ně utratilo a kdo vozil. Vyber období,
-          zkontroluj a vytiskni — nebo ulož jako PDF.
+          Kolik nocí děti u koho byly, co se za ně utratilo a kdo vozil. Vyberte období,
+          zkontroluj a vytiskněte — nebo uložte jako PDF.
         </p>
       </div>
 

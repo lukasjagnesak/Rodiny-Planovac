@@ -66,7 +66,7 @@ export function OpakovaneVydaje({
       <Card>
         <CardHeader
           title="Pravidelné výdaje"
-          description="Zapisují se samy. Zastavit je můžeš kdykoli."
+          description="Zapisují se samy. Zastavit je můžete kdykoli."
         />
         <CardBody className="space-y-2 pt-3">
           {chyba ? <Alert tone="danger">{chyba}</Alert> : null}

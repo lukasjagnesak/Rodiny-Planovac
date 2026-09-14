@@ -14,10 +14,10 @@ import type { GoogleAccount } from "@/lib/types";
 const ERROR_MESSAGES: Record<string, string> = {
   nenastaveno:
     "Na serveru chybí GOOGLE_CLIENT_ID a GOOGLE_CLIENT_SECRET. Doplň je do .env a restartuj aplikaci.",
-  "neplatny-stav": "Ověření se nezdařilo. Zkus propojení spustit znovu.",
+  "neplatny-stav": "Ověření se nezdařilo. Zkuste propojení spustit znovu.",
   "bez-refresh-tokenu":
-    "Google nevrátil trvalý přístup. Odeber aplikaci v nastavení účtu Google (Zabezpečení → Aplikace třetích stran) a zkus to znovu.",
-  access_denied: "Přístup ke kalendáři jsi nepovolil.",
+    "Google nevrátil trvalý přístup. Odeber aplikaci v nastavení účtu Google (Zabezpečení → Aplikace třetích stran) a zkuste to znovu.",
+  access_denied: "Přístup ke kalendáři jste nepovolili.",
 };
 
 export function GoogleSettings({
@@ -91,7 +91,7 @@ export function GoogleSettings({
           Google kalendář
         </h1>
         <p className="text-sm text-ink-muted">
-          Kdo má děti, kroužky i události se přenesou do tvého kalendáře. Každý člen rodiny si
+          Kdo má děti, kroužky i události se přenesou do vašeho kalendáře. Každý člen rodiny si
           propojí svůj vlastní účet.
         </p>
       </div>
@@ -108,7 +108,7 @@ export function GoogleSettings({
           <CardBody>
             <Alert tone="warning">
               Propojení zatím není na serveru nastavené. Doplň <code>GOOGLE_CLIENT_ID</code> a{" "}
-              <code>GOOGLE_CLIENT_SECRET</code> — postup najdeš v README.
+              <code>GOOGLE_CLIENT_SECRET</code> — postup najdete v README.
             </Alert>
           </CardBody>
         </Card>
@@ -121,7 +121,7 @@ export function GoogleSettings({
             <div>
               <p className="font-semibold text-ink">Kalendář zatím není propojený</p>
               <p className="mx-auto mt-1 max-w-sm text-sm text-ink-muted">
-                Po propojení uvidíš v Google kalendáři barevné bloky péče, kroužky s časem i
+                Po propojení uvidíte v Google kalendáři barevné bloky péče, kroužky s časem i
                 lékařské prohlídky.
               </p>
             </div>

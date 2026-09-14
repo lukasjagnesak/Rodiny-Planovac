@@ -28,7 +28,7 @@ const OTAZKY = [
     otazka: "Jak se počítají noci ve střídavé péči?",
     odpoved:
       "Noc ze dne na den patří tomu rodiči, u kterého dítě ten večer usíná. Kalkulačka to " +
-      "počítá stejně — proto ti u střídání po týdnu nevyjde přesně půl na půl každý měsíc, " +
+      "počítá stejně — proto vám u střídání po týdnu nevyjde přesně půl na půl každý měsíc, " +
       "ale za rok se to srovná.",
   },
   {
@@ -48,15 +48,15 @@ const OTAZKY = [
   {
     otazka: "Můžeme mít rozpis, který nesedí na celé týdny?",
     odpoved:
-      "Ano. Vyber Vlastní rozpis dnů a naklikej, který den patří komu. Rozpis může být " +
+      "Ano. Vyberte Vlastní rozpis dnů a naklikej, který den patří komu. Rozpis může být " +
       "jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
   },
   {
     otazka: "Ukládáte jména dětí?",
     odpoved:
-      "Ne. Ke kalkulačce je nezadáváš a nikam se neukládají. Samotný výpočet navíc " +
-      "probíhá u tebe v prohlížeči — na server se něco pošle až ve chvíli, kdy si rozpis " +
-      "sám uložíš.",
+      "Ne. Ke kalkulačce je nezadáváte a nikam se neukládají. Samotný výpočet navíc " +
+      "probíhá u vás v prohlížeči — na server se něco pošle až ve chvíli, kdy si rozpis " +
+      "sám uložíte.",
   },
 ];
 
@@ -66,7 +66,7 @@ export default function KalkulackaPage() {
       <Hero
         nadtitulek="Kalkulačka · rozpis dnů a nocí"
         nadpis="Kolik nocí u koho"
-        perex="Zadej, jak se u vás střídáte, a hned uvidíš rozpis dnů i to, kolik nocí stráví děti u každého z rodičů. Zdarma, bez registrace."
+        perex="Zadejte, jak se u vás střídáte, a hned uvidíte rozpis dnů i to, kolik nocí stráví děti u každého z rodičů. Zdarma, bez registrace."
         siroky
       />
 
@@ -79,16 +79,16 @@ export default function KalkulackaPage() {
             Noc patří tomu rodiči, u kterého dítě ten večer usíná — ne tomu, kdo měl toho dne
             víc hodin. Uvnitř pobytu je to jednoduché, den a noc patří témuž. Na dni předání
             záleží na tom, kdy se předává: odpoledne znamená, že dítě už spí u přebírajícího,
-            ráno druhý den, že ještě u odcházejícího. Proto ti u týdenního střídání nevyjde
+            ráno druhý den, že ještě u odcházejícího. Proto vám u týdenního střídání nevyjde
             přesně sedm nocí každý týden, ale za rok se to srovná.
           </p>
           <p>
             Sudý a lichý týden se počítá podle čísla kalendářního týdne, ne podle toho, kolikátý
             je to týden od začátku péče — stejně, jak to dělají soudy a školní rozvrhy. Schéma
             2-2-3 a vlastní rozpis dnů se opakují v čtrnáctidenním nebo týdenním cyklu, který si
-            zadáš.
+            zadáte.
           </p>
-          <p>Výpočet proběhne u tebe v prohlížeči. Na server se nic nepošle, dokud si sám rozpis neuložíš.</p>
+          <p>Výpočet proběhne u vás v prohlížeči. Na server se nic nepošle, dokud si rozpis neuložíte.</p>
 
           <h2>Co s tím dál</h2>
           <p>
@@ -161,7 +161,7 @@ export default function KalkulackaPage() {
           },
           {
             nazev: "Výdaje s účtenkou",
-            popis: "Vyfotíš, appka spočítá, kdo komu kolik dluží.",
+            popis: "Vyfotíte, appka spočítá, kdo komu kolik dluží.",
           },
           {
             nazev: "Druhý rodič zdarma",

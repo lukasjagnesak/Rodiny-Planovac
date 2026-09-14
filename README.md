@@ -319,6 +319,28 @@ i když je obsah v pořádku:
 - **protiklad jako šablona.** „Není to X, je to Y.“ Jednou je to důraz,
   potřetí na stránce je to vzorec.
 
+### 5e3. Vykání v celém produktu
+
+`npm run osloveni` převede texty na vykání, `npm run kontrola:osloveni`
+to hlídá a je součástí `npm test`.
+
+Proč vykání: Klidoo chodí ke klientům přes mediátory a advokáty a slouží
+jako podklad pro soud. V takovém řetězci by tykání znělo nepatřičně.
+E-maily vykaly už dřív, tohle dorovnalo web i aplikaci.
+
+Skript má **úplný slovník tvarů**, které se v projektu opravdu vyskytly.
+Žádné odvozování podle koncovky: „nejspíš“ ani „Lukáš“ nejsou slovesa ve
+druhé osobě. Když přibude nový text s tykáním, kontrola ho najde a tvar
+se doplní do slovníku.
+
+Převádí se text v uvozovkách i text v JSX. Ochrana proti přejmenování
+proměnných je jen hrubá — `zkus(`, `.vyber`, `vyber =` se vynechají,
+zbytek zachytí `tsc`, což se při zavádění dvakrát stalo.
+
+> Co slovník neumí: shodu příčestí. Po převodu zbylo „jste nepovolil“
+> místo „jste nepovolili“ a gendrované „používáte sám“. Obojí se
+> opravovalo ručně, takže po každém větším průchodu si výsledek přečti.
+
 ### 5f. Články na webu
 
 Sekce `/clanky` je v datech, ne v markdownu: projekt nemá knihovnu na

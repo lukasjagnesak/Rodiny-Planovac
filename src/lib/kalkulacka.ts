@@ -156,7 +156,7 @@ export function nejblizsiPredani(
 /** Kontrola zadání, než se pošle na server. */
 export function zkontrolujVstup(vstup: PlanVstup): string | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(vstup.anchorDate)) {
-    return "Vyber datum, od kterého se má střídání počítat.";
+    return "Vyberte datum, od kterého se má střídání počítat.";
   }
   try {
     fromDateKey(vstup.anchorDate);

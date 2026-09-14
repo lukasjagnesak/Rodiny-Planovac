@@ -117,7 +117,7 @@ export function EventsScreen({
             title={tab === "budouci" ? "Nic naplánovaného" : "Žádná historie"}
             description={
               tab === "budouci"
-                ? "Zapiš třídní schůzky, školu v přírodě nebo prohlídku u lékaře — a přijde ti připomínka."
+                ? "Zapište třídní schůzky, školu v přírodě nebo prohlídku u lékaře — a přijde vám připomínka."
                 : "Tady se budou hromadit proběhlé události."
             }
             action={

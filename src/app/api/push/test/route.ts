@@ -30,7 +30,7 @@ export async function POST() {
   for (const odber of odbery) {
     const vysledek = await posliPush(odber, {
       titulek: "🔔 Zkušební notifikace",
-      telo: `${ZNACKA} je správně propojený — připomínky ti budou chodit sem.`,
+      telo: `${ZNACKA} je správně propojený — připomínky vám budou chodit sem.`,
       odkaz: "/prehled",
       tag: "test",
     });
@@ -39,7 +39,7 @@ export async function POST() {
   }
 
   if (odeslano === 0) {
-    return NextResponse.json({ error: "Odeslání selhalo — zkus notifikace zapnout znovu." }, { status: 500 });
+    return NextResponse.json({ error: "Odeslání selhalo — zkuste notifikace zapnout znovu." }, { status: 500 });
   }
   return NextResponse.json({ ok: true, odeslano });
 }

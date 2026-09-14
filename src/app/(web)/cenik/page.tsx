@@ -25,17 +25,17 @@ const OTAZKY = [
   {
     otazka: "Co se stane po 30 dnech?",
     odpoved:
-      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíš, můžeš zase psát — v tom stavu, ve kterém jsi skončil.",
+      "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíte, můžete zase psát — v tom stavu, ve kterém jste skončil.",
   },
   {
     otazka: "Když zaplatím hned, přijdu o zbytek zkušebního období?",
     odpoved:
-      "Ne. Karta se strhne až v den, kdy by zkušební období skončilo — tři dny předem ti navíc přijde upozornění. Zaplatit dřív tedy nic nestojí a nic neurychlí, jen máš klid.",
+      "Ne. Karta se strhne až v den, kdy by zkušební období skončilo — tři dny předem vám navíc přijde upozornění. Zaplatit dřív tedy nic nestojí a nic neurychlí, jen máte klid.",
   },
   {
     otazka: "Musím zadávat kartu, abych to mohl zkusit?",
     odpoved:
-      "Ne. Zkušební období se zapne samo při založení rodiny a nic se z ničeho nestrhává. Kartu zadáváš, až když se rozhodneš pokračovat.",
+      "Ne. Zkušební období se zapne samo při založení rodiny a nic se z ničeho nestrhává. Kartu zadáváte, až když se rozhodnete pokračovat.",
   },
   {
     otazka: "Platí druhý rodič taky?",
@@ -50,7 +50,7 @@ const OTAZKY = [
   {
     otazka: "Proč je roční tarif levnější?",
     odpoved:
-      "Ročním předplatným ušetříš dva měsíce. Střídavá péče je běh na roky, ne na týdny, takže se to většině rodin vyplatí.",
+      "Ročním předplatným ušetříte dva měsíce. Střídavá péče je běh na roky, ne na týdny, takže se to většině rodin vyplatí.",
   },
 ];
 
@@ -64,7 +64,7 @@ export default function Cenik() {
             {ZKUSEBNI_SLIB.dni} dní zdarma. Se vším všudy.
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Žádná osekaná verze na vyzkoušení: měsíc máš přesně to, co si potom případně
+            Žádná osekaná verze na vyzkoušení: měsíc máte přesně to, co si potom případně
             předplatíš. Bez zadání karty, takže se nemá co samo strhnout.
           </p>
 
@@ -103,7 +103,7 @@ export default function Cenik() {
                 >
                   {rocni ? (
                     <span className="absolute right-5 top-5 rounded-pill bg-brand px-2.5 py-1 text-xs font-semibold text-brand-ink">
-                      ušetříš {tarif.usetri} %
+                      ušetříte {tarif.usetri} %
                     </span>
                   ) : null}
 
@@ -172,7 +172,7 @@ export default function Cenik() {
           </h2>
           <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-ink-muted">
             Nic se nemaže ani neschovává. Po zkušebním období se zamkne zápis a vytváření
-            dokumentů — číst můžeš dál.
+            dokumentů — číst můžete dál.
           </p>
           <SrovnaniTarifu className="mt-8" />
         </Sloupec>
@@ -199,10 +199,10 @@ export default function Cenik() {
         <Sloupec siroky>
           <div className="rounded-2xl border border-line-strong bg-surface p-7 text-center sm:p-10">
             <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-              Zkus to měsíc
+              Zkuste to měsíc
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-[0.95rem] leading-relaxed text-ink-muted">
-              Založení rodiny trvá pár minut a kalendář na celý rok je hotový hned. Kartu po tobě
+              Založení rodiny trvá pár minut a kalendář na celý rok je hotový hned. Kartu po vám
               nikdo nechce.
             </p>
             <Link

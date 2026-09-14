@@ -27,7 +27,7 @@ export const vanoce: Clanek = {
     },
     {
       typ: "poznamka",
-      text: "Zapište do dohody, který rok je „sudý“ a co v něm platí. Věta „letos u mě, příští u tebe“ vydrží do prvního roku, kdy si to každý pamatuje jinak.",
+      text: "Zapište do dohody, který rok je „sudý“ a co v něm platí. Věta „letos u mě, příští u vás“ vydrží do prvního roku, kdy si to každý pamatuje jinak.",
     },
     { typ: "nadpis", text: "Tři věci, které se vyplatí domluvit spolu s termínem" },
     {

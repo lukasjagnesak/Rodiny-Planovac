@@ -108,7 +108,7 @@ export const CENIK: Cenik[] = [
     cena: 199,
     mesicne: 199,
     obdobi: "měsíc",
-    popis: "Zrušíš kdykoli, hned v aplikaci.",
+    popis: "Zrušíte kdykoli, hned v aplikaci.",
     usetri: 0,
   },
   {

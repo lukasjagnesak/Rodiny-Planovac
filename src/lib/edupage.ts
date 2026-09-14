@@ -71,7 +71,7 @@ async function call<T>(path: string, body: Record<string, unknown>): Promise<T> 
     });
   } catch {
     throw new Error(
-      "Služba pro EduPage neodpovídá. Zkontroluj, jestli běží — v Dockeru " +
+      "Služba pro EduPage neodpovídá. Zkontrolujte, jestli běží — v Dockeru " +
         "kontejner `edupage`, lokálně uvicorn na portu 8000.",
     );
   }

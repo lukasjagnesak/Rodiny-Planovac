@@ -58,7 +58,7 @@ export default function MissingConfigPage() {
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
           Ve složce projektu musí být soubor <code className="rounded bg-surface-2 px-1">.env.local</code>{" "}
-          s klíči ze Supabase. Najdeš je v <strong className="text-ink">Project Settings → API</strong>.
+          s klíči ze Supabase. Najdete je v <strong className="text-ink">Project Settings → API</strong>.
         </p>
 
         <ul className="mt-5 space-y-1.5">
@@ -102,7 +102,7 @@ export default function MissingConfigPage() {
         </div>
 
         <p className="mt-4 text-xs text-ink-subtle">
-          Soubor začíná tečkou, takže je ve Finderu skrytý — zobrazíš ho zkratkou Cmd+Shift+tečka.
+          Soubor začíná tečkou, takže je ve Finderu skrytý — zobrazíte ho zkratkou Cmd+Shift+tečka.
         </p>
       </div>
     </div>

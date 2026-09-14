@@ -38,7 +38,7 @@ export function DekujemeObsah({ tarif }: { tarif: string | null }) {
         Děkujeme, je zaplaceno
       </h1>
       <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-muted">
-        Za chvilku tě přesměrujeme zpátky do aplikace. Doklad ti přijde e-mailem ze Stripu.
+        Za chvilku vás přesměrujeme zpátky do aplikace. Doklad vám přijde e-mailem ze Stripu.
       </p>
       <Link
         href="/predplatne?stav=hotovo"

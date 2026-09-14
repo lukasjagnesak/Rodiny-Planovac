@@ -212,7 +212,7 @@ export function HomeworkScreen({
             title={items.length === 0 ? "Zatím nic staženo" : "Nic tu není"}
             description={
               items.length === 0
-                ? "Propoj EduPage v nastavení a stáhni úkoly."
+                ? "Propoj EduPage v nastavení a stáhněte úkoly."
                 : zalozka === "zpravy"
                   ? "Žádné zprávy od školy."
                   : "Všechno je hotové nebo už po termínu."

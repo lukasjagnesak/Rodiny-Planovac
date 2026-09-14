@@ -86,7 +86,7 @@ export function withAlpha(barva: string, alpha: number): string {
  * je přitom zamčené předplatné — tak ať to tak i vypadá.
  */
 export function hlaskaChyby(chyba: { message?: string; code?: string } | null | undefined): string {
-  if (!chyba) return "Něco se nepovedlo. Zkus to prosím znovu.";
+  if (!chyba) return "Něco se nepovedlo. Zkuste to prosím znovu.";
 
   const zprava = chyba.message ?? "";
 
@@ -94,7 +94,7 @@ export function hlaskaChyby(chyba: { message?: string; code?: string } | null | 
     return "Zápis je zamčený — vypršelo předplatné rodiny. Kalendář i výdaje zůstávají vidět, zapisovat půjde hned po obnovení.";
   }
   if (chyba.code === "23505") return "Tenhle záznam už existuje.";
-  if (/Failed to fetch|NetworkError/i.test(zprava)) return "Nejsme online. Zkus to prosím znovu.";
+  if (/Failed to fetch|NetworkError/i.test(zprava)) return "Nejsme online. Zkuste to prosím znovu.";
 
-  return zprava || "Něco se nepovedlo. Zkus to prosím znovu.";
+  return zprava || "Něco se nepovedlo. Zkuste to prosím znovu.";
 }

@@ -158,7 +158,7 @@ export function OnboardingWizard({
       setStep(3);
     } catch (e) {
       setBusy(false);
-      setError(e instanceof Error ? e.message : "Něco se pokazilo, zkus to prosím znovu.");
+      setError(e instanceof Error ? e.message : "Něco se pokazilo, zkuste to prosím znovu.");
     }
   }
 
@@ -198,7 +198,7 @@ export function OnboardingWizard({
             <div>
               <h1 className="text-lg font-semibold text-ink">Založme rodinu</h1>
               <p className="mt-1 text-sm text-ink-muted">
-                Rodina je společný prostor, do kterého později pozveš druhého rodiče, prarodiče
+                Rodina je společný prostor, do kterého později pozvete druhého rodiče, prarodiče
                 nebo kohokoli dalšího.
               </p>
             </div>
@@ -211,7 +211,7 @@ export function OnboardingWizard({
               />
             </Field>
 
-            <Field label="Jak se jmenuješ ty" required>
+            <Field label="Jak se jmenujete ty" required>
               <Input
                 placeholder="Jan"
                 value={myName}
@@ -220,7 +220,7 @@ export function OnboardingWizard({
             </Field>
 
             <Field
-              label="Tvoje strana v kalendáři"
+              label="Vaše strana v kalendáři"
               hint="rozliší barvy dnů"
             >
               <div className="grid grid-cols-2 gap-2">
@@ -262,7 +262,7 @@ export function OnboardingWizard({
             <div>
               <h1 className="text-lg font-semibold text-ink">Kdo jsou vaše děti?</h1>
               <p className="mt-1 text-sm text-ink-muted">
-                Každé dítě má vlastní barvu — v kalendáři i ve výdajích pak hned poznáš, koho se
+                Každé dítě má vlastní barvu — v kalendáři i ve výdajích pak hned poznáte, koho se
                 záznam týká.
               </p>
             </div>
@@ -345,7 +345,7 @@ export function OnboardingWizard({
             <div>
               <h1 className="text-lg font-semibold text-ink">Jak se u vás střídáte?</h1>
               <p className="mt-1 text-sm text-ink-muted">
-                Podle toho obarvíme kalendář a spočítáme noci. Kdykoli později změníš, i jen pro
+                Podle toho obarvíme kalendář a spočítáme noci. Kdykoli později změníte, i jen pro
                 jedno dítě.
               </p>
             </div>
@@ -395,7 +395,7 @@ export function OnboardingWizard({
               </>
             ) : kind === "custom_weekly" ? (
               <>
-                <Field label="Rozpis dnů" hint="klikni na den a přepni stranu">
+                <Field label="Rozpis dnů" hint="klikněte na den a přepni stranu">
                   <WeeklyMapEditor value={weeklyMap} onChange={setWeeklyMap} />
                 </Field>
                 {weeklyMap.length === 14 ? (
@@ -630,7 +630,7 @@ function PozvaniDruhehoRodice({
 
   async function pozvat() {
     if (!email.includes("@")) {
-      setChyba("Zadej platný e-mail.");
+      setChyba("Zadejte platný e-mail.");
       return;
     }
     setBusy(true);
@@ -683,8 +683,8 @@ function PozvaniDruhehoRodice({
         <div className="space-y-3">
           <Alert tone="success">
             {emailem
-              ? `Pozvánku jsme poslali na ${email.trim().toLowerCase()}. Pro jistotu můžeš odkaz poslat i sám — platí 30 dní.`
-              : "Pozvánka je připravená. Pošli tenhle odkaz — platí 30 dní."}
+              ? `Pozvánku jsme poslali na ${email.trim().toLowerCase()}. Pro jistotu můžete odkaz přeposlat i vy. Platí 30 dní.`
+              : "Pozvánka je připravená. Pošlete tenhle odkaz — platí 30 dní."}
           </Alert>
           <div className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2.5">
             <p className="min-w-0 flex-1 truncate text-sm text-ink-muted">{odkaz}</p>
@@ -787,7 +787,7 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
         </h1>
         <p className="mt-1 text-center text-sm text-ink-muted">
           Zkušební období běží do <strong className="text-ink">{datum}</strong>. Kartu k němu
-          nepotřebuješ a nic se samo nestrhne — tři dny předem se ozveme.
+          nepotřebujete a nic se samo nestrhne — tři dny předem se ozveme.
         </p>
       </div>
 
@@ -818,8 +818,8 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
               <span>
                 <span className="block font-medium text-ink">Zaplatit rovnou</span>
                 <span className="mt-0.5 block text-sm text-ink-muted">
-                  Karta se strhne až {datum}, takže o zkušební období nepřijdeš. Jen se ti
-                  aplikace nezamkne, až na to zapomeneš.
+                  Karta se strhne až {datum}, takže o zkušební období nepřijdete. Jen se vám
+                  aplikace nezamkne, až na to zapomenete.
                 </span>
               </span>
             </button>

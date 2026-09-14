@@ -39,7 +39,7 @@ export default async function PredplatnePage({
         </Alert>
       ) : null}
       {stav === "zruseno" ? (
-        <Alert tone="info">Platba nebyla dokončena. Nic se nestalo, můžeš ji spustit znovu.</Alert>
+        <Alert tone="info">Platba nebyla dokončena. Nic se nestalo, můžete ji spustit znovu.</Alert>
       ) : null}
 
       <Card>
@@ -50,7 +50,7 @@ export default async function PredplatnePage({
         />
         <CardBody className="pt-3 text-sm text-ink-muted">
           {predplatne === null ? (
-            <p>Tvoje rodina má přístup bez omezení.</p>
+            <p>Vaše rodina má přístup bez omezení.</p>
           ) : predplatne.stav === "zkusebni" && pristup.muzeZapisovat ? (
             <p>
               Zkušební období běží do <strong className="text-ink">{plati}</strong>. Karta k němu
@@ -64,7 +64,7 @@ export default async function PredplatnePage({
           ) : !pristup.muzeZapisovat ? (
             <p>
               Zápis a vytváření dokumentů je zamčené. Kalendář, výdaje i doklady zůstávají
-              čitelné — nic ti nemažeme.
+              čitelné — nic vám nemažeme.
             </p>
           ) : predplatne.stav === "po_splatnosti" ? (
             <p>
@@ -93,8 +93,8 @@ export default async function PredplatnePage({
             title={pristup.muzeZapisovat ? "Pokračovat po zkušebním období" : "Odemknout zápis"}
             description={
               pristup.jeZkusebni && pristup.dniDoKonce > 2
-                ? `Zaplatit můžeš hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdeš.`
-                : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebuješ.`
+                ? `Zaplatit můžete hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdete.`
+                : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebujete.`
             }
           />
           <CardBody className="pt-3">

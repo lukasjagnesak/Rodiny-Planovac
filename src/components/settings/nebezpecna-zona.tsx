@@ -40,7 +40,7 @@ export function NebezpecnaZona({ session }: { session: SessionContext }) {
         ) : (
           <p className="text-sm text-ink-muted">
             Rodinu <strong className="text-ink">{session.family.name}</strong> může smazat jen její
-            správce. Ty z ní můžeš odejít smazáním svého účtu.
+            správce. Vy z ní můžete odejít smazáním svého účtu.
           </p>
         )}
         <SmazatUcet session={session} />
@@ -83,7 +83,7 @@ function SmazatRodinu({
       router.push("/prehled");
       router.refresh();
     } catch {
-      setChyba("Smazání se nepovedlo. Zkus to prosím znovu.");
+      setChyba("Smazání se nepovedlo. Zkuste to prosím znovu.");
       setBusy(false);
     }
   }
@@ -115,7 +115,7 @@ function SmazatRodinu({
         <div className="space-y-4">
           <Alert tone="danger">
             Smaže se kalendář péče, všechny výdaje a účtenky, kroužky, události, doklady i rozvrhy
-            {dalsiClenove > 0 ? " — všem členům rodiny, ne jen tobě" : ""}. Běžící předplatné
+            {dalsiClenove > 0 ? " — všem členům rodiny, ne jen vám" : ""}. Běžící předplatné
             zrušíme ve Stripe, aby se dál nic nestrhávalo.
           </Alert>
 
@@ -179,7 +179,7 @@ function SmazatUcet({ session }: { session: SessionContext }) {
       router.push("/");
       router.refresh();
     } catch {
-      setChyba("Smazání se nepovedlo. Zkus to prosím znovu.");
+      setChyba("Smazání se nepovedlo. Zkuste to prosím znovu.");
       setBusy(false);
     }
   }
@@ -207,8 +207,8 @@ function SmazatUcet({ session }: { session: SessionContext }) {
       >
         <div className="space-y-4">
           <Alert tone="danger">
-            Smaže se tvůj profil, přihlášení i propojení s Googlem a EduPage. Rodiny,
-            ve kterých zůstává někdo další, se nemažou — jen v nich přestaneš být. Pokud jsi v nich
+            Smaže se váš profil, přihlášení i propojení s Googlem a EduPage. Rodiny,
+            ve kterých zůstává někdo další, se nemažou — jen v nich přestanete být. Pokud jste v nich
             byl správcem, převezme to nejdéle přítomný člen.
           </Alert>
 

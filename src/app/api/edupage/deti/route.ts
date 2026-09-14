@@ -113,7 +113,7 @@ export async function PUT(request: NextRequest) {
       .maybeSingle();
 
     if (!clenstvi || clenstvi.role === "viewer") {
-      return NextResponse.json({ error: "K tomuhle dítěti nemáš přístup." }, { status: 403 });
+      return NextResponse.json({ error: "K tomuhle dítěti nemáte přístup." }, { status: 403 });
     }
   }
 

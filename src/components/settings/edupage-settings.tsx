@@ -101,7 +101,7 @@ export function EdupageSettings({
       setError(
         data.potize
           ? `Hledání dětí selhalo: ${data.potize}`
-          : "V účtu se žádné dítě najít nepodařilo. Zadej ID ručně — jak na to je níž.",
+          : "V účtu se žádné dítě najít nepodařilo. Zadejte ID ručně — jak na to je níž.",
       );
       setKlice(Array.isArray(data.klice) ? data.klice : []);
     } else {
@@ -141,7 +141,7 @@ export function EdupageSettings({
     }
     await paruj(cislo, "", null);
     setRucniId("");
-    setMessage("Dítě přidáno. Teď mu vyber, komu v plánovači odpovídá.");
+    setMessage("Dítě přidáno. Teď mu vyberte, komu v plánovači odpovídá.");
   }
 
   async function odeber(edupageId: number) {
@@ -253,8 +253,8 @@ export function EdupageSettings({
             <CardBody className="space-y-3 pt-3">
               {edupageDeti.length === 0 ? (
                 <p className="text-sm text-ink-muted">
-                  Zatím nic. Zkus <strong className="text-ink">Najít</strong> — a když se
-                  nenajde nic, přidej ID ručně níž.
+                  Zatím nic. Zkuste <strong className="text-ink">Najít</strong> — a když se
+                  nenajde nic, přidejte ID ručně níž.
                 </p>
               ) : (
                 <ul className="divide-y divide-line">
@@ -299,7 +299,7 @@ export function EdupageSettings({
 
               {deti.length === 0 ? (
                 <Alert tone="warning">
-                  V plánovači zatím nemáš žádné dítě, takže není k čemu přiřazovat.
+                  V plánovači zatím nemáte žádné dítě, takže není k čemu přiřazovat.
                 </Alert>
               ) : null}
 
@@ -311,7 +311,7 @@ export function EdupageSettings({
                   <p className="mt-1 text-xs text-ink-muted">
                     Struktura se mezi školami liší a v téhle se děti nenašly.
                     Níž je jen tvar dat — názvy polí a typy, žádné hodnoty ani
-                    osobní údaje. Pošli ho, ať jde hledání doladit.
+                    osobní údaje. Pošlete ho, ať jde hledání doladit.
                   </p>
                   <code className="mt-2 block max-h-64 overflow-auto whitespace-pre-line rounded-lg bg-surface p-2 text-[11px] leading-relaxed text-ink-muted">
                     {klice.join("\n")}
@@ -338,7 +338,7 @@ export function EdupageSettings({
                   </div>
                 </Field>
                 <p className="mt-2 text-xs text-ink-muted">
-                  ID najdeš v EduPage: přepni se na dítě a v adrese stránky bude{" "}
+                  ID najdete v EduPage: přepni se na dítě a v adrese stránky bude{" "}
                   <code>studentid=…</code>.
                 </p>
               </div>
@@ -376,7 +376,7 @@ export function EdupageSettings({
         <Card>
           <CardHeader
             title="Propojit účet"
-            description="Přihlašuješ se stejnými údaji jako do EduPage."
+            description="Přihlašujete se stejnými údaji jako do EduPage."
           />
           <CardBody className="space-y-4 pt-3">
             <Field label="E-mail" required>
@@ -411,7 +411,7 @@ export function EdupageSettings({
                 <p className="mt-1 text-xs text-danger">{potizAdresy}</p>
               ) : (
                 <p className="mt-1 text-xs text-ink-subtle">
-                  Část adresy před <code>.edupage.org</code>, ne název školy. Můžeš sem
+                  Část adresy před <code>.edupage.org</code>, ne název školy. Můžete sem
                   vložit i celý odkaz z prohlížeče.
                 </p>
               )}
@@ -440,7 +440,7 @@ export function EdupageSettings({
           <p>
             <strong className="text-ink">Stahuje se i rozvrh.</strong> Čte se čtrnáct dní
             dopředu, aby se poznalo, jestli škola jede na sudý a lichý týden. Hodiny, které
-            sis zapsal ručně, stažení nepřepíše.
+            jste si zapsal ručně, stažení nepřepíše.
           </p>
           <p>
             <strong className="text-ink">EduPage nemá veřejné rozhraní.</strong> Data se

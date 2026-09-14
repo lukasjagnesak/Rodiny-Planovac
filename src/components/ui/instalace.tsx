@@ -156,7 +156,7 @@ function NavodIOS() {
       ikona: <Plus className="h-5 w-5" />,
       text: (
         <>
-          V nabídce sjeď níž a vyber{" "}
+          V nabídce sjeďte níž a vyberte{" "}
           <strong className="text-ink">Přidat na plochu</strong>.
         </>
       ),
@@ -165,7 +165,7 @@ function NavodIOS() {
       ikona: <Check className="h-5 w-5" />,
       text: (
         <>
-          Potvrď <strong className="text-ink">Přidat</strong>. Klidoo pak najdeš mezi
+          Potvrď <strong className="text-ink">Přidat</strong>. Klidoo pak najdete mezi
           ostatními aplikacemi.
         </>
       ),
@@ -175,7 +175,7 @@ function NavodIOS() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-ink-muted">
-        Na iPhonu a iPadu to Apple nedovoluje udělat za tebe — jsou to tři ťuknutí a máš
+        Na iPhonu a iPadu to Apple nedovoluje udělat za vás — jsou to tři ťuknutí a máte
         hotovo napořád.
       </p>
 
@@ -193,7 +193,7 @@ function NavodIOS() {
       {/* Nejčastější důvod, proč to lidem nejde: mají otevřený jiný
           prohlížeč, kde položka „Přidat na plochu" v nabídce chybí. */}
       <p className="rounded-xl bg-surface-2 p-3 text-xs text-ink-subtle">
-        Když v nabídce „Přidat na plochu“ nevidíš, otevři klidoo.cz v Safari — v jiných
+        Když v nabídce „Přidat na plochu“ nevidíte, otevřete klidoo.cz v Safari — v jiných
         prohlížečích na iPhonu tam ta položka být nemusí.
       </p>
     </div>
@@ -217,12 +217,12 @@ export function StavInstalace() {
   return jakoAplikace ? (
     <p className="flex items-start gap-2 rounded-xl bg-success/10 p-3 text-sm text-ink-muted">
       <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-      Klidoo máš na ploše — právě teď ho takhle používáš.
+      Klidoo máte na ploše — právě teď ho takhle používáte.
     </p>
   ) : (
     <p className="rounded-xl bg-surface-2 p-3 text-sm text-ink-muted">
-      Tenhle prohlížeč přidání na plochu nenabízí. Otevři klidoo.cz v Chromu na Androidu
-      nebo v Safari na iPhonu a zkus to znovu.
+      Tenhle prohlížeč přidání na plochu nenabízí. Otevřete klidoo.cz v Chromu na Androidu
+      nebo v Safari na iPhonu a zkuste to znovu.
     </p>
   );
 }

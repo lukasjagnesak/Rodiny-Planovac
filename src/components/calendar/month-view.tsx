@@ -411,7 +411,7 @@ export function MonthView({
 
           <p className="text-xs text-ink-subtle">
             Přepůlená dlaždice je den předání — vlevo nahoře ten, kdo má dítě přes den,
-            vpravo dole ten, u koho spí. Klikni na den a noc přepneš.{" "}
+            vpravo dole ten, u koho spí. Klikněte na den a noc přepnete.{" "}
             {days(stats.daysA)} u {sideLabel(session.members, "a")},{" "}
             {days(stats.daysB)} u {sideLabel(session.members, "b")}.
           </p>

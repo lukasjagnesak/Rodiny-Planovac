@@ -147,7 +147,7 @@ export function Kalkulacka() {
           {vstup.kind === "custom_weekly" ? (
             <Field
               label="Které dny u koho"
-              hint="klikáním přepínáš — rozpis může být na týden nebo na dva"
+              hint="klikáním přepínáte — rozpis může být na týden nebo na dva"
             >
               <WeeklyMapEditor
                 value={vstup.weeklyMap}
@@ -242,7 +242,7 @@ export function Kalkulacka() {
               </Field>
             </div>
             <p className="mt-2 text-xs text-ink-subtle">
-              Jména dětí schválně nikde nezadáváš — k výpočtu nejsou potřeba.
+              Jména dětí schválně nikde nezadáváte — k výpočtu nejsou potřeba.
             </p>
           </details>
         </div>
@@ -262,8 +262,8 @@ export function Kalkulacka() {
                   <p className="font-semibold text-ink">Rozpis je uložený</p>
                   <p className="text-sm text-ink-muted">
                     {poslano
-                      ? "Poslali jsme ti odkaz na e-mail. Klikni v něm a rozpis se ti překlopí do aplikace."
-                      : "Odkaz si ulož nebo pošli druhému rodiči."}
+                      ? "Poslali jsme vám odkaz na e-mail. Klikněte v něm a rozpis se vám překlopí do aplikace."
+                      : "Odkaz si uložte nebo pošlete druhému rodiči."}
                   </p>
                 </div>
               </div>
@@ -285,8 +285,8 @@ export function Kalkulacka() {
                   Uložit a poslat druhému rodiči
                 </h2>
                 <p className="mt-1 text-sm text-ink-muted">
-                  Dostaneš odkaz, který se dá poslat dál — a rozpis ti zůstane, takže se k
-                  němu vrátíš, až se něco změní.
+                  Dostanete odkaz, který se dá poslat dál — a rozpis vám zůstane, takže se k
+                  němu vrátíte, až se něco změní.
                 </p>
               </div>
 
@@ -294,7 +294,7 @@ export function Kalkulacka() {
 
               <Field
                 label="E-mail"
-                hint="nepovinný — bez něj dostaneš jen odkaz"
+                hint="nepovinný — bez něj dostanete jen odkaz"
               >
                 <Input
                   type="email"
@@ -325,7 +325,7 @@ export function Kalkulacka() {
               </Button>
 
               <p className="text-xs text-ink-subtle">
-                Výpočet proběhl u tebe v prohlížeči. Na server se něco pošle až teď, když
+                Výpočet proběhl u vás v prohlížeči. Na server se něco pošle až teď, když
                 klikneš.
               </p>
             </div>
@@ -340,7 +340,7 @@ export function Kalkulacka() {
         >
           <span>
             <span className="block font-semibold text-ink">
-              Chceš k rozpisu i kroužky, výdaje a připomínky?
+              Chcete k rozpisu i kroužky, výdaje a připomínky?
             </span>
             <span className="block text-sm text-ink-muted">
               Celá aplikace pro dvě domácnosti — druhý rodič má přístup zdarma.

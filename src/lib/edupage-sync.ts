@@ -61,7 +61,7 @@ export async function nactiEdupageKontext(
   if (ucet.je_rodic && parovani.length === 0) {
     return {
       kontext: null,
-      chyba: "Nemáš spárované žádné dítě. Nastav to v Nastavení → EduPage.",
+      chyba: "Nemáte spárované žádné dítě. Nastavte to v Nastavení → EduPage.",
     };
   }
 

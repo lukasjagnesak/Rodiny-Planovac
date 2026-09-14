@@ -105,7 +105,7 @@ export function CustodySettings({
           <EmptyState
             icon={<Repeat className="h-6 w-6" />}
             title="Žádný vzor"
-            description="Bez vzoru zůstane kalendář prázdný. Přidej alespoň jeden."
+            description="Bez vzoru zůstane kalendář prázdný. Přidejte alespoň jeden."
           />
         ) : (
           <ul className="mt-2 divide-y divide-line">
@@ -184,7 +184,7 @@ export function CustodySettings({
       <Card>
         <CardHeader
           title="Nadcházející výjimky"
-          description="Dny, které jste ručně přehodili — nastavíš je klikem na den v kalendáři"
+          description="Dny, které jste ručně přehodili — nastavíte je klikem na den v kalendáři"
         />
 
         {overrides.length === 0 ? (
@@ -417,7 +417,7 @@ function PatternForm({
             </>
           ) : form.kind === "custom_weekly" ? (
             <>
-              <Field label="Rozpis dnů" hint="klikni na den a přepni stranu">
+              <Field label="Rozpis dnů" hint="klikněte na den a přepni stranu">
                 <WeeklyMapEditor
                   value={form.weekly_map}
                   onChange={(v) => set("weekly_map", v)}

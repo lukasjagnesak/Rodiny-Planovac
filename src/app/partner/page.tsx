@@ -119,12 +119,12 @@ function Neni({ email }: { email: string }) {
           Tenhle účet není partnerský
         </h1>
         <p className="mt-2 text-sm text-ink-muted">
-          Jsi přihlášený jako <strong className="text-ink">{email}</strong>. Partnerský
-          přehled se páruje podle e-mailu, který jsi nám dal při přihlášení do programu —
+          Jste přihlášený jako <strong className="text-ink">{email}</strong>. Partnerský
+          přehled se páruje podle e-mailu, který jste nám dal při přihlášení do programu —
           možná je to jiná adresa.
         </p>
         <p className="mt-2 text-sm text-ink-muted">
-          Napiš na{" "}
+          Napište na{" "}
           <a
             href={`mailto:${PARTNERSKY_EMAIL}`}
             className="text-brand underline underline-offset-4"

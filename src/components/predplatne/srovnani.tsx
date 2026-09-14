@@ -66,7 +66,7 @@ export function SrovnaniTarifu({
 
       <p className="mt-3 text-xs text-ink-subtle">
         Nic se nemaže ani neschovává. Po zkušebním období se zamkne zapisování a vytváření
-        dokumentů; všechno napsané zůstává čitelné a po zaplacení se pokračuje tam, kde jsi
+        dokumentů; všechno napsané zůstává čitelné a po zaplacení se pokračuje tam, kde jste
         skončil.
       </p>
     </div>

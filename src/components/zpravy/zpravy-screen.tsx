@@ -161,7 +161,7 @@ export function ZpravyScreen({
         <Card>
           <CardHeader
             title="Napsat"
-            description="Než odešleš: zpráva se nedá vzít zpět ani upravit."
+            description="Než odešlete: zpráva se nedá vzít zpět ani upravit."
           />
           <CardBody className="space-y-3 pt-3">
             <Textarea

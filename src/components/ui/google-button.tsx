@@ -70,7 +70,7 @@ export function PrihlaseniGoogle({
       setError(
         potiz.message.includes("provider is not enabled")
           ? "Přihlášení přes Google zatím není zapnuté."
-          : "Přihlášení přes Google se nepovedlo. Zkus to prosím znovu.",
+          : "Přihlášení přes Google se nepovedlo. Zkuste to prosím znovu.",
       );
     }
     // Při úspěchu odchází prohlížeč na Google, takže stav necháváme běžet.

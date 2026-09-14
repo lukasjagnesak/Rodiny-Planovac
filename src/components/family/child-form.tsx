@@ -203,7 +203,7 @@ export function ChildForm({
         onConfirm={remove}
         busy={busy}
         title="Smazat dítě?"
-        message="Smažou se i jeho kroužky, události a výdaje. Pokud chceš data zachovat, radši použij archivaci."
+        message="Smažou se i jeho kroužky, události a výdaje. Pokud chcete data zachovat, radši použij archivaci."
       />
     </>
   );

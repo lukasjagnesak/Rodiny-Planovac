@@ -74,7 +74,7 @@ export default async function SettingsPage() {
     {
       href: "/nastaveni/google",
       title: "Google kalendář",
-      description: "Přenos událostí do tvého kalendáře",
+      description: "Přenos událostí do vašeho kalendáře",
       Icon: CalendarSync,
       badge: google ? "propojeno" : null,
       veVyvoji: true,

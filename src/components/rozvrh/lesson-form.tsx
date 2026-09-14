@@ -84,7 +84,7 @@ export function LessonForm({
 
   async function uloz() {
     if (!predmet.trim()) {
-      setError("Vyplň předmět.");
+      setError("Vyplňte předmět.");
       return;
     }
     if (konec <= zacatek) {
@@ -118,7 +118,7 @@ export function LessonForm({
     if (error) {
       setError(
         error.code === "23505"
-          ? "Tuhle hodinu už v ten den máš. Uprav ji, nebo zvol jiné pořadí."
+          ? "Tuhle hodinu už v ten den máte. Uprav ji, nebo zvol jiné pořadí."
           : hlaskaChyby(error),
       );
       return;

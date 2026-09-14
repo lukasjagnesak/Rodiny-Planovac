@@ -121,7 +121,7 @@ export async function POST() {
     const potize = [...chyby];
     if (bezDitete > 0) {
       potize.push(
-        `${bezDitete} hodin nešlo přiřadit k dítěti — zkontroluj párování v nastavení.`,
+        `${bezDitete} hodin nešlo přiřadit k dítěti — zkontrolujte párování v nastavení.`,
       );
     }
 

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
 
   if (!clenstvi || !["owner", "parent", "guardian"].includes(clenstvi.role as string)) {
-    return NextResponse.json({ chyba: "K této rodině nemáš přístup." }, { status: 403 });
+    return NextResponse.json({ chyba: "K této rodině nemáte přístup." }, { status: 403 });
   }
 
   const admin = createAdminClient();

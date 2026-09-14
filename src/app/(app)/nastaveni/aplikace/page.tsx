@@ -19,7 +19,7 @@ export default function AplikacePage() {
         </Link>
         <h1 className="mt-1 text-xl font-semibold tracking-tight text-ink">Aplikace na ploše</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          Klidoo si můžeš přidat mezi ostatní aplikace v telefonu.
+          Klidoo si můžete přidat mezi ostatní aplikace v telefonu.
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export default function AplikacePage() {
               {/* Bez tohohle si lidé myslí, že notifikace bez „opravdové"
                   aplikace nejdou, a čekají na appku z obchodu. */}
               <p className="mt-2">
-                Na ploše fungují i připomínky, které si zapneš v Notifikacích.
+                Na ploše fungují i připomínky, které si zapnete v Notifikacích.
               </p>
             </div>
           </div>

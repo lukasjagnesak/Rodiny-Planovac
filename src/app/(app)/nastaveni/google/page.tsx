@@ -40,7 +40,7 @@ export default async function GoogleSettingsPage({
           odejde a už se nevrátí. */}
       <Alert tone="warning">
         <strong>Tahle část je ve vývoji.</strong>{" "}
-        Propojení s Google kalendářem je zatím rozpracované. Události z Klidoo se do něj přenášejí, ale opačným směrem to nefunguje a synchronizace může občas zaostávat. Kdyby něco nesedělo, napiš na <a href="mailto:info@klidoo.cz" className="underline underline-offset-2">
+        Propojení s Google kalendářem je zatím rozpracované. Události z Klidoo se do něj přenášejí, ale opačným směrem to nefunguje a synchronizace může občas zaostávat. Kdyby něco nesedělo, napište na <a href="mailto:info@klidoo.cz" className="underline underline-offset-2">
           info@klidoo.cz
         </a>
         .

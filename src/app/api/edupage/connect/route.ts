@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   const subdomena = adresa.subdomena;
 
   if (!email || !heslo) {
-    return NextResponse.json({ error: "Vyplň e-mail i heslo." }, { status: 400 });
+    return NextResponse.json({ error: "Vyplňte e-mail i heslo." }, { status: 400 });
   }
 
   try {

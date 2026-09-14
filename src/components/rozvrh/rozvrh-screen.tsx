@@ -135,7 +135,7 @@ export function RozvrhScreen({
     }
     setZprava(
       data.pocet === 0
-        ? "EduPage nevrátilo žádné hodiny. Zkontroluj v nastavení, jestli máš spárované děti."
+        ? "EduPage nevrátilo žádné hodiny. Zkontrolujte v nastavení, jestli máte spárované děti."
         : `Staženo ${data.pocet} hodin pro ${data.deti} ${
             data.deti === 1 ? "dítě" : "děti"
           } za ${data.dnu} školních dní` +
@@ -150,7 +150,7 @@ export function RozvrhScreen({
       <Card>
         <EmptyState
           icon={<Table2 className="h-6 w-6" />}
-          title="Nejdřív přidej dítě"
+          title="Nejdřív přidejte dítě"
           description="Rozvrh se vede ke konkrétnímu dítěti."
         />
       </Card>
@@ -241,8 +241,8 @@ export function RozvrhScreen({
             title="Rozvrh je zatím prázdný"
             description={
               edupagePropojeno
-                ? "Přidej hodiny ručně, nebo je stáhni z EduPage."
-                : "Přidej první hodinu — časy se předvyplní podle běžného zvonění."
+                ? "Přidejte hodiny ručně, nebo je stáhněte z EduPage."
+                : "Přidejte první hodinu — časy se předvyplní podle běžného zvonění."
             }
             action={
               canEdit ? <Button onClick={() => pridej(1)}>Přidat hodinu</Button> : undefined

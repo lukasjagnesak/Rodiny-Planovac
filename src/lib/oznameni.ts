@@ -138,7 +138,7 @@ export function slozOznameni(zdroje: ZdrojeOznameni, dnes = new Date()): Oznamen
       id: `doprava:${jizda.id}`,
       druh: "doprava",
       kdy: denJakoCas(jizda.day),
-      titulek: `Vezeš ${smer}${jizda.activity ? ` — ${jizda.activity.name}` : ""}`,
+      titulek: `Vezete ${smer}${jizda.activity ? ` — ${jizda.activity.name}` : ""}`,
       popis: jizda.activity?.location ?? null,
       odkaz: "/krouzky",
       childId: jizda.activity?.child_id ?? null,

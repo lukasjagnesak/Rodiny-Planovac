@@ -74,7 +74,7 @@ export function PartnerObsah({
 
       {!aktivni ? (
         <Alert tone="warning">
-          Účet je pozastavený, doporučení se zatím nezapočítávají. Napiš na {kontakt}.
+          Účet je pozastavený, doporučení se zatím nezapočítávají. Napište na {kontakt}.
         </Alert>
       ) : null}
 

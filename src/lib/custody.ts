@@ -343,10 +343,10 @@ export const PATTERN_HINTS: Record<CustodyPattern["kind"], string> = {
   iso_week_parity:
     "Podle čísla kalendářního týdne — sudý u jednoho rodiče, lichý u druhého. Tak to bývá v rozsudcích i školních rozvrzích.",
   alternating_weeks:
-    "Celý týden u jednoho rodiče, pak se vymění. Cyklus se počítá od data, které zvolíš.",
+    "Celý týden u jednoho rodiče, pak se vymění. Cyklus se počítá od data, které zvolíte.",
   week_2_2_3: "Po–Út u A, St–Čt u B, Pá–Ne u A. Další týden obráceně.",
   custom_weekly:
-    "Sám určíš, který den patří komu. Cyklus může být jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
+    "Sám určíte, který den patří komu. Cyklus může být jednotýdenní, nebo dvoutýdenní — když se sudý a lichý týden liší.",
   fixed_parent: "Bez střídání — děti jsou trvale u jednoho rodiče.",
 };
 

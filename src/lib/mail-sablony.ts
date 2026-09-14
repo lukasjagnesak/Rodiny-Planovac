@@ -76,7 +76,7 @@ ${telo}
 
 function tlacitko(odkaz: string, popisek: string): string {
   return `<p style="margin:20px 0;"><a href="${escapeHtml(odkaz)}" style="display:inline-block;background:${BARVA_ZNACKY};color:#ffffff;text-decoration:none;font-weight:600;padding:12px 22px;border-radius:12px;">${escapeHtml(popisek)}</a></p>
-<p style="margin:0 0 4px 0;font-size:12px;color:${BARVA_TLUMENA};">Kdyby tlačítko nefungovalo, otevři tenhle odkaz:</p>
+<p style="margin:0 0 4px 0;font-size:12px;color:${BARVA_TLUMENA};">Kdyby tlačítko nefungovalo, otevřete tenhle odkaz:</p>
 <p style="margin:0;font-size:12px;word-break:break-all;"><a href="${escapeHtml(odkaz)}" style="color:${BARVA_ZNACKY};">${escapeHtml(odkaz)}</a></p>`;
 }
 

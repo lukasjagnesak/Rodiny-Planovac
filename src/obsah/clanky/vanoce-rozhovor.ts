@@ -14,7 +14,7 @@ export const vanoceRozhovor: Clanek = {
     },
     { typ: "otazka", text: "Kdy jste loni začali řešit Vánoce?" },
     { typ: "odpoved", kdo: "Martin", text: "Devatenáctého prosince." },
-    { typ: "odpoved", kdo: "Petra", text: "Osmnáctého. Psal jsi mi osmnáctého večer." },
+    { typ: "odpoved", kdo: "Petra", text: "Osmnáctého. Psal jste mi osmnáctého večer." },
     { typ: "otazka", text: "Proč tak pozdě?" },
     {
       typ: "odpoved",

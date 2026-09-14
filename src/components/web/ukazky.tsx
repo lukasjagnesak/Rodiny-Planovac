@@ -43,12 +43,12 @@ const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
     text: "Každý den má barvu rodiče, u kterého dítě spí. Den předání je přepůlený diagonálně směrem k tomu, kdo dítě přebírá — proto sedí počet nocí, ne jen zaškrtnutých dnů. Prázdniny mají vlastní pruh.",
   },
   prehled: {
-    nadpis: "Ráno otevřeš a víš, co dnes je",
+    nadpis: "Ráno otevřete a víte, co dnes je",
     text: "U koho děti spí, kdy končí škola, kdo veze na kroužek a co se chystá zítra. Bez ptaní se druhého rodiče.",
   },
   vydaje: {
     nadpis: "Účtenka se vyfotí, vyrovnání se spočítá",
-    text: "Každý výdaj má svůj podíl — půl na půl nebo jak jste se dohodli. Na konci měsíce je vidět jedno číslo místo dvou různých vzpomínek.",
+    text: "Každý výdaj má svůj podíl — půl na půl nebo jak jste se dohodli. Na konci měsíce je vidět, kolik kdo zaplatil a kolik z toho připadá na koho.",
   },
   krouzky: {
     nadpis: "Kdo veze tam a kdo zpátky",
@@ -269,7 +269,7 @@ function ObrazovkaKalendar() {
       <div className="flex items-center justify-between px-3.5 py-2.5 text-[11px] text-ink-subtle">
         <span className="flex items-center gap-1.5">
           <Moon size={11} aria-hidden />
-          16 nocí u tebe
+          16 nocí u vás
         </span>
         <span className="flex items-center gap-1.5">
           <span
@@ -289,7 +289,7 @@ function ObrazovkaKalendar() {
           Neděle 12. dubna, 17:00 — u školy
         </p>
         <p className="text-[10px] text-ink-subtle">
-          Přes den u tebe, na noc u druhého rodiče
+          Přes den u vás, na noc u druhého rodiče
         </p>
       </div>
 
@@ -317,7 +317,7 @@ function ObrazovkaPrehled() {
             className="mt-0.5 text-sm font-semibold"
             style={{ color: "var(--parent-a-text)" }}
           >
-            Děti spí u tebe
+            Děti spí u vás
           </p>
           <p className="mt-0.5 text-[11px] text-ink-muted">
             Předání v pátek v 17:00 u školy
@@ -370,8 +370,8 @@ function Dlazdice({ popisek, hodnota }: { popisek: string; hodnota: string }) {
  * Ukázka, ve které nesedí součet, je horší než žádná.
  */
 const VYDAJE = [
-  { nazev: "Lyžák Kuba", castka: "4 900 Kč", kdo: "Zaplatil jsi ty", podil: "50 / 50" },
-  { nazev: "Plavání — pololetí", castka: "2 400 Kč", kdo: "Zaplatil jsi ty", podil: "50 / 50" },
+  { nazev: "Lyžák Kuba", castka: "4 900 Kč", kdo: "Zaplatil jste ty", podil: "50 / 50" },
+  { nazev: "Plavání — pololetí", castka: "2 400 Kč", kdo: "Zaplatil jste ty", podil: "50 / 50" },
   { nazev: "Boty Ema", castka: "1 290 Kč", kdo: "Zaplatila máma", podil: "50 / 50" },
 ];
 
@@ -386,7 +386,7 @@ function ObrazovkaVydaje() {
             Vyrovnání za duben
           </p>
           <p className="mt-0.5 text-sm font-semibold text-ink">
-            Máma ti pošle 3 005 Kč
+            Máma vám pošle 3 005 Kč
           </p>
           <div className="mt-2 flex h-1.5 overflow-hidden rounded-full">
             <span className="w-[85%]" style={{ backgroundColor: "var(--parent-a)" }} />

@@ -42,6 +42,6 @@ export function varovaniZeSouhrnu(souhrn: SouhrnDitete[]): string[] {
 
   return [
     `Nepřišlo nic k dítěti: ${prazdna.map((s) => s.jmeno).join(", ")}. ` +
-      "Zkontroluj párování v Nastavení → EduPage.",
+      "Zkontrolujte párování v Nastavení → EduPage.",
   ];
 }

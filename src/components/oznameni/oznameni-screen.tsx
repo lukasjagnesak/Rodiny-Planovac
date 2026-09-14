@@ -59,7 +59,7 @@ export function OznameniScreen({
           <EmptyState
             icon={<Bell className="h-6 w-6" />}
             title="Zatím je klid"
-            description="Až přijde zpráva ze školy, blížit se bude událost nebo tě čeká odvoz, najdeš to tady."
+            description="Až přijde zpráva ze školy, blížit se bude událost nebo vás čeká odvoz, najdete to tady."
           />
         </Card>
       ) : (

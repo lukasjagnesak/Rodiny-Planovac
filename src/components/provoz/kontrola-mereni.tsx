@@ -191,7 +191,7 @@ export function KontrolaMereni() {
       <Card>
         <CardHeader
           title="Co se děje v tomhle prohlížeči"
-          description="Platí jen pro tebe a tenhle počítač. Každý návštěvník má vlastní souhlas."
+          description="Platí jen pro vás a tenhle počítač. Každý návštěvník má vlastní souhlas."
         />
         <CardBody className="pt-0">
           {!nacteno ? (

@@ -38,7 +38,7 @@ export async function aktualniOdber(): Promise<PushSubscription | null> {
 /** Požádá o povolení a přihlásí tohle zařízení k odběru. */
 export async function zapniNotifikace(verejnyKlic: string): Promise<PushSubscription> {
   const povoleno = await Notification.requestPermission();
-  if (povoleno !== "granted") throw new Error("Notifikace jsi u prohlížeče nepovolil.");
+  if (povoleno !== "granted") throw new Error("Notifikace jste v prohlížeči nepovolili.");
 
   const registrace = await navigator.serviceWorker.register("/sw.js");
   await navigator.serviceWorker.ready;

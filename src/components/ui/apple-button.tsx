@@ -63,7 +63,7 @@ export function PrihlaseniApple({
       setError(
         potiz.message.includes("provider is not enabled")
           ? "Přihlášení přes Apple zatím není zapnuté."
-          : "Přihlášení přes Apple se nepovedlo. Zkus to prosím znovu.",
+          : "Přihlášení přes Apple se nepovedlo. Zkuste to prosím znovu.",
       );
     }
     // Při úspěchu odchází prohlížeč k Applu, takže stav necháváme běžet.

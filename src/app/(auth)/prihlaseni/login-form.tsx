@@ -83,7 +83,7 @@ export function LoginForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-brand">
           <Mail className="h-6 w-6" />
         </div>
-        <h2 className="mt-3 font-semibold text-ink">Zkontroluj e-mail</h2>
+        <h2 className="mt-3 font-semibold text-ink">Zkontrolujte e-mail</h2>
         <p className="mt-1 text-sm text-ink-muted">
           Poslali jsme přihlašovací odkaz na <strong className="text-ink">{email}</strong>. Platí 60
           minut.
@@ -149,7 +149,7 @@ export function LoginForm() {
       </button>
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
-        Nemáš účet?{" "}
+        Nemáte účet?{" "}
         <Link href="/registrace" className="font-medium text-brand hover:underline">
           Zaregistruj se
         </Link>
@@ -162,7 +162,7 @@ export function LoginForm() {
 export function prettyError(message: string): string {
   const map: Record<string, string> = {
     "Invalid login credentials": "Nesprávný e-mail nebo heslo.",
-    "Email not confirmed": "E-mail zatím není potvrzený. Zkontroluj schránku.",
+    "Email not confirmed": "E-mail zatím není potvrzený. Zkontrolujte schránku.",
     "User already registered": "Uživatel s tímto e-mailem už existuje.",
     "Password should be at least 6 characters":
       "Heslo musí mít alespoň 6 znaků.",

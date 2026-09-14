@@ -56,7 +56,7 @@ export function KontaktForm({
 
   async function uloz() {
     if (!jmeno.trim()) {
-      setError("Vyplň jméno.");
+      setError("Vyplňte jméno.");
       return;
     }
 

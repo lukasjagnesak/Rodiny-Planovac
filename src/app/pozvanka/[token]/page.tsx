@@ -40,7 +40,7 @@ export default async function InvitePage({
     return (
       <InviteMessage
         title="Pozvánka už byla použita"
-        text="Přihlas se svým účtem a rodinu uvidíš v seznamu."
+        text="Přihlas se svým účtem a rodinu uvidíte v seznamu."
         action={<ButtonLink href="/prihlaseni">Přihlásit se</ButtonLink>}
       />
     );
@@ -50,7 +50,7 @@ export default async function InvitePage({
     return (
       <InviteMessage
         title="Pozvánka vypršela"
-        text="Požádej správce rodiny, ať ti pošle novou."
+        text="Požádejte správce rodiny, ať vám pošle novou."
       />
     );
   }
@@ -61,7 +61,7 @@ export default async function InvitePage({
     return (
       <InviteMessage
         title={`Pozvánka do rodiny ${familyName}`}
-        text="Nejdřív se přihlas nebo si vytvoř účet — pozvánku pak přijmeš jedním klikem."
+        text="Nejdřív se přihlas nebo si vytvoř účet — pozvánku pak přijmete jedním klikem."
         action={
           <div className="flex w-full flex-col gap-2 sm:flex-row">
             <ButtonLink
@@ -93,7 +93,7 @@ export default async function InvitePage({
       <ListaUctu email={user.email ?? null} />
       <InviteMessage
         title={`Připojit se k rodině ${familyName}`}
-        text={`Přihlášen jako ${user.email}. Po potvrzení uvidíš kalendář, kroužky i výdaje.`}
+        text={`Přihlášen jako ${user.email}. Po potvrzení uvidíte kalendář, kroužky i výdaje.`}
         action={<AcceptInviteButton token={token} />}
       />
     </>

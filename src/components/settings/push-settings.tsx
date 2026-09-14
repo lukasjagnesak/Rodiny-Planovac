@@ -8,10 +8,10 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { jePodporovan, aktualniOdber, zapniNotifikace, vypniNotifikace } from "@/lib/push-client";
 
 const WHAT_ARRIVES = [
-  { emoji: "🚗", text: "Večer předem: „Zítra vezeš Kubu na fotbal, 16:00, ZŠ Komenského.“" },
+  { emoji: "🚗", text: "Večer předem: „Zítra vezete Kubu na fotbal, 16:00, ZŠ Komenského.“" },
   { emoji: "❓", text: "Když na zítřejší kroužek nikdo není přiřazený jako řidič." },
   { emoji: "🔄", text: "Den před předáním dětí." },
-  { emoji: "🩺", text: "Připomínky událostí podle toho, co si u nich nastavíš." },
+  { emoji: "🩺", text: "Připomínky událostí podle toho, co si u nich nastavíte." },
 ];
 
 type Stav = "zjistuje" | "nepodporovano" | "zamitnuto" | "vypnuto" | "zapnuto";
@@ -75,7 +75,7 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
       <div>
         <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">Notifikace</h1>
         <p className="text-sm text-ink-muted">
-          Připomínky chodí přímo do zařízení, kde máš Klidoo otevřený nebo nainstalovaný — bez
+          Připomínky chodí přímo do zařízení, kde máte Klidoo otevřený nebo nainstalovaný — bez
           dalšího účtu a bez SMS.
         </p>
       </div>
@@ -96,8 +96,8 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
               <span className="flex items-start gap-2">
                 <Smartphone className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
-                  Tenhle prohlížeč notifikace nepodporuje. Na iPhonu appku nejdřív přidej na
-                  plochu (tlačítko <strong>Sdílet → Přidat na plochu</strong>) a otevři ji odtud —
+                  Tenhle prohlížeč notifikace nepodporuje. Na iPhonu appku nejdřív přidejte na
+                  plochu (tlačítko <strong>Sdílet → Přidat na plochu</strong>) a otevřete ji odtud —
                   Safari povoluje notifikace jen nainstalovaným appkám.
                 </span>
               </span>
@@ -125,7 +125,7 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
               <CheckCircle2 className="h-8 w-8 shrink-0 text-success" />
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-ink">Notifikace jsou zapnuté na tomhle zařízení</p>
-                <p className="text-sm text-ink-muted">Připomínky ti budou chodit automaticky.</p>
+                <p className="text-sm text-ink-muted">Připomínky vám budou chodit automaticky.</p>
               </div>
             </CardBody>
           </Card>
@@ -165,7 +165,7 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
       )}
 
       <Card>
-        <CardHeader title="Co ti bude chodit" />
+        <CardHeader title="Co vám bude chodit" />
         <CardBody className="pt-3">
           <ul className="space-y-2.5">
             {WHAT_ARRIVES.map((item) => (

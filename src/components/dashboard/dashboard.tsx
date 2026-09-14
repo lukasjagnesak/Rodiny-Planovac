@@ -344,7 +344,7 @@ export function Dashboard({
           title="Kdo veze"
           description={
             myRides.length > 0
-              ? `${myRides.length}× vezeš ty`
+              ? `${myRides.length}× vezete ty`
               : "Nejbližší kroužky a doprava"
           }
           action={
@@ -357,7 +357,7 @@ export function Dashboard({
           <EmptyState
             icon={<Car className="h-6 w-6" />}
             title="Žádné kroužky tento týden"
-            description="Přidej kroužek a naplánuj, kdo veze."
+            description="Přidejte kroužek a naplánuj, kdo veze."
           />
         ) : (
           <ul className="divide-y divide-line">
@@ -428,7 +428,7 @@ export function Dashboard({
           <EmptyState
             icon={<Sparkles className="h-6 w-6" />}
             title="Zatím nic naplánovaného"
-            description="Zapiš třídní schůzky nebo prohlídku u lékaře."
+            description="Zapište třídní schůzky nebo prohlídku u lékaře."
             action={
               <ButtonLink href="/udalosti" variant="secondary" size="sm">
                 Přidat událost
@@ -590,8 +590,8 @@ export function Dashboard({
         <Card>
           <EmptyState
             icon={<Sparkles className="h-6 w-6" />}
-            title="Přidej první dítě"
-            description="Bez dětí toho plánovač moc neumí — začni v sekci Děti a rodina."
+            title="Přidejte první dítě"
+            description="Bez dětí toho plánovač moc neumí — začněte v sekci Děti a rodina."
             action={<ButtonLink href="/deti">Přidat dítě</ButtonLink>}
           />
         </Card>

@@ -77,7 +77,7 @@ export function PrehledSettings({ session }: { session: SessionContext }) {
     <Card>
       <CardHeader
         title="Co se ukazuje na přehledu"
-        description="Vypni, co nepotřebuješ, a přerovnej zbytek. Platí jen pro tebe — druhý rodič má svoje."
+        description="Vypni, co nepotřebujete, a přerovnejte zbytek. Platí jen pro vás — druhý rodič má svoje."
       />
 
       <ul className="divide-y divide-line border-y border-line">
@@ -128,7 +128,7 @@ export function PrehledSettings({ session }: { session: SessionContext }) {
         {zapnutych === 0 ? (
           <Alert tone="warning">
             Všechno je vypnuté — na přehledu zůstane jenom pozdrav. To se dá, ale nejspíš to
-            není, co jsi chtěl.
+            není, co jste chtěl.
           </Alert>
         ) : null}
         {chyba ? <Alert tone="danger">{chyba}</Alert> : null}

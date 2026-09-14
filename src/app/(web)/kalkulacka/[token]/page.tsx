@@ -63,7 +63,7 @@ export default async function SdilenyPlanPage({
         <span>
           <span className="block font-semibold text-ink">Nesedí to?</span>
           <span className="block text-sm text-ink-muted">
-            Uprav si rozpis po svém a pošli ho zpátky — v {ZNACKA} to zabere minutu.
+            Uprav si rozpis po svém a pošlete ho zpátky — v {ZNACKA} to zabere minutu.
           </span>
         </span>
         <ArrowRight className="h-5 w-5 shrink-0 text-brand" />

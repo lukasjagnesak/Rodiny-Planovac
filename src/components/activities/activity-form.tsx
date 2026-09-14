@@ -91,7 +91,7 @@ export function ActivityForm({
 
   async function save() {
     if (!form.child_id) {
-      setError("Nejdřív přidej dítě v sekci Děti a rodina.");
+      setError("Nejdřív přidejte dítě v sekci Děti a rodina.");
       return;
     }
     if (form.ends_at <= form.starts_at) {
@@ -230,7 +230,7 @@ export function ActivityForm({
 
           <Field label="Dítě" required>
             <Select value={form.child_id} onChange={(e) => set("child_id", e.target.value)}>
-              {session.children.length === 0 ? <option value="">Nejdřív přidej dítě</option> : null}
+              {session.children.length === 0 ? <option value="">Nejdřív přidejte dítě</option> : null}
               {session.children.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -268,7 +268,7 @@ export function ActivityForm({
             </Field>
           </div>
 
-          <Field label="Místo" hint="uvidíš u připomínky">
+          <Field label="Místo" hint="uvidíte u připomínky">
             <Input
               placeholder="ZŠ Komenského, tělocvična"
               value={form.location}

@@ -43,7 +43,7 @@ export function VolbaTarifu({
       }
       window.location.href = data.url;
     } catch {
-      setChyba("Platbu se nepodařilo založit. Zkus to prosím znovu.");
+      setChyba("Platbu se nepodařilo založit. Zkuste to prosím znovu.");
       setCeka(false);
     }
   }
@@ -126,7 +126,7 @@ export function VolbaTarifu({
         </>
       ) : (
         <Alert tone="warning">
-          Platební brána se právě dokončuje. Napiš nám a předplatné ti nastavíme ručně — do té
+          Platební brána se právě dokončuje. Napište nám a předplatné vám nastavíme ručně — do té
           doby aplikace běží dál.
         </Alert>
       )}

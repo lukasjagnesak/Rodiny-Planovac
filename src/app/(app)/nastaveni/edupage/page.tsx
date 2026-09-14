@@ -41,7 +41,7 @@ export default async function EdupageSettingsPage() {
           odejde a už se nevrátí. */}
       <Alert tone="warning">
         <strong>Tahle část je ve vývoji.</strong>{" "}
-        EduPage nemá veřejné rozhraní, takže se k němu Klidoo připojuje tak, jak to dělá jejich mobilní aplikace. Když škola něco změní, může se stahování přestat dařit — přihlášení do Klidoo ani nic jiného v appce tím netrpí. Kdyby se něco pokazilo, napiš na <a href="mailto:info@klidoo.cz" className="underline underline-offset-2">
+        EduPage nemá veřejné rozhraní, takže se k němu Klidoo připojuje tak, jak to dělá jejich mobilní aplikace. Když škola něco změní, může se stahování přestat dařit — přihlášení do Klidoo ani nic jiného v appce tím netrpí. Kdyby se něco pokazilo, napište na <a href="mailto:info@klidoo.cz" className="underline underline-offset-2">
           info@klidoo.cz
         </a>
         .
