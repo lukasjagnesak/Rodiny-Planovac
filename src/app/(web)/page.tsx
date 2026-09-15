@@ -110,7 +110,7 @@ const OTAZKY = [
     otazka: "Vidí druhý rodič všechno, co si zapíšu?",
     odpoved:
       "Vidí to, co je společné: kalendář péče, kroužky, události a výdaje, které do rodiny " +
-      "zadáte. Nastavení, propojení s Googlem nebo EduPage a vaše notifikace jsou vaše.",
+      "zadáte. Nastavení, propojení s Googlem nebo EduPage a upozornění zůstávají jen vám.",
   },
   {
     otazka: "Umí to sudé a liché týdny?",

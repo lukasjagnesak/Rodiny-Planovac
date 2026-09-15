@@ -28,3 +28,6 @@ supabase/.temp/
 supabase/.branches/
 caddy_data/
 caddy_config/
+
+# Exporty textů ke korektuře — vznikají skriptem, po čase neplatí
+exporty/
