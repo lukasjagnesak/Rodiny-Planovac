@@ -32,12 +32,18 @@ const VETA = "Příliš žluťoučký kůň úpěl ďábelské ódy — 1 990 K�
 
 const pdf = pdfDokument(
   [
+    { typ: "nadtitulek", text: "Kalkulačka výživného" },
     { typ: "nadpis", text: "Orientační výpočet výživného" },
     { typ: "odstavec", text: VETA },
-    { typ: "cislo", popis: "Výživné měsíčně", hodnota: "4 200 Kč" },
-    { typ: "cara" },
-    { typ: "radek", vlevo: "Příjem rodiče A", vpravo: "45 000 Kč" },
-    { typ: "radek", vlevo: "Příjem rodiče B", vpravo: "32 000 Kč", silny: true },
+    {
+      typ: "karta",
+      prvky: [
+        { typ: "cislo", popis: "Výživné měsíčně", hodnota: "4 200 Kč" },
+        { typ: "cara" },
+        { typ: "radek", vlevo: "Příjem rodiče A", vpravo: "45 000 Kč" },
+        { typ: "radek", vlevo: "Příjem rodiče B", vpravo: "32 000 Kč", silny: true },
+      ],
+    },
     { typ: "podnadpis", text: "Jak se k číslu došlo" },
     { typ: "odstavec", text: "Ěščřžýáíé ÚŮĎŤŇ ".repeat(40) },
   ],
@@ -128,6 +134,56 @@ const cely2 = [...t2.matchAll(/<([0-9a-f]{4,})> Tj/g)]
 ok("nápis Klidoo je i na jednostránkovém dokumentu", cely2.includes("Klidoo"));
 ok("v hlavičce je adresa webu", cely2.includes("klidoo.cz"));
 ok("stránka je očíslovaná", cely2.includes("1 / 1"));
+
+console.log("── písma z webu ──");
+ok("tři řezy ve zdrojích stránky", /\/F1 \d+ 0 R \/F2 \d+ 0 R \/F3 \d+ 0 R/.test(text));
+ok("nadpisy v Baloo 2", text.includes("/BaseFont /Baloo2-SemiBold"));
+ok("text v Interu", text.includes("/BaseFont /Inter-Regular"));
+ok("tučné je vlastní řez, ne obtažení", text.includes("/BaseFont /Inter-SemiBold") && !text.includes("2 Tr"));
+ok("každý řez má vlastní vložený soubor", (text.match(/\/FontFile2/g) ?? []).length === 3);
+ok("a vlastní mapu pro kopírování", (text.match(/\/ToUnicode/g) ?? []).length === 3);
+
+console.log("── sazba jako na webu ──");
+ok("krémový papír přes celou stranu", text.includes(`${proPdf("canvas")} rg 0 0 595.28 841.89 re f`));
+ok("bílé karty se zaoblením", text.includes("1 1 1 rg"));
+ok("karty mají obrys v barvě linky", text.includes(`${proPdf("line")} RG`));
+ok(
+  "nadtitulek je prostrkaný",
+  /0\.9 Tc/.test(text),
+);
+
+console.log("── nadpis nezůstane sám ──");
+// Nadpis na konci strany, jehož text by začal až na další, je chyba sazby.
+const dlouhy = pdfDokument(
+  [
+    { typ: "odstavec", text: "Výplň. ".repeat(320) },
+    { typ: "podnadpis", text: "Osamělý nadpis" },
+    { typ: "odstavec", text: "Text, který k nadpisu patří a musí zůstat s ním." },
+  ],
+  { titulek: "Zkouška", paticka: "klidoo.cz" },
+);
+const t3 = dlouhy.toString("latin1");
+const mapa3 = new Map();
+for (const m of t3.matchAll(/<([0-9a-f]{4})> <([0-9a-f]{4})>/g)) {
+  mapa3.set(m[1], String.fromCharCode(parseInt(m[2], 16)));
+}
+const strany = t3
+  .split("/Type /Page")
+  .slice(1)
+  .map((kus) => kus);
+const obsahy = [...t3.matchAll(/stream\n([\s\S]*?)\nendstream/g)].map((m) => m[1]);
+const textStrany = obsahy.map((o) =>
+  [...o.matchAll(/<([0-9a-f]{4,})> Tj/g)]
+    .map((m) => (m[1].match(/.{4}/g) ?? []).map((g) => mapa3.get(g) ?? "?").join(""))
+    .join(" "),
+);
+const kdeNadpis = textStrany.findIndex((t) => t.includes("Osamělý nadpis"));
+ok("nadpis se našel", kdeNadpis >= 0);
+ok(
+  "text k nadpisu je na téže straně",
+  kdeNadpis >= 0 && textStrany[kdeNadpis].includes("musí zůstat s ním"),
+);
+void strany;
 
 console.log("── měření a zalomení ──");
 ok("širší text je širší", sirkaTextu("mmmm", 10) > sirkaTextu("iiii", 10));

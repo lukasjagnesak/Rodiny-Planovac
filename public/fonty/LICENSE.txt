@@ -1,10 +1,17 @@
-Liberation Sans
-Copyright (c) 2012 Red Hat, Inc. with Reserved Font Name Liberation.
-Digitized data copyright (c) 2010 Google Corporation
-with Reserved Font Arimo, Tinos and Cousine.
+Písma vložená do generovaných PDF
+=================================
 
-Písmo je tu proto, že PDF se standardními fonty neumí č, ř, ě ani ů.
-Vkládá se do každého vygenerovaného dokumentu.
+Jsou to stejná písma, jaká používá web, aby dokument vypadal jako
+Klidoo a ne jako výpis ze systému. Vkládají se do každého vygenerovaného
+souboru, protože standardní fonty v PDF neumí č, ř, ě ani ů.
+
+  Baloo 2 (SemiBold)  — nadpisy
+  Copyright (c) 2019 Ek Type. Reserved Font Name: Baloo 2.
+
+  Inter (Regular, SemiBold) — text a rozhraní
+  Copyright (c) 2016 The Inter Project Authors. Reserved Font Name: Inter.
+
+Obě písma jsou pod SIL Open Font License 1.1, jejíž text následuje.
 
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 

@@ -360,11 +360,19 @@ Cesta: `components/web/vyzivne-pdf.tsx` → `POST /api/vyzivne/pdf` →
 > máme aspoň komu se ozvat ručně; opačné pořadí by o toho člověka
 > přišlo úplně.
 
-**Vlastní zapisovač PDF** (`lib/pdf.ts`) existuje kvůli češtině:
-standardní fonty v PDF neznají č, ř, ě ani ů. Vkládá se proto Liberation
-Sans (SIL OFL, licence v `public/fonty/`) jako CIDFontType2 s kódováním
-Identity-H. Tučné se dělá obtažením, ne druhým řezem — ten by přílohu
-zdvojnásobil. Dokument má kvůli vloženému písmu ~415 kB.
+**Vlastní zapisovač PDF** (`lib/pdf.ts`) existuje ze dvou důvodů.
+Čeština: standardní fonty v PDF neznají č, ř, ě ani ů. A vzhled:
+dokument si lidé přeposílají a nosí k advokátovi, takže má vypadat
+jako Klidoo. Vkládají se proto **stejná písma, jaká má web** — Baloo 2
+na nadpisy, Inter na text a tučné (SIL OFL, licence v `public/fonty/`)
+— jako CIDFontType2 s kódováním Identity-H, a sází se to jako web:
+krémový papír přes celou stranu, bílé karty se zaoblením, nadtitulek
+v barvě značky. Tři vložené řezy stojí místo: dokument má ~1 065 kB.
+
+> Nadpis, kterému by text začal až na další straně, je chyba sazby,
+> a přetečení na skoro prázdnou stranu taky. Ani jedno test nenajde —
+> proto `npm run nahled:pdf`, který soubor vykreslí do PNG a dá se na
+> něj podívat.
 
 > `ToUnicode` tam není pro parádu: bez ní se z PDF nedá kopírovat text
 > ani v něm hledat. `npm run test:pdf` čte hotový soubor zpátky přes

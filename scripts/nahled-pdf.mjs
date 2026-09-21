@@ -10,7 +10,7 @@
  * náhledu, do běhu aplikace nezasahují):
  *
  *     npm install --no-save pdfjs-dist@4
- *     npx playwright install chromium     # nebo systémový, viz PLAYWRIGHT
+ *     npx playwright install chromium     # nebo systémový, viz CHROMIUM
  *
  * Spuštění:
  *
@@ -69,8 +69,12 @@ const server = createServer((pozadavek, odpoved) => {
       : jmeno.endsWith(".mjs")
         ? "text/javascript"
         : "text/html; charset=utf-8";
+    // Číst až před odesláním hlaviček: prohlížeč si sám říká
+    // o favicon.ico, a kdyby se hlavičky poslaly dřív, chyběl by
+    // způsob, jak odpovědět 404.
+    const obsah = readFileSync(join(pracovni, jmeno));
     odpoved.writeHead(200, { "content-type": typ });
-    odpoved.end(readFileSync(join(pracovni, jmeno)));
+    odpoved.end(obsah);
   } catch {
     odpoved.writeHead(404).end();
   }
@@ -84,7 +88,12 @@ const { port } = server.address();
 const { createRequire } = await import("node:module");
 const nacti = createRequire(import.meta.url);
 const { chromium } = nacti(process.env.PLAYWRIGHT ?? "playwright");
-const prohlizec = await chromium.launch();
+// `CHROMIUM` je cesta k hotovému prohlížeči. Hodí se tam, kde je
+// Chromium předinstalované a `npx playwright install` by ho stahovalo
+// znovu — nebo kde se čísla sestavení Playwrightu a prohlížeče rozešla.
+const prohlizec = await chromium.launch(
+  process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {},
+);
 const strana = await prohlizec.newPage({ viewport: { width: 1000, height: 1400 } });
 strana.on("pageerror", (chyba) => console.error("[stránka]", String(chyba).slice(0, 200)));
 await strana.goto(`http://127.0.0.1:${port}/index.html`);
