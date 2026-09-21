@@ -374,6 +374,22 @@ Umí jen to, co tenhle dokument potřebuje: nadpisy, odstavce, řádky
 s hodnotou vpravo, čáru a velké číslo. Žádné obrázky, rámečky ani
 dělení slov. Až bude potřeba víc, je čas na knihovnu.
 
+**Značka v dokumentu.** Krémový pruh s logem nahoře, znak nakreslený
+křivkami přímo v PDF (dvě kolečka, překryv přes `/BM /Multiply` —
+stejně jako na webu), částka v barvě značky, patička s číslem strany.
+Barvy jsou v `lib/barvy.ts` jako oklch a převádějí se na RGB; že se
+nerozešly s `globals.css`, hlídá `npm run test:barvy-pdf`.
+
+**Jak se na dokument podívat.** Testy ověří text i barvy, ale neřeknou,
+jestli něco nepřeteklo na další stranu. Na to je `npm run nahled:pdf`:
+
+```bash
+npm install --no-save pdfjs-dist@4
+PLAYWRIGHT=$(npm root -g)/playwright npm run nahled:pdf -- vypocet.pdf nahled.png
+```
+
+> Obojí je jen pro náhled a schválně to není v závislostech projektu.
+
 ### 5f. Články na webu
 
 Sekce `/clanky` je v datech, ne v markdownu: projekt nemá knihovnu na

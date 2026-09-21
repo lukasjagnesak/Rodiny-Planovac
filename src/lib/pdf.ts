@@ -18,6 +18,8 @@ import "server-only";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { proPdf } from "./barvy";
+
 /* ── Čtení TrueType ────────────────────────────────────────────── */
 
 interface Pismo {
@@ -208,12 +210,67 @@ export type Prvek =
   | { typ: "mezera"; vyska?: number };
 
 const STRANA = { sirka: 595.28, vyska: 841.89 };
-const OKRAJ = { vlevo: 56, vpravo: 56, nahore: 64, dole: 64 };
+const OKRAJ = { vlevo: 56, vpravo: 56, nahore: 64, dole: 54 };
 const SLOUPEC = STRANA.sirka - OKRAJ.vlevo - OKRAJ.vpravo;
 
-const SEDA = "0.42 0.42 0.4";
-const CERNA = "0.13 0.13 0.12";
-const LINKA = "0.82 0.82 0.8";
+const INK = proPdf("ink");
+const TLUMENA = proPdf("inkMuted");
+const SLABA = proPdf("inkSubtle");
+const LINKA = proPdf("line");
+const ZNACKA_BARVA = proPdf("brand");
+const PAPIR = proPdf("canvas");
+const RODIC_A = proPdf("parentA");
+const RODIC_B = proPdf("parentB");
+
+/** Výška pruhu se značkou na první straně a na dalších. */
+const HLAVICKA_PRVNI = 86;
+const HLAVICKA_DALSI = 46;
+
+/* ── Znak ──────────────────────────────────────────────────────── */
+
+/** Bézierova aproximace kruhu. Čtyři oblouky stačí, oko rozdíl nepozná. */
+const K = 0.5523;
+
+function kruh(x: number, y: number, r: number): string {
+  const k = r * K;
+  return [
+    `${(x - r).toFixed(2)} ${y.toFixed(2)} m`,
+    `${(x - r).toFixed(2)} ${(y + k).toFixed(2)} ${(x - k).toFixed(2)} ${(y + r).toFixed(2)} ${x.toFixed(2)} ${(y + r).toFixed(2)} c`,
+    `${(x + k).toFixed(2)} ${(y + r).toFixed(2)} ${(x + r).toFixed(2)} ${(y + k).toFixed(2)} ${(x + r).toFixed(2)} ${y.toFixed(2)} c`,
+    `${(x + r).toFixed(2)} ${(y - k).toFixed(2)} ${(x + k).toFixed(2)} ${(y - r).toFixed(2)} ${x.toFixed(2)} ${(y - r).toFixed(2)} c`,
+    `${(x - k).toFixed(2)} ${(y - r).toFixed(2)} ${(x - r).toFixed(2)} ${(y - k).toFixed(2)} ${(x - r).toFixed(2)} ${y.toFixed(2)} c`,
+    "f",
+  ].join("\n");
+}
+
+/**
+ * Dvě kolečka, která se překrývají — dva domovy a dítě uprostřed.
+ *
+ * Geometrie je převzatá z `components/ui/logo.tsx`: plátno 120 × 80,
+ * poloměr 34, středy na 46 a 74. Překryv vzniká prolnutím barev
+ * (`/BM /Multiply`), ne třetím odstínem — stejně jako na webu.
+ */
+function znak(x: number, stred: number, vyska: number): string {
+  const sirka = (vyska * 120) / 80;
+  const r = (vyska * 34) / 80;
+  const stredA = x + (sirka * 46) / 120;
+  const stredB = x + (sirka * 74) / 120;
+
+  return [
+    "q",
+    `${RODIC_A} rg`,
+    kruh(stredA, stred, r),
+    "/GSprolnuti gs",
+    `${RODIC_B} rg`,
+    kruh(stredB, stred, r),
+    "Q",
+  ].join("\n");
+}
+
+/** Šířka znaku při dané výšce — aby se za něj dal umístit nápis. */
+function sirkaZnaku(vyska: number): number {
+  return (vyska * 120) / 80;
+}
 
 /* ── Skládání PDF ──────────────────────────────────────────────── */
 
@@ -233,12 +290,14 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
   const stranky: string[] = [];
 
   let proud: string[] = [];
-  let y = STRANA.vyska - OKRAJ.nahore;
+  const zacatekStrany = () =>
+    STRANA.vyska - (stranky.length === 0 ? HLAVICKA_PRVNI : HLAVICKA_DALSI) - 26;
+  let y = zacatekStrany();
 
   const novaStrana = () => {
     if (proud.length) stranky.push(proud.join("\n"));
     proud = [];
-    y = STRANA.vyska - OKRAJ.nahore;
+    y = zacatekStrany();
   };
 
   const misto = (vyska: number) => {
@@ -273,7 +332,7 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
         for (const radek of zalom(prvek.text, velikost, SLOUPEC)) {
           misto(velikost * 1.35);
           y -= velikost * 1.1;
-          napis(radek, velikost, OKRAJ.vlevo, CERNA, true);
+          napis(radek, velikost, OKRAJ.vlevo, INK, true);
         }
         y -= 10;
         break;
@@ -281,8 +340,8 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
       case "podnadpis": {
         const velikost = 12.5;
         misto(velikost * 2.4);
-        y -= velikost * 2;
-        napis(prvek.text, velikost, OKRAJ.vlevo, CERNA, true);
+        y -= velikost * 1.75;
+        napis(prvek.text, velikost, OKRAJ.vlevo, INK, true);
         y -= 4;
         break;
       }
@@ -290,23 +349,23 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
         const velikost = 10.5;
         for (const radek of zalom(prvek.text, velikost, SLOUPEC)) {
           misto(velikost * 1.6);
-          y -= velikost * 1.55;
-          napis(radek, velikost, OKRAJ.vlevo, SEDA);
+          y -= velikost * 1.48;
+          napis(radek, velikost, OKRAJ.vlevo, TLUMENA);
         }
-        y -= 5;
+        y -= 4;
         break;
       }
       case "radek": {
         const velikost = 10.5;
         misto(velikost * 1.9);
-        y -= velikost * 1.75;
-        napis(prvek.vlevo, velikost, OKRAJ.vlevo, SEDA);
+        y -= velikost * 1.62;
+        napis(prvek.vlevo, velikost, OKRAJ.vlevo, TLUMENA);
         const sirka = sirkaTextu(prvek.vpravo, velikost);
         napis(
           prvek.vpravo,
           velikost,
           STRANA.sirka - OKRAJ.vpravo - sirka,
-          CERNA,
+          INK,
           prvek.silny,
         );
         break;
@@ -314,9 +373,9 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
       case "cislo": {
         misto(46);
         y -= 20;
-        napis(prvek.popis, 10, OKRAJ.vlevo, SEDA);
+        napis(prvek.popis, 10, OKRAJ.vlevo, TLUMENA);
         y -= 24;
-        napis(prvek.hodnota, 22, OKRAJ.vlevo, CERNA, true);
+        napis(prvek.hodnota, 22, OKRAJ.vlevo, ZNACKA_BARVA, true);
         y -= 6;
         break;
       }
@@ -341,17 +400,90 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
   if (proud.length) stranky.push(proud.join("\n"));
   if (stranky.length === 0) stranky.push("");
 
-  // Patička až nakonec: musí být na každé stránce včetně té poslední.
-  if (meta.paticka) {
-    const velikost = 8.5;
-    for (let i = 0; i < stranky.length; i += 1) {
-      const text = `${meta.paticka}  ·  strana ${i + 1} z ${stranky.length}`;
-      const x = OKRAJ.vlevo;
-      const yp = OKRAJ.dole - 24;
-      stranky[i] +=
-        `\nBT\n${SEDA} rg\n0 Tr\n/F1 ${velikost} Tf\n1 0 0 1 ${x} ${yp} Tm\n` +
-        `<${hexGlyfy(text, pouzite)}> Tj\nET`;
+  // Značka a patička až nakonec: musí být na každé straně včetně poslední
+  // a hlavička se kreslí pod text, takže se vkládá na začátek proudu.
+  const textik = (
+    text: string,
+    velikost: number,
+    x: number,
+    yp: number,
+    barva: string,
+    tucne = false,
+  ) =>
+    `BT\n${barva} rg\n` +
+    (tucne ? `${barva} RG\n${(velikost * 0.028).toFixed(3)} w\n2 Tr\n` : "0 Tr\n") +
+    `/F1 ${velikost} Tf\n1 0 0 1 ${x.toFixed(2)} ${yp.toFixed(2)} Tm\n` +
+    `<${hexGlyfy(text, pouzite)}> Tj\nET`;
+
+  for (let i = 0; i < stranky.length; i += 1) {
+    const prvni = i === 0;
+    const vyskaPruhu = prvni ? HLAVICKA_PRVNI : HLAVICKA_DALSI;
+    const hornihrana = STRANA.vyska;
+    const spodek = hornihrana - vyskaPruhu;
+    const vyskaZnaku = prvni ? 22 : 14;
+    const stredZnaku = spodek + vyskaPruhu / 2 - (prvni ? 4 : 0);
+    const napisX = OKRAJ.vlevo + sirkaZnaku(vyskaZnaku) + (prvni ? 11 : 7);
+    const velikostNapisu = prvni ? 17 : 11;
+
+    const hlavicka = [
+      // Krémový pruh. Papír zůstává bílý, aby se dokument dal tisknout
+      // bez utopení půlky kazety.
+      `q ${PAPIR} rg ${0} ${spodek.toFixed(2)} ${STRANA.sirka} ${vyskaPruhu} re f Q`,
+      znak(OKRAJ.vlevo, stredZnaku, vyskaZnaku),
+      textik(
+        "Klidoo",
+        velikostNapisu,
+        napisX,
+        stredZnaku - velikostNapisu * 0.34,
+        INK,
+        true,
+      ),
+      `q ${LINKA} RG 0.7 w 0 ${spodek.toFixed(2)} m ${STRANA.sirka} ${spodek.toFixed(2)} l S Q`,
+      // Krátký akcent v barvě značky, aby pruh nebyl jen béžový obdélník.
+      `q ${ZNACKA_BARVA} RG 2.2 w ${OKRAJ.vlevo} ${(spodek - 1.1).toFixed(2)} m ${(OKRAJ.vlevo + 64).toFixed(2)} ${(spodek - 1.1).toFixed(2)} l S Q`,
+    ];
+
+    if (prvni) {
+      const adresa = "klidoo.cz";
+      hlavicka.push(
+        textik(
+          adresa,
+          9.5,
+          STRANA.sirka - OKRAJ.vpravo - sirkaTextu(adresa, 9.5),
+          stredZnaku - 3,
+          SLABA,
+        ),
+      );
+    } else if (meta.titulek) {
+      hlavicka.push(
+        textik(
+          meta.titulek,
+          9.5,
+          STRANA.sirka - OKRAJ.vpravo - sirkaTextu(meta.titulek, 9.5),
+          stredZnaku - 3,
+          SLABA,
+        ),
+      );
     }
+
+    const paticka: string[] = [
+      `q ${LINKA} RG 0.7 w ${OKRAJ.vlevo} ${OKRAJ.dole - 14} m ${(STRANA.sirka - OKRAJ.vpravo).toFixed(2)} ${OKRAJ.dole - 14} l S Q`,
+    ];
+    if (meta.paticka) {
+      paticka.push(textik(meta.paticka, 8.5, OKRAJ.vlevo, OKRAJ.dole - 27, SLABA));
+    }
+    const cislo = `${i + 1} / ${stranky.length}`;
+    paticka.push(
+      textik(
+        cislo,
+        8.5,
+        STRANA.sirka - OKRAJ.vpravo - sirkaTextu(cislo, 8.5),
+        OKRAJ.dole - 27,
+        SLABA,
+      ),
+    );
+
+    stranky[i] = [...hlavicka, stranky[i], ...paticka].join("\n");
   }
 
   /* Objekty */
@@ -437,7 +569,9 @@ export function pdfDokument(prvky: Prvek[], meta: PdfMeta): Buffer {
   for (let i = 0; i < cisloStranek; i += 1) {
     pridej(
       `<< /Type /Page /Parent ${idStrom} 0 R /MediaBox [0 0 ${STRANA.sirka} ${STRANA.vyska}] ` +
-        `/Resources << /Font << /F1 ${idFont} 0 R >> >> /Contents ${idObsahy[i]} 0 R >>`,
+        `/Resources << /Font << /F1 ${idFont} 0 R >> ` +
+        `/ExtGState << /GSprolnuti << /Type /ExtGState /BM /Multiply >> >> >> ` +
+        `/Contents ${idObsahy[i]} 0 R >>`,
     );
     const obsah = stranky[i];
     pridej(

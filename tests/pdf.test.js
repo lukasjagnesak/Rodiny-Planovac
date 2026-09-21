@@ -98,6 +98,37 @@ ok("pravý sloupec řádku", cely.includes("45 000 Kč"));
 ok("žádný znak se neztratil", !cely.includes("�"));
 ok("dlouhý text se zalomil na víc řádků", prectene.length > 12);
 
+console.log("── značka v dokumentu ──");
+ok(
+  "kolečka znaku se kreslí křivkami (osm oblouků na stránku)",
+  (text.match(/ c\n/g) ?? []).length >= 8,
+);
+ok("překryv koleček je prolnutím, ne třetí barvou", text.includes("/BM /Multiply"));
+ok("prostředek prolnutí je ve zdrojích stránky", text.includes("/ExtGState << /GSprolnuti"));
+
+// Barvy se berou z `lib/barvy.ts`, ta je hlídaná proti globals.css.
+const { proPdf } = require("../.test-build/lib/barvy.js");
+ok("krémový pruh hlavičky", text.includes(`${proPdf("canvas")} rg`));
+ok("barva značky u částky", text.includes(`${proPdf("brand")} rg`));
+ok("obě barvy rodičů ve znaku", text.includes(`${proPdf("parentA")} rg`) && text.includes(`${proPdf("parentB")} rg`));
+ok("text v barvě inkoustu, ne černé", text.includes(`${proPdf("ink")} rg`));
+
+const dokument = pdfDokument([{ typ: "odstavec", text: "Krátký dokument." }], {
+  titulek: "Zkouška",
+  paticka: "klidoo.cz",
+});
+const t2 = dokument.toString("latin1");
+const mapa2 = new Map();
+for (const m of t2.matchAll(/<([0-9a-f]{4})> <([0-9a-f]{4})>/g)) {
+  mapa2.set(m[1], String.fromCharCode(parseInt(m[2], 16)));
+}
+const cely2 = [...t2.matchAll(/<([0-9a-f]{4,})> Tj/g)]
+  .map((m) => (m[1].match(/.{4}/g) ?? []).map((g) => mapa2.get(g) ?? "?").join(""))
+  .join("\n");
+ok("nápis Klidoo je i na jednostránkovém dokumentu", cely2.includes("Klidoo"));
+ok("v hlavičce je adresa webu", cely2.includes("klidoo.cz"));
+ok("stránka je očíslovaná", cely2.includes("1 / 1"));
+
 console.log("── měření a zalomení ──");
 ok("širší text je širší", sirkaTextu("mmmm", 10) > sirkaTextu("iiii", 10));
 ok("diakritika nemění šířku písmene", Math.abs(sirkaTextu("e", 10) - sirkaTextu("ě", 10)) < 0.01);
