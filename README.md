@@ -341,6 +341,39 @@ zbytek zachytí `tsc`, což se při zavádění dvakrát stalo.
 > místo „jste nepovolili“ a gendrované „používáte sám“. Obojí se
 > opravovalo ručně, takže po každém větším průchodu si výsledek přečti.
 
+### 5e4. Výpočet výživného v PDF
+
+Na `/kalkulacka-vyzivneho` běží kampaň a stránka do té doby nesbírala
+kontakty: formulář na ní byl, ale nabízel jen newsletter. Teď je hned
+pod výsledkem blok **Poslat výpočet v PDF** — dokument se skládá ze
+zadání, které má člověk zrovna naklikané, takže musí být tam a ne
+v patičce.
+
+Cesta: `components/web/vyzivne-pdf.tsx` → `POST /api/vyzivne/pdf` →
+`lib/vyzivne-pdf.ts` (obsah) → `lib/pdf.ts` (sazba) → příloha e-mailu.
+
+> **Posílá se zadání, ne spočítaná částka.** Číslo z prohlížeče by šlo
+> podvrhnout a v příloze by pak odešla částka, kterou jsme nespočítali.
+> Server si výsledek počítá znovu.
+
+> Kontakt se ukládá **dřív**, než se odesílá pošta. Když SMTP selže,
+> máme aspoň komu se ozvat ručně; opačné pořadí by o toho člověka
+> přišlo úplně.
+
+**Vlastní zapisovač PDF** (`lib/pdf.ts`) existuje kvůli češtině:
+standardní fonty v PDF neznají č, ř, ě ani ů. Vkládá se proto Liberation
+Sans (SIL OFL, licence v `public/fonty/`) jako CIDFontType2 s kódováním
+Identity-H. Tučné se dělá obtažením, ne druhým řezem — ten by přílohu
+zdvojnásobil. Dokument má kvůli vloženému písmu ~415 kB.
+
+> `ToUnicode` tam není pro parádu: bez ní se z PDF nedá kopírovat text
+> ani v něm hledat. `npm run test:pdf` čte hotový soubor zpátky přes
+> tuhle mapu — když projde, čeština v dokumentu opravdu je.
+
+Umí jen to, co tenhle dokument potřebuje: nadpisy, odstavce, řádky
+s hodnotou vpravo, čáru a velké číslo. Žádné obrázky, rámečky ani
+dělení slov. Až bude potřeba víc, je čas na knihovnu.
+
 ### 5f. Články na webu
 
 Sekce `/clanky` je v datech, ne v markdownu: projekt nemá knihovnu na

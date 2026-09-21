@@ -57,7 +57,17 @@ function odesilatel(): string {
  * nepošle, odkaz na ni se pořád dá zkopírovat, a to je pořád lepší než
  * chyba nad celým formulářem.
  */
-export async function posliMail(komu: string, zprava: Zprava): Promise<boolean> {
+export interface Priloha {
+  jmeno: string;
+  obsah: Buffer;
+  typ: string;
+}
+
+export async function posliMail(
+  komu: string,
+  zprava: Zprava,
+  prilohy?: Priloha[],
+): Promise<boolean> {
   if (!mailJeNastaveny()) {
     console.warn("[mail] SMTP není nastavené, e-mail se neposlal:", zprava.predmet);
     return false;
@@ -71,6 +81,11 @@ export async function posliMail(komu: string, zprava: Zprava): Promise<boolean> 
       text: zprava.text,
       html: zprava.html,
       replyTo: process.env.SMTP_REPLY_TO || undefined,
+      attachments: prilohy?.map((p) => ({
+        filename: p.jmeno,
+        content: p.obsah,
+        contentType: p.typ,
+      })),
     });
     return true;
   } catch (chyba) {

@@ -10,6 +10,7 @@ import {
   spocitejVyzivne,
   type VyzivneVstup,
 } from "@/lib/vyzivne";
+import { VyzivnePdf } from "./vyzivne-pdf";
 import { Field, Input, Select } from "@/components/ui/field";
 
 const kc = (castka: number) => `${castka.toLocaleString("cs-CZ")} Kč`;
@@ -61,6 +62,7 @@ export function KalkulackaVyzivneho() {
   const peceB = 100 - vstup.peceA;
 
   return (
+    <>
     <div className="card p-5 sm:p-6">
       <div className="space-y-5">
         <div className="space-y-2.5">
@@ -279,5 +281,8 @@ export function KalkulackaVyzivneho() {
         )}
       </div>
     </div>
+
+    <VyzivnePdf vstup={vstup} />
+    </>
   );
 }

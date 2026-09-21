@@ -289,3 +289,69 @@ ${vstup.odhlaseni}
     text,
   };
 }
+
+/**
+ * Výpočet výživného v příloze.
+ *
+ * Text e-mailu musí dávat smysl i tomu, kdo přílohu neotevře — část
+ * lidí si ji na mobilu nezobrazí a chce vidět číslo hned ve zprávě.
+ */
+export function vyzivneVypocetZprava(vstup: {
+  shrnuti: string;
+  web: string;
+  odhlaseni: string;
+}): Zprava {
+  const predmet = "Váš výpočet výživného";
+  const odkaz = `${vstup.web}/vzor-dohody-o-stridave-peci`;
+
+  const telo = `
+<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">Výpočet je v příloze</h1>
+<p style="margin:0 0 12px 0;">
+  ${escapeHtml(vstup.shrnuti)}
+</p>
+<p style="margin:0 0 12px 0;">
+  V přiloženém PDF je i zadání, ze kterého výpočet vyšel, a co tabulka
+  ministerstva neumí. Dá se přiložit k e-mailu druhému rodiči nebo vzít
+  k advokátovi.
+</p>
+<p style="margin:0 0 12px 0;">
+  Výsledek je orientační a není právně závazný. Konkrétní částku vždy určuje
+  soud podle potřeb dítěte a možností obou rodičů.
+</p>
+<p style="margin:0 0 12px 0;">
+  Nejlevnější cesta k výsledku bývá dohoda rodičů, kterou soud schválí.
+  Vzor máme připravený ke stažení.
+</p>
+${tlacitko(odkaz, "Stáhnout vzor dohody")}
+<p style="margin:16px 0 0 0;font-size:13px;color:${BARVA_TLUMENA};">
+  Kdyby cokoli, stačí na tenhle e-mail odpovědět.
+</p>`;
+
+  const text = `Výpočet je v příloze.
+
+${vstup.shrnuti}
+
+V přiloženém PDF je i zadání, ze kterého výpočet vyšel, a co tabulka
+ministerstva neumí. Dá se přiložit k e-mailu druhému rodiči nebo vzít
+k advokátovi.
+
+Výsledek je orientační a není právně závazný. Konkrétní částku vždy určuje
+soud podle potřeb dítěte a možností obou rodičů.
+
+Nejlevnější cesta k výsledku bývá dohoda rodičů, kterou soud schválí:
+${odkaz}
+
+Nechcete-li už žádné zprávy, odhlaste se tady:
+${vstup.odhlaseni}
+`;
+
+  return {
+    predmet,
+    html: obalka(
+      predmet,
+      telo,
+      `Tenhle e-mail vám přišel, protože jste si na klidoo.cz nechali poslat výpočet výživného. <a href="${escapeHtml(vstup.odhlaseni)}" style="color:${BARVA_TLUMENA};">Odhlásit se</a>`,
+    ),
+    text,
+  };
+}

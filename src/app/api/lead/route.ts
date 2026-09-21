@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
-import { ohlasNovyKontakt } from "@/lib/spravce-oznameni";
+import { ulozLead } from "@/lib/leady";
 
 /**
  * Sběr kontaktů z veřejného webu.
@@ -40,12 +39,7 @@ export async function POST(request: NextRequest) {
 
   const magnet = text(body?.magnet, 60) ?? "newsletter";
 
-  const admin = createAdminClient();
-
-  // Obyčejný insert, ne upsert: unikátní index sedí na `lower(email)`,
-  // což `on conflict` neumí pojmenovat sloupci. Duplicitu proto necháme
-  // vzniknout a odchytíme ji níž.
-  const { error } = await admin.from("leady").insert({
+  const vysledek = await ulozLead({
     email,
     magnet,
     jmeno: text(body?.jmeno, 120),
@@ -60,22 +54,9 @@ export async function POST(request: NextRequest) {
     landing: text(body?.landing, 200),
   });
 
-  if (error) {
-    // Druhé odeslání stejného e-mailu na stejný materiál není chyba
-    // uživatele — nejspíš mu první zpráva utekla. Tváříme se, že prošlo.
-    if (error.code === "23505") return NextResponse.json({ ok: true });
+  if (vysledek === "chyba") {
     return NextResponse.json({ error: "Uložení se nepovedlo." }, { status: 500 });
   }
-
-  // Správci do telefonu. Až po úspěšném zápisu, ať se neohlašuje kontakt,
-  // který se neuložil — a bez `await`, protože návštěvník nemá čekat na
-  // odeslání notifikace, aby dostal svůj materiál.
-  void ohlasNovyKontakt({
-    email,
-    magnet,
-    jmeno: text(body?.jmeno, 120),
-    organizace: text(body?.organizace, 160),
-  }).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

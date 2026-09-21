@@ -8,7 +8,6 @@ import {
   Sloupec,
 } from "@/components/web/prvky";
 import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
-import { LeadForm } from "@/components/web/lead-form";
 import { ZNACKA } from "@/lib/brand";
 
 const TITULEK = "Kalkulačka výživného 2026 — i pro střídavou péči";
@@ -147,13 +146,6 @@ export default function KalkulackaVyzivnehoStranka() {
           </div>
         </section>
 
-        <LeadForm
-          magnet="vyzivne"
-          nadpis="Ať vám neuteče, co se změní"
-          popis="Tabulka ministerstva se čas od času mění a soudní praxe s ní. Dáme vědět, když se změní něco, co ovlivní váš výpočet."
-          tlacitko="Dát vědět"
-          hotovo="Díky. Ozveme se, až se tabulka nebo praxe změní."
-        />
 
         <DalsiCteni
           odkazy={[
