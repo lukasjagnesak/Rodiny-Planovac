@@ -959,6 +959,31 @@ přihlášení není místo, kde by měly ležet. Tabulka `kalkulacka_plany` nem
 RLS politiky schválně: sahá na ni jen serverová část servisním klíčem a rozpis
 otevírá jedině náhodný token z odkazu.
 
+**Kalkulačka výživného jede podle stejného vzorce** (`vyzivne_plany`,
+`lib/vyzivne-plan.ts`). Hlavní nabídka pod výsledkem není PDF, ale účet:
+výpočet se odloží pod token a po registraci se z něj předvyplní průvodce
+a založí opakovaný výdaj „Výživné". Za e-mail v políčku je řádek v tabulce,
+za tímhle je rodina, která se má kam vracet.
+
+> **Příjmy se do `vyzivne_plany` neukládají.** Kdo kolik bere je to
+> nejcitlivější, co na webu bez přihlášení padne, a k ničemu, co se přenáší,
+> to potřeba není. Přenášejí se etapy dětí, podíl péče a spočítaná částka.
+
+Dvě místa, kde se to dá splést, a proto je na ně test
+(`npm run test:vyzivne-plan`):
+
+- **Rozvrh se neodvozuje vždycky.** Kolem poloviny je to týden po týdnu,
+  u téměř výhradní péče `fixed_parent` — a mezi tím (třeba 60/40) se
+  nepředvyplní nic, protože žádný vzor v aplikaci tomu neodpovídá a vybrat
+  nejbližší by znamenalo vydat náš odhad za zadání rodiče.
+- **Výživné není společný výdaj k rozpočítání**, ale převod od jednoho rodiče
+  druhému. `split_percent` je proto nula. Se stem by vyrovnání tvrdilo, že
+  příjemce plátci dluží přesně to, co dostal.
+
+Částku počítá server, ne prohlížeč — stejně jako u PDF. Číslo z klienta by šlo
+podvrhnout a my bychom člověku založili opakovaný výdaj na částku, kterou jsme
+nespočítali.
+
 ### Veřejný web
 
 Marketingové a obsahové stránky nejsou samostatný projekt — leží ve skupině
@@ -976,10 +1001,16 @@ se změní paleta, změní se s ní i web; nemůže se rozejít, protože není 
 | `/pro-advokaty`, `/pro-mediatory` | Partnerské stránky |
 | `/zasady-ochrany-osobnich-udaju` | Zásady zpracování údajů |
 
-**Materiály se neposílají e-mailem.** Není odesílatel, a slíbit něco, co
-nedorazí, je horší než nesbírat nic. E-mail se uloží do tabulky `leady`
-a materiál se otevře rovnou na webu. Až bude vyřešené SMTP, stačí navázat
-odesílání na `magnet` — texty tvrdí jen to, že se ozveme.
+**Většina materiálů se neposílá e-mailem**, jen se po odeslání otevře rovnou
+na webu; kontakt se uloží do tabulky `leady`. Výjimkou je PDF z kalkulačky
+výživného, které přílohou chodí (`/api/vyzivne/pdf`).
+
+> Koncový bod, na který sahá odhlášený návštěvník, **musí být
+> v `PUBLIC_PATHS`**. Jinak ho proxy přesměruje na přihlášení, volání dostane
+> místo odpovědi přihlašovací stránku v HTML a formulář řekne jen „odeslání se
+> nepovedlo". Přesně takhle týden nefungovalo odesílání PDF. Hlídá to
+> `npm run test:verejne-cesty`, který si volání `fetch("/api/…")` ve veřejných
+> komponentách najde sám.
 
 Odkud návštěvník přišel, se zapamatuje **při prvním zobrazení** (`lib/atribuce.ts`,
 mountuje se v layoutu, ne ve formuláři). Lidé přistanou na článku a e-mail

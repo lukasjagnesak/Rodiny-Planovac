@@ -7,6 +7,9 @@ import { OnboardingWizard, type PredvyplnenoZKalkulacky } from "./wizard";
 import { ListaUctu } from "@/components/ui/lista-uctu";
 import { ZmerRegistraci } from "./zmer-registraci";
 import type { PatternKind } from "@/lib/types";
+import { rozvrhZPece } from "@/lib/vyzivne-plan";
+import { toDateKey, WEEK_OPTS } from "@/lib/dates";
+import { startOfWeek } from "date-fns";
 
 export const metadata: Metadata = { title: "Vítejte" };
 
@@ -48,12 +51,61 @@ async function prevezmiPlan(
   };
 }
 
+/**
+ * Totéž pro kalkulačku výživného.
+ *
+ * Přenáší se počet dětí a jejich etapy, rozvrh odvozený z podílu péče
+ * a částka. Příjmy v tabulce nejsou — viz migrace 0028.
+ *
+ * Rozvrh se neodvozuje vždycky: u podílu mezi rovnoměrnou a téměř
+ * výhradní péčí (třeba 60/40) žádný vzor v aplikaci neodpovídá a
+ * vybrat nejbližší by znamenalo vydat odhad za zadání rodiče.
+ */
+async function prevezmiVyzivne(
+  token: string,
+  userId: string,
+): Promise<PredvyplnenoZKalkulacky | null> {
+  const admin = createAdminClient();
+
+  const { data } = await admin
+    .from("vyzivne_plany")
+    .select("id, etapy, pece_a, plati, castka, claimed_by")
+    .eq("token", token)
+    .maybeSingle();
+
+  if (!data) return null;
+
+  if (!data.claimed_by) {
+    await admin
+      .from("vyzivne_plany")
+      .update({ claimed_by: userId, claimed_at: new Date().toISOString() })
+      .eq("id", data.id);
+  }
+
+  const etapy = (data.etapy as string[] | null) ?? [];
+  const peceA = Number(data.pece_a);
+  const rozvrh = rozvrhZPece(peceA);
+  const castka = Number(data.castka);
+  const plati = data.plati as "a" | "b" | null;
+
+  return {
+    kind: rozvrh?.kind ?? "iso_week_parity",
+    anchorDate: toDateKey(startOfWeek(new Date(), WEEK_OPTS)),
+    anchorSide: rozvrh?.anchorSide ?? "a",
+    weeklyMap: "aabbaab",
+    pocetDeti: Math.max(etapy.length, 1),
+    etapy,
+    rozvrhOdvozen: rozvrh !== null,
+    vyzivne: plati && castka > 0 ? { castka, plati } : null,
+  };
+}
+
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ plan?: string }>;
+  searchParams: Promise<{ plan?: string; vyzivne?: string }>;
 }) {
-  const { plan } = await searchParams;
+  const { plan, vyzivne } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -75,7 +127,11 @@ export default async function WelcomePage({
     .eq("id", user.id)
     .single();
 
-  const predvyplneno = plan ? await prevezmiPlan(plan, user.id) : null;
+  const predvyplneno = plan
+    ? await prevezmiPlan(plan, user.id)
+    : vyzivne
+      ? await prevezmiVyzivne(vyzivne, user.id)
+      : null;
 
   // Čerstvě založený účet. Okno je široké schválně — dvojímu započítání
   // brání značka u uživatele, tohle jen drží stranou ty, kdo tu mají účet

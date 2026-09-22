@@ -13,12 +13,17 @@ import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { prettyError } from "../prihlaseni/login-form";
 import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
+import { bezpecnyCil } from "@/lib/navrat";
 
 export function RegisterForm() {
   const router = useRouter();
   const params = useSearchParams();
   // Pozvánka: /registrace?pozvanka=<token>
   const inviteToken = params.get("pozvanka");
+  // Kam po registraci. Chodí sem člověk z veřejné kalkulačky, který má
+  // odložený výpočet — bez tohohle by mu po založení účtu spadl pod stůl
+  // a průvodce by začal na prázdno.
+  const dal = bezpecnyCil(params.get("dal"), "/vitejte");
 
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState(params.get("email") ?? "");
@@ -30,7 +35,7 @@ export function RegisterForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 8) {
-      setError("Zvol heslo alespoň o 8 znacích.");
+      setError("Zvolte prosím heslo alespoň o osmi znacích.");
       return;
     }
 
@@ -38,7 +43,7 @@ export function RegisterForm() {
     setError(null);
 
     const supabase = createClient();
-    const redirectTarget = inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte";
+    const redirectTarget = inviteToken ? `/pozvanka/${inviteToken}` : dal;
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -102,7 +107,7 @@ export function RegisterForm() {
       <SocialniPrihlaseni
         popisekGoogle="Zaregistrovat se přes Google"
         popisekApple="Zaregistrovat se přes Apple"
-        dal={inviteToken ? `/pozvanka/${inviteToken}` : "/vitejte"}
+        dal={inviteToken ? `/pozvanka/${inviteToken}` : dal}
       />
 
       <Field label="Jméno" hint="uvidí ho ostatní členové">
@@ -155,8 +160,11 @@ export function RegisterForm() {
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
         Už máte účet?{" "}
-        <Link href="/prihlaseni" className="font-medium text-brand hover:underline">
-          Přihlas se
+        <Link
+          href={`/prihlaseni?dal=${encodeURIComponent(dal)}`}
+          className="font-medium text-brand hover:underline"
+        >
+          Přihlaste se
         </Link>
       </div>
     </form>

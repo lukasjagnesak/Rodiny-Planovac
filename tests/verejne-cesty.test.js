@@ -10,6 +10,12 @@
  *
  * Přesně tohle se stalo sekci článků, proto tenhle test existuje.
  *
+ * Druhá polovina hlídá totéž u koncových bodů. Stránka se aspoň pozná
+ * tím, že místo ní naskočí přihlášení; volání z prohlížeče dostane
+ * přesměrování, po něm přihlašovací stránku v HTML, a formulář jen
+ * řekne „odeslání se nepovedlo". Takhle spadlo odesílání PDF z
+ * kalkulačky výživného — na stránce, na kterou vede placená kampaň.
+ *
  * Spouští se přes `npm run test:verejne-cesty`.
  */
 const fs = require("node:fs");
@@ -47,6 +53,44 @@ ok(`stránek v mapě je víc než pět (${stranky.length})`, stranky.length > 5)
 
 console.log("── každá stránka z mapy je veřejná ──");
 for (const cesta of stranky) {
+  const kryta = verejne.some((v) => cesta === v || cesta.startsWith(`${v}/`));
+  ok(cesta, kryta);
+}
+
+/**
+ * Koncové body, na které sahá veřejný web.
+ *
+ * Hledají se doslovná volání `fetch("/api/…")` v komponentách, které
+ * běží před přihlášením. Nic se nevyjmenovává ručně schválně — ruční
+ * seznam by se zapomněl doplnit úplně stejně jako `PUBLIC_PATHS`.
+ */
+const VEREJNE_SLOZKY = [
+  "src/app/(web)",
+  "src/components/web",
+  "src/components/kalkulacka",
+];
+
+function projdi(slozka, nalezene = []) {
+  const cela = path.join(__dirname, "..", slozka);
+  if (!fs.existsSync(cela)) return nalezene;
+  for (const polozka of fs.readdirSync(cela, { withFileTypes: true })) {
+    const dal = path.join(slozka, polozka.name);
+    if (polozka.isDirectory()) projdi(dal, nalezene);
+    else if (/\.tsx?$/.test(polozka.name)) nalezene.push(dal);
+  }
+  return nalezene;
+}
+
+const volana = new Set();
+for (const soubor of VEREJNE_SLOZKY.flatMap((s) => projdi(s))) {
+  for (const m of precti(soubor).matchAll(/fetch\(\s*"(\/api\/[^"?]+)"/g)) {
+    volana.add(m[1]);
+  }
+}
+
+console.log("── koncové body veřejného webu jsou veřejné ──");
+ok(`nějaká volání se vůbec našla (${volana.size})`, volana.size > 0);
+for (const cesta of [...volana].sort()) {
   const kryta = verejne.some((v) => cesta === v || cesta.startsWith(`${v}/`));
   ok(cesta, kryta);
 }

@@ -11,6 +11,7 @@ import {
   type VyzivneVstup,
 } from "@/lib/vyzivne";
 import { VyzivnePdf } from "./vyzivne-pdf";
+import { VyzivnePokracovat } from "./vyzivne-pokracovat";
 import { Field, Input, Select } from "@/components/ui/field";
 
 const kc = (castka: number) => `${castka.toLocaleString("cs-CZ")} Kč`;
@@ -282,6 +283,7 @@ export function KalkulackaVyzivneho() {
       </div>
     </div>
 
+    <VyzivnePokracovat vstup={vstup} />
     <VyzivnePdf vstup={vstup} />
     </>
   );

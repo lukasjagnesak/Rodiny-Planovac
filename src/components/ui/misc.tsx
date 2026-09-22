@@ -149,9 +149,11 @@ export function Spinner({ className }: { className?: string }) {
 export function Alert({
   tone = "info",
   children,
+  className,
 }: {
   tone?: "info" | "success" | "danger" | "warning";
   children: React.ReactNode;
+  className?: string;
 }) {
   const tones = {
     info: "bg-info-soft text-info",
@@ -160,7 +162,7 @@ export function Alert({
     warning: "bg-warning-soft text-warning",
   };
   return (
-    <div className={cn("rounded-xl px-3.5 py-2.5 text-sm", tones[tone])} role="status">
+    <div className={cn("rounded-xl px-3.5 py-2.5 text-sm", tones[tone], className)} role="status">
       {children}
     </div>
   );

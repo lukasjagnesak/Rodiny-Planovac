@@ -118,7 +118,7 @@ export function LessonForm({
     if (error) {
       setError(
         error.code === "23505"
-          ? "Tuhle hodinu už v ten den máte. Uprav ji, nebo zvol jiné pořadí."
+          ? "Tuhle hodinu už v ten den máte. Upravte ji, nebo zvolte jiné pořadí."
           : hlaskaChyby(error),
       );
       return;

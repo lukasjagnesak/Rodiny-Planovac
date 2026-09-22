@@ -32,6 +32,12 @@ import { platnyRef } from "@/lib/atribuce";
 import { PLATNOST_DOPORUCENI_DNI } from "@/lib/partneri";
 import { VolbaTarifu } from "@/components/predplatne/volba-tarifu";
 import { ZKUSEBNI_DNI } from "@/lib/tarify";
+import {
+  VYZIVNE_NEDELI_SE,
+  VYZIVNE_TITULEK,
+  type PrevzateVyzivne,
+} from "@/lib/vyzivne-plan";
+import { najdiEtapu } from "@/lib/vyzivne";
 
 interface ChildDraft {
   name: string;
@@ -57,6 +63,12 @@ export interface PredvyplnenoZKalkulacky {
   anchorSide: "a" | "b";
   weeklyMap: string;
   pocetDeti: number;
+  /** Etapy dětí z kalkulačky výživného. Jen nápověda, ne vyplněná data. */
+  etapy?: string[];
+  /** Šlo rozvrh z podílu péče odvodit? U 60/40 ne — viz `rozvrhZPece`. */
+  rozvrhOdvozen?: boolean;
+  /** Výživné k založení jako opakovaný výdaj. */
+  vyzivne?: PrevzateVyzivne | null;
 }
 
 export function OnboardingWizard({
@@ -138,6 +150,30 @@ export function OnboardingWizard({
       });
       if (patternError) throw patternError;
 
+      // Výživné z veřejné kalkulačky. Zakládá se jako opakovaný výdaj,
+      // protože právě tím se z čísla na obrazovce stane něco, co každý
+      // měsíc připomene, že se má poslat.
+      //
+      // `paid_by` se vyplní jen tomu, kdo platí — druhý rodič zatím
+      // žádný profil nemá. Selhání se mlčky spolkne: rodina je
+      // založená a nepustit ji dál kvůli jedné položce ve výdajích
+      // by bylo obrácené pořadí důležitosti. Dá se dopsat ručně.
+      const vyzivne = predvyplneno?.vyzivne;
+      if (vyzivne) {
+        const { data: ja } = await supabase.auth.getUser();
+        const { error: vyzivneError } = await supabase.from("vydaje_opakovane").insert({
+          family_id: familyId,
+          category: "alimony",
+          title: VYZIVNE_TITULEK,
+          amount: vyzivne.castka,
+          frekvence: "mesicne",
+          paid_by: vyzivne.plati === mySide ? (ja.user?.id ?? null) : null,
+          split_percent: VYZIVNE_NEDELI_SE,
+          note: "Orientační částka z kalkulačky na klidoo.cz. Upravte ji podle skutečnosti.",
+        });
+        if (vyzivneError) console.warn("Výživné se nezaložilo:", vyzivneError.message);
+      }
+
       zmer("rodina");
 
       // Doporučení od mediátora nebo advokáta. Selhání se mlčky spolkne:
@@ -191,6 +227,24 @@ export function OnboardingWizard({
           </li>
         ))}
       </ol>
+
+      {/* Co se převzalo z veřejné kalkulačky. Vypsané schválně: kdo
+          nevidí, co se přeneslo, to buď nezkontroluje, nebo tomu
+          nevěří — a obojí je horší než řádek textu navíc. */}
+      {predvyplneno?.etapy?.length ? (
+        <Alert tone="info" className="mb-5">
+          Z kalkulačky jsme převzali{" "}
+          {predvyplneno.etapy.length === 1 ? "jedno dítě" : `${predvyplneno.etapy.length} děti`}
+          {predvyplneno.rozvrhOdvozen ? " a rozvrh péče" : ""}
+          {predvyplneno.vyzivne
+            ? ", a až rodinu založíte, přidáme výživné jako opakovaný výdaj"
+            : ""}
+          .{" "}
+          {predvyplneno.rozvrhOdvozen
+            ? "Všechno se dá změnit."
+            : "Rozvrh jsme nepředvyplnili — podílu, který jste zadali, žádný vzor v aplikaci přesně neodpovídá."}
+        </Alert>
+      ) : null}
 
       <div className="card space-y-5 p-5 sm:p-6">
         {step === 0 ? (
@@ -270,6 +324,14 @@ export function OnboardingWizard({
             <div className="space-y-4">
               {children.map((child, i) => (
                 <div key={i} className="rounded-xl border border-line bg-surface-2 p-3.5">
+                  {/* Etapa z kalkulačky je nápověda, ne vyplněný údaj:
+                      „2. stupeň ZŠ" není datum narození a dopočítat ho
+                      by znamenalo vymyslet rodičovi data o jeho dítěti. */}
+                  {predvyplneno?.etapy?.[i] ? (
+                    <p className="mb-2 text-xs text-ink-subtle">
+                      Z kalkulačky: {najdiEtapu(predvyplneno.etapy[i]).popis}
+                    </p>
+                  ) : null}
                   <div className="flex items-start gap-2">
                     <div className="flex-1 space-y-3">
                       <Input

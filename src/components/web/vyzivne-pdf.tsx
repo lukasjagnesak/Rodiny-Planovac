@@ -73,7 +73,7 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
 
   if (stav === "hotovo") {
     return (
-      <div className="card mt-4 p-5 sm:p-6">
+      <div className="mt-3 rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
         <h3 className="font-display text-lg font-semibold tracking-tight text-ink">
           Odesláno na {kam}
         </h3>
@@ -102,22 +102,15 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
   );
 
   return (
-    <div className="card mt-4 p-5 sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
-          <FileDown className="h-5 w-5" aria-hidden />
-        </span>
-        <div className="min-w-0">
-          <h3 className="font-display text-lg font-semibold tracking-tight text-ink">
-            Poslat výpočet v PDF
-          </h3>
-          <p className="mt-1 text-[0.95rem] leading-relaxed text-ink-muted">
-            Dokument s výsledkem, se zadáním, ze kterého vyšel, a s tím, co tabulka
-            ministerstva neumí. Dá se přiložit k e-mailu druhému rodiči nebo vzít
-            k advokátovi.
-          </p>
-        </div>
-      </div>
+    <div className="mt-3 rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
+      <h3 className="flex items-center gap-2 font-medium text-ink">
+        <FileDown className="h-4 w-4 shrink-0 text-ink-subtle" aria-hidden />
+        Nebo si nechte poslat jen PDF
+      </h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
+        Dokument s výsledkem a se zadáním, ze kterého vyšel. Dá se přiložit
+        k e-mailu druhému rodiči nebo vzít k advokátovi.
+      </p>
 
       <form onSubmit={odesli} className="mt-4 flex flex-wrap gap-2.5">
         {/* Návnada pro roboty. Člověk ji nevidí, robot ji vyplní. */}

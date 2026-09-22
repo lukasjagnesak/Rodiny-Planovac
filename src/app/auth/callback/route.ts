@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { siteUrl } from "@/lib/google";
+import { bezpecnyCil } from "@/lib/navrat";
 
 /**
  * Cíl odkazů z potvrzovacích e-mailů a magic linků.
@@ -15,9 +16,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const zaklad = siteUrl();
 
-  // `//neco.cz` taky začíná lomítkem, ale prohlížeč to čte jako cizí doménu.
-  const dal = searchParams.get("dal") ?? "/prehled";
-  const kam = dal.startsWith("/") && !dal.startsWith("//") ? dal : "/prehled";
+  const kam = bezpecnyCil(searchParams.get("dal"), "/prehled");
 
   const naPrihlaseni = (duvod: string) =>
     NextResponse.redirect(

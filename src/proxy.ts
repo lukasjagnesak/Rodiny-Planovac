@@ -34,6 +34,11 @@ export const PUBLIC_PATHS = [
   "/sitemap.xml",
   "/robots.txt",
   "/api/kalkulacka",
+  // Kalkulačka výživného: PDF na e-mail i odložení výpočtu před
+  // registrací. Obojí volá člověk, který účet ještě nemá — bez tohohle
+  // řádku ho middleware pošle na přihlášení a z volání se vrátí
+  // přihlašovací stránka místo odpovědi.
+  "/api/vyzivne",
   "/api/lead",
   "/api/t",
   "/api/checklist",
