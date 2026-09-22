@@ -119,7 +119,14 @@ export default async function WelcomePage({
     .eq("user_id", user.id)
     .limit(1);
 
-  if (memberships && memberships.length > 0) redirect("/prehled");
+  if (memberships && memberships.length > 0) {
+    // Kdo rodinu má, sem nepatří — ale nese-li s sebou výpočet
+    // z kalkulačky, patří na převzetí, ne na přehled. Tohle je přesně
+    // to místo, kde se odložený výpočet ztrácel.
+    redirect(
+      vyzivne ? `/prevzit/vyzivne?token=${encodeURIComponent(vyzivne)}` : "/prehled",
+    );
+  }
 
   const { data: profile } = await supabase
     .from("profiles")

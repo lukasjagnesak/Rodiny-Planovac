@@ -52,7 +52,9 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
       const { token } = await odpoved.json();
       zmer("vyzivne-prenos");
 
-      const cil = `/vitejte?vyzivne=${encodeURIComponent(token)}`;
+      // Vede to na převzetí, ne rovnou do průvodce: kdo už rodinu má,
+      // by v průvodci skončil na přehledu a výpočet by se zahodil.
+      const cil = `/prevzit/vyzivne?token=${encodeURIComponent(token)}`;
       router.push(`/registrace?dal=${encodeURIComponent(cil)}`);
     } catch {
       setChyba("Nejsme online. Zkuste to prosím znovu.");

@@ -87,6 +87,8 @@ export function OnboardingWizard({
   const [zalozenaRodina, setZalozenaRodina] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  /** Částka, kterou se nepovedlo založit. Řekneme ji, ať se dá dopsat ručně. */
+  const [vyzivneSelhalo, setVyzivneSelhalo] = React.useState<number | null>(null);
 
   const [familyName, setFamilyName] = React.useState("");
   const [myName, setMyName] = React.useState(defaultName);
@@ -155,9 +157,14 @@ export function OnboardingWizard({
       // měsíc připomene, že se má poslat.
       //
       // `paid_by` se vyplní jen tomu, kdo platí — druhý rodič zatím
-      // žádný profil nemá. Selhání se mlčky spolkne: rodina je
-      // založená a nepustit ji dál kvůli jedné položce ve výdajích
-      // by bylo obrácené pořadí důležitosti. Dá se dopsat ručně.
+      // žádný profil nemá.
+      //
+      // Selhání rodinu neshodí: ta je založená a nepustit člověka dál
+      // kvůli jedné položce ve výdajích by bylo obrácené pořadí
+      // důležitosti. Ale ani se nespolkne. Tiché selhání je tu horší
+      // než hlasité — člověk odejde v přesvědčení, že výživné
+      // v aplikaci má, a zjistí to až za měsíc, když nepřijde
+      // připomínka.
       const vyzivne = predvyplneno?.vyzivne;
       if (vyzivne) {
         const { data: ja } = await supabase.auth.getUser();
@@ -169,9 +176,13 @@ export function OnboardingWizard({
           frekvence: "mesicne",
           paid_by: vyzivne.plati === mySide ? (ja.user?.id ?? null) : null,
           split_percent: VYZIVNE_NEDELI_SE,
+          created_by: ja.user?.id ?? null,
           note: "Orientační částka z kalkulačky na klidoo.cz. Upravte ji podle skutečnosti.",
         });
-        if (vyzivneError) console.warn("Výživné se nezaložilo:", vyzivneError.message);
+        if (vyzivneError) {
+          console.error("Výživné se nezaložilo:", vyzivneError.message);
+          setVyzivneSelhalo(vyzivne.castka);
+        }
       }
 
       zmer("rodina");
@@ -231,6 +242,13 @@ export function OnboardingWizard({
       {/* Co se převzalo z veřejné kalkulačky. Vypsané schválně: kdo
           nevidí, co se přeneslo, to buď nezkontroluje, nebo tomu
           nevěří — a obojí je horší než řádek textu navíc. */}
+      {vyzivneSelhalo !== null ? (
+        <Alert tone="warning" className="mb-5">
+          Výživné se nepodařilo založit jako opakovaný výdaj. Přidejte ho prosím
+          ručně ve Výdajích: {vyzivneSelhalo.toLocaleString("cs-CZ")} Kč měsíčně.
+        </Alert>
+      ) : null}
+
       {predvyplneno?.etapy?.length ? (
         <Alert tone="info" className="mb-5">
           Z kalkulačky jsme převzali{" "}

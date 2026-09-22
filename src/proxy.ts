@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { bezpecnyCil, odkazNaPrihlaseni } from "@/lib/navrat";
 
 export const PUBLIC_PATHS = [
   // Přehled s vymyšlenými daty pro test rozvržení. V ostrém provozu
@@ -123,16 +124,20 @@ export async function proxy(request: NextRequest) {
   const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
 
   if (!prihlaseny && !isPublic) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/prihlaseni";
-    url.searchParams.set("dal", path);
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(odkazNaPrihlaseni(request.nextUrl));
   }
 
+  // Přihlášený na přihlašovací stránce nemá co dělat — ale když ho sem
+  // poslala vlastní adresa s cílem (`?dal=…`), pustíme ho na ten cíl.
+  // Jinak by se zahodilo všechno, co po přihlášení mělo pokračovat:
+  // pozvánka, odložený výpočet z kalkulačky, rozepsaná cesta kamkoli.
   if (prihlaseny && (path === "/prihlaseni" || path === "/registrace")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/prehled";
     url.search = "";
+    const cil = bezpecnyCil(request.nextUrl.searchParams.get("dal"), "/prehled");
+    const rozdeleno = cil.indexOf("?");
+    url.pathname = rozdeleno < 0 ? cil : cil.slice(0, rozdeleno);
+    if (rozdeleno >= 0) url.search = cil.slice(rozdeleno);
     return NextResponse.redirect(url);
   }
 

@@ -11,9 +11,9 @@ export const metadata: Metadata = { title: "Výdaje" };
 export default async function ExpensesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ m?: string; novy?: string }>;
+  searchParams: Promise<{ m?: string; novy?: string; prevzato?: string }>;
 }) {
-  const { m, novy } = await searchParams;
+  const { m, novy, prevzato } = await searchParams;
   const session = await requireSession();
   const supabase = await createClient();
 
@@ -47,6 +47,7 @@ export default async function ExpensesPage({
       opakovane={(opakovane ?? []) as OpakovanyVydaj[]}
       monthKey={toDateKey(startOfMonth(anchor)).slice(0, 7)}
       prefillDate={novy ?? null}
+      prevzato={prevzato ?? null}
     />
   );
 }

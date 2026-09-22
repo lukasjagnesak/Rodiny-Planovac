@@ -17,3 +17,21 @@ export function bezpecnyCil(cil: string | null | undefined, vychozi: string): st
   if (cil.startsWith("/\\")) return vychozi;
   return cil;
 }
+
+/**
+ * Kam poslat nepřihlášeného návštěvníka.
+ *
+ * Do `dal` patří cesta **i s dotazem**. Bez něj se ztratí všechno, co
+ * v adrese neslo stav — třeba token odloženého výpočtu z kalkulačky.
+ * A protože se adresa klonuje z té původní, musí se dotaz napřed
+ * vymazat: jinak na přihlašovací stránce zůstanou viset cizí parametry
+ * a `dal` přesto ukazuje na holou cestu.
+ */
+export function odkazNaPrihlaseni(adresa: URL): URL {
+  const cil = `${adresa.pathname}${adresa.search}`;
+  const url = new URL(adresa);
+  url.pathname = "/prihlaseni";
+  url.search = "";
+  url.searchParams.set("dal", cil);
+  return url;
+}

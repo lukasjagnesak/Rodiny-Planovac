@@ -17,7 +17,7 @@ import {
 import { Card, CardBody, CardHeader, StatTile } from "@/components/ui/card";
 import { Badge, Dot } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { EmptyState, Segmented } from "@/components/ui/misc";
+import { Alert, EmptyState, Segmented } from "@/components/ui/misc";
 import { ExpenseForm } from "./expense-form";
 import { CategoryDonut, MonthlyTrend } from "./expense-charts";
 import { ReceiptImage, ReceiptLightbox } from "./receipt-image";
@@ -34,12 +34,15 @@ export function ExpensesScreen({
   opakovane,
   monthKey,
   prefillDate,
+  prevzato = null,
 }: {
   session: SessionContext;
   expenses: Expense[];
   opakovane: OpakovanyVydaj[];
   monthKey: string;
   prefillDate: string | null;
+  /** Výsledek převzetí výpočtu z veřejné kalkulačky, viz `/prevzit/vyzivne`. */
+  prevzato?: string | null;
 }) {
   const router = useRouter();
   const [childFilter, setChildFilter] = React.useState<string>("all");
@@ -146,6 +149,11 @@ export function ExpensesScreen({
 
   return (
     <div className="space-y-4">
+      {/* Výsledek převzetí z kalkulačky. Bez téhle věty člověk neví,
+          jestli se něco stalo — položka je dole mezi opakovanými
+          a mezi ostatními výdaji ji nehledá. */}
+      {prevzato ? <PrevzetiHlaska stav={prevzato} /> : null}
+
       {/* ── Hlavička ───────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -477,5 +485,33 @@ export function ExpensesScreen({
         />
       ) : null}
     </div>
+  );
+}
+
+/** Co se stalo s výpočtem z veřejné kalkulačky výživného. */
+function PrevzetiHlaska({ stav }: { stav: string }) {
+  if (stav === "vyzivne") {
+    return (
+      <Alert tone="success">
+        Výživné z kalkulačky jsme přidali mezi opakované výdaje. Zkontrolujte
+        částku a kdo ho platí — je to orientační číslo, ne rozsudek.
+      </Alert>
+    );
+  }
+  if (stav === "uz") {
+    return <Alert tone="info">Tenhle výpočet už jste jednou převzali.</Alert>;
+  }
+  if (stav === "bez-castky") {
+    return (
+      <Alert tone="info">
+        Podle zadání se výživné nestanovuje, takže nebylo co přidat.
+      </Alert>
+    );
+  }
+  return (
+    <Alert tone="warning">
+      Výživné se nepodařilo přidat. Zkuste ho prosím založit ručně jako
+      opakovaný výdaj.
+    </Alert>
   );
 }
