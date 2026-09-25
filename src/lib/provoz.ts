@@ -16,7 +16,18 @@ import { createAdminClient } from "./supabase/admin";
  * a přesně proto na to není potřeba cookie lišta.
  */
 
+/**
+ * Druhy událostí, které server přijme. Co tu chybí, se tiše zahodí.
+ *
+ * Tiše schválně — měření nemá útočníkovi říkat, jestli se trefil — ale
+ * právě proto se tu nesmí na nic zapomenout. Jednou se to stalo: osm
+ * druhů z patnácti se týdny nezapisovalo a z nul v datech to vypadalo,
+ * že na „Vyzkoušet zdarma" nikdo nekliká. Hlídá to test
+ * `tests/mereni-druhy.test.js`, který porovná tenhle seznam se všemi
+ * voláními `zmer("…")` v kódu.
+ */
 export const DRUHY = [
+  // Hlavní trychtýř.
   "zobrazeni",
   "kalkulacka",
   "lead",
@@ -24,6 +35,17 @@ export const DRUHY = [
   "rodina",
   "druhy_rodic",
   "predplatne",
+  // Kalkulačka výživného.
+  "vyzivne-zadani",
+  "vyzivne-nabidka-videt",
+  "vyzivne-prenos",
+  // Průvodce: kdy chce člověk platit.
+  "onboarding-bez-karty",
+  "onboarding-karta-hned",
+  // Aplikace na ploše.
+  "instalace-vyzva",
+  "instalace-hotovo",
+  "instalace-navod-ios",
 ] as const;
 
 export type DruhUdalosti = (typeof DRUHY)[number];

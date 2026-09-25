@@ -38,6 +38,8 @@ export interface KrokTrychtyre {
   zPredchoziho: number;
   /** Podíl na prvním kroku v procentech. */
   zVrcholu: number;
+  /** Odsazení při vykreslení: 1 = jedna z větví předchozího kroku. */
+  uroven?: number;
 }
 
 /** Kroky v pořadí, ve kterém jimi člověk prochází. */
@@ -148,6 +150,111 @@ export function trychtyr(udalosti: Udalost[]): KrokTrychtyre[] {
     predchozi = pocet;
     return krok;
   });
+}
+
+/** Adresa kalkulačky výživného — vstupní stránka placené kampaně. */
+export const CESTA_VYZIVNE = "/kalkulacka-vyzivneho";
+
+/**
+ * Přišla událost z placené reklamy?
+ *
+ * Google Ads přidává `gclid`, ze kterého `lib/atribuce.ts` udělá
+ * `utm_medium=cpc`; ruční označení kampaní bývá `cpc`, `ppc` nebo `paid`.
+ */
+export function jePlacena(u: Udalost): boolean {
+  const medium = (u.utm_medium ?? "").toLowerCase();
+  return medium === "cpc" || medium === "ppc" || medium === "paid";
+}
+
+/**
+ * Trychtýř kalkulačky výživného.
+ *
+ * Počítá se po lidech, ne po událostech: kdo si číslo přepočítá desetkrát,
+ * je pořád jeden člověk, který kalkulačku použil. Za člověka se bere
+ * denní otisk návštěvníka (viz `lib/provoz.ts`).
+ *
+ * Po nabídce se cesta dělí: kdo se už o děti střídá, kliká na aplikaci,
+ * kdo se teprve domlouvá, nechá e-mail pro PDF. Obě větve se měří proti
+ * témuž kroku — proti lidem, kteří nabídku viděli.
+ *
+ * Registrace se přiřadí tomu, kdo byl týž den na kalkulačce. Otisk je
+ * stejný jen v rámci dne a zařízení, takže kdo se zaregistruje zítra
+ * nebo z jiného telefonu, se sem nepočítá — čísla jsou spíš nižší než
+ * vyšší, a to je lepší směr.
+ *
+ * `jenPlacene` bere lidi, u kterých se kdykoli v období objevila placená
+ * návštěva — registrace přijde na jiné stránce a označení kampaně už
+ * nemusí nést.
+ */
+export function trychtyrVyzivneho(udalosti: Udalost[], jenPlacene = false): KrokTrychtyre[] {
+  const placeni = new Set<string>();
+  if (jenPlacene) {
+    for (const u of udalosti) if (u.navstevnik && jePlacena(u)) placeni.add(u.navstevnik);
+  }
+  const bere = (u: Udalost): boolean =>
+    !jenPlacene || (u.navstevnik !== null && placeni.has(u.navstevnik));
+
+  const lide = (podminka: (u: Udalost) => boolean): Set<string> => {
+    const mnozina = new Set<string>();
+    udalosti.forEach((u, i) => {
+      // Bez otisku (třeba když se nepovedl hash) je každá událost
+      // samostatný člověk. Nadsadí to jen tenhle vzácný případ.
+      if (bere(u) && podminka(u)) mnozina.add(u.navstevnik ?? `bez-otisku-${i}`);
+    });
+    return mnozina;
+  };
+
+  const prislo = lide((u) => u.druh === "zobrazeni" && u.cesta === CESTA_VYZIVNE);
+  const kroky: { klic: string; popisek: string; mnozina: Set<string>; rodic: number; uroven?: number }[] = [
+    { klic: "prislo", popisek: "Přišli na kalkulačku", mnozina: prislo, rodic: -1 },
+    {
+      klic: "zadalo",
+      popisek: "Začali vyplňovat",
+      mnozina: lide((u) => u.druh === "vyzivne-zadani"),
+      rodic: 0,
+    },
+    {
+      klic: "videlo",
+      popisek: "Došli k nabídce pod výsledkem",
+      mnozina: lide((u) => u.druh === "vyzivne-nabidka-videt"),
+      rodic: 1,
+    },
+    {
+      klic: "kliklo",
+      popisek: "Klikli na Vyzkoušet zdarma",
+      mnozina: lide((u) => u.druh === "vyzivne-prenos"),
+      rodic: 2,
+      uroven: 1,
+    },
+    {
+      klic: "pdf",
+      popisek: "Nechali e-mail pro PDF",
+      mnozina: lide((u) => u.druh === "lead" && u.cesta === CESTA_VYZIVNE),
+      rodic: 2,
+      uroven: 1,
+    },
+    {
+      klic: "registrace",
+      popisek: "Zaregistrovali se (z těch, co přišli)",
+      mnozina: lide(
+        (u) => u.druh === "registrace" && u.navstevnik !== null && prislo.has(u.navstevnik),
+      ),
+      rodic: 0,
+    },
+  ];
+
+  const procento = (cast: number, celek: number): number =>
+    celek > 0 ? Math.round((cast / celek) * 1000) / 10 : 0;
+  const vrchol = prislo.size;
+
+  return kroky.map(({ klic, popisek, mnozina, rodic, uroven }) => ({
+    klic,
+    popisek,
+    pocet: mnozina.size,
+    zPredchoziho: rodic < 0 ? 100 : procento(mnozina.size, kroky[rodic].mnozina.size),
+    zVrcholu: procento(mnozina.size, vrchol),
+    ...(uroven ? { uroven } : {}),
+  }));
 }
 
 /** Kanál návštěvníka: utm_source, partnerský kód, jinak doména odkazu. */

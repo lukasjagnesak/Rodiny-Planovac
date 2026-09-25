@@ -44,6 +44,36 @@ const PRAZDNY: Puvod = {
 };
 
 /**
+ * Kanál z parametrů adresy.
+ *
+ * Google Ads k prokliku přidává `gclid` (na iPhonu `gbraid` nebo
+ * `wbraid`), ne `utm_*`. Bez tohohle by se placená návštěva v našem
+ * měření tvářila jako „přímá" a nešlo by říct, kolik lidí jsme za
+ * peníze přivedli a co udělali. Vlastní `utm_*` mají přednost: když je
+ * v reklamě někdo nastaví, víc o kampani řeknou.
+ *
+ * `fbclid` schválně ne — Facebook ho přidává ke každému odkazu, i ke
+ * sdílenému příspěvku zdarma, takže placenou návštěvu neznamená.
+ */
+export function kanalZAdresy(p: URLSearchParams): {
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+} {
+  const utm = {
+    utm_source: p.get("utm_source") ?? "",
+    utm_medium: p.get("utm_medium") ?? "",
+    utm_campaign: p.get("utm_campaign") ?? "",
+  };
+  if (utm.utm_source) return utm;
+
+  if (p.get("gclid") || p.get("gbraid") || p.get("wbraid")) {
+    return { ...utm, utm_source: "google", utm_medium: "cpc" };
+  }
+  return utm;
+}
+
+/**
  * Vrátí zapamatovaný původ. Když ještě žádný není, přečte ho z adresy
  * a uloží — proto se má volat na každé veřejné stránce, ne až u formuláře.
  */
@@ -59,9 +89,7 @@ export function zapamatujPuvod(): Puvod {
 
   const p = new URLSearchParams(window.location.search);
   const novy: Puvod = {
-    utm_source: p.get("utm_source") ?? "",
-    utm_medium: p.get("utm_medium") ?? "",
-    utm_campaign: p.get("utm_campaign") ?? "",
+    ...kanalZAdresy(p),
     ref: p.get("ref") ?? "",
     referrer: document.referrer,
     landing: window.location.pathname,

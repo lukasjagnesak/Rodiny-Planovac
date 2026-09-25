@@ -30,6 +30,7 @@ export function ProvozScreen({
   dny,
   hodiny,
   trychtyr,
+  vyzivne,
   kanaly,
   stranky,
   zarizeni,
@@ -41,6 +42,8 @@ export function ProvozScreen({
   /** Posledních 24 hodin — nezávisle na zvoleném období. */
   hodiny: Hodina[];
   trychtyr: KrokTrychtyre[];
+  /** Kalkulačka výživného: všichni a jen lidé z reklamy. */
+  vyzivne: { vse: KrokTrychtyre[]; placene: KrokTrychtyre[] };
   kanaly: Radek[];
   stranky: Radek[];
   zarizeni: Radek[];
@@ -175,29 +178,41 @@ export function ProvozScreen({
           Vrchol jsou návštěvy, ne lidé: kdo přijde v pondělí a ve středu, počítá se dvakrát.
           Skutečná konverze je tedy o něco lepší než tahle čísla.
         </p>
-        <CardBody className="space-y-2 pt-3">
-          {trychtyr.map((krok, i) => (
-            <div key={krok.klic}>
-              <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="text-ink">{krok.popisek}</span>
-                <span className="tnum shrink-0 text-ink-muted">
-                  {formatNumber(krok.pocet)}
-                  {i > 0 ? (
-                    <span className={krok.zPredchoziho < 10 ? "text-danger" : "text-ink-subtle"}>
-                      {" "}
-                      · {krok.zPredchoziho} %
-                    </span>
-                  ) : null}
-                </span>
-              </div>
-              <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface-2">
-                <div
-                  className="h-full rounded-full bg-brand transition-all"
-                  style={{ width: `${Math.max(krok.zVrcholu, krok.pocet > 0 ? 1.5 : 0)}%` }}
-                />
-              </div>
-            </div>
-          ))}
+        <CardBody className="pt-3">
+          <SeznamKroku kroky={trychtyr} />
+        </CardBody>
+      </Card>
+
+      {/* ── Kalkulačka výživného ─────────────────────────────────── */}
+      {/* Vedle sebe všichni a lidé z reklamy: placená kampaň na tuhle
+          stránku vede, a bez rozdělení se nedá říct, jestli za peníze
+          přicházejí lidé, kteří se chovají jinak než návštěvníci z vyhledávání. */}
+      <Card>
+        <CardHeader
+          title="Kalkulačka výživného"
+          description="Po lidech, ne po kliknutích. Po nabídce se cesta dělí na aplikaci a PDF."
+        />
+        <CardBody className="grid gap-6 pt-3 lg:grid-cols-2">
+          <div>
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-subtle">
+              Všichni
+            </h3>
+            <SeznamKroku kroky={vyzivne.vse} />
+          </div>
+          <div>
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-subtle">
+              Z reklamy
+            </h3>
+            {vyzivne.placene[0]?.pocet ? (
+              <SeznamKroku kroky={vyzivne.placene} />
+            ) : (
+              <p className="text-sm text-ink-muted">
+                Žádná návštěva z reklamy. Buď kampaň neběží, nebo prokliky nenesou{" "}
+                <code>gclid</code> ani <code>utm_medium=cpc</code> — v Google Ads zkontrolujte
+                automatické označování.
+              </p>
+            )}
+          </div>
         </CardBody>
       </Card>
 
@@ -359,5 +374,42 @@ function PoslednichDvacetCtyri({ hodiny }: { hodiny: Hodina[] }) {
         </div>
       </CardBody>
     </Card>
+  );
+}
+
+/**
+ * Kroky trychtýře pod sebou.
+ *
+ * Procento je podíl na kroku, ze kterého ten vychází; pod deset procent
+ * je červeně, protože tam se ztrácí nejvíc lidí a tam má smysl hledat.
+ * Větve (`uroven`) jsou odsazené, aby bylo vidět, že se měří proti témuž
+ * kroku a nesčítají se.
+ */
+function SeznamKroku({ kroky }: { kroky: KrokTrychtyre[] }) {
+  return (
+    <div className="space-y-2">
+      {kroky.map((krok, i) => (
+        <div key={krok.klic} className={krok.uroven ? "pl-4" : undefined}>
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="text-ink">{krok.popisek}</span>
+            <span className="tnum shrink-0 text-ink-muted">
+              {formatNumber(krok.pocet)}
+              {i > 0 ? (
+                <span className={krok.zPredchoziho < 10 ? "text-danger" : "text-ink-subtle"}>
+                  {" "}
+                  · {krok.zPredchoziho} %
+                </span>
+              ) : null}
+            </span>
+          </div>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface-2">
+            <div
+              className="h-full rounded-full bg-brand transition-all"
+              style={{ width: `${Math.max(krok.zVrcholu, krok.pocet > 0 ? 1.5 : 0)}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

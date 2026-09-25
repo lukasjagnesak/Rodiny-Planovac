@@ -4,7 +4,15 @@ import { subDays } from "date-fns";
 import { requireSession } from "@/lib/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { jeSpravce } from "@/lib/provoz";
-import { kanal, poDnech, poHodinach, trychtyr, zebricek, type Udalost } from "@/lib/provoz-souhrn";
+import {
+  kanal,
+  poDnech,
+  poHodinach,
+  trychtyr,
+  trychtyrVyzivneho,
+  zebricek,
+  type Udalost,
+} from "@/lib/provoz-souhrn";
 import { toDateKey } from "@/lib/dates";
 import { ProvozScreen } from "@/components/provoz/provoz-screen";
 
@@ -71,6 +79,10 @@ export default async function ProvozPage({
       dny={poDnech(udalosti, toDateKey(od), toDateKey(do_))}
       hodiny={hodiny}
       trychtyr={trychtyr(udalosti)}
+      vyzivne={{
+        vse: trychtyrVyzivneho(udalosti),
+        placene: trychtyrVyzivneho(udalosti, true),
+      }}
       kanaly={zebricek(udalosti, kanal)}
       stranky={zebricek(udalosti, (u) => u.cesta, "/")}
       zarizeni={zebricek(udalosti, (u) => u.zarizeni, "neznámé", 3)}

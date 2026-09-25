@@ -6,7 +6,15 @@
  *
  * Spouští se přes `npm run test:provoz`.
  */
-const { poDnech, zebricek, trychtyr, kanal } = require("../.test-build/provoz-souhrn.js");
+const {
+  poDnech,
+  zebricek,
+  trychtyr,
+  kanal,
+  trychtyrVyzivneho,
+  jePlacena,
+  CESTA_VYZIVNE,
+} = require("../.test-build/provoz-souhrn.js");
 
 let selhalo = 0;
 function ok(popis, podminka) {
@@ -94,6 +102,61 @@ console.log("── kanál ──");
   ok("utm se spojí s médiem", kanal(u("zobrazeni", "", "a", { utm_source: "seznam", utm_medium: "cpc" })) === "seznam / cpc");
   ok("jinak doména odkazu", kanal(u("zobrazeni", "", "a", { zdroj: "idnes.cz" })) === "idnes.cz");
   ok("nic z toho = null", kanal(u("zobrazeni", "", "a")) === null);
+}
+
+console.log("── kalkulačka výživného ──");
+{
+  const T = "2026-09-25T10:00:00Z";
+  const kalk = { cesta: CESTA_VYZIVNE };
+  const reklama = { cesta: CESTA_VYZIVNE, utm_source: "google", utm_medium: "cpc" };
+  const data = [
+    // a: z reklamy, projde vším a zaregistruje se
+    u("zobrazeni", T, "a", reklama),
+    u("vyzivne-zadani", T, "a", reklama),
+    u("vyzivne-zadani", T, "a", reklama), // přepočítal si to znovu
+    u("vyzivne-nabidka-videt", T, "a", reklama),
+    u("vyzivne-prenos", T, "a", reklama),
+    u("registrace", T, "a", { cesta: "/registrace" }), // už bez označení kampaně
+    // b: z reklamy, vyplní a odejde
+    u("zobrazeni", T, "b", reklama),
+    u("vyzivne-zadani", T, "b", reklama),
+    // c: z vyhledávání zdarma, nechá e-mail pro PDF
+    u("zobrazeni", T, "c", kalk),
+    u("vyzivne-zadani", T, "c", kalk),
+    u("vyzivne-nabidka-videt", T, "c", kalk),
+    u("lead", T, "c", kalk),
+    // d: zaregistruje se, ale na kalkulačce nebyl
+    u("zobrazeni", T, "d"),
+    u("registrace", T, "d", { cesta: "/registrace" }),
+    // e: lead z jiné stránky se sem nepočítá
+    u("lead", T, "e", { cesta: "/vzor-dohody-o-stridave-peci" }),
+  ];
+  const vse = trychtyrVyzivneho(data);
+  const krok = (t, klic) => t.find((k) => k.klic === klic);
+
+  ok("přišli 3 lidé", krok(vse, "prislo").pocet === 3);
+  ok("vyplňovali 3 — opakovaný výpočet je pořád jeden člověk", krok(vse, "zadalo").pocet === 3);
+  ok("k nabídce došli 2", krok(vse, "videlo").pocet === 2);
+  ok("na Vyzkoušet klikl 1", krok(vse, "kliklo").pocet === 1);
+  ok("e-mail pro PDF nechal 1", krok(vse, "pdf").pocet === 1);
+  ok("lead z jiné stránky se nepočítá", krok(vse, "pdf").pocet === 1);
+  ok("registrace jen od toho, kdo byl na kalkulačce", krok(vse, "registrace").pocet === 1);
+  ok("obě větve se měří proti nabídce", krok(vse, "kliklo").zPredchoziho === 50 && krok(vse, "pdf").zPredchoziho === 50);
+  ok("větve jsou odsazené", krok(vse, "kliklo").uroven === 1 && krok(vse, "pdf").uroven === 1);
+
+  const placene = trychtyrVyzivneho(data, true);
+  ok("z reklamy přišli 2", krok(placene, "prislo").pocet === 2);
+  ok("PDF z vyhledávání zdarma do reklamy nepatří", krok(placene, "pdf").pocet === 0);
+  ok(
+    "registrace se reklamě připíše, i když už nenese označení",
+    krok(placene, "registrace").pocet === 1,
+  );
+
+  const prazdno = trychtyrVyzivneho([]);
+  ok("prázdná data nedělí nulou", prazdno.every((k) => Number.isFinite(k.zPredchoziho)));
+
+  ok("gclid → cpc je placené", jePlacena(u("zobrazeni", T, "x", { utm_medium: "cpc" })));
+  ok("bez označení není placené", !jePlacena(u("zobrazeni", T, "x")));
 }
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);
