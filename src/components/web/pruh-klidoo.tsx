@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Znak } from "@/components/ui/logo";
 import { ZNACKA } from "@/lib/brand";
-import { ZKUSEBNI_SLIB } from "@/lib/tarify";
 
 /**
  * Čí ta kalkulačka vlastně je.
@@ -11,26 +10,25 @@ import { ZKUSEBNI_SLIB } from "@/lib/tarify";
  * pak přijde jako z čistého nebe — „Klidoo" je do té chvíle jen slovo
  * v patičce.
  *
- * Proto pruh nad nástrojem, ne tlačítko: člověk si přišel počítat, ne
- * registrovat se, a odvádět ho hned pryč by bylo proti němu i proti nám.
- * Řekne, čí to je a že se to dá zkusit zadarmo — a jde z cesty.
+ * Jedna věta s odkazem, ne karta s tlačítkem. Karta s tlačítkem tu byla
+ * a na telefonu odsunula kalkulačku pod první obrazovku: člověk, který si
+ * přišel něco spočítat, viděl nadpis, úvod, reklamu na aplikaci — a pole
+ * k vyplnění až po rolování.
  */
 export function PruhKlidoo({ co }: { co: string }) {
   return (
-    <div className="flex flex-col gap-3.5 rounded-2xl border border-line bg-surface px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
-      <div className="flex min-w-0 flex-1 items-start gap-3">
-        <Znak size={28} className="mt-0.5" />
-        <p className="min-w-0 text-sm leading-relaxed text-ink-muted">
-          {co} od <strong className="font-semibold text-ink">{ZNACKA}</strong> — aplikace pro
-          rodiče, kteří se o děti střídají. {ZKUSEBNI_SLIB.vetaKratka}
-        </p>
-      </div>
-      <Link
-        href="/registrace"
-        className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-brand px-4 text-sm font-semibold text-brand transition-colors hover:bg-brand-soft"
-      >
-        Vyzkoušet zdarma
-      </Link>
+    <div className="flex items-start gap-2.5 rounded-2xl border border-line bg-surface px-3.5 py-2.5">
+      <Znak size={26} className="mt-0.5" />
+      <p className="min-w-0 text-[0.8125rem] leading-relaxed text-ink-muted">
+        {co} od <strong className="font-semibold text-ink">{ZNACKA}</strong> — aplikace pro
+        rodiče, kteří se o děti střídají.{" "}
+        <Link
+          href="/registrace"
+          className="whitespace-nowrap font-semibold text-brand underline-offset-4 hover:underline"
+        >
+          Vyzkoušet zdarma
+        </Link>
+      </p>
     </div>
   );
 }

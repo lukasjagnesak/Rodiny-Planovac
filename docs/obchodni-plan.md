@@ -269,15 +269,20 @@ já připravím podklady).
 ### Krok 0 — Měření, kterému se dá věřit
 *Kód, řádově hodina. Všechno ostatní na tom stojí.*
 
-- [ ] **0.1** Server přijímá všechny druhy událostí, které aplikace
+- [x] **0.1** Server přijímá všechny druhy událostí, které aplikace
       posílá. Test, který porovná seznam v klientu se seznamem na serveru
       — tahle chyba se nesmí vrátit tiše.
-- [ ] **0.2** Google Ads → nastavení kampaně → **přípona konečné URL**:
+- [x] **0.2** *Hotovo v kódu:* proklik s `gclid` (na iPhonu `gbraid`,
+      `wbraid`) se sám označí jako `google / cpc`. Přípona níž je už jen
+      pro podrobnosti o kampani a sestavě — nepovinná.
+      Google Ads → nastavení kampaně → **přípona konečné URL**:
       `utm_source=google&utm_medium=cpc&utm_campaign={campaignid}&utm_content={adgroupid}`.
       *Bez kódu, v Google Ads.* Pak půjde placená návštěvnost oddělit.
 - [ ] **0.3** Výchozí stav firmy — dotaz nahoře, čísla dopsat do
       kapitoly „Kde jsme".
-- [ ] **0.4** V `/provoz` jeden trychtýř: zobrazení → zadání → nabídka
+- [x] **0.4** *Pro kalkulačku výživného hotovo* — v `/provoz`, vedle sebe
+      všichni a lidé z reklamy. Pro celý web zbývá.
+      V `/provoz` jeden trychtýř: zobrazení → zadání → nabídka
       vidět → klik → registrace → rodina → druhý rodič → platba,
       rozdělený podle vstupní stránky a podle toho, jestli je návštěva
       placená.
@@ -299,6 +304,24 @@ a odkud přišli.
 „nástroj".
 **Rozhodnutí po 14 dnech:** cena za registraci podle sestavy — co
 nefunguje, vypnout.
+
+### Krok 1b — Stránka kalkulačky výživného (hotovo 25. 9.)
+
+Podle boardu „Kalkulačka výživného — návrh". Na telefonu:
+
+| | Předtím | Teď |
+|---|---|---|
+| První pole | na konci 1. obrazovky | v polovině 1. obrazovky |
+| Výsledek | v 1,6. obrazovce | v 1,06. obrazovce, při vyplňování v liště dole |
+| Tlačítko „Vyzkoušet" | v 1,7. obrazovce | v jednom pohledu s částkou |
+| Viditelných polí | 8 | 4 |
+| Tlačítek „Vyzkoušet" | 5 | 3 (pruh, rozcestí, konec) |
+
+Pod výsledkem rozcestí: *už se střídáte* → aplikace s přeneseným
+výpočtem, *teprve se domlouváte* → PDF na e-mail.
+
+**Vyhodnotit po 14 dnech** v `/provoz` → Kalkulačka výživného: kolik
+lidí došlo k nabídce a jak se rozdělili mezi aplikaci a PDF.
 
 ### Krok 2 — Mezičlánek: e-maily
 *Kód a texty. Texty napíšu, vy schválíte.*

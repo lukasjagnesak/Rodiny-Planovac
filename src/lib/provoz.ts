@@ -39,6 +39,7 @@ export const DRUHY = [
   "vyzivne-zadani",
   "vyzivne-nabidka-videt",
   "vyzivne-prenos",
+  "vyzivne-lista",
   // Průvodce: kdy chce člověk platit.
   "onboarding-bez-karty",
   "onboarding-karta-hned",

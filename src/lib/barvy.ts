@@ -17,7 +17,7 @@ export const PALETA = {
   inkSubtle: [70, 0.012, 60],
   line: [90, 0.012, 70],
   canvas: [98, 0.012, 75],
-  brand: [56, 0.09, 175],
+  brand: [53, 0.09, 175],
   brandSoft: [94, 0.035, 175],
   parentA: [56, 0.09, 175],
   parentB: [67, 0.11, 35],

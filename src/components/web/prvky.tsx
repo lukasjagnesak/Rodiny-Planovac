@@ -50,15 +50,22 @@ export function Hero({
   perex,
   children,
   siroky = false,
+  kompaktni = false,
 }: {
   nadtitulek?: React.ReactNode;
   nadpis: React.ReactNode;
   perex?: React.ReactNode;
   children?: React.ReactNode;
   siroky?: boolean;
+  /**
+   * Pro stránky, kde je pod nadpisem nástroj. Na telefonu pak začíná
+   * ještě na první obrazovce — kdo si přišel něco spočítat, nemá
+   * nejdřív rolovat přes úvod.
+   */
+  kompaktni?: boolean;
 }) {
   return (
-    <section className="pb-8 pt-10 sm:pb-12 sm:pt-16">
+    <section className={kompaktni ? "pb-5 pt-6 sm:pb-8 sm:pt-12" : "pb-8 pt-10 sm:pb-12 sm:pt-16"}>
       <Sloupec siroky={siroky}>
         {nadtitulek ? <Nadtitulek>{nadtitulek}</Nadtitulek> : null}
         <h1
@@ -71,9 +78,16 @@ export function Hero({
           {nadpis}
         </h1>
         {perex ? (
-          <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-muted">{perex}</p>
+          <p
+            className={cn(
+              "max-w-xl leading-relaxed text-ink-muted",
+              kompaktni ? "mt-2.5 text-base sm:text-lg" : "mt-4 text-lg",
+            )}
+          >
+            {perex}
+          </p>
         ) : null}
-        {children ? <div className="mt-7">{children}</div> : null}
+        {children ? <div className={kompaktni ? "mt-4" : "mt-7"}>{children}</div> : null}
       </Sloupec>
     </section>
   );

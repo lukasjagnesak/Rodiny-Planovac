@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { FileDown } from "lucide-react";
 import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
 import { zmer } from "@/lib/mereni";
@@ -16,6 +15,11 @@ import type { VyzivneVstup } from "@/lib/vyzivne";
  * hned pod výsledkem a musí vědět, co v kalkulačce stojí. Nabídnout
  * ho až v patičce stránky znamená nabídnout ho po tom, co si výsledek
  * opsal na papír.
+ *
+ * Je to pravá větev rozcestí pod výsledkem: pro toho, kdo se teprve
+ * domlouvá. Aplikaci by ještě nepoužil a 30 dní zkoušení by mu propadlo
+ * dřív, než bude mít rozvrh — PDF mu pomůže teď a e-mail nám dovolí
+ * ozvat se, až aplikaci potřebovat bude.
  *
  * Posílá se jen zadání, ne spočítaná částka — tu si server spočítá sám.
  */
@@ -73,8 +77,8 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
 
   if (stav === "hotovo") {
     return (
-      <div className="mt-3 rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
-        <h3 className="font-display text-lg font-semibold tracking-tight text-ink">
+      <div className="rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
+        <h3 className="font-display text-xl font-semibold tracking-tight text-ink">
           Odesláno na {kam}
         </h3>
         <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
@@ -102,17 +106,18 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
   );
 
   return (
-    <div className="mt-3 rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
-      <h3 className="flex items-center gap-2 font-medium text-ink">
-        <FileDown className="h-4 w-4 shrink-0 text-ink-subtle" aria-hidden />
-        Nebo si nechte poslat jen PDF
+    <div className="rounded-2xl border border-line bg-surface-2 p-5 sm:p-6">
+      <p className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-muted">
+        Teprve se domlouváte
+      </p>
+      <h3 className="mt-1.5 font-display text-xl font-semibold leading-tight tracking-tight text-ink">
+        Pošleme vám výpočet v PDF
       </h3>
       <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">
-        Dokument s výsledkem a se zadáním, ze kterého vyšel. Dá se přiložit
-        k e-mailu druhému rodiči nebo vzít k advokátovi.
+        I se zadáním, ze kterého vyšel — k jednání s druhým rodičem nebo k advokátovi.
       </p>
 
-      <form onSubmit={odesli} className="mt-4 flex flex-wrap gap-2.5">
+      <form onSubmit={odesli} className="mt-4 flex gap-2">
         {/* Návnada pro roboty. Člověk ji nevidí, robot ji vyplní. */}
         <input
           name="web"
@@ -129,27 +134,27 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
           placeholder="vas@email.cz"
           autoComplete="email"
           aria-label="E-mail, na který výpočet poslat"
-          className={cn(poleTridy, "flex-1 basis-56")}
+          className={cn(poleTridy, "flex-1")}
         />
         <button
           type="submit"
           disabled={stav === "odesila"}
           className={cn(
-            "h-[3.125rem] shrink-0 rounded-xl bg-brand px-5 font-semibold text-brand-ink",
-            "transition-colors hover:bg-brand-hover",
+            "h-[3.125rem] shrink-0 rounded-xl border-[1.5px] border-brand px-4 font-semibold text-brand",
+            "transition-colors hover:bg-brand-soft",
             "disabled:cursor-progress disabled:opacity-60",
           )}
         >
-          {stav === "odesila" ? "Odesílám…" : "Poslat PDF"}
+          {stav === "odesila" ? "Posílám…" : "Poslat"}
         </button>
       </form>
 
       {chyba ? <p className="mt-2 text-sm text-danger">{chyba}</p> : null}
 
-      <p className="mt-3 text-xs leading-relaxed text-ink-subtle">
-        Příjmy se nikam neukládají — v dokumentu jsou jen proto, aby bylo vidět,
-        z čeho výsledek vyšel. Necháváme si jen e-mail, ať se ozveme, když se
-        tabulka nebo soudní praxe změní. Odhlásit se dá jedním kliknutím.
+      <p className="mt-3 text-xs leading-relaxed text-ink-muted">
+        Příjmy se nikam neukládají, v PDF jsou jen kvůli tomu, aby bylo vidět, z čeho
+        číslo vyšlo. E-mail si necháme, ať se ozveme, když se tabulka nebo soudní praxe
+        změní. Odhlásit se dá jedním kliknutím.
       </p>
     </div>
   );

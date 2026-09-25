@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  DalsiCteni,
-  Hero,
-  Pitch,
-  Poznamka,
-  Sloupec,
-  VyzvaPas,
-} from "@/components/web/prvky";
+import { DalsiCteni, Hero, Sloupec } from "@/components/web/prvky";
 import { PruhKlidoo } from "@/components/web/pruh-klidoo";
 import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
 import { ZNACKA } from "@/lib/brand";
+import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 
 const TITULEK = "Kalkulačka výživného 2026 — i pro střídavou péči";
 const POPISEK =
@@ -24,7 +18,15 @@ export const metadata: Metadata = {
   openGraph: { title: `${TITULEK} | ${ZNACKA}`, description: POPISEK, type: "website" },
 };
 
-const OTAZKY = [
+/**
+ * Otázky pod kalkulačkou.
+ *
+ * Sem se přestěhoval i výklad, který dřív ležel rozepsaný mezi kalkulačkou
+ * a nabídkou — na telefonu to byly čtyři obrazovky textu, přes které se
+ * člověk musel prorolovat k dalšímu kroku. Sbalený zůstává ve stránce,
+ * takže ho vyhledávač čte dál, jen už nikomu nestojí v cestě.
+ */
+const OTAZKY: { otazka: string; odpoved: string; odkaz?: { href: string; text: string } }[] = [
   {
     otazka: "Platí se výživné i při střídavé péči?",
     odpoved:
@@ -62,15 +64,41 @@ const OTAZKY = [
       "sníží, další dítě toho přijímajícího ho naopak zvýší. Používáme koeficient, ne " +
       "samostatnou řadu z tabulky; je to zjednodušení.",
   },
+  {
+    otazka: "Co kalkulačka nepočítá?",
+    odpoved:
+      "Kontrolní částku, tedy minimum, které musí platícímu rodiči zůstat. Dál majetek " +
+      "a potenciální příjem — soud může počítat s tím, kolik by rodič vydělávat mohl, ne jen " +
+      "s tím, kolik vydělává. U víc vyživovacích povinností používáme koeficient místo " +
+      "samostatné řady z tabulky. A u nadstandardních příjmů tabulka spolehlivě nefunguje vůbec.",
+  },
+  {
+    otazka: "Ukládají se někam moje příjmy?",
+    odpoved:
+      "Ne. Výpočet běží přímo ve vašem prohlížeči. Když si necháte poslat PDF nebo výpočet " +
+      "přenesete do aplikace, příjmy se použijí jen k výpočtu a do žádné databáze se " +
+      "neukládají. V PDF jsou proto, aby bylo vidět, z čeho číslo vyšlo.",
+  },
+  {
+    otazka: "Co s výsledkem dál?",
+    odpoved:
+      "Výsledek je začátek jednání, ne jeho konec. Nejlevnější a nejrychlejší cesta je " +
+      "dohoda rodičů, kterou soud schválí — spor o výživné stojí měsíce a peníze na obou " +
+      "stranách. A pak přijde to, na co kalkulačka neodpoví: lyžák, tábor, rovnátka a školní " +
+      "výlety se platí navíc a právě u nich vzniká většina pozdějších sporů.",
+    odkaz: { href: "/vzor-dohody-o-stridave-peci", text: "Vzor dohody rodičů" },
+  },
+
 ];
 
 export default function KalkulackaVyzivnehoStranka() {
   return (
     <>
       <Hero
-        nadtitulek="Kalkulačka · doporučující tabulka MSp"
-        nadpis="Kolik vyjde výživné"
-        perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
+        kompaktni
+        nadtitulek="Podle tabulky ministerstva"
+        nadpis="Kalkulačka výživného 2026"
+        perex="Oba příjmy, všechny děti i střídavá péče. Výsledek hned, bez registrace."
       >
         <PruhKlidoo co="Kalkulačka níže je" />
       </Hero>
@@ -78,88 +106,78 @@ export default function KalkulackaVyzivnehoStranka() {
       <Sloupec>
         <KalkulackaVyzivneho />
 
-        <Poznamka druh="pozor">
-          <strong className="text-ink">Výsledek je orientační, ne právně závazný.</strong>{" "}
-          Doporučující tabulka Ministerstva spravedlnosti je pomůcka, kterou soudy používají
-          jen podpůrně — konkrétní částku vždy určuje soud podle odůvodněných potřeb dítěte
-          a možností obou rodičů. Tabulka navíc pracuje s takzvanou kontrolní částkou, tedy
-          minimem, které musí platícímu rodiči zůstat, a tu tato kalkulačka nepočítá.
-          Oficiální kalkulačku ministerstva najdete na{" "}
-          <a
-            href="https://vyzivne.justice.cz/kalkulacka-vyzivneho/"
-            className="underline"
-            rel="noopener"
-          >
-            vyzivne.justice.cz
-          </a>
-          .
-        </Poznamka>
-
-        <article className="proza">
-          <h2>Jak kalkulačka počítá</h2>
-          <p>
-            Vezme procento z tabulky podle etapy dítěte a spočítá, kolik by na dítě měl
-            přispívat každý rodič ze svého příjmu. Od toho odečte to, co už rodič pokrývá tím,
-            že má dítě fyzicky u sebe. Rozdíl mezi oběma rodiči je výživné a platí ho ten,
-            komu vyjde víc.
-          </p>
-          <p>
-            Proto při rovnoměrné střídavé péči a podobných příjmech vyjde nula — oba přispívají
-            stejně. Jakmile se příjmy rozejdou, výživné se objeví, i když se rodiče střídají po
-            týdnu. Dítě má právo na srovnatelnou životní úroveň v obou domácnostech.
-          </p>
-          <p>
-            Zjednodušení, o kterých byste měli vědět: u více vyživovacích povinností používáme
-            koeficient místo samostatné řady z tabulky, nepočítáme kontrolní částku a
-            nepracujeme s majetkem ani s potenciálním příjmem. U nadstandardních příjmů tabulka
-            spolehlivě nefunguje vůbec.
-          </p>
-          <p>
-            Údaje o příjmech nikam neodesíláme — výpočet probíhá u vás v prohlížeči.
-          </p>
-
-          <h2>Co s tím dál</h2>
-          <p>
-            Výsledek je začátek jednání, ne jeho konec. Nejlevnější a nejrychlejší cesta je{" "}
-            <Link href="/vzor-dohody-o-stridave-peci">
-              dohoda rodičů, kterou soud schválí
-            </Link>{" "}
-            — soudní spor o výživné stojí měsíce a peníze na obou stranách.
-          </p>
-          <p>
-            A pak přijde ta část, na kterou kalkulačka neodpoví: výživné je jen jedna položka.
-            Lyžák, brusle, tábor, rovnátka a školní výlety se platí navíc a právě u nich vzniká
-            většina pozdějších sporů — protože si za rok nikdo nepamatuje, kdo co zaplatil.
-          </p>
-        </article>
-      </Sloupec>
-
-      {/* Sem to patří: předchozí odstavec právě popsal problém, na který
-          Klidoo odpovídá. Nabídnout ji až v patičce znamená nabídnout ji
-          potom, co člověk zavřel stránku. */}
-      <VyzvaPas
-        nadpis="Lyžák, brusle, rovnátka. Kdo to platil?"
-        text="Klidoo si pamatuje, kdo za děti co zaplatil, a dopočítá, kdo komu kolik dluží. Výživné je jen jedna položka z mnoha."
-      />
-
-      <Sloupec>
-        <section>
+        <section className="mt-12">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
             Časté otázky
           </h2>
-          <div className="mt-5 space-y-3">
-            {OTAZKY.map(({ otazka, odpoved }) => (
+          <div className="mt-4 space-y-2">
+            {OTAZKY.map(({ otazka, odpoved, odkaz }) => (
               <details
                 key={otazka}
-                className="rounded-2xl border border-line bg-surface px-4 py-3.5"
+                className="group rounded-2xl border border-line bg-surface px-4 py-3.5"
               >
                 <summary className="cursor-pointer font-medium text-ink">{otazka}</summary>
                 <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">{odpoved}</p>
+                {odkaz ? (
+                  <Link
+                    href={odkaz.href}
+                    className="mt-2 inline-block text-[0.95rem] font-medium text-brand underline underline-offset-4"
+                  >
+                    {odkaz.text}
+                  </Link>
+                ) : null}
               </details>
             ))}
           </div>
         </section>
 
+        <p className="mt-6 rounded-2xl bg-surface-2 px-4 py-3.5 text-sm leading-relaxed text-ink-muted">
+          <strong className="text-ink">Výsledek je orientační, ne právně závazný.</strong>{" "}
+          Doporučující tabulka ministerstva je pomůcka, kterou soudy používají jen podpůrně;
+          konkrétní částku určuje soud podle potřeb dítěte a možností obou rodičů. Oficiální
+          kalkulačka je na{" "}
+          <a
+            href="https://vyzivne.justice.cz/kalkulacka-vyzivneho/"
+            className="underline underline-offset-4"
+            rel="noopener"
+          >
+            vyzivne.justice.cz
+          </a>
+          .
+        </p>
+
+        {/* Jedna nabídka Klidoo na konci, ne tři po celé stránce. Kdo sem
+            dojel, výsledek už má a rozcestí pod ním minul — tady dostane
+            poslední, klidnou verzi téže nabídky. */}
+        <section className="mt-12 rounded-3xl border border-line bg-surface p-6 sm:p-8">
+          <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight text-ink">
+            Výživné je jedna položka. Zbytek si pamatuje {ZNACKA}.
+          </h2>
+          <ul className="mt-4 space-y-2 text-[0.95rem] text-ink">
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-parent-a" aria-hidden />
+              U koho jsou děti tenhle týden — vidí to oba rodiče
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-parent-b" aria-hidden />
+              Kdo co zaplatil a kdo komu kolik dluží, i s účtenkami
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-parent-a" aria-hidden />
+              Druhý rodič má přístup zdarma
+            </li>
+          </ul>
+          <Link
+            href="/registrace"
+            className="mt-5 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+          >
+            Vyzkoušet zdarma
+          </Link>
+          <p className="mt-3 text-sm text-ink-muted">
+            {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Potom{" "}
+            {korun(CENIK[0].cena)} měsíčně za celou rodinu.
+          </p>
+        </section>
 
         <DalsiCteni
           odkazy={[
@@ -176,36 +194,6 @@ export default function KalkulackaVyzivnehoStranka() {
           ]}
         />
       </Sloupec>
-
-      <Pitch
-        nadpis="Výživné je jedna položka. Zbytek si pamatuje Klidoo."
-        perex="Zapíšete výdaj, vyfotíte účtenku a Klidoo dopočítá, kdo komu kolik dluží. Bez tabulek v Excelu a bez dohadování po roce."
-        polozky={[
-          {
-            nazev: "Sdílené výdaje",
-            popis: "Škola, lékař, kroužky. Rozdělení podle vašeho klíče, ne po paměti.",
-          },
-          {
-            nazev: "Doklady u výdaje",
-            popis: "Účtenka nebo faktura rovnou u položky. Dohledatelné kdykoli.",
-          },
-          {
-            nazev: "Rozvrh na dvě domácnosti",
-            popis: "Kdo má dítě, kdo veze na kroužek, kdy je předávka.",
-          },
-          {
-            nazev: "Druhý rodič zdarma",
-            popis: "Platí jedna domácnost, přístup mají obě.",
-          },
-        ]}
-      >
-        <Link
-          href="/registrace"
-          className="inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
-        >
-          Vyzkoušet zdarma
-        </Link>
-      </Pitch>
 
       <script
         type="application/ld+json"

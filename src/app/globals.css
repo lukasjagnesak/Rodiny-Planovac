@@ -43,7 +43,10 @@
 
   /* Značka jede na stejném tyrkysu jako strana A. Nevadí to: plná
      barva rodiče se nikde nerozlévá do velkých ploch. */
-  --brand: oklch(56% 0.09 175);
+  /* 53 %, ne 56 % jako rodič A: bílý text na tlačítku musí mít kontrast
+     aspoň 4,5 : 1 a při 56 % měl 4,3. Tlačítko „Vyzkoušet zdarma" je
+     nejdůležitější prvek webu a nesmí být zrovna ten nečitelný. */
+  --brand: oklch(53% 0.09 175);
   --brand-hover: oklch(47% 0.09 175);
   --brand-soft: oklch(94% 0.035 175);
   --brand-ink: oklch(99% 0.004 75);

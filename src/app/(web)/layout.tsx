@@ -3,6 +3,7 @@ import { Logo, Znak } from "@/components/ui/logo";
 import { SledovaniPuvodu } from "@/components/web/puvod";
 import { SouhlasLista } from "@/components/web/souhlas-lista";
 import { MobilniMenu } from "@/components/web/mobilni-menu";
+import { HlavickaVyzva } from "@/components/web/hlavicka-vyzva";
 import { ZNACKA } from "@/lib/brand";
 
 /**
@@ -83,12 +84,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             >
               Přihlásit se
             </Link>
-            <Link
-              href="/registrace"
-              className="inline-flex h-10 items-center rounded-xl bg-brand px-3 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover sm:px-4"
-            >
-              Vyzkoušet<span className="hidden xs:inline">&nbsp;zdarma</span>
-            </Link>
+            <HlavickaVyzva />
             <MobilniMenu odkazy={NAVIGACE} />
           </div>
         </div>
