@@ -6,7 +6,9 @@ import {
   Pitch,
   Poznamka,
   Sloupec,
+  VyzvaPas,
 } from "@/components/web/prvky";
+import { PruhKlidoo } from "@/components/web/pruh-klidoo";
 import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
 import { ZNACKA } from "@/lib/brand";
 
@@ -69,7 +71,9 @@ export default function KalkulackaVyzivnehoStranka() {
         nadtitulek="Kalkulačka · doporučující tabulka MSp"
         nadpis="Kolik vyjde výživné"
         perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
-      />
+      >
+        <PruhKlidoo co="Kalkulačka je" />
+      </Hero>
 
       <Sloupec>
         <KalkulackaVyzivneho />
@@ -128,8 +132,18 @@ export default function KalkulackaVyzivnehoStranka() {
             většina pozdějších sporů — protože si za rok nikdo nepamatuje, kdo co zaplatil.
           </p>
         </article>
+      </Sloupec>
 
-        <section className="mt-10">
+      {/* Sem to patří: předchozí odstavec právě popsal problém, na který
+          Klidoo odpovídá. Nabídnout ji až v patičce znamená nabídnout ji
+          potom, co člověk zavřel stránku. */}
+      <VyzvaPas
+        nadpis="Lyžák, brusle, rovnátka. Kdo to platil?"
+        text="Klidoo si pamatuje, kdo za děti co zaplatil, a dopočítá, kdo komu kolik dluží. Výživné je jen jedna položka z mnoha."
+      />
+
+      <Sloupec>
+        <section>
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
             Časté otázky
           </h2>

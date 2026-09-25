@@ -7,6 +7,7 @@ import { zmer } from "@/lib/mereni";
 import { rozvrhZPece } from "@/lib/vyzivne-plan";
 import { spocitejVyzivne, type VyzivneVstup } from "@/lib/vyzivne";
 import { ZKUSEBNI_DNI } from "@/lib/tarify";
+import { ZNACKA } from "@/lib/brand";
 
 /**
  * Přenesení výpočtu do aplikace.
@@ -65,10 +66,12 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
   return (
     <div className="card mt-4 border-brand/30 p-5 sm:p-6">
       <h3 className="font-display text-lg font-semibold tracking-tight text-ink sm:text-xl">
-        Pokračovat zdarma v Klidoo
+        Vyzkoušejte {ZNACKA} zdarma
       </h3>
       <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">
-        Co jste tu naklikali, se přenese — nemusíte nic vyplňovat znovu.
+        Aplikace pro rodiče, kteří se o děti střídají — kalendář, sdílené výdaje
+        a výživné na jednom místě. Co jste tu naklikali, se přenese, takže
+        nemusíte nic vyplňovat znovu:
       </p>
 
       <ul className="mt-4 space-y-2.5">
@@ -95,14 +98,14 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
         disabled={busy}
         className="mt-5 inline-flex h-[3.125rem] w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover disabled:cursor-progress disabled:opacity-60 sm:w-auto"
       >
-        {busy ? "Připravuji…" : "Pokračovat zdarma"}
+        {busy ? "Připravuji…" : "Vyzkoušet zdarma"}
         {busy ? null : <ArrowRight className="h-4 w-4" aria-hidden />}
       </button>
 
       <p className="mt-3 text-xs leading-relaxed text-ink-subtle">
-        {ZKUSEBNI_DNI} dní zdarma, bez zadání karty. Druhý rodič má přístup v ceně.
-        Příjmy se nikam neukládají — přenáší se jen etapy dětí, podíl péče
-        a spočítaná částka.
+        {ZKUSEBNI_DNI} dní zdarma se všemi funkcemi, bez zadávání karty — nic se samo
+        nestrhne. Druhý rodič má přístup v ceně. Příjmy se nikam neukládají; přenáší
+        se jen etapy dětí, podíl péče a spočítaná částka.
       </p>
     </div>
   );
