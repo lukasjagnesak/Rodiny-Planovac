@@ -72,7 +72,7 @@ export default function KalkulackaVyzivnehoStranka() {
         nadpis="Kolik vyjde výživné"
         perex="Většina kalkulaček počítá jen s příjmem jednoho rodiče a jedním dítětem. Tahle zohledňuje oba příjmy, všechny společné děti i jejich věk, rozsah péče a děti z jiných vztahů — takže funguje i pro střídavku, kde je výsledek často nula."
       >
-        <PruhKlidoo co="Kalkulačka je" />
+        <PruhKlidoo co="Kalkulačka níže je" />
       </Hero>
 
       <Sloupec>

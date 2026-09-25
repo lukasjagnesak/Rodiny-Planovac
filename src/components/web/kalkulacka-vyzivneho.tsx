@@ -10,6 +10,7 @@ import {
   spocitejVyzivne,
   type VyzivneVstup,
 } from "@/lib/vyzivne";
+import { zmer } from "@/lib/mereni";
 import { VyzivnePdf } from "./vyzivne-pdf";
 import { VyzivnePokracovat } from "./vyzivne-pokracovat";
 import { Field, Input, Select } from "@/components/ui/field";
@@ -37,28 +38,51 @@ export function KalkulackaVyzivneho() {
   const [vstup, setVstup] = React.useState<VyzivneVstup>(VYCHOZI_VYZIVNE);
   const vysledek = React.useMemo(() => spocitejVyzivne(vstup), [vstup]);
 
-  const zmen = <K extends keyof VyzivneVstup>(klic: K, hodnota: VyzivneVstup[K]) =>
-    setVstup((stary) => ({ ...stary, [klic]: hodnota }));
+  /**
+   * Kolik lidí kalkulačku opravdu použije.
+   *
+   * Počítá se průběžně při psaní, takže tu není žádné „spočítat", co by
+   * šlo změřit — a bez toho se ze zobrazení stránky nepozná, jestli
+   * člověk něco zadal, nebo se jen podíval a odešel. Hlásí se první
+   * změna, ne každá: jde o lidi, ne o stisky kláves.
+   */
+  const zmereno = React.useRef(false);
+  const nahlasPouziti = () => {
+    if (zmereno.current) return;
+    zmereno.current = true;
+    zmer("vyzivne-zadani");
+  };
 
-  const zmenDite = (poradi: number, etapa: string) =>
-    setVstup((stary) => ({
+  const zmen = <K extends keyof VyzivneVstup>(klic: K, hodnota: VyzivneVstup[K]) => {
+    nahlasPouziti();
+    setVstup((stary) => ({ ...stary, [klic]: hodnota }));
+  };
+
+  const zmenDite = (poradi: number, etapa: string) => {
+    nahlasPouziti();
+    return setVstup((stary) => ({
       ...stary,
       deti: stary.deti.map((d, i) => (i === poradi ? { etapa } : d)),
     }));
+  };
 
   // Nové dítě dědí etapu po posledním — sourozenci bývají blízko věkem
   // a je to o klik míň.
-  const pridejDite = () =>
-    setVstup((stary) => ({
+  const pridejDite = () => {
+    nahlasPouziti();
+    return setVstup((stary) => ({
       ...stary,
       deti: [...stary.deti, { etapa: stary.deti[stary.deti.length - 1]?.etapa ?? "druhy-stupen" }],
     }));
+  };
 
-  const odeberDite = (poradi: number) =>
-    setVstup((stary) => ({
+  const odeberDite = (poradi: number) => {
+    nahlasPouziti();
+    return setVstup((stary) => ({
       ...stary,
       deti: stary.deti.length > 1 ? stary.deti.filter((_, i) => i !== poradi) : stary.deti,
     }));
+  };
 
   const peceB = 100 - vstup.peceA;
 
