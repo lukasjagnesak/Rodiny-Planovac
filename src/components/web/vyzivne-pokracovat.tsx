@@ -69,6 +69,10 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
     if (busy) return;
     setBusy(true);
     setChyba(null);
+    // Měří se klik, ne úspěch. Kdyby se výpočet nepovedlo uložit, byl by
+    // to klik, který v datech chybí — a přesně ten je potřeba vidět,
+    // protože za ním stojí člověk, který chtěl a nemohl.
+    zmer("vyzivne-prenos");
 
     try {
       const zdroj = new URLSearchParams(window.location.search).get("utm_source");
@@ -86,7 +90,6 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
       }
 
       const { token } = await odpoved.json();
-      zmer("vyzivne-prenos");
 
       // Vede to na převzetí, ne rovnou do průvodce: kdo už rodinu má,
       // by v průvodci skončil na přehledu a výpočet by se zahodil.

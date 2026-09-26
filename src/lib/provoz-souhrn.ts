@@ -221,7 +221,7 @@ export function trychtyrVyzivneho(udalosti: Udalost[], jenPlacene = false): Krok
     },
     {
       klic: "kliklo",
-      popisek: "Klikli na Vyzkoušet zdarma",
+      popisek: "Klikli na Vyzkoušet zdarma pod výsledkem",
       mnozina: lide((u) => u.druh === "vyzivne-prenos"),
       rodic: 2,
       uroven: 1,
@@ -232,6 +232,15 @@ export function trychtyrVyzivneho(udalosti: Udalost[], jenPlacene = false): Krok
       mnozina: lide((u) => u.druh === "lead" && u.cesta === CESTA_VYZIVNE),
       rodic: 2,
       uroven: 1,
+    },
+    {
+      // Pruh nad kalkulačkou a nabídka na konci stránky. Vedou na holou
+      // registraci bez výpočtu, a tak se měří zvlášť — a proti všem,
+      // kdo přišli, protože pruh je vidět dřív než cokoli jiného.
+      klic: "jinde",
+      popisek: "Klikli na Vyzkoušet jinde na stránce",
+      mnozina: lide((u) => u.druh === "vyzivne-pruh" || u.druh === "vyzivne-konec"),
+      rodic: 0,
     },
     {
       klic: "registrace",

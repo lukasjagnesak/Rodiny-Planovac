@@ -42,6 +42,12 @@ for (const soubor of projdi(path.join(koren, "src"))) {
   for (const m of text.matchAll(/\bzmer\(\s*"([a-z0-9_-]+)"/g)) {
     if (!posila.has(m[1])) posila.set(m[1], path.relative(koren, soubor));
   }
+  // Měřené odkazy (`<OdkazMereny udalost="…">`) posílají druh jako
+  // vlastnost — jinak by tenhle test o nich nevěděl a přesně tahle
+  // cesta by se mohla rozejít se serverem.
+  for (const m of text.matchAll(/\budalost="([a-z0-9_-]+)"/g)) {
+    if (!posila.has(m[1])) posila.set(m[1], path.relative(koren, soubor));
+  }
 }
 
 console.log("── seznamy se našly ──");

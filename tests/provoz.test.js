@@ -130,11 +130,16 @@ console.log("── kalkulačka výživného ──");
     u("registrace", T, "d", { cesta: "/registrace" }),
     // e: lead z jiné stránky se sem nepočítá
     u("lead", T, "e", { cesta: "/vzor-dohody-o-stridave-peci" }),
+    // f: přijde a klikne na pruh nahoře, dál nic
+    u("zobrazeni", T, "f", kalk),
+    u("vyzivne-pruh", T, "f", kalk),
   ];
   const vse = trychtyrVyzivneho(data);
   const krok = (t, klic) => t.find((k) => k.klic === klic);
 
-  ok("přišli 3 lidé", krok(vse, "prislo").pocet === 3);
+  ok("přišli 4 lidé", krok(vse, "prislo").pocet === 4);
+  ok("klik na pruh nahoře se počítá zvlášť", krok(vse, "jinde").pocet === 1);
+  ok("a měří se proti všem, kdo přišli", krok(vse, "jinde").zPredchoziho === 25);
   ok("vyplňovali 3 — opakovaný výpočet je pořád jeden člověk", krok(vse, "zadalo").pocet === 3);
   ok("k nabídce došli 2", krok(vse, "videlo").pocet === 2);
   ok("na Vyzkoušet klikl 1", krok(vse, "kliklo").pocet === 1);

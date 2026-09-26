@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DalsiCteni, Hero, Sloupec } from "@/components/web/prvky";
 import { PruhKlidoo } from "@/components/web/pruh-klidoo";
+import { OdkazMereny } from "@/components/web/odkaz-mereny";
 import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
 import { ZNACKA } from "@/lib/brand";
 import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
@@ -167,12 +168,13 @@ export default function KalkulackaVyzivnehoStranka() {
               Druhý rodič má přístup zdarma
             </li>
           </ul>
-          <Link
+          <OdkazMereny
             href="/registrace"
+            udalost="vyzivne-konec"
             className="mt-5 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
           >
             Vyzkoušet zdarma
-          </Link>
+          </OdkazMereny>
           <p className="mt-3 text-sm text-ink-muted">
             {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Potom{" "}
             {korun(CENIK[0].cena)} měsíčně za celou rodinu.

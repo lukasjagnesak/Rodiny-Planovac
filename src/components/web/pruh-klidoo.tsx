@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { OdkazMereny } from "@/components/web/odkaz-mereny";
 import { Znak } from "@/components/ui/logo";
 import { ZNACKA } from "@/lib/brand";
 
@@ -22,12 +22,13 @@ export function PruhKlidoo({ co }: { co: string }) {
       <p className="min-w-0 text-[0.8125rem] leading-relaxed text-ink-muted">
         {co} od <strong className="font-semibold text-ink">{ZNACKA}</strong> — aplikace pro
         rodiče, kteří se o děti střídají.{" "}
-        <Link
+        <OdkazMereny
           href="/registrace"
+          udalost="vyzivne-pruh"
           className="whitespace-nowrap font-semibold text-brand underline-offset-4 hover:underline"
         >
           Vyzkoušet zdarma
-        </Link>
+        </OdkazMereny>
       </p>
     </div>
   );
