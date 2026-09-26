@@ -42,6 +42,10 @@ export const DRUHY = [
   "vyzivne-lista",
   "vyzivne-pruh",
   "vyzivne-konec",
+  // Vstupní stránka z reklamy (/vyzkouset).
+  "rozvrh-zadani",
+  "rozvrh-ulozit",
+  "rozvrh-jinak",
   // Průvodce: kdy chce člověk platit.
   "onboarding-bez-karty",
   "onboarding-karta-hned",

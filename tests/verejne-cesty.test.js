@@ -58,6 +58,43 @@ for (const cesta of stranky) {
 }
 
 /**
+ * Každá stránka ve veřejných skupinách.
+ *
+ * Mapa webu nestačí: vstupní stránka z reklamy v ní schválně není (nemá
+ * se indexovat), a přesto ji musí vidět každý, za jehož proklik se
+ * zaplatilo. Kdyby ji proxy poslala na přihlášení, reklama by platila za
+ * přihlašovací formulář.
+ */
+const VEREJNE_SKUPINY = ["src/app/(web)", "src/app/(reklama)"];
+
+function strankySkupiny(slozka, cesta = "", nalezene = []) {
+  const cela = path.join(__dirname, "..", slozka);
+  if (!fs.existsSync(cela)) return nalezene;
+  for (const polozka of fs.readdirSync(cela, { withFileTypes: true })) {
+    if (polozka.isDirectory()) {
+      // Skupiny (v závorkách) se do adresy nepromítají; [slug] je libovolný kus.
+      const kus = polozka.name.startsWith("(")
+        ? ""
+        : polozka.name.startsWith("[")
+          ? "/libovolne"
+          : `/${polozka.name}`;
+      strankySkupiny(path.join(slozka, polozka.name), cesta + kus, nalezene);
+    } else if (polozka.name === "page.tsx") {
+      nalezene.push(cesta || "/");
+    }
+  }
+  return nalezene;
+}
+
+console.log("── každá stránka ve veřejných skupinách je veřejná ──");
+const vsechnyStranky = VEREJNE_SKUPINY.flatMap((s) => strankySkupiny(s));
+ok(`stránky se našly (${vsechnyStranky.length})`, vsechnyStranky.length > 10);
+for (const cesta of vsechnyStranky.sort()) {
+  const kryta = verejne.some((v) => cesta === v || (v !== "/" && cesta.startsWith(`${v}/`)));
+  ok(cesta, kryta);
+}
+
+/**
  * Koncové body, na které sahá veřejný web.
  *
  * Hledají se doslovná volání `fetch("/api/…")` v komponentách, které
@@ -66,6 +103,7 @@ for (const cesta of stranky) {
  */
 const VEREJNE_SLOZKY = [
   "src/app/(web)",
+  "src/app/(reklama)",
   "src/components/web",
   "src/components/kalkulacka",
 ];

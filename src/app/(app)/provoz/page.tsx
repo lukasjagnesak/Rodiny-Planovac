@@ -9,6 +9,7 @@ import {
   poDnech,
   poHodinach,
   trychtyr,
+  trychtyrRozvrhu,
   trychtyrVyzivneho,
   zebricek,
   type Udalost,
@@ -82,6 +83,11 @@ export default async function ProvozPage({
       vyzivne={{
         vse: trychtyrVyzivneho(udalosti),
         placene: trychtyrVyzivneho(udalosti, true),
+      }}
+      vstupni={{
+        vse: trychtyrRozvrhu(udalosti),
+        google: trychtyrRozvrhu(udalosti, "google"),
+        facebook: trychtyrRozvrhu(udalosti, "facebook"),
       }}
       kanaly={zebricek(udalosti, kanal)}
       stranky={zebricek(udalosti, (u) => u.cesta, "/")}

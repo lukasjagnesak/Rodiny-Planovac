@@ -31,6 +31,7 @@ export function ProvozScreen({
   hodiny,
   trychtyr,
   vyzivne,
+  vstupni,
   kanaly,
   stranky,
   zarizeni,
@@ -44,6 +45,8 @@ export function ProvozScreen({
   trychtyr: KrokTrychtyre[];
   /** Kalkulačka výživného: všichni a jen lidé z reklamy. */
   vyzivne: { vse: KrokTrychtyre[]; placene: KrokTrychtyre[] };
+  /** Vstupní stránka z reklamy: všichni, Google Ads, Facebook. */
+  vstupni: { vse: KrokTrychtyre[]; google: KrokTrychtyre[]; facebook: KrokTrychtyre[] };
   kanaly: Radek[];
   stranky: Radek[];
   zarizeni: Radek[];
@@ -180,6 +183,37 @@ export function ProvozScreen({
         </p>
         <CardBody className="pt-3">
           <SeznamKroku kroky={trychtyr} />
+        </CardBody>
+      </Card>
+
+      {/* ── Vstupní stránka z reklamy ─────────────────────────────── */}
+      {/* Kam vede placená návštěva z Googlu i z Facebooku. Sloupce vedle
+          sebe, protože otázka zní „který kanál přivádí lidi, co si rozpis
+          opravdu uloží", ne „kolik lidí přišlo celkem". */}
+      <Card>
+        <CardHeader
+          title="Vstupní stránka /vyzkouset"
+          description="Po lidech. Kanál podle toho, odkud člověk v období přišel."
+        />
+        <CardBody className="grid gap-6 pt-3 lg:grid-cols-3">
+          {(
+            [
+              ["Všichni", vstupni.vse],
+              ["Google Ads", vstupni.google],
+              ["Facebook a Instagram", vstupni.facebook],
+            ] as const
+          ).map(([nadpis, kroky]) => (
+            <div key={nadpis}>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-subtle">
+                {nadpis}
+              </h3>
+              {kroky[0]?.pocet ? (
+                <SeznamKroku kroky={kroky} />
+              ) : (
+                <p className="text-sm text-ink-muted">Zatím nikdo.</p>
+              )}
+            </div>
+          ))}
         </CardBody>
       </Card>
 

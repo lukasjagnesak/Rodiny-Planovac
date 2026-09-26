@@ -163,7 +163,76 @@ export const CESTA_VYZIVNE = "/kalkulacka-vyzivneho";
  */
 export function jePlacena(u: Udalost): boolean {
   const medium = (u.utm_medium ?? "").toLowerCase();
-  return medium === "cpc" || medium === "ppc" || medium === "paid";
+  return ["cpc", "ppc", "paid", "paid_social", "paidsocial"].includes(medium);
+}
+
+/** Placený proklik z Google Ads (z `gclid` nebo ručního označení). */
+export function jeZGoogleAds(u: Udalost): boolean {
+  return jePlacena(u) && (u.utm_source ?? "").toLowerCase() === "google";
+}
+
+/**
+ * Placený proklik z Facebooku nebo Instagramu.
+ *
+ * Jen podle `utm_*`, které se nastaví v reklamě — `fbclid` Facebook
+ * přidává ke každému odkazu, i ke sdílenému příspěvku zdarma.
+ */
+export function jeZFacebookAds(u: Udalost): boolean {
+  const zdroj = (u.utm_source ?? "").toLowerCase();
+  return jePlacena(u) && ["facebook", "fb", "instagram", "ig", "meta"].includes(zdroj);
+}
+
+/** Vstupní stránka pro placenou návštěvu z Googlu i z Facebooku. */
+export const CESTA_VSTUPNI = "/vyzkouset";
+
+export type KanalReklamy = "vse" | "google" | "facebook";
+
+/**
+ * Trychtýř vstupní stránky: přišli → naklikali rozpis → klikli na uložení
+ * → zaregistrovali se → založili rodinu.
+ *
+ * Po lidech, ne po kliknutích, a s přiřazením registrace podle denního
+ * otisku stejně jako u kalkulačky výživného (viz `trychtyrVyzivneho`).
+ * Kanál se určuje po člověku: kdo kdykoli v období přišel z reklamy, patří
+ * k ní i s registrací, která už označení kampaně nenese.
+ */
+export function trychtyrRozvrhu(udalosti: Udalost[], kanal: KanalReklamy = "vse"): KrokTrychtyre[] {
+  const test = kanal === "google" ? jeZGoogleAds : kanal === "facebook" ? jeZFacebookAds : null;
+  const vybrani = new Set<string>();
+  if (test) for (const u of udalosti) if (u.navstevnik && test(u)) vybrani.add(u.navstevnik);
+  const bere = (u: Udalost): boolean =>
+    !test || (u.navstevnik !== null && vybrani.has(u.navstevnik));
+
+  const lide = (podminka: (u: Udalost) => boolean): Set<string> => {
+    const mnozina = new Set<string>();
+    udalosti.forEach((u, i) => {
+      if (bere(u) && podminka(u)) mnozina.add(u.navstevnik ?? `bez-otisku-${i}`);
+    });
+    return mnozina;
+  };
+
+  const prislo = lide((u) => u.druh === "zobrazeni" && u.cesta === CESTA_VSTUPNI);
+  const zNich = (druh: string) =>
+    lide((u) => u.druh === druh && u.navstevnik !== null && prislo.has(u.navstevnik));
+
+  const kroky = [
+    { klic: "prislo", popisek: "Přišli na stránku", mnozina: prislo, rodic: -1 },
+    { klic: "zadali", popisek: "Naklikali si rozpis", mnozina: lide((u) => u.druh === "rozvrh-zadani"), rodic: 0 },
+    { klic: "ulozit", popisek: "Klikli na Uložit do Klidoo", mnozina: lide((u) => u.druh === "rozvrh-ulozit"), rodic: 1 },
+    { klic: "registrace", popisek: "Zaregistrovali se", mnozina: zNich("registrace"), rodic: 2 },
+    { klic: "rodina", popisek: "Založili rodinu", mnozina: zNich("rodina"), rodic: 3 },
+  ];
+
+  const procento = (cast: number, celek: number): number =>
+    celek > 0 ? Math.round((cast / celek) * 1000) / 10 : 0;
+
+  return kroky.map(({ klic, popisek, mnozina, rodic }) => ({
+    klic,
+    popisek,
+    pocet: mnozina.size,
+    zPredchoziho: rodic < 0 ? 100 : procento(mnozina.size, kroky[rodic].mnozina.size),
+    zVrcholu: procento(mnozina.size, prislo.size),
+  }));
 }
 
 /**

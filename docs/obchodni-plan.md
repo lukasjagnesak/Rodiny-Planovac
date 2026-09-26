@@ -323,6 +323,17 @@ výpočtem, *teprve se domlouváte* → PDF na e-mail.
 **Vyhodnotit po 14 dnech** v `/provoz` → Kalkulačka výživného: kolik
 lidí došlo k nabídce a jak se rozdělili mezi aplikaci a PDF.
 
+### Krok 1c — Vstupní stránka pro reklamu (hotovo 27. 9.)
+
+`/vyzkouset`: dvě klepnutí (jak se střídáte, u koho jsou děti teď) a
+hned barevný kalendář na čtyři týdny, tlačítko „Uložit do Klidoo
+zdarma" → registrace s předvyplněným rozpisem. Bez menu. Sem vede
+Google (sestavy Nástroj a Rozvrh) i Facebook — nastavení v
+`docs/google-ads.md` a `docs/facebook-ads.md`.
+
+Výsledky: `/provoz` → **Vstupní stránka /vyzkouset**, vedle sebe
+všichni, Google Ads a Facebook. **Vyhodnotit po 7 a po 14 dnech.**
+
 ### Krok 2 — Mezičlánek: e-maily
 *Kód a texty. Texty napíšu, vy schválíte.*
 

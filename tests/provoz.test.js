@@ -12,8 +12,11 @@ const {
   trychtyr,
   kanal,
   trychtyrVyzivneho,
+  trychtyrRozvrhu,
   jePlacena,
+  jeZFacebookAds,
   CESTA_VYZIVNE,
+  CESTA_VSTUPNI,
 } = require("../.test-build/provoz-souhrn.js");
 
 let selhalo = 0;
@@ -162,6 +165,43 @@ console.log("── kalkulačka výživného ──");
 
   ok("gclid → cpc je placené", jePlacena(u("zobrazeni", T, "x", { utm_medium: "cpc" })));
   ok("bez označení není placené", !jePlacena(u("zobrazeni", T, "x")));
+}
+
+console.log("── vstupní stránka z reklamy ──");
+{
+  const T = "2026-09-27T10:00:00Z";
+  const google = { cesta: CESTA_VSTUPNI, utm_source: "google", utm_medium: "cpc" };
+  const fb = { cesta: CESTA_VSTUPNI, utm_source: "facebook", utm_medium: "paid_social" };
+  const data = [
+    // g1: Google, projde až k rodině
+    u("zobrazeni", T, "g1", google),
+    u("rozvrh-zadani", T, "g1", google),
+    u("rozvrh-ulozit", T, "g1", google),
+    u("registrace", T, "g1", { cesta: "/registrace" }),
+    u("rodina", T, "g1", { cesta: "/vitejte" }),
+    // f1: Facebook, naklikne a odejde
+    u("zobrazeni", T, "f1", fb),
+    u("rozvrh-zadani", T, "f1", fb),
+    // f2: Facebook, jen se podívá
+    u("zobrazeni", T, "f2", fb),
+    // o1: z odkazu zdarma, s fbclid — reklama to není
+    u("zobrazeni", T, "o1", { cesta: CESTA_VSTUPNI, utm_source: "facebook" }),
+  ];
+  const krok = (t, klic) => t.find((k) => k.klic === klic).pocet;
+
+  const vse = trychtyrRozvrhu(data);
+  ok("přišli 4", krok(vse, "prislo") === 4);
+  ok("rozpis naklikali 2", krok(vse, "zadali") === 2);
+  ok("rodinu založil 1", krok(vse, "rodina") === 1);
+
+  const g = trychtyrRozvrhu(data, "google");
+  ok("z Googlu přišel 1 a došel až k rodině", krok(g, "prislo") === 1 && krok(g, "rodina") === 1);
+
+  const f = trychtyrRozvrhu(data, "facebook");
+  ok("z Facebooku přišli 2", krok(f, "prislo") === 2);
+  ok("rozpis z nich naklikal 1", krok(f, "zadali") === 1);
+  ok("sdílený odkaz bez placeného média není reklama", !jeZFacebookAds(u("zobrazeni", T, "x", { utm_source: "facebook" })));
+  ok("paid_social je placené", jePlacena(u("zobrazeni", T, "x", { utm_medium: "paid_social" })));
 }
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);

@@ -108,11 +108,33 @@ dotazech tlačenice. Tady se dá koupit přesný záměr levně.
 
 ---
 
+## Kam reklama vede (září 2026)
+
+**`/vyzkouset`** — samostatná vstupní stránka pro placenou návštěvu,
+bez menu. Člověk klepne, jak se střídá a u koho jsou děti teď, a hned
+vidí barevný kalendář na čtyři týdny. Tlačítko „Uložit do Klidoo
+zdarma" rozpis uloží a po registraci ho najde v aplikaci.
+
+Proč ne úvodní stránka: má menu a pět různých sdělení, a na
+zaplaceného návštěvníka je každý odkaz cesta pryč. Úvodní stránka
+zůstává jen pro značku (`klidoo`).
+
+Stránka je `noindex` — ve vyhledávání tuhle práci dělá `/kalkulacka`
+a dvě podobné stránky by si konkurovaly.
+
+Výsledky: `/provoz` → **Vstupní stránka /vyzkouset**, sloupec
+**Google Ads** (přišli → naklikali rozpis → klikli na uložení →
+registrace → rodina). Prokliky se označí samy z `gclid`; přípona
+URL s `utm_*` je nepovinná.
+
+Nadpis inzerátu, který přesně odpovídá stránce (30 znaků, víc Google
+nedovolí): **U koho jsou děti příští týden?**
+
 ## Sestavy
 
 ### 1. Nástroj (jádro rozpočtu, ~50 %)
 
-Vstupní stránka: `/`
+Vstupní stránka: **`/vyzkouset`** (od 27. 9. 2026, dřív `/`)
 
 Frázová a přesná shoda:
 
@@ -130,7 +152,7 @@ střídavá péče organizace
 
 ### 2. Rozvrh a noci (~20 %)
 
-Vstupní stránka: `/kalkulacka`
+Vstupní stránka: **`/vyzkouset`** (od 27. 9. 2026, dřív `/kalkulacka`)
 
 ```
 střídavá péče rozvrh
@@ -167,7 +189,12 @@ klidoo aplikace
 
 ### Zatím nezakládat
 
-**Kalkulačka výživného.** Až budou tři sestavy výš vyladěné a bude
+**Kalkulačka výživného** — od září běží, proti tomuhle doporučení.
+Pokud má běžet dál, tak **s nízkým pevným stropem** (návrh 30 Kč/den) a
+na `/kalkulacka-vyzivneho`, kde je cílem e-mail za PDF, ne registrace.
+Za prvních ~2 000 Kč: nula registrací, čemuž odpovídá záměr dotazu.
+
+Původní poznámka: Až budou tři sestavy výš vyladěné a bude
 rozpočet navíc. Zvlášť, s vlastním stropem, aby nesežrala zbytek.
 
 **Konkurence** (`app2us` a podobné). Dotazů je málo, prokliky drahé

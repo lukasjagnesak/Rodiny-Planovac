@@ -24,6 +24,9 @@ export const PUBLIC_PATHS = [
   "/vzor-dohody-o-stridave-peci",
   "/kalkulacka-vyzivneho",
   "/kalkulacka",
+  // Vstupní stránka z placené reklamy. Není v mapě webu (je `noindex`),
+  // a tak ji hlídá test, který prochází všechny veřejné skupiny stránek.
+  "/vyzkouset",
   "/cenik",
   "/clanky",
   "/dekujeme",

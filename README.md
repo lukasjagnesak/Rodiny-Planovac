@@ -997,6 +997,7 @@ se změní paleta, změní se s ní i web; nemůže se rozejít, protože není 
 | `/vzor-dohody-o-stridave-peci` | Co dohoda musí obsahovat; `/text` je celý vzor k okopírování |
 | `/kalkulacka-vyzivneho` | Orientační výživné podle tabulky MSp |
 | `/kalkulacka` | Rozpis dnů a noci u každého rodiče |
+| `/vyzkouset` | Vstupní stránka z reklamy (Google i Facebook): rozpis na dvě klepnutí a uložení do aplikace. Bez menu, `noindex` — skupina `(reklama)` |
 | `/checklist-prvnich-30-dni` | Materiál k vytištění |
 | `/pro-advokaty`, `/pro-mediatory` | Partnerské stránky |
 | `/zasady-ochrany-osobnich-udaju` | Zásady zpracování údajů |

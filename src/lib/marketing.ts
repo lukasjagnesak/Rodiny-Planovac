@@ -197,6 +197,10 @@ export function marketingZobrazeni(cesta: string): void {
 /** Převod našich kroků trychtýře na jazyk, kterému rozumí reklamní systémy. */
 const UDALOSTI: Record<string, { ga: string; meta: string | null }> = {
   kalkulacka: { ga: "kalkulacka_dokoncena", meta: "Lead" },
+  // Naklikaný rozpis na vstupní stránce z reklamy. Pro Facebook je to
+  // „Lead" schválně: registrací je zatím málo na to, aby se podle nich
+  // reklama naučila hledat lidi, a rozpis si naklikají desítky za týden.
+  "rozvrh-zadani": { ga: "rozvrh_zadani", meta: "Lead" },
   lead: { ga: "generate_lead", meta: "Lead" },
   registrace: { ga: "sign_up", meta: "CompleteRegistration" },
   rodina: { ga: "rodina_zalozena", meta: "StartTrial" },
