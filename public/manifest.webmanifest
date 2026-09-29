@@ -1,0 +1,52 @@
+{
+  "name": "Klidoo",
+  "short_name": "Klidoo",
+  "description": "Klid do rodiny, která žije ve dvou domovech — kalendář péče, kroužky, výdaje a škola.",
+  "start_url": "/prehled",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fdf7f0",
+  "theme_color": "#2c8671",
+  "lang": "cs",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kalendář",
+      "url": "/kalendar"
+    },
+    {
+      "name": "Přidat výdaj",
+      "url": "/vydaje?novy=dnes"
+    },
+    {
+      "name": "Kroužky",
+      "url": "/krouzky"
+    }
+  ]
+}
