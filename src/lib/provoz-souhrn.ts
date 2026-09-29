@@ -335,6 +335,50 @@ export function trychtyrVyzivneho(udalosti: Udalost[], jenPlacene = false): Krok
   }));
 }
 
+/**
+ * Trychtýř registračního formuláře.
+ *
+ * Odpovídá na otázku, kde lidé odpadají: přijdou a ani nezačnou (nevědí,
+ * co si zakládají, nebo se bojí ceny), začnou a nedokončí (formulář,
+ * heslo), nebo odejdou přes Google — a to není odchod, ale jiná cesta.
+ */
+export function trychtyrRegistrace(udalosti: Udalost[]): KrokTrychtyre[] {
+  const lide = (podminka: (u: Udalost) => boolean): Set<string> => {
+    const mnozina = new Set<string>();
+    udalosti.forEach((u, i) => {
+      if (podminka(u)) mnozina.add(u.navstevnik ?? `bez-otisku-${i}`);
+    });
+    return mnozina;
+  };
+
+  const videli = lide((u) => u.druh === "zobrazeni" && u.cesta === "/registrace");
+  const zacali = lide((u) => u.druh === "registrace-zacal");
+  const pres = lide((u) => u.druh === "registrace-cizi");
+  // Registrace přes Google se hlásí až na `/vitejte` — a počítá se jen
+  // od těch, kdo formulář viděli, ať se nemíchají s pozvanými.
+  const hotovo = lide(
+    (u) => u.druh === "registrace" && u.navstevnik !== null && videli.has(u.navstevnik),
+  );
+
+  const procento = (cast: number, celek: number): number =>
+    celek > 0 ? Math.round((cast / celek) * 1000) / 10 : 0;
+  const krok = (klic: string, popisek: string, m: Set<string>, rodic: Set<string>, uroven?: number) => ({
+    klic,
+    popisek,
+    pocet: m.size,
+    zPredchoziho: procento(m.size, rodic.size),
+    zVrcholu: procento(m.size, videli.size),
+    ...(uroven ? { uroven } : {}),
+  });
+
+  return [
+    { ...krok("videli", "Otevřeli registraci", videli, videli), zPredchoziho: 100 },
+    krok("zacali", "Začali vyplňovat formulář", zacali, videli, 1),
+    krok("pres", "Pokračovali přes Google nebo Apple", pres, videli, 1),
+    krok("hotovo", "Registraci dokončili", hotovo, videli),
+  ];
+}
+
 /** Kanál návštěvníka: utm_source, partnerský kód, jinak doména odkazu. */
 export function kanal(u: Udalost): string | null {
   if (u.ref) return `partner: ${u.ref}`;

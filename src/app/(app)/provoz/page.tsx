@@ -9,6 +9,7 @@ import {
   poDnech,
   poHodinach,
   trychtyr,
+  trychtyrRegistrace,
   trychtyrRozvrhu,
   trychtyrVyzivneho,
   zebricek,
@@ -84,6 +85,7 @@ export default async function ProvozPage({
         vse: trychtyrVyzivneho(udalosti),
         placene: trychtyrVyzivneho(udalosti, true),
       }}
+      registrace={trychtyrRegistrace(udalosti)}
       vstupni={{
         vse: trychtyrRozvrhu(udalosti),
         google: trychtyrRozvrhu(udalosti, "google"),

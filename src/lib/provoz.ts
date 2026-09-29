@@ -46,6 +46,9 @@ export const DRUHY = [
   "rozvrh-zadani",
   "rozvrh-ulozit",
   "rozvrh-jinak",
+  // Registrační formulář: začal vyplňovat, nebo šel přes Google/Apple.
+  "registrace-zacal",
+  "registrace-cizi",
   // Průvodce: kdy chce člověk platit.
   "onboarding-bez-karty",
   "onboarding-karta-hned",

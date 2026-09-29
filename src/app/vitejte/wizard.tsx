@@ -53,7 +53,12 @@ interface ChildDraft {
  * je to dohoda. Zároveň ale nesmí stát v cestě k první hodnotě: rodič se
  * nejdřív musí podívat na hotový kalendář, teprve pak má co posílat dál.
  */
-const STEPS = ["Rodina", "Děti", "Střídání", "Druhý rodič", "Platba"];
+// Poslední krok se jmenuje „Hotovo", ne „Platba", přestože se v něm dá
+// zaplatit. Ukazatel kroků je vidět od první obrazovky, a „Platba" na
+// jeho konci říkala člověku, který se právě zaregistroval zdarma, že
+// ho na konci čeká placení. Ve skutečnosti tam stojí „Hotovo. Teď
+// 30 dní zdarma" a placení je jen nepovinná možnost.
+const STEPS = ["Rodina", "Děti", "Střídání", "Druhý rodič", "Hotovo"];
 const POSLEDNI_NASTAVENI = 2;
 
 /** Zadání přenesené z veřejné kalkulačky. */

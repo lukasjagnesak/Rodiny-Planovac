@@ -32,6 +32,7 @@ export function ProvozScreen({
   trychtyr,
   vyzivne,
   vstupni,
+  registrace,
   kanaly,
   stranky,
   zarizeni,
@@ -45,6 +46,8 @@ export function ProvozScreen({
   trychtyr: KrokTrychtyre[];
   /** Kalkulačka výživného: všichni a jen lidé z reklamy. */
   vyzivne: { vse: KrokTrychtyre[]; placene: KrokTrychtyre[] };
+  /** Registrační formulář: kde lidé odpadají. */
+  registrace: KrokTrychtyre[];
   /** Vstupní stránka z reklamy: všichni, Google Ads, Facebook. */
   vstupni: { vse: KrokTrychtyre[]; google: KrokTrychtyre[]; facebook: KrokTrychtyre[] };
   kanaly: Radek[];
@@ -183,6 +186,17 @@ export function ProvozScreen({
         </p>
         <CardBody className="pt-3">
           <SeznamKroku kroky={trychtyr} />
+        </CardBody>
+      </Card>
+
+      {/* ── Registrace ─────────────────────────────────────────────── */}
+      <Card>
+        <CardHeader
+          title="Registrační formulář"
+          description="Kde lidé odpadají: nezačnou, začnou a nedokončí, nebo jdou přes Google."
+        />
+        <CardBody className="pt-3">
+          <SeznamKroku kroky={registrace} />
         </CardBody>
       </Card>
 

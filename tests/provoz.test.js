@@ -13,6 +13,7 @@ const {
   kanal,
   trychtyrVyzivneho,
   trychtyrRozvrhu,
+  trychtyrRegistrace,
   jePlacena,
   jeZFacebookAds,
   CESTA_VYZIVNE,
@@ -202,6 +203,26 @@ console.log("── vstupní stránka z reklamy ──");
   ok("rozpis z nich naklikal 1", krok(f, "zadali") === 1);
   ok("sdílený odkaz bez placeného média není reklama", !jeZFacebookAds(u("zobrazeni", T, "x", { utm_source: "facebook" })));
   ok("paid_social je placené", jePlacena(u("zobrazeni", T, "x", { utm_medium: "paid_social" })));
+}
+
+console.log("── registrační formulář ──");
+{
+  const T = "2026-09-29T10:00:00Z";
+  const reg = { cesta: "/registrace" };
+  const data = [
+    u("zobrazeni", T, "r1", reg), // jen se podívá
+    u("zobrazeni", T, "r2", reg), u("registrace-zacal", T, "r2", reg), // začne, nedokončí
+    u("zobrazeni", T, "r3", reg), u("registrace-zacal", T, "r3", reg), u("registrace", T, "r3", reg),
+    u("zobrazeni", T, "r4", reg), u("registrace-cizi", T, "r4", reg), u("registrace", T, "r4", { cesta: "/vitejte" }),
+    u("registrace", T, "p1", { cesta: "/pozvanka" }), // pozvaný, formulář neviděl
+  ];
+  const t = trychtyrRegistrace(data);
+  const k = (klic) => t.find((x) => x.klic === klic);
+  ok("otevřeli 4", k("videli").pocet === 4);
+  ok("začali vyplňovat 2", k("zacali").pocet === 2);
+  ok("přes Google 1", k("pres").pocet === 1);
+  ok("dokončili 2 — pozvaný bez formuláře se nepočítá", k("hotovo").pocet === 2);
+  ok("dokončení se měří proti všem, kdo registraci otevřeli", k("hotovo").zPredchoziho === 50);
 }
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);
