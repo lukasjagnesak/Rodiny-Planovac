@@ -65,6 +65,20 @@ jinde funguje rovnou.
 4. V **Authentication → URL Configuration** nastav:
    - Site URL: `https://klidoo.cz`
    - Redirect URLs: `https://klidoo.cz/auth/callback`
+5. V **Authentication → Sign In / Providers → Email** vypni **Confirm email**.
+
+> **Proč bez potvrzení e-mailu** (rozhodnutí z 29. 9. 2026): lidé
+> registraci nedokončovali a potvrzení byl krok navíc přesně v místě,
+> kde odpadali — mezi formulářem a aplikací musel člověk otevřít poštu,
+> najít zprávu (často ve spamu) a kliknout. Bez něj jde po registraci
+> rovnou do průvodce; aplikace to umí, `register-form.tsx` se podle toho,
+> jestli Supabase vrátí přihlášení, sám rozhodne.
+>
+> Cena za to: překlep v adrese se nepozná (zapomenuté heslo pak nedojde)
+> a zaregistrovat se jde i cizí adresou. Na tomhle počtu lidí se to
+> nevyplatí řešit; kdyby se objevily hromadné registrace robotů, zapnout
+> v **Authentication → Attack Protection** CAPTCHA, ne potvrzení zpátky.
+> Přihlášení přes Google adresu ověřuje samo.
 
 > Data jsou chráněná na úrovni databáze. I kdyby někdo získal `anon` klíč,
 > uvidí jen rodiny, jejichž je členem — hlídá to RLS, ne aplikace.
