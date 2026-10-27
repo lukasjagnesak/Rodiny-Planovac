@@ -17,7 +17,14 @@ www.{$APP_DOMAIN} {
 		Referrer-Policy strict-origin-when-cross-origin
 		Permissions-Policy "camera=(self), geolocation=(), microphone=()"
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# Okno otevřené z cizí stránky na nás nedosáhne přes window.opener.
+		Cross-Origin-Opener-Policy same-origin
+		X-Permitted-Cross-Domain-Policies none
+		# Content-Security-Policy tu není schválně: v aplikaci se mění
+		# u každého požadavku (nonce), proto ji posílá aplikace sama,
+		# viz src/lib/csp.ts.
 		-Server
+		-X-Powered-By
 	}
 
 	reverse_proxy app:3000 {

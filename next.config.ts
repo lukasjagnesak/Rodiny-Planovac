@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   // Standalone build = malý Docker image pro Hetzner.
   output: "standalone",
   reactStrictMode: true,
+  // Neprozrazovat, na čem web běží.
+  poweredByHeader: false,
   experimental: {
     // Kolik vteřin smí prohlížeč použít už stažené obrazovky.
     //

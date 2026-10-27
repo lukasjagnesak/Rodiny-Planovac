@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { bezpecnyCil, odkazNaPrihlaseni } from "@/lib/navrat";
+import { novyNonce, otiskSkriptu, sestavCsp } from "@/lib/csp";
+import { smiMerit } from "@/lib/mereni-hranice";
+import { INSTALACE_SCRIPT, THEME_SCRIPT } from "@/lib/vlozene-skripty";
 
 export const PUBLIC_PATHS = [
   // Přehled s vymyšlenými daty pro test rozvržení. V ostrém provozu
@@ -72,6 +75,31 @@ function configProblem(): boolean {
   }
 }
 
+/**
+ * Stránky mimo veřejný web, které jsou přesto předgenerované. Nonce do
+ * nich dát nejde (vznikly při sestavení, ne u požadavku), takže dostanou
+ * politiku webu. Ani jedna nepracuje s daty rodiny.
+ */
+const PREDGENEROVANE_MIMO_WEB = new Set(["/chybi-nastaveni", "/nahled-mobil"]);
+
+/** Otisky se počítají jednou za běh serveru, texty se nemění. */
+const otisky = Promise.all([otiskSkriptu(THEME_SCRIPT), otiskSkriptu(INSTALACE_SCRIPT)]);
+
+/**
+ * Politika pro tenhle požadavek, nebo `null` tam, kde se nevrací stránka.
+ * Přísná s nonce všude, kde jsou data rodiny — viz `lib/csp`.
+ */
+async function politika(cesta: string): Promise<string | null> {
+  if (cesta.startsWith("/api/") || cesta.startsWith("/auth/")) return null;
+  const web = smiMerit(cesta) || PREDGENEROVANE_MIMO_WEB.has(cesta);
+  return sestavCsp({
+    nonce: web ? null : novyNonce(),
+    otisky: web ? [] : await otisky,
+    supabase: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    vyvoj: process.env.NODE_ENV === "development",
+  });
+}
+
 export async function proxy(request: NextRequest) {
   // Místo bílé chyby 500 ukážeme stránku, která řekne, co doplnit.
   if (configProblem() && request.nextUrl.pathname !== "/chybi-nastaveni") {
@@ -81,7 +109,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  let response = NextResponse.next({ request });
+  // Next si nonce přečte z hlavičky požadavku a přidá ho ke všem svým
+  // skriptům. Prohlížeč pak dostane tutéž politiku v odpovědi.
+  const csp = await politika(request.nextUrl.pathname);
+  const hlavicky = new Headers(request.headers);
+  if (csp) hlavicky.set("Content-Security-Policy", csp);
+  const dal = () => {
+    const odpoved = NextResponse.next({ request: { headers: hlavicky } });
+    if (csp) odpoved.headers.set("Content-Security-Policy", csp);
+    return odpoved;
+  };
+
+  let response = dal();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -93,7 +132,9 @@ export async function proxy(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          // Obnovené cookies musí jít dál i v hlavičkách, které předáváme.
+          hlavicky.set("cookie", request.cookies.toString());
+          response = dal();
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options),
           );
