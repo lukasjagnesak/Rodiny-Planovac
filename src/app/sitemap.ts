@@ -23,6 +23,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/pro-advokaty", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-mediatory", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-ospod-a-soudy", priorita: 0.5, frekvence: "yearly" },
+  { cesta: "/overit", priorita: 0.3, frekvence: "yearly" },
   { cesta: "/bezpecnost", priorita: 0.4, frekvence: "yearly" },
   { cesta: "/zasady-ochrany-osobnich-udaju", priorita: 0.2, frekvence: "yearly" },
   { cesta: "/obchodni-podminky", priorita: 0.2, frekvence: "yearly" },

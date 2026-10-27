@@ -4,6 +4,8 @@ import { requireSession } from "@/lib/session";
 import { vytvorDocx } from "@/lib/docx";
 import { vypisKomunikace, type Zprava } from "@/lib/zpravy";
 import { nactiPredplatne } from "@/lib/predplatne";
+import { novyKod, otiskSouboru, vetaOvereni, zaregistrujVypis } from "@/lib/vypisy";
+import { siteUrl } from "@/lib/google";
 
 /**
  * Výpis komunikace ke stažení.
@@ -43,15 +45,28 @@ export async function GET() {
     supabase.from("events").select("id, title").eq("family_id", session.family.id),
   ]);
 
-  const soubor = vytvorDocx(
-    vypisKomunikace(zpravy, session.family.name, {
-      deti: Object.fromEntries(session.children.map((d) => [d.id, d.name])),
-      vydaje: Object.fromEntries((vydaje ?? []).map((v) => [v.id, v.title])),
-      udalosti: Object.fromEntries((udalosti ?? []).map((u) => [u.id, u.title])),
-    }),
-  );
+  // Kód výpisu musí být v souboru dřív, než se spočítá otisk — otisk
+  // patří k souboru přesně tak, jak ho člověk stáhne.
+  const kod = novyKod();
+  const overeni = { druh: "drobne" as const, text: vetaOvereni(kod, siteUrl()) };
+  const odstavce = vypisKomunikace(zpravy, session.family.name, {
+    deti: Object.fromEntries(session.children.map((d) => [d.id, d.name])),
+    vydaje: Object.fromEntries((vydaje ?? []).map((v) => [v.id, v.title])),
+    udalosti: Object.fromEntries((udalosti ?? []).map((u) => [u.id, u.title])),
+  });
+  const soubor = vytvorDocx([odstavce[0], overeni, ...odstavce.slice(1), overeni]);
 
-  const nazev = `komunikace-${new Date().toISOString().slice(0, 10)}.docx`;
+  await zaregistrujVypis({
+    session,
+    kod,
+    druh: "komunikace",
+    od: zpravy[0]?.created_at.slice(0, 10) ?? null,
+    do: zpravy.at(-1)?.created_at.slice(0, 10) ?? null,
+    otisk: otiskSouboru(soubor),
+    shrnuti: { zprav: zpravy.length },
+  });
+
+  const nazev = `komunikace-${new Date().toISOString().slice(0, 10)}-${kod}.docx`;
 
   return new NextResponse(new Uint8Array(soubor), {
     headers: {

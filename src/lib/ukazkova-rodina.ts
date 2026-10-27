@@ -24,6 +24,7 @@ import type {
   RozvrhHodina,
   SessionContext,
   ZadostZmeny,
+  ZaznamHistorie,
 } from "./types";
 import type { Zprava } from "./zpravy";
 
@@ -154,5 +155,20 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
     },
   ];
 
-  return { session, zadosti, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
+  const zaznam = (id: number, posun: number, hod: string, kdo: string, oblast: ZaznamHistorie["oblast"], popis: string): ZaznamHistorie => ({
+    id, family_id: "f-ukazka", kdo: kdo === "Petr" ? TATA : MAMA, kdo_jmeno: kdo,
+    kdy: new Date(`${den(posun)}T${hod}:00`).toISOString(), oblast, popis, zaznam_id: null,
+  });
+  const historie: ZaznamHistorie[] = [
+    zaznam(8, 0, "12:20", "Petr", "vydaje", "Výdaj: Obědy ve školní jídelně, 1 180 Kč"),
+    zaznam(7, -1, "08:02", "Jana", "vydaje", "Výdaj Kopačky označen jako vyrovnaný"),
+    zaznam(6, -2, "18:45", "Petr", "rozvrh", "Výjimka v rozvrhu: 7. 11. 2026 u: Jana"),
+    zaznam(5, -2, "18:45", "Petr", "rozvrh", "Výjimka v rozvrhu: 14. 11. 2026 u: Petr"),
+    zaznam(4, -4, "20:10", "Jana", "vydaje", "Upraven výdaj: Zimní bunda, 1 690 Kč → 1 890 Kč"),
+    zaznam(3, -5, "17:30", "Petr", "vypisy", "Stažen výpis komunikace (kód K7F3-9QX2)"),
+    zaznam(2, -9, "09:12", "Jana", "udalosti", "Událost: Preventivní prohlídka"),
+    zaznam(1, -12, "19:00", "Petr", "krouzky", "Upraven kroužek: Plavání"),
+  ];
+
+  return { session, zadosti, historie, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
 }

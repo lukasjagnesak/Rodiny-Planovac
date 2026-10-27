@@ -28,6 +28,7 @@ export const CESTY_S_MERENIM = [
   "/pro-advokaty",
   "/pro-mediatory",
   "/pro-ospod-a-soudy",
+  "/overit",
   "/bezpecnost",
   "/zasady-ochrany-osobnich-udaju",
   "/obchodni-podminky",

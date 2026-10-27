@@ -29,9 +29,9 @@ orientační.
 | **ToneMeter** | Při psaní upozorní na útočné nebo emotivní formulace | ❌ **Chybí** |
 | Výdaje | Evidence, rozdělení, zůstatek | ✅ Má (účtenky, klíč, vyrovnání) |
 | Žádost o proplacení a OFWpay | Žádost o úhradu, platba převodem v aplikaci, historie plateb | ⚠️ Částečně — výdaje a „vypořádáno" ano, žádost se schválením a platba ne |
-| **Auditní stopa** | Časová historie žádostí, výdajů, změn rozvrhu a přihlášení | ⚠️ Jen u zpráv. Změny rozvrhu a výdajů ani přihlášení se nezaznamenávají |
+| **Auditní stopa** | Časová historie žádostí, výdajů, změn rozvrhu a přihlášení | ✅ **Má od 27. 10. 2026** (migrace 0034): rozvrh, výdaje, události, kroužky, děti, členové i stažené výpisy; nejde upravit ani smazat. Přihlášení zatím ne |
 | **Přístup pro profesionály** | Advokát, soudce, opatrovník, mediátor vidí účet rodiny jen pro čtení, zdarma | ❌ **Chybí.** Partnerský přehled ukazuje jen obchodní čísla, ne data rodiny |
-| Výpisy pro soud | Záznamy pro řízení | ⚠️ Výpis zpráv (Word) a souhrn péče a nákladů. Word jde upravit a neověří se, že je pravý |
+| Výpisy pro soud | Záznamy pro řízení | ✅ Výpis zpráv, historie (Word) a souhrn s ověřovacím kódem; klidoo.cz/overit ověří pravost i to, že soubor nikdo neupravil (SHA-256) |
 | Info Bank | Pojištění, lékaři, velikosti, zdravotní údaje | ✅ Většinou má (děti, doklady, kontakty) |
 | Deník a check-in | Soukromé i sdílené záznamy, ověření polohy při předání | ❌ Nemá. Soukromé poznámky schválně ne (neutralita), check-in zvážit |
 | Nahrávané hovory (TalkingParents) | Hovor v aplikaci se nahraje a přepíše | ❌ Nemá a nedoporučuji (souhlasy, zákon) |

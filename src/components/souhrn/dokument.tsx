@@ -71,9 +71,12 @@ function Prazdno({ text }: { text: string }) {
 export function SouhrnDokument({
   souhrn,
   session,
+  kod = null,
 }: {
   souhrn: Souhrn;
   session: SessionContext;
+  /** Ověřovací kód — jen když souhrn vznikl tlačítkem Tisk (migrace 0034). */
+  kod?: string | null;
 }) {
   const mena = session.family.currency;
   const rodice = session.members.filter((m) => m.role === "owner" || m.role === "parent");
@@ -218,6 +221,12 @@ export function SouhrnDokument({
         <p className="mt-1.5">
           Vygenerováno {new Date().toLocaleString("cs-CZ")} · {ZNACKA} · klidoo.cz
         </p>
+        {kod ? (
+          <p className="mt-1.5 font-medium text-ink">
+            Ověření pravosti: klidoo.cz/overit · kód {kod}. Na stránce se po zadání kódu ukáže,
+            kdy a kdo souhrn vytvořil a jaká čísla obsahoval.
+          </p>
+        ) : null}
       </div>
     </article>
   );

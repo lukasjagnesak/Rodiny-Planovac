@@ -8,6 +8,7 @@ import { ActivitiesScreen } from "@/components/activities/activities-screen";
 import { ZpravyScreen } from "@/components/zpravy/zpravy-screen";
 import { RozvrhScreen } from "@/components/rozvrh/rozvrh-screen";
 import { ukazkovaRodina } from "@/lib/ukazkova-rodina";
+import { HistorieScreen } from "@/components/historie/historie-screen";
 
 /**
  * Skutečné obrazovky aplikace s ukázkovou rodinou — zdroj snímků na web.
@@ -19,7 +20,7 @@ import { ukazkovaRodina } from "@/lib/ukazkova-rodina";
  *
  * Jen pro vývoj, v ostrém provozu neexistuje (stejně jako `nahled-mobil`).
  */
-const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh"] as const;
+const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh", "historie"] as const;
 type Obrazovka = (typeof OBRAZOVKY)[number];
 
 export default async function UkazkaObrazovky({
@@ -86,6 +87,7 @@ export default async function UkazkaObrazovky({
         weekStartKey={r.pondeli}
       />
     ),
+    historie: <HistorieScreen zaznamy={r.historie} filtr={null} muzeStahnout />,
     zpravy: <ZpravyScreen session={r.session} zpravy={r.zpravy} muzePsat muzeStahnout />,
     rozvrh: <RozvrhScreen session={r.session} hodiny={r.rozvrh} zmeny={[]} edupagePropojeno />,
   };

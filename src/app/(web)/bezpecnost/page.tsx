@@ -159,7 +159,10 @@ export default function Bezpecnost() {
           <p>
             Když rodinu používají oba rodiče, <strong>rozvrh nemůže změnit jeden sám</strong>.
             Změnu navrhne jeden a schválí druhý; do té doby kalendář platí, jak byl. Návrh
-            i odpověď se zapíšou do Zpráv.
+            i odpověď se zapíšou do Zpráv. Každou změnu rozvrhu, výdaje
+          nebo události navíc zapíše do <strong>historie změn</strong> sama databáze; vidí ji oba
+          rodiče a nikdo ji nemůže upravit ani smazat. Výpisy pro soud mají ověřovací kód — na
+          stránce <Link href="/overit">Ověření výpisu</Link> se pozná, že jsou pravé.
           </p>
           <Poznamka>
             Klidoo nestraní žádnému z rodičů. Oba mají stejná práva a vidí totéž. Soukromé poznámky

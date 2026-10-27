@@ -8,6 +8,7 @@ import {
   Check,
   LayoutDashboard,
   MessageCircle,
+  History,
   Table2,
   Wallet,
 } from "lucide-react";
@@ -25,7 +26,7 @@ import { cn } from "@/lib/format";
  * Jména jsou smyšlená, data obyčejný měsíc obyčejné rodiny.
  */
 
-type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky" | "zpravy" | "rozvrh";
+type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky" | "zpravy" | "rozvrh" | "historie";
 
 const ZALOZKY: { id: Obrazovka; popisek: string; Ikona: typeof CalendarDays }[] = [
   { id: "kalendar", popisek: "Kalendář", Ikona: CalendarDays },
@@ -34,6 +35,7 @@ const ZALOZKY: { id: Obrazovka; popisek: string; Ikona: typeof CalendarDays }[] 
   { id: "krouzky", popisek: "Kroužky", Ikona: Bike },
   { id: "zpravy", popisek: "Zprávy", Ikona: MessageCircle },
   { id: "rozvrh", popisek: "Rozvrh", Ikona: Table2 },
+  { id: "historie", popisek: "Historie", Ikona: History },
 ];
 
 const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
@@ -60,6 +62,10 @@ const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
   rozvrh: {
     nadpis: "Rozvrh i změny stažené ze školy",
     text: "Napojí se na EduPage a samo si drží rozvrh, odpadlé hodiny i suplování — pro každé dítě zvlášť, i když chodí na jinou školu.",
+  },
+  historie: {
+    nadpis: "Kdo co změnil, je vidět",
+    text: "Každá změna rozvrhu, výdaje nebo události se zapíše sama — kdo, kdy a co. Nikdo z rodičů ji nemůže smazat. Výpis má ověřovací kód, podle kterého soud zjistí, že je pravý.",
   },
 };
 
@@ -138,7 +144,7 @@ export function UkazkyAplikace() {
   );
 }
 
-/** Co se do šesti záložek nevešlo, ale v appce je. */
+/** Co se do záložek nevešlo, ale v aplikaci je. */
 const DALSI = [
   "Události — škola, lékař, výlety",
   "Dokumenty rodiny na jednom místě",

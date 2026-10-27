@@ -19,7 +19,7 @@ import path from "node:path";
 const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT ?? "playwright");
 
 const zaklad = process.argv[2] ?? "http://localhost:3000";
-const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh"];
+const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh", "historie"];
 const cil = path.join(process.cwd(), "public", "ukazky");
 await mkdir(cil, { recursive: true });
 

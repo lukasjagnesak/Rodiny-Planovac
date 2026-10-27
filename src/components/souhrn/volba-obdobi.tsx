@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
@@ -19,6 +19,39 @@ export function VolbaObdobi({
   do: string;
 }) {
   const router = useRouter();
+  const parametry = useSearchParams();
+  const [tisknu, setTisknu] = React.useState(false);
+  const [chyba, setChyba] = React.useState<string | null>(null);
+
+  // Po vytvoření kódu se stránka načte znovu i s kódem v patičce —
+  // teprve pak se tiskne, aby kód byl na papíře.
+  React.useEffect(() => {
+    if (parametry.get("tisk") !== "1" || !parametry.get("kod")) return;
+    const casovac = setTimeout(() => {
+      window.print();
+      router.replace(`/souhrn?od=${od}&do=${doData}&kod=${parametry.get("kod")}`);
+    }, 400);
+    return () => clearTimeout(casovac);
+  }, [parametry, router, od, doData]);
+
+  async function tisk() {
+    setTisknu(true);
+    setChyba(null);
+    try {
+      const odpoved = await fetch("/api/vypisy/souhrn", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ od, do: doData }),
+      });
+      const data = (await odpoved.json()) as { kod?: string; chyba?: string };
+      if (!odpoved.ok || !data.kod) throw new Error(data.chyba ?? "Kód se nepodařilo vytvořit.");
+      router.replace(`/souhrn?od=${od}&do=${doData}&kod=${data.kod}&tisk=1`);
+    } catch (e) {
+      setChyba(e instanceof Error ? e.message : "Kód se nepodařilo vytvořit.");
+    } finally {
+      setTisknu(false);
+    }
+  }
 
   function nastav(odKlic: string, doKlic: string) {
     router.push(`/souhrn?od=${odKlic}&do=${doKlic}`);
@@ -32,7 +65,7 @@ export function VolbaObdobi({
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           Kolik nocí děti u koho byly, co se za ně utratilo a kdo vozil. Vyberte období,
-          zkontroluj a vytiskněte — nebo uložte jako PDF.
+          zkontrolujte a vytiskněte — nebo uložte jako PDF.
         </p>
       </div>
 
@@ -78,11 +111,16 @@ export function VolbaObdobi({
             className="w-auto"
           />
         </label>
-        <Button onClick={() => window.print()} className="ml-auto">
+        <Button onClick={tisk} disabled={tisknu} className="ml-auto">
           <Printer className="h-4 w-4" />
-          Tisk / uložit PDF
+          {tisknu ? "Připravuji…" : "Tisk / uložit PDF"}
         </Button>
       </div>
+      {chyba ? <p className="text-sm text-danger">{chyba}</p> : null}
+      <p className="text-xs text-ink-muted">
+        Vytištěný souhrn dostane ověřovací kód. Na klidoo.cz/overit pak soud nebo advokát zjistí,
+        že čísla pocházejí z Klidoo. Vytvoření souhrnu se zapíše do historie rodiny.
+      </p>
     </div>
   );
 }

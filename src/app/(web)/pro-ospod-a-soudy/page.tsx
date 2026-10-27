@@ -72,7 +72,7 @@ export default function ProOspodASoudy() {
             {
               nazev: "Výpis pro řízení",
               popis:
-                "Rodič si stáhne výpis zpráv a souhrn péče a nákladů za období a přinese ho sám.",
+                "Rodič přinese výpis zpráv, historie změn nebo souhrn. Každý má kód; na klidoo.cz/overit zjistíte, že je pravý a nikdo ho neupravil.",
             },
             {
               nazev: "Rok zdarma pro rodiny od vás",

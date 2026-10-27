@@ -1,22 +1,13 @@
 import type { Metadata } from "next";
-import { eachDayOfInterval } from "date-fns";
 import { requireSession } from "@/lib/session";
 import { nactiPredplatne } from "@/lib/predplatne";
 import { ZamcenyDokument } from "@/components/ui/zamceno";
 import { createClient } from "@/lib/supabase/server";
-import { expandActivities } from "@/lib/activities";
-import { slozSouhrn } from "@/lib/souhrn";
+import { nactiSouhrn } from "@/lib/souhrn-nacteni";
 import { toDateKey } from "@/lib/dates";
 import { VolbaObdobi } from "@/components/souhrn/volba-obdobi";
 import { urciObdobi } from "@/lib/obdobi";
 import { SouhrnDokument } from "@/components/souhrn/dokument";
-import type {
-  Activity,
-  ActivityOccurrence,
-  CustodyOverride,
-  CustodyPattern,
-  Expense,
-} from "@/lib/types";
 
 export const metadata: Metadata = { title: "Souhrn pro soud a advokáta" };
 
@@ -40,7 +31,7 @@ export const metadata: Metadata = { title: "Souhrn pro soud a advokáta" };
 export default async function SouhrnPage({
   searchParams,
 }: {
-  searchParams: Promise<{ od?: string; do?: string }>;
+  searchParams: Promise<{ od?: string; do?: string; kod?: string }>;
 }) {
   const session = await requireSession();
   const supabase = await createClient();
@@ -74,56 +65,29 @@ export default async function SouhrnPage({
   const odKlic = toDateKey(od);
   const doKlic = toDateKey(doData);
 
-  const [patterns, overrides, vydaje, aktivity, terminy] = await Promise.all([
-    supabase.from("custody_patterns").select("*").eq("family_id", session.family.id),
-    supabase
-      .from("custody_overrides")
-      .select("*")
-      .eq("family_id", session.family.id)
-      .gte("day", odKlic)
-      .lte("day", doKlic),
-    supabase
-      .from("expenses")
-      .select("*")
-      .eq("family_id", session.family.id)
-      .gte("spent_on", odKlic)
-      .lte("spent_on", doKlic)
-      .order("spent_on"),
-    supabase.from("activities").select("*").eq("family_id", session.family.id),
-    supabase
-      .from("activity_occurrences")
-      .select("*")
-      .eq("family_id", session.family.id)
-      .gte("day", odKlic)
-      .lte("day", doKlic),
-  ]);
+  const souhrn = await nactiSouhrn(supabase, session, od, doData);
 
-  // Jízdy se skládají ze vzoru kroužku a zapsaných výjimek — v tabulce
-  // termínů leží jen ty dny, u kterých někdo něco změnil.
-  const dny = eachDayOfInterval({ start: od, end: doData });
-  const jizdy = [
-    ...expandActivities(
-      dny,
-      (aktivity.data ?? []) as Activity[],
-      (terminy.data ?? []) as ActivityOccurrence[],
-    ).values(),
-  ].flat();
-
-  const souhrn = slozSouhrn({
-    od,
-    do: doData,
-    deti: session.children,
-    members: session.members,
-    patterns: (patterns.data ?? []) as CustodyPattern[],
-    overrides: (overrides.data ?? []) as CustodyOverride[],
-    vydaje: (vydaje.data ?? []) as Expense[],
-    jizdy,
-  });
+  // Kód ověřitelného výpisu, pokud právě vznikl (tlačítko Tisk). Platí
+  // jen kód této rodiny a přesně tohoto období — jinak by šlo k jinému
+  // souhrnu přidat kód, který ověřuje jiná čísla.
+  let kod: string | null = null;
+  if (parametry.kod) {
+    const { data: vypis } = await supabase
+      .from("vypisy")
+      .select("kod")
+      .eq("family_id", session.family.id)
+      .eq("druh", "souhrn")
+      .eq("kod", parametry.kod)
+      .eq("obdobi_od", odKlic)
+      .eq("obdobi_do", doKlic)
+      .maybeSingle();
+    kod = vypis?.kod ?? null;
+  }
 
   return (
     <div className="space-y-5">
       <VolbaObdobi aktivni={klic} od={odKlic} do={doKlic} />
-      <SouhrnDokument souhrn={souhrn} session={session} />
+      <SouhrnDokument souhrn={souhrn} session={session} kod={kod} />
     </div>
   );
 }

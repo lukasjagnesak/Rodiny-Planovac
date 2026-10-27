@@ -218,7 +218,7 @@ export default async function Domu() {
             Podívejte se dovnitř
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas. Skutečné snímky aplikace, jen s vymyšlenou rodinou.
+            Obrazovky, ve kterých rodiče tráví skoro všechen čas. Skutečné snímky aplikace, jen s vymyšlenou rodinou.
           </p>
 
           <div className="mt-10">

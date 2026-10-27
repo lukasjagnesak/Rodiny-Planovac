@@ -372,3 +372,15 @@ export interface ZadostZmeny {
   vyrizeno_at: string | null;
   created_at: string;
 }
+
+/** Záznam historie změn, viz migrace 0034. */
+export interface ZaznamHistorie {
+  id: number;
+  family_id: string;
+  kdo: string | null;
+  kdo_jmeno: string;
+  kdy: string;
+  oblast: "rozvrh" | "vydaje" | "udalosti" | "krouzky" | "deti" | "clenove" | "vypisy";
+  popis: string;
+  zaznam_id: string | null;
+}

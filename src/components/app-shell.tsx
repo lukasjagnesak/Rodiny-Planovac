@@ -18,6 +18,7 @@ import {
   MessageSquare,
   FileBarChart,
   FileText,
+  History,
   MoreHorizontal,
   Settings,
   Table2,
@@ -46,6 +47,7 @@ const SECONDARY = [
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/doklady", label: "Doklady", Icon: FileText },
   { href: "/souhrn", label: "Souhrn pro soud", Icon: FileBarChart },
+  { href: "/historie", label: "Historie změn", Icon: History },
   { href: "/deti", label: "Děti a rodina", Icon: Users },
   // Předplatné bylo schované jako položka v nastavení. Kdo chtěl zaplatit,
   // musel uhodnout, že se platba schovává tam, kde se přepínají notifikace.

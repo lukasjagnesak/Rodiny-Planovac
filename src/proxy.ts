@@ -37,6 +37,9 @@ export const PUBLIC_PATHS = [
   "/pro-advokaty",
   "/pro-mediatory",
   "/pro-ospod-a-soudy",
+  // Ověření výpisu — soud ani advokát účet nemají.
+  "/overit",
+  "/api/overit",
   "/zasady-ochrany-osobnich-udaju",
   "/bezpecnost",
   // security.txt — kontakt pro nahlášení chyby v zabezpečení.
