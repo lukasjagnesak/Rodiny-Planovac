@@ -52,6 +52,21 @@ console.log("── pozvánka ──");
   ok("žádné skripty", !/<script/i.test(z.html));
 }
 {
+  const z = pozvankaZprava({
+    odesilatel: "Jana",
+    rodina: "Novákovi",
+    odkaz: "https://klidoo.cz/pozvanka/p1",
+    role: "profesional",
+    email: "kancelar@advokat.cz",
+    pristupDo: "2027-01-31",
+  });
+  ok("profesionál: říká, že jen ke čtení", z.html.includes("jen ke čtení"));
+  ok("profesionál: datum konce česky", z.html.includes("31. 1. 2027") && z.text.includes("31. 1. 2027"));
+  ok("profesionál: jmenuje e-mail k přihlášení", z.text.includes("kancelar@advokat.cz"));
+  ok("profesionál: nemluví o předplatném", !z.html.includes("předplatné"));
+  ok("profesionál: odkaz v HTML i textu", z.html.includes("/pozvanka/p1") && z.text.includes("/pozvanka/p1"));
+}
+{
   // Jméno rodiny píše uživatel — nesmí se dostat do HTML syrové.
   const z = pozvankaZprava({
     odesilatel: '<img src=x onerror="alert(1)">',

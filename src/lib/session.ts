@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { ACTIVE_FAMILY_COOKIE, toMemberView } from "./members";
+import { toDateKey } from "./dates";
+import { pristupPlati } from "./profesionalove";
 import type { Child, Family, FamilyMember, Profile, SessionContext } from "./types";
 
 /**
@@ -38,13 +40,19 @@ export const requireSession = cache(async function requireSession(): Promise<Ses
     supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
   ]);
 
-  if (!memberships || memberships.length === 0) {
+  // Profesionálovi po datu konce databáze rodinu nepustí (family je
+  // null) — takové členství se nepočítá a stránka Vítejte mu řekne proč.
+  const dnes = toDateKey(new Date());
+  const platna = (memberships ?? []).filter(
+    (m) => m.family && pristupPlati(m.pristup_do as string | null, dnes),
+  );
+  if (platna.length === 0) {
     redirect("/vitejte");
   }
 
   const cookieStore = await cookies();
   const preferred = cookieStore.get(ACTIVE_FAMILY_COOKIE)?.value;
-  const active = memberships.find((m) => m.family_id === preferred) ?? memberships[0];
+  const active = platna.find((m) => m.family_id === preferred) ?? platna[0];
   const family = active.family as unknown as Family;
 
   const [{ data: rawMembers }, { data: children }] = await Promise.all([
@@ -82,7 +90,7 @@ export const requireSession = cache(async function requireSession(): Promise<Ses
     members,
     children: (children ?? []) as Child[],
     myMembership: active as unknown as FamilyMember,
-    allFamilies: memberships.map((m) => ({
+    allFamilies: platna.map((m) => ({
       id: m.family_id,
       name: (m.family as unknown as Family).name,
     })),

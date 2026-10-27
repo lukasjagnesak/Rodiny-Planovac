@@ -62,8 +62,16 @@ export interface FamilyMember {
   display_name: string | null;
   color: string | null;
   created_at: string;
+  /** Jen u přístupu pro profesionály (role viewer). */
+  profese: Profese | null;
+  /** Poslední den přístupu (YYYY-MM-DD); NULL = bez konce. */
+  pristup_do: string | null;
+  /** Kdo přístup udělil. */
+  udelil: string | null;
   profile?: Profile | null;
 }
+
+export type Profese = "advokat" | "mediator" | "ospod" | "soud" | "jiny";
 
 /** Člen s dopočítanými zobrazovacími hodnotami — používá se napříč UI. */
 export interface MemberView {
@@ -75,6 +83,9 @@ export interface MemberView {
   side: CustodySide | null;
   color: string;
   avatarUrl: string | null;
+  profese: Profese | null;
+  pristupDo: string | null;
+  udelil: string | null;
 }
 
 export interface FamilyInvite {
@@ -87,6 +98,8 @@ export interface FamilyInvite {
   accepted_at: string | null;
   expires_at: string;
   created_at: string;
+  profese: Profese | null;
+  pristup_do: string | null;
 }
 
 export interface Child {

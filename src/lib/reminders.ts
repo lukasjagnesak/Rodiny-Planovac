@@ -130,7 +130,9 @@ export async function planNotifications(): Promise<number> {
         members.map((m) => m.userId),
       );
     const maPush = new Set((odbery ?? []).map((o) => o.user_id as string));
-    const sPushem = members.filter((m) => maPush.has(m.userId));
+    // Profesionálové (advokát, OSPOD…) data vidí, ale připomínky
+    // předávání a kroužků jim nepatří.
+    const sPushem = members.filter((m) => maPush.has(m.userId) && !m.profese);
 
     if (sPushem.length === 0) continue;
 

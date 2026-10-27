@@ -4,6 +4,7 @@ import "server-only";
 import { addDays, eachDayOfInterval } from "date-fns";
 import { createAdminClient } from "./supabase/admin";
 import { smiZapisovatUzivatel } from "./predplatne";
+import { pristupPlati } from "./profesionalove";
 import {
   GoogleEventMissing,
   accessTokenFor,
@@ -70,10 +71,14 @@ export async function syncUserCalendar(userId: string): Promise<SyncResult> {
 
   const { data: memberships } = await admin
     .from("family_members")
-    .select("family_id")
+    .select("family_id, pristup_do")
     .eq("user_id", userId);
 
-  const familyIds = (memberships ?? []).map((m) => m.family_id);
+  // Profesionálovi po datu konce se rodina do kalendáře dál nepropisuje.
+  const dnes = toDateKey(new Date());
+  const familyIds = (memberships ?? [])
+    .filter((m) => pristupPlati(m.pristup_do as string | null, dnes))
+    .map((m) => m.family_id);
   if (familyIds.length === 0) return { created: 0, updated: 0, deleted: 0 };
 
   const today = new Date();

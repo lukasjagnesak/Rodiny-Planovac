@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ButtonLink } from "@/components/ui/button";
 import { AcceptInviteButton } from "./accept";
 import { ListaUctu } from "@/components/ui/lista-uctu";
+import { formatDay } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Pozvánka do rodiny" };
 
@@ -22,7 +23,7 @@ export default async function InvitePage({
   const admin = createAdminClient();
   const { data: invite } = await admin
     .from("family_invites")
-    .select("id, email, role, accepted_at, expires_at, family:families(name)")
+    .select("id, email, role, profese, pristup_do, accepted_at, expires_at, family:families(name)")
     .eq("token", token)
     .maybeSingle();
 
@@ -50,18 +51,26 @@ export default async function InvitePage({
     return (
       <InviteMessage
         title="Pozvánka vypršela"
-        text="Požádejte správce rodiny, ať vám pošle novou."
+        text="Požádejte toho, kdo vás pozval, ať vám pošle novou."
       />
     );
   }
 
   const familyName = (invite.family as unknown as { name: string } | null)?.name ?? "rodiny";
+  const profesional = Boolean(invite.profese);
+  const pristup = invite.pristup_do
+    ? `Přístup je jen ke čtení a skončí ${formatDay(invite.pristup_do)}.`
+    : "Přístup je jen ke čtení.";
 
   if (!user) {
     return (
       <InviteMessage
         title={`Pozvánka do rodiny ${familyName}`}
-        text="Nejdřív se přihlaste nebo si vytvoř účet — pozvánku pak přijmete jedním klikem."
+        text={
+          profesional
+            ? `${pristup} Přihlaste se nebo si vytvořte účet s e-mailem ${invite.email} — jiný účet pozvánku nepřijme.`
+            : "Nejdřív se přihlaste nebo si vytvořte účet — pozvánku pak přijmete jedním klikem."
+        }
         action={
           <div className="flex w-full flex-col gap-2 sm:flex-row">
             <ButtonLink
@@ -85,6 +94,20 @@ export default async function InvitePage({
     );
   }
 
+  // Pozvánka profesionála jde přijmout jen z e-mailu, na který šla
+  // (hlídá to i databáze). Tady se to řekne dřív, než se klikne.
+  if (profesional && user.email?.toLowerCase() !== String(invite.email).toLowerCase()) {
+    return (
+      <>
+        <ListaUctu email={user.email ?? null} />
+        <InviteMessage
+          title="Pozvánka patří jinému e-mailu"
+          text={`Pozvánka je pro ${invite.email}, přihlášený účet je ${user.email}. Odhlaste se a přihlaste se e-mailem, na který pozvánka přišla.`}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       {/* Pozvánka může být pro jinou adresu, než pod kterou je člověk
@@ -93,8 +116,12 @@ export default async function InvitePage({
       <ListaUctu email={user.email ?? null} />
       <InviteMessage
         title={`Připojit se k rodině ${familyName}`}
-        text={`Přihlášen jako ${user.email}. Po potvrzení uvidíte kalendář, kroužky i výdaje.`}
-        action={<AcceptInviteButton token={token} />}
+        text={
+          profesional
+            ? `Přihlášen jako ${user.email}. ${pristup} Uvidíte kalendář, zprávy, výdaje a doklady, nic nemůžete změnit.`
+            : `Přihlášen jako ${user.email}. Po potvrzení uvidíte kalendář, kroužky i výdaje.`
+        }
+        action={<AcceptInviteButton token={token} profesional={profesional} />}
       />
     </>
   );

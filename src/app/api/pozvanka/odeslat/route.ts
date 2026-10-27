@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   // takže cizí e-mail se odsud nedá rozeslat.
   const { data: pozvanka } = await supabase
     .from("family_invites")
-    .select("email, role, family_id, family:families(name)")
+    .select("email, role, profese, pristup_do, family_id, family:families(name)")
     .eq("token", token)
     .maybeSingle();
 
@@ -53,7 +53,13 @@ export async function POST(request: NextRequest) {
       odesilatel: profil?.full_name ?? "",
       rodina,
       odkaz: `${siteUrl()}/pozvanka/${token}`,
-      role: pozvanka.role === "parent" || pozvanka.role === "owner" ? "rodic" : "jiny",
+      role: pozvanka.profese
+        ? "profesional"
+        : pozvanka.role === "parent" || pozvanka.role === "owner"
+          ? "rodic"
+          : "jiny",
+      email: pozvanka.email as string,
+      pristupDo: (pozvanka.pristup_do as string | null) ?? null,
     }),
   );
 

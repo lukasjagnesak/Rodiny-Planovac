@@ -22,6 +22,8 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { Sheet, ConfirmSheet } from "@/components/ui/sheet";
 import { Alert, ColorPicker, EmptyState, Spinner } from "@/components/ui/misc";
 import { ChildForm } from "./child-form";
+import { PristupProfesionalu } from "./pristup-profesionalu";
+import { posliPozvanku } from "./posli-pozvanku";
 import { COLOR_PALETTE, ROLE_HINTS, ROLE_LABELS } from "@/lib/constants";
 import { formatDay } from "@/lib/dates";
 import { sideLabel } from "@/lib/members";
@@ -51,6 +53,10 @@ export function FamilyScreen({
 
   const isOwner = session.myMembership.role === "owner";
   const canEdit = session.myMembership.role !== "viewer";
+  const jeRodic = isOwner || session.myMembership.role === "parent";
+  // Profesionálové mají vlastní kartu níž — s datem konce a odebráním.
+  const clenove = session.members.filter((m) => !m.profese);
+  const pozvanky = invites.filter((i) => !i.profese);
 
   return (
     <div className="space-y-4">
@@ -148,7 +154,7 @@ export function FamilyScreen({
         />
 
         <ul className="mt-2 divide-y divide-line">
-          {session.members.map((m) => (
+          {clenove.map((m) => (
             <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
               <Avatar name={m.name} color={m.color} src={m.avatarUrl} size={42} />
               <div className="min-w-0 flex-1">
@@ -181,19 +187,26 @@ export function FamilyScreen({
           ))}
         </ul>
 
-        {invites.length > 0 ? (
+        {pozvanky.length > 0 ? (
           <CardBody className="border-t border-line pt-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle">
               Čekající pozvánky
             </p>
             <ul className="space-y-2">
-              {invites.map((inv) => (
+              {pozvanky.map((inv) => (
                 <InviteRow key={inv.id} invite={inv} canManage={isOwner} />
               ))}
             </ul>
           </CardBody>
         ) : null}
       </Card>
+
+      {jeRodic ? (
+        <PristupProfesionalu
+          session={session}
+          invites={invites.filter((i) => i.profese)}
+        />
+      ) : null}
 
       <ChildForm
         open={childOpen}
@@ -584,21 +597,3 @@ function MemberSheet({
 }
 
 
-/**
- * Pošle pozvánku e-mailem. Vrací jen ano/ne — když SMTP mlčí, uživateli
- * zůstává odkaz ke zkopírování a hláška o chybějícím nastavení by mu
- * nic neřekla.
- */
-async function posliPozvanku(token: string): Promise<boolean> {
-  try {
-    const odpoved = await fetch("/api/pozvanka/odeslat", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
-    const data = (await odpoved.json()) as { poslano?: boolean };
-    return Boolean(data.poslano);
-  } catch {
-    return false;
-  }
-}

@@ -8,7 +8,13 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { ACTIVE_FAMILY_COOKIE } from "@/lib/members";
 import { zmer } from "@/lib/mereni";
 
-export function AcceptInviteButton({ token }: { token: string }) {
+export function AcceptInviteButton({
+  token,
+  profesional = false,
+}: {
+  token: string;
+  profesional?: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -26,7 +32,8 @@ export function AcceptInviteButton({ token }: { token: string }) {
       return;
     }
 
-    zmer("druhy_rodic");
+    // Advokát nebo OSPOD není druhý rodič — do měření nepatří.
+    if (!profesional) zmer("druhy_rodic");
 
     document.cookie = `${ACTIVE_FAMILY_COOKIE}=${data}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     router.push("/prehled");

@@ -30,7 +30,7 @@ orientační.
 | Výdaje | Evidence, rozdělení, zůstatek | ✅ Má (účtenky, klíč, vyrovnání) |
 | Žádost o proplacení a OFWpay | Žádost o úhradu, platba převodem v aplikaci, historie plateb | ⚠️ Částečně — výdaje a „vypořádáno" ano, žádost se schválením a platba ne |
 | **Auditní stopa** | Časová historie žádostí, výdajů, změn rozvrhu a přihlášení | ✅ **Má od 27. 10. 2026** (migrace 0034): rozvrh, výdaje, události, kroužky, děti, členové i stažené výpisy; nejde upravit ani smazat. Přihlášení zatím ne |
-| **Přístup pro profesionály** | Advokát, soudce, opatrovník, mediátor vidí účet rodiny jen pro čtení, zdarma | ❌ **Chybí.** Partnerský přehled ukazuje jen obchodní čísla, ne data rodiny |
+| **Přístup pro profesionály** | Advokát, soudce, opatrovník, mediátor vidí účet rodiny jen pro čtení, zdarma | ✅ **Má od 27. 10. 2026** (migrace 0035). Udělí kterýkoli rodič, druhý dostane zprávu a smí přístup odebrat. Přístup má datum konce, pozvánku jde přijmout jen z e-mailu, na který šla |
 | Výpisy pro soud | Záznamy pro řízení | ✅ Výpis zpráv, historie (Word) a souhrn s ověřovacím kódem; klidoo.cz/overit ověří pravost i to, že soubor nikdo neupravil (SHA-256) |
 | Info Bank | Pojištění, lékaři, velikosti, zdravotní údaje | ✅ Většinou má (děti, doklady, kontakty) |
 | Deník a check-in | Soukromé i sdílené záznamy, ověření polohy při předání | ❌ Nemá. Soukromé poznámky schválně ne (neutralita), check-in zvážit |
@@ -60,6 +60,7 @@ orientační.
    transparentní (rodič ví, že se text kontroluje, a kde).
 5. **Přístup pro profesionály.** Advokát, mediátor nebo OSPOD jen pro
    čtení. Uděluje ho rodič, druhý rodič to vidí a jde ho kdykoli odebrat.
+   ✅ Hotovo (0035, karta v Děti a rodina).
 6. **Žádost o proplacení výdaje** se schválením nebo rozporováním. Platby
    v aplikaci zatím ne.
 7. **Formulace do dohody a rozhodnutí** a **přístup zdarma** pro rodiny

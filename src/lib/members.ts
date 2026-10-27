@@ -22,6 +22,9 @@ export function toMemberView(m: FamilyMember & { profile: Profile | null }): Mem
     side: m.custody_side,
     color: m.color || profile?.color || fallbackColor,
     avatarUrl: profile?.avatar_url ?? null,
+    profese: m.profese ?? null,
+    pristupDo: m.pristup_do ?? null,
+    udelil: m.udelil ?? null,
   };
 }
 

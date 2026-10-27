@@ -8,6 +8,7 @@ import { ListaUctu } from "@/components/ui/lista-uctu";
 import { ZmerRegistraci } from "./zmer-registraci";
 import type { PatternKind } from "@/lib/types";
 import { rozvrhZPece } from "@/lib/vyzivne-plan";
+import { pristupPlati } from "@/lib/profesionalove";
 import { toDateKey, WEEK_OPTS } from "@/lib/dates";
 import { startOfWeek } from "date-fns";
 
@@ -113,18 +114,38 @@ export default async function WelcomePage({
 
   if (!user) redirect("/prihlaseni");
 
-  const { data: memberships } = await supabase
+  const { data: clenstvi } = await supabase
     .from("family_members")
-    .select("family_id")
-    .eq("user_id", user.id)
-    .limit(1);
+    .select("family_id, profese, pristup_do")
+    .eq("user_id", user.id);
+  const dnes = toDateKey(new Date());
+  const memberships = (clenstvi ?? []).filter((m) => pristupPlati(m.pristup_do, dnes));
 
-  if (memberships && memberships.length > 0) {
+  if (memberships.length > 0) {
     // Kdo rodinu má, sem nepatří — ale nese-li s sebou výpočet
     // z kalkulačky, patří na převzetí, ne na přehled. Tohle je přesně
     // to místo, kde se odložený výpočet ztrácel.
     redirect(
       vyzivne ? `/prevzit/vyzivne?token=${encodeURIComponent(vyzivne)}` : "/prehled",
+    );
+  }
+
+  // Profesionál, kterému skončil přístup: průvodce založením rodiny
+  // by tu jen mátl. Rodiče o konci vědí, přístup se dá udělit znovu.
+  if ((clenstvi ?? []).some((m) => m.profese)) {
+    return (
+      <>
+        <ListaUctu email={user.email ?? null} />
+        <div className="flex min-h-[70dvh] items-center justify-center px-4 py-10">
+          <div className="card w-full max-w-md p-6 text-center">
+            <h1 className="text-lg font-semibold text-ink">Přístup skončil</h1>
+            <p className="mt-1 text-sm text-ink-muted">
+              Přístup jen ke čtení, který vám rodiče udělili, už neplatí. Potřebujete-li ho dál,
+              požádejte některého z rodičů o novou pozvánku.
+            </p>
+          </div>
+        </div>
+      </>
     );
   }
 

@@ -92,10 +92,14 @@ export function pozvankaZprava(vstup: {
   odesilatel: string;
   rodina: string;
   odkaz: string;
-  role?: "rodic" | "jiny";
+  role?: "rodic" | "jiny" | "profesional";
+  /** U profesionála: e-mail, kterým se musí přihlásit, a konec přístupu. */
+  email?: string;
+  pristupDo?: string | null;
 }): Zprava {
   const kdo = vstup.odesilatel.trim() || "Druhý rodič";
   const rodina = vstup.rodina.trim() || "rodinný kalendář";
+  if (vstup.role === "profesional") return pozvankaProfesionala(kdo, rodina, vstup);
   const jeRodic = (vstup.role ?? "rodic") === "rodic";
 
   const predmet = `${kdo} vás zve do sdíleného kalendáře dětí`;
@@ -129,6 +133,53 @@ ${vstup.odkaz}
     html: obalka(predmet, telo, "Tenhle e-mail vám přišel, protože vás někdo pozval do své rodiny."),
     text,
   };
+}
+
+/**
+ * Pozvánka pro advokáta, mediátora, OSPOD nebo soud. Věcná: co uvidí,
+ * do kdy a že se musí přihlásit e-mailem, na který pozvánka přišla.
+ */
+function pozvankaProfesionala(
+  kdo: string,
+  rodina: string,
+  vstup: { odkaz: string; email?: string; pristupDo?: string | null },
+): Zprava {
+  const predmet = `${kdo} vám dává přístup ke kalendáři rodiny ${rodina}`;
+  const konec = vstup.pristupDo
+    ? `Přístup skončí sám ${datumCesky(vstup.pristupDo)}.`
+    : "Přístup trvá, dokud ho některý z rodičů neodebere.";
+  const email = vstup.email ? ` (${vstup.email})` : "";
+
+  const telo = `
+<h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">${escapeHtml(kdo)} vám dává přístup jen ke čtení</h1>
+<p style="margin:0 0 12px 0;">
+  Jde o rodinu <strong>${escapeHtml(rodina)}</strong> v ${ZNACKA}: rozvrh péče o děti, zprávy mezi
+  rodiči, výdaje s doklady a historii změn. Nic nemůžete změnit ani smazat. ${escapeHtml(konec)}
+</p>
+<p style="margin:0 0 12px 0;">
+  Pozvánku přijmete jen po přihlášení e-mailem, na který přišla${escapeHtml(email)}. Účet je zdarma.
+</p>
+${tlacitko(vstup.odkaz, "Přijmout pozvánku")}
+<p style="margin:16px 0 0 0;font-size:13px;color:${BARVA_TLUMENA};">Odkaz platí 30 dní. Druhý rodič o pozvání ví.</p>`;
+
+  const text = `${kdo} vám dává přístup jen ke čtení k rodině ${rodina} v ${ZNACKA}.
+
+Uvidíte rozvrh péče, zprávy mezi rodiči, výdaje s doklady a historii změn. Nic nemůžete změnit ani smazat. ${konec}
+
+Pozvánku přijmete jen po přihlášení e-mailem, na který přišla${email}. Účet je zdarma.
+${vstup.odkaz}
+`;
+
+  return {
+    predmet,
+    html: obalka(predmet, telo, "Tenhle e-mail vám přišel, protože vám rodič udělil přístup ke své rodině."),
+    text,
+  };
+}
+
+function datumCesky(klic: string): string {
+  const [r, m, d] = klic.split("-").map(Number);
+  return `${d}. ${m}. ${r}`;
 }
 
 /** Zkušební období se chýlí ke konci. */
