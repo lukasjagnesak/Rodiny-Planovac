@@ -12,6 +12,7 @@ const {
   navrhKodu,
   PROVIZE_PROCENTO,
   MINIMALNI_VYPLATA_KC,
+  platbyKProvizi,
 } = require("../.test-build/partneri.js");
 const { refJeStalePlatny } = require("../.test-build/atribuce.js");
 
@@ -78,6 +79,21 @@ ok("diakritika pryč", navrhKodu("Jana Nováková") === "jana-novakova");
 ok("mezery a interpunkce na pomlčky", navrhKodu("Mgr. Petr Černý, LL.M.") === "mgr-petr-cerny-ll-m");
 ok("pomlčky na krajích se ořežou", navrhKodu("  Eva  ") === "eva");
 ok("prázdné jméno nespadne", navrhKodu("") === "");
+
+console.log("── provize z prvních 12 měsíců placení ──");
+{
+  const vznik = new Map([["f1", new Date("2026-01-01").getTime()]]);
+  const p = (datum, castka = 129) => ({ family_id: "f1", castka, zaplaceno_at: `${datum}T10:00:00Z` });
+  // Rok zdarma, pak měsíční platby od ledna 2027.
+  const platby = [
+    p("2025-12-15", 999), // před doporučením — nepočítá se
+    ...Array.from({ length: 14 }, (_, i) => p(`20${27 + Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, "0")}-05`)),
+  ];
+  const zaklad = platbyKProvizi(platby, vznik);
+  ok("počítá se 12 plateb, ne 14", zaklad.length === 12);
+  ok("platba před doporučením ne", !zaklad.includes(999));
+  ok("rok zdarma provizi nesežere", zaklad.reduce((a, b) => a + b, 0) === 12 * 129);
+}
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\n${selhalo} selhalo.`);
 process.exit(selhalo === 0 ? 0 : 1);

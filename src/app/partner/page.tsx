@@ -10,6 +10,7 @@ import {
   PARTNERSKY_EMAIL,
   PLATNOST_DOPORUCENI_DNI,
   VYPLATA_OBDOBI,
+  platbyKProvizi,
   slozPrehled,
   type StavRodiny,
 } from "@/lib/partneri";
@@ -73,20 +74,22 @@ export default async function PartnerPage() {
         ])
       : [{ data: [] }, { data: [] }];
 
-  // Počítá se jen to, co rodina zaplatila PO doporučení. Bez toho by si
-  // partner připsal i platby rodiny, která u nás byla dávno předtím.
+  // Počítá se jen to, co rodina zaplatila po doporučení, a jen prvních
+  // 12 měsíců placení — viz `platbyKProvizi`.
   const vznik = new Map(
     (doporuceni ?? []).map((d) => [String(d.family_id), new Date(String(d.vzniklo_at)).getTime()]),
   );
 
   const prehled = slozPrehled({
     stavy: (predplatna ?? []).map((p) => String(p.stav) as StavRodiny),
-    zaplaceno: (platby ?? [])
-      .filter(
-        (p) =>
-          new Date(String(p.zaplaceno_at)).getTime() >= (vznik.get(String(p.family_id)) ?? 0),
-      )
-      .map((p) => Number(p.castka)),
+    zaplaceno: platbyKProvizi(
+      (platby ?? []).map((p) => ({
+        family_id: String(p.family_id),
+        castka: Number(p.castka),
+        zaplaceno_at: String(p.zaplaceno_at),
+      })),
+      vznik,
+    ),
     provizeProcento: Number(partner.provize_procento),
   });
 

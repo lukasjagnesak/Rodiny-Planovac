@@ -6,7 +6,12 @@
  * kde by se navíc dřív nebo později rozešla.
  */
 
-/** Podíl z předplatného, které doporučená rodina zaplatí v prvním roce. */
+/**
+ * Podíl z předplatného, které doporučená rodina zaplatí v prvních
+ * 12 měsících placení. Ne „v prvním roce od registrace": rodina od
+ * partnera má 12 měsíců zdarma (migrace 0031) a partner by jinak
+ * nedostal nic.
+ */
 export const PROVIZE_PROCENTO = 25;
 
 /** Jak dlouho se doporučení počítá od prvního prokliku. */
@@ -80,6 +85,48 @@ export function slozPrehled(vstup: {
     provize,
     doVyplaty: Math.max(0, minimum - provize),
   };
+}
+
+/** Kolik měsíců od první platby rodiny se z jejích plateb počítá provize. */
+export const PROVIZE_MESICU = 12;
+
+export interface PlatbaRodiny {
+  family_id: string;
+  castka: number;
+  zaplaceno_at: string;
+}
+
+/**
+ * Platby, ze kterých se počítá provize.
+ *
+ * Jen to, co rodina zaplatila po doporučení (jinak by si partner připsal
+ * rodinu, která u nás byla dřív), a jen prvních {@link PROVIZE_MESICU}
+ * měsíců od její první takové platby — to slibuje stránka pro
+ * mediátory. Ne „první rok od registrace": rodina od partnera má rok
+ * zdarma a partner by jinak nedostal nic.
+ */
+export function platbyKProvizi(
+  platby: PlatbaRodiny[],
+  vznikDoporuceni: Map<string, number>,
+  mesicu: number = PROVIZE_MESICU,
+): number[] {
+  const poDoporuceni = platby.filter(
+    (p) => new Date(p.zaplaceno_at).getTime() >= (vznikDoporuceni.get(p.family_id) ?? 0),
+  );
+
+  const prvni = new Map<string, number>();
+  for (const p of poDoporuceni) {
+    const cas = new Date(p.zaplaceno_at).getTime();
+    prvni.set(p.family_id, Math.min(prvni.get(p.family_id) ?? Infinity, cas));
+  }
+
+  return poDoporuceni
+    .filter((p) => {
+      const konec = new Date(prvni.get(p.family_id)!);
+      konec.setMonth(konec.getMonth() + mesicu);
+      return new Date(p.zaplaceno_at).getTime() < konec.getTime();
+    })
+    .map((p) => p.castka);
 }
 
 /**

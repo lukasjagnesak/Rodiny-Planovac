@@ -77,7 +77,7 @@ export default function ProMediatory() {
             radky={[
               [
                 "Provize",
-                `${PROVIZE_PROCENTO} % z předplatného, které doporučená rodina zaplatí v prvním roce`,
+                `${PROVIZE_PROCENTO} % z předplatného, které doporučená rodina zaplatí v prvních 12 měsících placení`,
               ],
               [
                 "Doporučení",
