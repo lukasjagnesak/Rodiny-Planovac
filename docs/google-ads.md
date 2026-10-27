@@ -290,7 +290,19 @@ Kalendář pro dva domovy
 Kroužky, odvozy i výdaje
 Česká aplikace, data v EU
 Zkuste to za dvě minuty
+Méně než 5 Kč denně
+Za cenu dvou káv měsíčně
+Celá rodina za 129 Kč měsíčně
+Rok zdarma, pak 129 Kč/měsíc
+Levnější než pizza měsíčně
 ```
+
+> **Cena v reklamě se srovnáním** (od 27. 10. 2026). Rodič si 129 Kč
+> neumí zařadit; „méně než 5 Kč denně" nebo „dvě kávy měsíčně" ano.
+> Srovnání musí sedět: 129 Kč / 30 dní = 4,30 Kč; káva v kavárně
+> 60–80 Kč; pizza 180+ Kč. Při změně ceny přepočítat, jinak je to
+> klamavá reklama. Rok zdarma vždycky dřív než cena — cena je
+> uklidnění „a potom to nebude drahé", ne háček.
 
 **Popisy — verze „rok zdarma"** (max. 90 znaků):
 
@@ -299,6 +311,9 @@ Klepněte, jak se střídáte, a uvidíte celý měsíc. Prvních 50 rodin má r
 Začnete sami, druhého rodiče pozvete, až bude chtít. Bez karty, nic se nestrhne.
 Kdo má děti o Vánocích, kdo platil tábor. Napsané jednou, vidí to oba rodiče.
 Česká aplikace pro rodiny se dvěma domovy. Sudé a liché týdny, prázdniny, výdaje.
+Rok zdarma pro prvních 50 rodin, pak 129 Kč měsíčně za celou rodinu. Méně než 5 Kč denně.
+Za cenu dvou káv měsíčně: kalendář, výdaje i zprávy pro celou rodinu.
+Méně než 5 Kč denně za klid v tom, u koho jsou děti. Prvních 50 rodin rok zdarma.
 ```
 
 **Nadpisy — původní verze** (pro srovnání, po vyhodnocení vypnout):

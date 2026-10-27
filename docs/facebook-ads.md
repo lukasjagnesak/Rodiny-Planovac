@@ -124,11 +124,26 @@ Týden u vás, týden u druhého. A kdo veze na fotbal?
 Klidoo: jeden kalendář pro oba domovy, kroužky i výdaje. Začnete sami, druhý rodič se přidá, až bude chtít. Prvních 50 rodin rok zdarma.
 ```
 
+```
+Kolik stojí jedna hádka o to, u koho jsou děti o víkendu?
+Klidoo stojí méně než 5 Kč denně — 129 Kč měsíčně za celou rodinu, druhý rodič neplatí nic. A prvních 50 rodin ho má rok úplně zdarma.
+```
+
+```
+Za cenu dvou káv měsíčně: jeden kalendář pro oba domovy, kroužky, výdaje i zprávy.
+Prvních 50 rodin rok zdarma, bez karty. Pak 129 Kč měsíčně za celou rodinu.
+```
+
+> Srovnání musí sedět: 129 Kč / 30 dní = 4,30 Kč, káva 60–80 Kč.
+> Při změně ceny přepočítat.
+
 **Nadpis — verze „rok zdarma":**
 
 ```
 Prvních 50 rodin: rok zdarma
 Rozvrh dětí na měsíc dopředu, zdarma
+Méně než 5 Kč denně, celá rodina
+Za cenu dvou káv měsíčně
 ```
 
 **Hlavní text — původní verze:**

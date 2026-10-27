@@ -98,8 +98,12 @@ export default function Cenik() {
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
             Potom {korun(CENIK[0].cena)} měsíčně za celou rodinu
           </h2>
+          {/* Srovnání, které si rodič umí představit. „Dvě kávy" platí pro
+              cenu kolem 130 Kč (káva 60–80 Kč) — při změně ceny přepsat. */}
           <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-ink-muted">
-            Cena je za jednu rodinu, ne za člověka. Kolik vás do ní přibude, na cenu nemá vliv.
+            Méně než {Math.ceil(CENIK[0].cena / 30)} Kč denně — zhruba jako dvě kávy za
+            měsíc. Cena je za jednu rodinu, ne za člověka. Kolik vás do ní přibude, na cenu nemá
+            vliv.
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
