@@ -156,6 +156,11 @@ export default function Bezpecnost() {
             si ji druhý rodič přečetl. Když se pak řeší, kdo co napsal a kdy, není o čem se
             dohadovat.
           </p>
+          <p>
+            Když rodinu používají oba rodiče, <strong>rozvrh nemůže změnit jeden sám</strong>.
+            Změnu navrhne jeden a schválí druhý; do té doby kalendář platí, jak byl. Návrh
+            i odpověď se zapíšou do Zpráv.
+          </p>
           <Poznamka>
             Klidoo nestraní žádnému z rodičů. Oba mají stejná práva a vidí totéž. Soukromé poznámky
             „na toho druhého" tu schválně nejsou.

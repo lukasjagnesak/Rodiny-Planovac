@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { startOfWeek } from "date-fns";
 import { CalendarRange, Pencil, Plus, Repeat, Trash2 } from "lucide-react";
+import { maDvaRodice } from "@/lib/zadosti";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge, Dot } from "@/components/ui/badge";
@@ -44,6 +45,9 @@ export function CustodySettings({
   const [busyOverride, setBusyOverride] = React.useState<string | null>(null);
 
   const canEdit = session.myMembership.role !== "viewer";
+  // Se dvěma rodiči se výjimky nemažou ani nepřidávají přímo — jen
+  // návrhem v kalendáři, který druhý schválí (migrace 0032).
+  const dvaRodice = maDvaRodice(session.members);
 
   async function deleteOverride(id: string) {
     setBusyOverride(id);
@@ -85,7 +89,11 @@ export function CustodySettings({
       <Card>
         <CardHeader
           title="Vzory střídání"
-          description={`${patterns.length} nastavených`}
+          description={
+            dvaRodice
+              ? `${patterns.length} nastavených · každou změnu vzoru uvidí druhý rodič ve Zprávách`
+              : `${patterns.length} nastavených`
+          }
           action={
             canEdit ? (
               <Button
@@ -184,7 +192,11 @@ export function CustodySettings({
       <Card>
         <CardHeader
           title="Nadcházející výjimky"
-          description="Dny, které jste ručně přehodili — nastavíte je klikem na den v kalendáři"
+          description={
+            dvaRodice
+              ? "Změny navrhnete klikem na den v kalendáři; platí po souhlasu druhého rodiče"
+              : "Dny, které jste ručně přehodili — nastavíte je klikem na den v kalendáři"
+          }
         />
 
         {overrides.length === 0 ? (
@@ -208,7 +220,7 @@ export function CustodySettings({
                       {o.reason ? ` · ${o.reason}` : ""}
                     </p>
                   </div>
-                  {canEdit ? (
+                  {canEdit && !dvaRodice ? (
                     <button
                       type="button"
                       onClick={() => deleteOverride(o.id)}

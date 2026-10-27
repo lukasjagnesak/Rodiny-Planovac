@@ -14,6 +14,8 @@ import { hodinyDneSeZmenami } from "@/lib/rozvrh";
 import { sideBg, sideColor, sideLabel } from "@/lib/members";
 import { EVENT_KINDS } from "@/lib/constants";
 import { cn } from "@/lib/format";
+import { maDvaRodice } from "@/lib/zadosti";
+import { NavrhZmeny } from "./navrh-zmeny";
 import type { CustodyDay } from "@/lib/custody";
 import type { ActivityInstance } from "@/lib/activities";
 import type {
@@ -52,6 +54,7 @@ export function DaySheet({
   const [error, setError] = React.useState<string | null>(null);
 
   const canEdit = session.myMembership.role !== "viewer";
+  const dvaRodice = maDvaRodice(session.members);
 
   /**
    * Zapíše výjimku na den. `side` mění, kdo má dítě přes den,
@@ -201,7 +204,18 @@ export function DaySheet({
             </div>
           )}
 
-          {canEdit ? (
+          {/* Se dvěma rodiči se den nemění přímo, ale návrhem, který druhý
+              schválí — viz `NavrhZmeny` a migrace 0032. */}
+          {canEdit && dvaRodice ? (
+            <NavrhZmeny
+              session={session}
+              dayKey={dayKey}
+              childId={childId}
+              aktualniStrana={side}
+            />
+          ) : null}
+
+          {canEdit && !dvaRodice ? (
             <div className="flex flex-wrap gap-2">
               {(["a", "b"] as const).map((s) => (
                 <button
@@ -244,7 +258,7 @@ export function DaySheet({
           {/* Den předání. Kdy se přesně předává, z rozpisu dnů nevyplývá —
               stejné dva dny můžou být jedna noc i dvě. Proto se to dá
               přepnout tady, u konkrétního dne. */}
-          {canEdit && side !== null && custody ? (
+          {canEdit && !dvaRodice && side !== null && custody ? (
             <div className="rounded-xl border border-line bg-surface-2 p-3">
               <p className="text-sm font-medium text-ink">Kde dítě tuhle noc spí</p>
               <p className="mt-0.5 text-xs text-ink-muted">

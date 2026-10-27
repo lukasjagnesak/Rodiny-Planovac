@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Dashboard } from "@/components/dashboard/dashboard";
 import { MonthView } from "@/components/calendar/month-view";
+import { ZadostiZmeny } from "@/components/calendar/zadosti-zmeny";
 import { ExpensesScreen } from "@/components/expenses/expenses-screen";
 import { ActivitiesScreen } from "@/components/activities/activities-screen";
 import { ZpravyScreen } from "@/components/zpravy/zpravy-screen";
@@ -52,18 +53,21 @@ export default async function UkazkaObrazovky({
       />
     ),
     kalendar: (
-      <MonthView
-        session={r.session}
-        monthKey={mesic}
-        initialChildId="all"
-        patterns={r.patterns}
-        overrides={[]}
-        activities={r.activities}
-        occurrences={r.occurrences}
-        events={r.events}
-        rozvrh={[]}
-        rozvrhZmeny={[]}
-      />
+      <div className="space-y-4">
+        <ZadostiZmeny session={r.session} zadosti={r.zadosti} />
+        <MonthView
+          session={r.session}
+          monthKey={mesic}
+          initialChildId="all"
+          patterns={r.patterns}
+          overrides={[]}
+          activities={r.activities}
+          occurrences={r.occurrences}
+          events={r.events}
+          rozvrh={[]}
+          rozvrhZmeny={[]}
+        />
+      </div>
     ),
     vydaje: (
       <ExpensesScreen
@@ -83,9 +87,7 @@ export default async function UkazkaObrazovky({
       />
     ),
     zpravy: <ZpravyScreen session={r.session} zpravy={r.zpravy} muzePsat muzeStahnout />,
-    rozvrh: (
-      <RozvrhScreen session={r.session} hodiny={r.rozvrh} zmeny={[]} edupagePropojeno />
-    ),
+    rozvrh: <RozvrhScreen session={r.session} hodiny={r.rozvrh} zmeny={[]} edupagePropojeno />,
   };
 
   return (

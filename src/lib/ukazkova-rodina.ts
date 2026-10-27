@@ -23,6 +23,7 @@ import type {
   OpakovanyVydaj,
   RozvrhHodina,
   SessionContext,
+  ZadostZmeny,
 } from "./types";
 import type { Zprava } from "./zpravy";
 
@@ -141,5 +142,16 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
     zprava("z4", TATA, "Petr", -1, "12:20", "Koupím je dnes, účtenku dám do výdajů."),
   ];
 
-  return { session, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
+  // Jana navrhuje prodloužený víkend — žádost čeká na Petra.
+  const zadosti: ZadostZmeny[] = [
+    {
+      id: "zz1", family_id: "f-ukazka", child_id: null,
+      od: vTydnu(5, 2), do_dne: vTydnu(7, 2), strana: "b",
+      duvod: "Jedeme s dětmi k babičce na její narozeniny",
+      navrhl: MAMA, navrhl_jmeno: "Jana", odpovedet_do: vTydnu(5, 1),
+      stav: "ceka", odpovedel: null, odpoved: null, vyrizeno_at: null, created_at: den(-1),
+    },
+  ];
+
+  return { session, zadosti, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
 }

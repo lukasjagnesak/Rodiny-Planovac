@@ -350,3 +350,22 @@ export interface SessionContext {
   myMembership: FamilyMember;
   allFamilies: { id: string; name: string }[];
 }
+
+/** Žádost o změnu rozvrhu, viz migrace 0032. */
+export interface ZadostZmeny {
+  id: string;
+  family_id: string;
+  child_id: string | null;
+  od: string;
+  do_dne: string;
+  strana: CustodySide;
+  duvod: string | null;
+  navrhl: string | null;
+  navrhl_jmeno: string;
+  odpovedet_do: string;
+  stav: "ceka" | "schvaleno" | "zamitnuto" | "zruseno";
+  odpovedel: string | null;
+  odpoved: string | null;
+  vyrizeno_at: string | null;
+  created_at: string;
+}

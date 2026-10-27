@@ -60,6 +60,11 @@ export default function ProOspodASoudy() {
                 "Oba vidí totéž a mají stejná práva. Žádné soukromé poznámky „na toho druhého“.",
             },
             {
+              nazev: "Rozvrh nezmění jeden rodič sám",
+              popis:
+                "Změnu navrhne jeden, schválí druhý. Bez souhlasu se kalendář nezmění — hlídá to databáze, ne dobrá vůle.",
+            },
+            {
               nazev: "Záznam, který nejde přepsat",
               popis:
                 "Odeslanou zprávu nemůže upravit ani smazat žádný z rodičů. Čas odeslání i přečtení je u ní.",

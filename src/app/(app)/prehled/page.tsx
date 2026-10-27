@@ -1,3 +1,4 @@
+import { ZadostiZmeny } from "@/components/calendar/zadosti-zmeny";
 import type { Metadata } from "next";
 import { addDays, endOfMonth, startOfMonth, startOfYear } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +16,7 @@ import type {
   FamilyEvent,
   RozvrhHodina,
   RozvrhZmena,
+  ZadostZmeny,
 } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Přehled" };
@@ -121,20 +123,32 @@ export default async function DashboardPage() {
     pripominkyJsou: (pushOdbery.count ?? 0) > 0,
   });
 
+  // Nevyřízené žádosti o změnu rozvrhu (migrace 0032). Bez migrace
+  // dotaz selže a seznam je prázdný — kalendář kvůli tomu nespadne.
+  const { data: zadosti } = await supabase
+    .from("zadosti_zmeny")
+    .select("*")
+    .eq("family_id", session.family.id)
+    .eq("stav", "ceka")
+    .order("od");
+
   return (
-    <Dashboard
-      session={session}
-      kroky={kroky}
-      patterns={(patterns.data ?? []) as CustodyPattern[]}
-      overrides={(overrides.data ?? []) as CustodyOverride[]}
-      activities={(activities.data ?? []) as Activity[]}
-      occurrences={(occurrences.data ?? []) as ActivityOccurrence[]}
-      events={(events.data ?? []) as FamilyEvent[]}
-      expenses={(expenses.data ?? []) as Expense[]}
-      rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
-      rozvrhZmeny={(rozvrhZmeny.data ?? []) as RozvrhZmena[]}
-      ukoly={(ukoly.data ?? []) as EdupageRow[]}
-    />
+    <div className="space-y-4">
+      <ZadostiZmeny session={session} zadosti={(zadosti ?? []) as ZadostZmeny[]} />
+      <Dashboard
+        session={session}
+        kroky={kroky}
+        patterns={(patterns.data ?? []) as CustodyPattern[]}
+        overrides={(overrides.data ?? []) as CustodyOverride[]}
+        activities={(activities.data ?? []) as Activity[]}
+        occurrences={(occurrences.data ?? []) as ActivityOccurrence[]}
+        events={(events.data ?? []) as FamilyEvent[]}
+        expenses={(expenses.data ?? []) as Expense[]}
+        rozvrh={(rozvrh.data ?? []) as RozvrhHodina[]}
+        rozvrhZmeny={(rozvrhZmeny.data ?? []) as RozvrhZmena[]}
+        ukoly={(ukoly.data ?? []) as EdupageRow[]}
+      />
+    </div>
   );
 }
 
