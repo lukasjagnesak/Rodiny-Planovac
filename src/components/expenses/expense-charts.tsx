@@ -27,13 +27,13 @@ export function MonthlyTrend({
 }) {
   return (
     <ResponsiveContainer width="100%" height={170}>
-      <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -18 }}>
+      <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
         <XAxis dataKey="label" tickLine={false} axisLine={false} tick={AXIS} />
         <YAxis
           tickLine={false}
           axisLine={false}
           tick={AXIS}
-          width={54}
+          width={64}
           tickFormatter={(v: number) => formatMoney(v, currency, true)}
         />
         <Tooltip

@@ -40,7 +40,8 @@ const SLOVNIK = {
   klikneš: "kliknete",
   // rozkazovací způsob
   napiš: "napište", zadej: "zadejte", klikni: "klikněte", vyber: "vyberte",
-  zvol: "zvolte", přihlas: "přihlaste",
+  zvol: "zvolte", přihlas: "přihlaste", podívej: "podívejte", jdeš: "jdete",
+  předplatíš: "předplatíte",
   přidej: "přidejte", otevři: "otevřete", zkus: "zkuste", ulož: "uložte",
   smaž: "smažte", pošli: "pošlete", stáhni: "stáhněte", vyfoť: "vyfoťte",
   nastav: "nastavte", zavři: "zavřete", začni: "začněte", požádej: "požádejte",

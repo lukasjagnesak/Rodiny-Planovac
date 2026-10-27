@@ -412,8 +412,10 @@ export function MonthView({
           <p className="text-xs text-ink-subtle">
             Přepůlená dlaždice je den předání — vlevo nahoře ten, kdo má dítě přes den,
             vpravo dole ten, u koho spí. Klikněte na den a noc přepnete.{" "}
-            {days(stats.daysA)} u {sideLabel(session.members, "a")},{" "}
-            {days(stats.daysB)} u {sideLabel(session.members, "b")}.
+            {/* Jméno v prvním pádu: „u Petr" se skloňovat nedá a sklonění
+                jmen automaticky by dělalo chyby horší než tahle věta. */}
+            {sideLabel(session.members, "a")} {days(stats.daysA)},{" "}
+            {sideLabel(session.members, "b")} {days(stats.daysB)} přes den.
           </p>
 
           <SplitBar a={stats.nightsA} b={stats.nightsB} colorA={colorA} colorB={colorB} />

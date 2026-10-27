@@ -344,7 +344,7 @@ export function Dashboard({
           title="Kdo veze"
           description={
             myRides.length > 0
-              ? `${myRides.length}× vezete ty`
+              ? `${myRides.length}× vezete vy`
               : "Nejbližší kroužky a doprava"
           }
           action={

@@ -199,8 +199,9 @@ export function ExpensesScreen({
       {/* ── Souhrn ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-3">
         <StatTile
-          label="Celkem za měsíc"
+          label="Celkem"
           value={<span className="tnum">{formatMoney(total, currency)}</span>}
+          hint="za tento měsíc"
           icon={<Wallet className="h-3.5 w-3.5" />}
           accent="var(--brand)"
         />

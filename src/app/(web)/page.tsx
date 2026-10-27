@@ -38,17 +38,6 @@ export const metadata: Metadata = {
   },
 };
 
-/** Ukázkový týden do hlavičky — stejné barvy, jaké má kalendář v aplikaci. */
-const UKAZKOVY_TYDEN: { den: string; strana: "a" | "b"; poznamka?: string }[] = [
-  { den: "Po", strana: "a" },
-  { den: "Út", strana: "a", poznamka: "Plavání" },
-  { den: "St", strana: "a" },
-  { den: "Čt", strana: "b", poznamka: "Předávka 18:00" },
-  { den: "Pá", strana: "b" },
-  { den: "So", strana: "b", poznamka: "Zubař" },
-  { den: "Ne", strana: "b" },
-];
-
 const FUNKCE = [
   {
     ikona: CalendarDays,
@@ -200,161 +189,48 @@ export default async function Domu() {
             </p>
           </div>
 
-          {/* Ukázka týdne. Tohle je celý produkt v jednom obrázku:
-              každý den má barvu podle toho, u koho dítě spí. */}
-          <div className="card p-5 sm:p-6">
-            <div className="flex items-baseline justify-between">
-              <span className="font-display font-semibold text-ink">Tento týden</span>
-              <span className="text-xs font-medium uppercase tracking-wider text-ink-subtle">
-                14. týden
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-1.5">
-              {UKAZKOVY_TYDEN.map(({ den, strana, poznamka }) => (
-                <div
-                  key={den}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-                  style={{
-                    backgroundColor:
-                      strana === "a" ? "var(--parent-a-bg)" : "var(--parent-b-bg)",
-                  }}
-                >
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{
-                      backgroundColor: strana === "a" ? "var(--parent-a)" : "var(--parent-b)",
-                    }}
-                    aria-hidden
-                  />
-                  <span
-                    className="w-8 text-sm font-semibold"
-                    style={{
-                      color: strana === "a" ? "var(--parent-a-text)" : "var(--parent-b-text)",
-                    }}
-                  >
-                    {den}
-                  </span>
-                  <span className="truncate text-sm text-ink-muted">
-                    {poznamka ?? (strana === "a" ? "U vás" : "U druhého rodiče")}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex items-center gap-4 border-t border-line pt-3 text-xs text-ink-subtle">
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: "var(--parent-a)" }}
-                  aria-hidden
-                />
-                U vás · 16 nocí
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: "var(--parent-b)" }}
-                  aria-hidden
-                />
-                U druhého · 15 nocí
-              </span>
+          {/* Skutečný snímek aplikace, ne kresba. Jen na počítači: na
+              telefonu hned pod úvodem následuje „Podívejte se dovnitř"
+              a dva telefony za sebou by jen prodloužily cestu k tlačítku. */}
+          <div className="mx-auto hidden w-[280px] rounded-[2.25rem] border-[10px] border-ink/85 bg-canvas shadow-xl lg:block">
+            <div className="overflow-hidden rounded-[1.6rem]">
+              <Image
+                src="/ukazky/prehled.png"
+                alt="Přehled v aplikaci Klidoo: u koho jsou děti dnes, kdy končí škola, útrata a noci za měsíc"
+                width={780}
+                height={1688}
+                sizes="280px"
+                priority
+                className="block h-auto w-full"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Pás s fotkou ─────────────────────────────────────────── */}
-      {/* Nad ním jsou samá čísla a rozpisy. Tohle je jediné místo, kde
-          návštěvník uvidí, o koho vlastně jde, ještě než začne číst
-          o problémech.
-
-          Je tu schválně otec. Appky pro rodiny se vizuálně dělají pro
-          matky a otec ve střídavé péči si zvykl, že na obrázcích není —
-          na nejvýš položené fotce celého webu to má vidět jinak. */}
-      <FotoPas
-        src="/foto/cesta-ze-skoly.jpg"
-        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
-        prioritni
-      />
-
-      {/* ── Kdo za tím stojí ─────────────────────────────────────── */}
-      {/* Tady je jediná věc, kterou konkurence nemůže zkopírovat. Funkce
-          se dají dodělat za měsíc, „psal to někdo, kdo tím prošel“ ne.
-          Proto je to hned pod první fotkou, ne schované v patičce. */}
-      <section className="border-y border-line bg-surface py-14 sm:py-16">
+      {/* ── Jak to vypadá uvnitř ─────────────────────────────────── */}
+      {/* Rodič, který se rozhoduje, chce vidět aplikaci dřív, než dá
+          e-mail. Popis funkcí to nenahradí. */}
+      <section className="py-14 sm:py-20">
         <Sloupec siroky>
-          <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
-            <div>
-              <Nadtitulek>Kdo za tím stojí</Nadtitulek>
-              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                Klidoo píše rodič, který tím sám prochází
-              </h2>
-              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
-Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
-                a zprávy o tom, kdo koho kdy vyzvedne, z hlavy někam, kde to uvidí
-                oba rodiče.
-              </p>
-              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Každá funkce v aplikaci řeší něco, co v provozu dvou domácností
-                opakovaně drhlo. Když vám něco chybí nebo něco nefunguje, napište
-                na{" "}
-                <a
-                  href="mailto:info@klidoo.cz"
-                  className="font-medium text-brand underline underline-offset-4"
-                >
-                  info@klidoo.cz
-                </a>
-                . Odpovídám na to sám.
-              </p>
-            </div>
+          <Nadtitulek>Jak to vypadá uvnitř</Nadtitulek>
+          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Podívejte se dovnitř
+          </h2>
+          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas. Skutečné snímky aplikace, jen s vymyšlenou rodinou.
+          </p>
 
-            <div className="card p-6 sm:p-7">
-              <h3 className="font-display text-lg font-semibold text-ink">
-                Postavené na české střídavé péči
-              </h3>
-              <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
-                Několik věcí ve střídavé péči má v Česku vlastní pravidla. Bez nich
-                se rozpis počítá špatně:
-              </p>
-              <ul className="mt-4 space-y-3.5">
-                {[
-                  {
-                    nazev: "Počítá noci, ne dny",
-                    popis:
-                      "Den strávíte s dítětem oba, noc má jen jeden. Poměr péče se proto počítá z nocí a tak ho počítá i Klidoo.",
-                  },
-                  {
-                    nazev: "Zná český školní rok",
-                    popis:
-                      "Jarní prázdniny připadají podle okresu na jiný týden. Doplní se samy, včetně svátků a ředitelského volna.",
-                  },
-                  {
-                    nazev: "Výživné podle tabulky ministerstva",
-                    popis:
-                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
-                  },
-                  {
-                    nazev: "Druhý rodič neplatí nic",
-                    popis:
-                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidejte každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
-                  },
-                ].map(({ nazev, popis }) => (
-                  <li key={nazev} className="flex gap-3">
-                    <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand" aria-hidden />
-                    <span>
-                      <span className="block font-medium text-ink">{nazev}</span>
-                      <span className="mt-0.5 block text-[0.9rem] leading-relaxed text-ink-muted">
-                        {popis}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="mt-10">
+            <UkazkyAplikace />
           </div>
         </Sloupec>
       </section>
+
+      <VyzvaPas
+        nadpis="Takhle to vypadá i u vás"
+        text="Založení rodiny trvá dvě minuty. Kalendář se naklikne, zbytek se doplní časem."
+      />
 
       {/* ── Co se doopravdy děje ─────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-14 sm:py-16">
@@ -406,31 +282,6 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
           </div>
         </Sloupec>
       </section>
-
-      {/* ── Jak to vypadá uvnitř ─────────────────────────────────── */}
-      {/* Rodič, který se rozhoduje, chce vidět aplikaci dřív, než dá
-          e-mail. Popis funkcí to nenahradí. */}
-      <section className="py-14 sm:py-20">
-        <Sloupec siroky>
-          <Nadtitulek>Jak to vypadá uvnitř</Nadtitulek>
-          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Podívej se, do čeho jdeš
-          </h2>
-          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Šest obrazovek, ve kterých rodiče tráví skoro všechen čas. Žádné obrázky
-            z fotobanky. Je to ta samá aplikace, jen s vymyšlenou rodinou.
-          </p>
-
-          <div className="mt-10">
-            <UkazkyAplikace />
-          </div>
-        </Sloupec>
-      </section>
-
-      <VyzvaPas
-        nadpis="Takhle to vypadá i u vás"
-        text="Založení rodiny trvá dvě minuty. Kalendář se naklikne, zbytek se doplní časem."
-      />
 
       {/* ── Funkce ───────────────────────────────────────────────── */}
       <section className="py-14 sm:py-20">
@@ -516,11 +367,96 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
         </Sloupec>
       </section>
 
-      <VyzvaPas
-        nadpis="Začít můžete i bez druhého rodiče"
-        text="Druhého rodiče nemusíte nikam přemlouvat. Přidá se, až bude chtít, a nic tím platit nebude."
-        tlacitko="Založit rodinu zdarma"
+      {/* ── Pás s fotkou ─────────────────────────────────────────── */}
+      {/* Nad ním jsou samá čísla a obrazovky. Tohle je místo, kde
+          návštěvník uvidí, o koho vlastně jde — hned vedle toho, kdo
+          za Klidoo stojí.
+
+          Je tu schválně otec. Appky pro rodiny se vizuálně dělají pro
+          matky a otec ve střídavé péči si zvykl, že na obrázcích není —
+          na nejvýš položené fotce celého webu to má vidět jinak. */}
+      <FotoPas
+        src="/foto/cesta-ze-skoly.jpg"
+        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
       />
+
+      {/* ── Kdo za tím stojí ─────────────────────────────────────── */}
+      {/* Tady je jediná věc, kterou konkurence nemůže zkopírovat. Funkce
+          se dají dodělat za měsíc, „psal to někdo, kdo tím prošel“ ne.
+          Proto je to hned pod první fotkou, ne schované v patičce. */}
+      <section className="border-y border-line bg-surface py-14 sm:py-16">
+        <Sloupec siroky>
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
+            <div>
+              <Nadtitulek>Kdo za tím stojí</Nadtitulek>
+              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                Klidoo píše rodič, který tím sám prochází
+              </h2>
+              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
+Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
+                a zprávy o tom, kdo koho kdy vyzvedne, z hlavy někam, kde to uvidí
+                oba rodiče.
+              </p>
+              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
+                Každá funkce v aplikaci řeší něco, co v provozu dvou domácností
+                opakovaně drhlo. Když vám něco chybí nebo něco nefunguje, napište
+                na{" "}
+                <a
+                  href="mailto:info@klidoo.cz"
+                  className="font-medium text-brand underline underline-offset-4"
+                >
+                  info@klidoo.cz
+                </a>
+                . Odpovídám na to sám.
+              </p>
+            </div>
+
+            <div className="card p-6 sm:p-7">
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Postavené na české střídavé péči
+              </h3>
+              <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
+                Několik věcí ve střídavé péči má v Česku vlastní pravidla. Bez nich
+                se rozpis počítá špatně:
+              </p>
+              <ul className="mt-4 space-y-3.5">
+                {[
+                  {
+                    nazev: "Počítá noci, ne dny",
+                    popis:
+                      "Den strávíte s dítětem oba, noc má jen jeden. Poměr péče se proto počítá z nocí a tak ho počítá i Klidoo.",
+                  },
+                  {
+                    nazev: "Zná český školní rok",
+                    popis:
+                      "Jarní prázdniny připadají podle okresu na jiný týden. Doplní se samy, včetně svátků a ředitelského volna.",
+                  },
+                  {
+                    nazev: "Výživné podle tabulky ministerstva",
+                    popis:
+                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
+                  },
+                  {
+                    nazev: "Druhý rodič neplatí nic",
+                    popis:
+                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidejte každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
+                  },
+                ].map(({ nazev, popis }) => (
+                  <li key={nazev} className="flex gap-3">
+                    <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand" aria-hidden />
+                    <span>
+                      <span className="block font-medium text-ink">{nazev}</span>
+                      <span className="mt-0.5 block text-[0.9rem] leading-relaxed text-ink-muted">
+                        {popis}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Sloupec>
+      </section>
 
       {/* ── Rozcestník na obsah ──────────────────────────────────── */}
       <section className="py-14 sm:py-20">
