@@ -36,6 +36,7 @@ import {
 } from "@/lib/dates";
 import { cn, formatMoney, nights, withAlpha } from "@/lib/format";
 import { memberName, sideBg, sideColor, sideLabel } from "@/lib/members";
+import { vokativ } from "@/lib/vokativ";
 import type {
   Activity,
   ActivityOccurrence,
@@ -561,7 +562,8 @@ export function Dashboard({
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
             {greeting()}
-            {firstName ? `, ${firstName}` : ""}
+            {/* Oslovení v 5. pádě: „Dobrý večer, Petře", ne „Petr". */}
+            {firstName ? `, ${vokativ(firstName)}` : ""}
           </h1>
           <p className="text-sm capitalize text-ink-muted">
             {DOW_LONG[today.getDay()]} {formatDayShort(today)}
