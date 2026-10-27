@@ -1,15 +1,12 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { zmer } from "@/lib/mereni";
 import { tarifPodleId } from "@/lib/tarify";
 
 /** Po nahlášení konverze pošle člověka do aplikace. */
 export function DekujemeObsah({ tarif }: { tarif: string | null }) {
-  const router = useRouter();
   const nahlaseno = React.useRef(false);
 
   React.useEffect(() => {
@@ -25,9 +22,10 @@ export function DekujemeObsah({ tarif }: { tarif: string | null }) {
       items: cenik ? [{ item_name: `Klidoo ${cenik.nazev.toLowerCase()}` }] : undefined,
     });
 
-    const casovac = setTimeout(() => router.push("/predplatne?stav=hotovo"), 4000);
+    // Plné načtení: tady běží měřicí skripty a do aplikace nepatří.
+    const casovac = setTimeout(() => window.location.assign("/predplatne?stav=hotovo"), 4000);
     return () => clearTimeout(casovac);
-  }, [tarif, router]);
+  }, [tarif]);
 
   return (
     <div className="text-center">
@@ -40,12 +38,13 @@ export function DekujemeObsah({ tarif }: { tarif: string | null }) {
       <p className="mx-auto mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-muted">
         Za chvilku vás přesměrujeme zpátky do aplikace. Doklad vám přijde e-mailem ze Stripu.
       </p>
-      <Link
+      {/* Obyčejný odkaz, ne `Link` — ze stejného důvodu jako výše. */}
+      <a
         href="/predplatne?stav=hotovo"
         className="mt-6 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
       >
         Pokračovat do aplikace
-      </Link>
+      </a>
     </div>
   );
 }

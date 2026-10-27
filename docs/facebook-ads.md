@@ -58,9 +58,13 @@ Události, které aplikace posílá:
 | Co člověk udělá | Událost v Klidoo | Na Facebooku |
 |---|---|---|
 | Naklikal rozpis na `/vyzkouset` | `rozvrh-zadani` | **Lead** |
-| Zaregistroval se | `registrace` | CompleteRegistration |
-| Založil rodinu | `rodina` | StartTrial |
+| Zaregistroval se e-mailem | `registrace` | CompleteRegistration |
 | Zaplatil | `predplatne` | Purchase |
+
+Založení rodiny a registrace přes Google se na Facebook **neposílají**:
+dějí se v aplikaci, kde Pixel neběží (`src/lib/mereni-hranice.ts`).
+Pixel tam nemá co dělat — jsou tam jména dětí a zprávy druhému rodiči.
+Vlastní měření na `/provoz` je vidí dál.
 
 ### 3. Kampaň
 

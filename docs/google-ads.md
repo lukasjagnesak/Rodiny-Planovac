@@ -33,6 +33,14 @@ Založ tři, všechny **s ručním označením (gtag)**, ne přes GA4 import:
 | Založená rodina | Sign-up | jednu | bez hodnoty |
 | Předplatné | Purchase | jednu | z kódu (posílá se) |
 
+> **Od 27. 10. 2026 se „Založená rodina" do Google Ads neposílá.**
+> Rodina vzniká v průvodci `/vitejte`, a ten patří do aplikace, kde
+> reklamní kód neběží (`src/lib/mereni-hranice.ts`). Totéž registrace
+> přes Google — dopočítává se až na `/vitejte`. Do Ads tedy dojde
+> registrace e-mailem (na `/registrace`) a předplatné (na `/dekujeme`).
+> Všechno ostatní vidí vlastní měření na `/provoz`. Kdo konverzi
+> „Založená rodina" už má, ať ji nechá jako sekundární, nic se nerozbije.
+
 **Jako primární nech jen Předplatné.** Zbylé dvě přepni na sekundární:
 jsou to ukazatele, ne cíl. Kdyby se optimalizovalo na registrace, Google
 najde lidi, kteří se rádi registrují a neplatí.
@@ -342,3 +350,4 @@ nedostal data. Zmizí to sama pár hodin po prvním skutečném odeslání.
 | 2026-09-11 | Souhlas přestal viset na `NEXT_PUBLIC_GA_ID` | Bez GA se Consent Mode nenastavil a Google konverze z EU zahazoval |
 | 2026-09-11 | Přidána stránka Kontrola měření | Ověřování konverzí přes DevTools se nedá dělat při každé změně v `.env` |
 | 2026-09-11 | Oprava tvaru gtag: `arguments` místo pole | gtag.js bere z dataLayer jen objekt `arguments`, takže značka neodeslala jediný požadavek |
+| 2026-10-27 | Reklamní kód jen na veřejném webu, ne v aplikaci a průvodci | V aplikaci jsou data dětí a zprávy; Pixel umí číst formuláře. „Založená rodina" se proto do Ads neposílá |

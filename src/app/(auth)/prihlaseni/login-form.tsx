@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ const HLASKY: Record<string, string> = {
 };
 
 export function LoginForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const next = params.get("dal") || "/prehled";
   const duvod = params.get("chyba");
@@ -73,8 +72,9 @@ export function LoginForm() {
       setError(prettyError(error.message));
       return;
     }
-    router.push(next);
-    router.refresh();
+    // Plné načtení, ne `router.push`: na téhle stránce mohou běžet měřicí
+    // skripty a do aplikace se nesmí přenést (viz `lib/mereni-hranice`).
+    window.location.assign(next);
   }
 
   if (sent) {

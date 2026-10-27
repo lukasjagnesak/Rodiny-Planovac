@@ -9,6 +9,8 @@
  * neví; vývoj ani náhled se tím nemá zdržovat.
  */
 
+import { smiMerit } from "./mereni-hranice";
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -148,7 +150,8 @@ export function nactiGoogleAnalytics(): void {
   window.gtag!("js", new Date());
   // IP se anonymizuje na straně Googlu; ukládat celou nepotřebujeme
   // a u tohohle publika ani nechceme.
-  window.gtag!("config", GA_ID, { anonymize_ip: true });
+  // Zobrazení stránek hlásí `marketingZobrazeni`, i to první.
+  window.gtag!("config", GA_ID, { anonymize_ip: true, send_page_view: false });
 }
 
 /**
@@ -183,13 +186,19 @@ export function nactiMetaPixel(): void {
 
   nactiSkript("meta-pixel", "https://connect.facebook.net/en_US/fbevents.js");
 
+  // Bez automatiky: Pixel by jinak sám procházel tlačítka a formuláře
+  // na stránce a posílal, co v nich najde. Chceme jen to, co mu pošleme
+  // sami. A přechody mezi stránkami hlásí `marketingZobrazeni` — kdyby
+  // je Pixel sledoval i sám, počítal by se každý dvakrát.
+  window.fbq("set", "autoConfig", false, META_PIXEL_ID);
+  (window.fbq as unknown as { disablePushState: boolean }).disablePushState = true;
   window.fbq("init", META_PIXEL_ID);
-  window.fbq("track", "PageView");
+  // První PageView pošle `marketingZobrazeni` hned po načtení.
 }
 
 /** Zobrazení stránky — GA si ho při přechodu mezi stránkami nevšimne samo. */
 export function marketingZobrazeni(cesta: string): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !smiMerit(cesta)) return;
   if (window.gtag && GA_ID) window.gtag("event", "page_view", { page_path: cesta });
   if (window.fbq) window.fbq("track", "PageView");
 }
@@ -213,6 +222,9 @@ export function marketingUdalost(
   parametry: Record<string, unknown> = {},
 ): void {
   if (typeof window === "undefined") return;
+  // V aplikaci se reklamním systémům nehlásí nic, ani když tam skript
+  // z předchozí stránky ještě visí. Vlastní měření tím netrpí.
+  if (!smiMerit(window.location.pathname)) return;
 
   const mapa = UDALOSTI[druh];
   if (!mapa) return;

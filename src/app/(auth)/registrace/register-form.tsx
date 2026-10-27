@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Check, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,6 @@ function coCeka(dal: string, pozvanka: boolean): string | null {
 }
 
 export function RegisterForm() {
-  const router = useRouter();
   const params = useSearchParams();
   // Pozvánka: /registrace?pozvanka=<token>
   const inviteToken = params.get("pozvanka");
@@ -127,8 +126,9 @@ export function RegisterForm() {
       return;
     }
 
-    router.push(redirectTarget);
-    router.refresh();
+    // Plné načtení, ne `router.push`: na téhle stránce mohou běžet měřicí
+    // skripty a do aplikace se nesmí přenést (viz `lib/mereni-hranice`).
+    window.location.assign(redirectTarget);
   }
 
   if (needsConfirm) {

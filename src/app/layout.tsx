@@ -151,15 +151,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh antialiased">
         {/*
-          Měření patří sem, ne do jednotlivých skupin.
+          Měření je tady, aby vidělo každý přechod mezi stránkami — i ten
+          z webu do aplikace, kde musí skončit. Kde smí běžet, určuje
+          `lib/mereni-hranice`; v aplikaci se nenačte nikdy.
 
-          Dokud viselo jen na `(web)` a `(auth)`, neexistoval gtag nikde
-          jinde — a `/vitejte` do žádné z nich nepatří. Konverze
-          „Přihlášení rodiny", tedy ten jediný krok, kde rodina opravdu
-          vznikne, se proto nikdy neodeslala. Totéž platilo o pozvánce
-          druhého rodiče a o všem uvnitř aplikace.
-
-          Bez souhlasu se pořád nenačte nic; komponenta si ho čte sama.
+          Bez souhlasu se nenačte nic ani na webu; komponenta si ho čte sama.
         */}
         <MereniSkripty />
         {children}
