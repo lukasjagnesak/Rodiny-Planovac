@@ -33,6 +33,7 @@ export async function POST() {
       telo: `${ZNACKA} je správně propojený — připomínky vám budou chodit sem.`,
       odkaz: "/prehled",
       tag: "test",
+      ikona: "zvonek",
     });
     if (vysledek.ok) odeslano += 1;
     else if (vysledek.gone) await admin.from("push_subscriptions").delete().eq("endpoint", odber.endpoint);

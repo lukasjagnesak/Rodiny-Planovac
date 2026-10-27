@@ -27,6 +27,10 @@ for (const n of NAZVY_IKON) {
   ok(`${n}: bez vlastní tloušťky a barvy čáry`, !/stroke-width|stroke="#|fill="#/.test(s));
   ok(`${n}: bez textu a skriptu`, !/<text|<script|on\w+=/.test(s));
 }
+for (const n of NAZVY_IKON) {
+  const push = path.join(__dirname, "..", "public", "ikony", "push");
+  ok(`${n}: PNG pro notifikace (npm run ikony)`, fs.existsSync(path.join(push, `${n}.png`)) && fs.existsSync(path.join(push, `${n}-odznak.png`)));
+}
 ok("svgIkony skládá platný obal", /^<svg [^>]*viewBox="0 0 24 24"[^>]*>.*<\/svg>$/.test(svgIkony("lekar")));
 
 console.log("── v aplikaci nezůstala emoji ──");

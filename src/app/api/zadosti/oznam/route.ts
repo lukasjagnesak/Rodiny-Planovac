@@ -64,7 +64,13 @@ export async function POST(request: NextRequest) {
   for (const odber of odbery ?? []) {
     const vysledek = await posliPush(
       { endpoint: String(odber.endpoint), p256dh: String(odber.p256dh), auth: String(odber.auth) },
-      { titulek, telo: "Podrobnosti v Kalendáři.", odkaz: "/kalendar", tag: `zadost-${z.id}` },
+      {
+        titulek,
+        telo: "Podrobnosti v Kalendáři.",
+        odkaz: "/kalendar",
+        tag: `zadost-${z.id}`,
+        ikona: "predani",
+      },
     );
     if (vysledek.gone) await admin.from("push_subscriptions").delete().eq("id", odber.id);
   }

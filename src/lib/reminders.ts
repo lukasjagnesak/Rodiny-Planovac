@@ -8,7 +8,7 @@ import { toMemberView, sideLabel } from "./members";
 import { EVENT_KINDS } from "./constants";
 import { formatDayLong, formatTime, toDateKey } from "./dates";
 import { posliPush } from "./push";
-import { odkazPodleDeduplikace } from "./oznameni-odkaz";
+import { odkazPodleDeduplikace, ikonaPodleDeduplikace } from "./oznameni-odkaz";
 import type {
   Activity,
   ActivityOccurrence,
@@ -289,6 +289,24 @@ export async function dispatchNotifications(): Promise<{ sent: number; failed: n
   let sent = 0;
   let failed = 0;
 
+  // Typ události kvůli ikoně notifikace — jedním dotazem pro všechny.
+  const idUdalosti = [
+    ...new Set(
+      (due ?? [])
+        .map((n) => String(n.dedupe_key ?? ""))
+        .filter((k) => k.startsWith("event:"))
+        .map((k) => k.split(":")[1]),
+    ),
+  ];
+  const ikonaUdalosti = new Map<string, string>();
+  if (idUdalosti.length > 0) {
+    const { data: udalosti } = await admin.from("events").select("id, kind").in("id", idUdalosti);
+    for (const u of udalosti ?? []) {
+      const meta = EVENT_KINDS[u.kind as keyof typeof EVENT_KINDS];
+      if (meta) ikonaUdalosti.set(String(u.id), meta.ikona);
+    }
+  }
+
   for (const notification of due ?? []) {
     const { data: odbery } = await admin
       .from("push_subscriptions")
@@ -312,6 +330,10 @@ export async function dispatchNotifications(): Promise<{ sent: number; failed: n
         telo: notification.body,
         odkaz: odkazPodleDeduplikace(notification.dedupe_key),
         tag: notification.dedupe_key ?? undefined,
+        ikona: ikonaPodleDeduplikace(
+          notification.dedupe_key,
+          ikonaUdalosti.get(String(notification.dedupe_key ?? "").split(":")[1] ?? ""),
+        ),
       });
 
       if (vysledek.ok) {

@@ -11,6 +11,7 @@ působí jako hračka.
 | Zdroj (jediný) | `src/lib/ikony.ts` — `IKONY`, `svgIkony()` |
 | React komponenta | `src/components/ui/ikona.tsx` — `<Ikona nazev="lekar" />`, `<IkonaDlazdice nazev="lekar" barva="#a8443a" />` |
 | Samostatné SVG | `public/ikony/<nazev>.svg` (barva textu) a `<nazev>-znacka.svg` (barva značky) — pro web mimo React, e-maily, prezentace, sociální sítě |
+| Ikony notifikací | `public/ikony/push/<nazev>.png` (192 px, dlaždice v barvě značky) a `<nazev>-odznak.png` (96 px, bílá na průhledném) |
 | Katalog | `/nahled-mobil/ikony` (jen při vývoji) |
 
 ## Pravidla
@@ -22,14 +23,19 @@ působí jako hračka.
 - Žádný text uvnitř ikony.
 - **Emoji do rozhraní nepatří.** Test `npm run test:ikony` selže, když se
   emoji objeví ve zdrojácích (výjimka: články v `src/obsah`).
-- Texty, které odcházejí ven (push notifikace, události v Google kalendáři),
-  jsou bez emoji i bez ikon — jen slova.
+- Push notifikace mají ikonu ze sady: `ikona` v `posliPush` → `public/sw.js`
+  ji zobrazí jako `icon` (obrázek vedle textu) a `badge` (ikonka ve
+  stavovém řádku Androidu). Ukáže se na Androidu a v počítači; **iPhone
+  vlastní ikonu webové notifikace nepodporuje** a ukazuje vždy ikonu
+  aplikace z plochy. Do textu notifikace emoji nepatří.
+- Google kalendář vlastní ikony u událostí neumí (jen text a barvu).
 
 ## Nová ikona
 
 1. Nakreslit ji do `IKONY` v `src/lib/ikony.ts` podle pravidel výš.
 2. Zkontrolovat v katalogu `/nahled-mobil/ikony` vedle ostatních.
-3. `npm run ikony` — vygeneruje SVG do `public/ikony`.
+3. `npm run ikony` — vygeneruje SVG do `public/ikony` a PNG pro
+   notifikace do `public/ikony/push`.
 4. `npm run test:ikony`.
 
 ## Sada

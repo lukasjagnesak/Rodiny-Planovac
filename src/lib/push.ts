@@ -43,6 +43,8 @@ export interface PushZprava {
   telo: string;
   odkaz: string;
   tag?: string;
+  /** Ikona z vlastní sady (lib/ikony); sw.js z ní udělá /ikony/push/<ikona>.png. */
+  ikona?: string;
 }
 
 /**
@@ -60,7 +62,13 @@ export async function posliPush(
   try {
     await webpush.sendNotification(
       { endpoint: odber.endpoint, keys: { p256dh: odber.p256dh, auth: odber.auth } },
-      JSON.stringify({ titulek: zprava.titulek, telo: zprava.telo, odkaz: zprava.odkaz, tag: zprava.tag }),
+      JSON.stringify({
+        titulek: zprava.titulek,
+        telo: zprava.telo,
+        odkaz: zprava.odkaz,
+        tag: zprava.tag,
+        ikona: zprava.ikona,
+      }),
     );
     return { ok: true };
   } catch (chyba) {

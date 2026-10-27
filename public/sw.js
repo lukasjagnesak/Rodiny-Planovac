@@ -14,7 +14,7 @@
 
 /* Verze se mění při každé úpravě tohoto souboru — jinak si prohlížeč
    nechá starou mezipaměť i s neplatnou offline stránkou. */
-const VERZE = "klidoo-v1";
+const VERZE = "klidoo-v2";
 const OFFLINE = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -56,11 +56,18 @@ self.addEventListener("push", (event) => {
     // Zpráva bez těla (test od prohlížeče) — zůstane výchozí text.
   }
 
+  // Ikona z vlastní sady Klidoo (lib/ikony → public/ikony/push).
+  // `icon` je velký obrázek vedle textu, `badge` malá jednobarevná ikonka
+  // ve stavovém řádku Androidu. iPhone obojí ignoruje a ukazuje vždy
+  // ikonu aplikace z plochy. Název se prověří, ať se do adresy nedostane
+  // nic jiného než název ikony.
+  const ikona = typeof data.ikona === "string" && /^[a-z_]+$/.test(data.ikona) ? data.ikona : null;
+
   event.waitUntil(
     self.registration.showNotification(data.titulek, {
       body: data.telo,
-      icon: "/icons/icon-192.png",
-      badge: "/icons/icon-192.png",
+      icon: ikona ? `/ikony/push/${ikona}.png` : "/icons/icon-192.png",
+      badge: ikona ? `/ikony/push/${ikona}-odznak.png` : "/ikony/push/zvonek-odznak.png",
       tag: data.tag,
       data: { odkaz: data.odkaz },
     }),
