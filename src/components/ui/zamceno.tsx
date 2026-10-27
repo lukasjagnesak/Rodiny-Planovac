@@ -15,7 +15,7 @@ import { CENIK, korun } from "@/lib/tarify";
  *
  * Cena je tu uvedená měsíční schválně, i když roční vychází líp.
  * Kdo potřebuje podklad k soudu, řeší tenhle týden, ne příští rok —
- * a 199 Kč za listinu, kterou potřebuje, je odpověď, kterou pochopí
+ * a 129 Kč za listinu, kterou potřebuje, je odpověď, kterou pochopí
  * bez počítání.
  */
 export function ZamcenyDokument({

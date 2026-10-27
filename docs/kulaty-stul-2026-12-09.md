@@ -285,7 +285,7 @@ bez instalace, počítání nocí, EduPage, kalkulačka výživného podle
 tabulky MSp a vzor dohody zdarma.
 
 **„Kolik to stojí?"**
-30 dní zdarma bez karty, pak 199 Kč měsíčně nebo 1 990 Kč ročně za
+30 dní zdarma bez karty, pak 129 Kč měsíčně nebo 1 290 Kč ročně za
 celou rodinu; druhý rodič neplatí. Pro rodiny z mediace, OSPOD a soudu
 nabízíme přístup zdarma.
 

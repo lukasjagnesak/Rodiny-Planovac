@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cenaId, stripe, stripeJeNastaveny } from "@/lib/stripe";
 import { siteUrl } from "@/lib/google";
-import type { Tarif } from "@/lib/tarify";
+import { tarifPodleId, type Tarif } from "@/lib/tarify";
 
 /**
  * Start platby. Vrací URL do Stripe Checkoutu.
@@ -96,6 +96,22 @@ export async function POST(request: NextRequest) {
   const konecZkusebniho =
     predplatne?.stav === "zkusebni" ? new Date(predplatne.plati_do as string).getTime() : 0;
   const zbyvaDost = konecZkusebniho > Date.now() + 48 * 60 * 60 * 1000;
+
+  // Cena ve Stripu musí sedět s ceníkem na webu. Po změně ceny se nová
+  // cena zakládá ve Stripu ručně a ID se přepisuje v `.env` — když se
+  // na to zapomene, strhla by se jiná částka, než jakou člověk viděl.
+  // To nesmí projít ani jednou, i za cenu, že se dočasně nedá zaplatit.
+  const cenaVeStripu = await s.prices.retrieve(cenaId(tarif)!);
+  const ocekavana = tarifPodleId(tarif)!.cena * 100;
+  if (cenaVeStripu.unit_amount !== ocekavana || cenaVeStripu.currency !== "czk") {
+    console.error(
+      `Cena ve Stripu (${cenaVeStripu.unit_amount} ${cenaVeStripu.currency}) nesedí s ceníkem (${ocekavana} czk) pro tarif ${tarif}. Opravte STRIPE_PRICE_* v .env.`,
+    );
+    return NextResponse.json(
+      { chyba: "Platbu teď nejde spustit, ceník se aktualizuje. Zkuste to prosím později." },
+      { status: 503 },
+    );
+  }
 
   const session = await s.checkout.sessions.create({
     mode: "subscription",

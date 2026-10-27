@@ -18,7 +18,7 @@ import { ZNACKA } from "@/lib/brand";
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo 1 990 Kč ročně za celou rodinu — druhý rodič neplatí nic.`,
+    `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom ${korun(CENIK[0].cena)} měsíčně nebo ${korun(CENIK[1].cena)} ročně za celou rodinu — druhý rodič neplatí nic.`,
   alternates: { canonical: "/cenik" },
 };
 
@@ -96,7 +96,7 @@ export default function Cenik() {
       <section className="border-y border-line bg-surface py-12 sm:py-16">
         <Sloupec siroky>
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Potom 199 Kč měsíčně za celou rodinu
+            Potom {korun(CENIK[0].cena)} měsíčně za celou rodinu
           </h2>
           <p className="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-ink-muted">
             Cena je za jednu rodinu, ne za člověka. Kolik vás do ní přibude, na cenu nemá vliv.

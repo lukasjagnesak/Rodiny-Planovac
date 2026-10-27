@@ -564,7 +564,7 @@ protože ji potřebuje k soudu tenhle týden.
 
 **Jednorázový nákup dokumentu zatím nestavíme.** Rozbil by tu jedinou
 věc, kvůli které se neplatící rodina vrací k předplatnému, a měsíční
-tarif tu roli plní sám — 199 Kč, stáhnout, kdykoli zrušit. Až data
+tarif tu roli plní sám — 129 Kč, stáhnout, kdykoli zrušit. Až data
 ukážou, že si lidé kupují měsíc a hned ruší, je to signál postavit to
 pořádně; do té doby by to byl druhý platební tok a druhý produkt
 v katalogu kvůli odhadu.

@@ -23,7 +23,7 @@ import { bezpecnyCil } from "@/lib/navrat";
  * Lidé registraci nedokončovali ze strachu, že to bude něco stát. Jediná
  * věta o tom, že je to zdarma, byla drobným šedým písmem pod tlačítkem —
  * a končila cenou. Poslední, co člověk před kliknutím četl, bylo
- * „199 Kč měsíčně". Teď je nahoře, velkým písmem a jako první: kolik to
+ * „199 Kč měsíčně" (tehdejší cena). Teď je nahoře, velkým písmem a jako první: kolik to
  * stojí (nic), co po něm chceme (žádnou kartu) a co se stane po 30 dnech
  * (nic, dokud sám nechce). Cena zůstává — schovat ji by byl podvod — ale
  * až jako odpověď na otázku „a kdybych chtěl pokračovat".

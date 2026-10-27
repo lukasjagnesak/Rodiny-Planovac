@@ -97,8 +97,8 @@ const OTAZKY = [
   {
     otazka: "Kolik to stojí?",
     odpoved:
-      `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo ` +
-      "1 990 Kč ročně za celou rodinu, ne za jednoho člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.",
+      `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom ${korun(CENIK[0].cena)} měsíčně nebo ` +
+      `${korun(CENIK[1].cena)} ročně za celou rodinu, ne za jednoho člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.`,
   },
   {
     otazka: "Musí Klidoo používat oba rodiče?",

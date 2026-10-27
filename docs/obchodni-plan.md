@@ -132,7 +132,8 @@ Hrubý počet (předpoklady jsou odhad, přepsat skutečnými čísly, až budou
 | **Cena za platící rodinu** | **~4 000 Kč** | **~24 000 Kč** |
 
 Platící rodina přinese v prvním roce kolem **1 800 Kč** (mix ročních
-1 990 Kč a měsíčních 199 Kč s odchody). I nejlepší sestava je v prvním
+1 990 Kč a měsíčních 199 Kč s odchody; od 27. 10. 2026 je cena 129 Kč
+/ 1 290 Kč, takže spíš ~1 150 Kč). I nejlepší sestava je v prvním
 roce ve ztrátě; kalkulačka výživného je ve ztrátě řádově.
 
 Vyrovnat to může jen **dlouhá doba předplatného** — střídavá péče trvá
@@ -173,7 +174,7 @@ Nedůvěřuje ničemu, co působí narychlo. Co dnes chybí nebo je rozpracovan�
 ### 8. Cena teď není problém
 
 Při jedné registraci týdně se o ceně nedá nic zjistit a každá změna by
-byla střelba naslepo. 199 Kč měsíčně / 1 990 Kč ročně za celou rodinu,
+byla střelba naslepo. 129 Kč měsíčně / 1 290 Kč ročně za celou rodinu (do 27. 10. 2026 199 / 1 990),
 30 dní bez karty — **nechat, dokud nebude aspoň 20 rodin ve zkušební
 době** a neuvidíme, kolik jich zaplatí.
 
@@ -236,7 +237,7 @@ ověří se rozhovory v kroku 6.
 
 **Kolik je „funkční model":**
 
-| Měsíční příjem | Platících rodin (při ~166 Kč/měs.) |
+| Měsíční příjem | Platících rodin (při ~108 Kč/měs.) |
 |---|---|
 | 10 000 Kč | ~60 |
 | 50 000 Kč | ~300 |

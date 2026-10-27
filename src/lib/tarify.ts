@@ -132,8 +132,8 @@ export const CENIK: Cenik[] = [
   {
     id: "mesicni",
     nazev: "Měsíčně",
-    cena: 199,
-    mesicne: 199,
+    cena: 129,
+    mesicne: 129,
     obdobi: "měsíc",
     popis: "Zrušíte kdykoli, hned v aplikaci.",
     usetri: 0,
@@ -141,8 +141,8 @@ export const CENIK: Cenik[] = [
   {
     id: "rocni",
     nazev: "Ročně",
-    cena: 1990,
-    mesicne: 166,
+    cena: 1290,
+    mesicne: 108,
     obdobi: "rok",
     popis: "Dva měsíce zdarma proti měsíční platbě.",
     usetri: 17,
