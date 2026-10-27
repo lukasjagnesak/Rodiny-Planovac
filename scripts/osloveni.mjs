@@ -70,6 +70,13 @@ const SLOVNIK = {
  */
 const VYJIMKY = ["prosím tě", "řekni tátovi", "řekni mámě"];
 
+/**
+ * Soubory, kde je tykání obsah, ne oslovení uživatele: hlídač tónu
+ * hledá ve zprávách mezi rodiči (kteří si tykají) „ty jsi…", „uvidíš"
+ * a jeho příklady jsou věty jednoho rodiče druhému.
+ */
+const SOUBORY_S_TYKANIM = ["src/lib/ton.ts"];
+
 const P = "a-zA-ZěščřžýáíéúůďťňĚŠČŘŽÝÁÍÉÚŮĎŤŇ";
 const VZOR = new RegExp(
   `(?<![${P}])(${Object.keys(SLOVNIK).join("|")})(?![${P}])`,
@@ -125,6 +132,7 @@ let celkem = 0;
 const dotcene = [];
 
 for (const soubor of soubory) {
+  if (SOUBORY_S_TYKANIM.includes(soubor)) continue;
   const puvodni = readFileSync(soubor, "utf8");
   let zmen = 0;
 

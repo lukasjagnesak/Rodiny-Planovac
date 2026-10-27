@@ -17,13 +17,13 @@ export function useHlidacTonu(): [boolean, (zapnuto: boolean) => void] {
       // Bez úložiště zůstane zapnutý.
     }
   }, []);
-  const nastav = React.useCallback((hodnota: boolean) => {
+  const nastavHlidac = React.useCallback((hodnota: boolean) => {
     setZapnuto(hodnota);
     try {
       localStorage.setItem(KLIC, hodnota ? "zapnuto" : "vypnuto");
     } catch {}
   }, []);
-  return [zapnuto, nastav];
+  return [zapnuto, nastavHlidac];
 }
 
 /** Text zprávy se zvýrazněnými místy. */
