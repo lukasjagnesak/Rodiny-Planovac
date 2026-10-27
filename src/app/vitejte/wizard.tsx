@@ -192,12 +192,13 @@ export function OnboardingWizard({
 
       zmer("rodina");
 
-      // Doporučení od mediátora nebo advokáta. Selhání se mlčky spolkne:
-      // rodina je založená a nepustit ji dál kvůli provizi by bylo
-      // obrácené pořadí důležitosti.
+      // Doporučení od mediátora, advokáta, OSPOD nebo soudu. Čeká se na
+      // něj, protože prodlužuje období zdarma a poslední krok průvodce
+      // ho ukazuje. Selhání se ale mlčky spolkne: rodina je založená
+      // a nepustit ji dál kvůli doporučení by bylo obrácené pořadí.
       const kod = platnyRef(PLATNOST_DOPORUCENI_DNI);
       if (kod) {
-        void fetch("/api/doporuceni", {
+        await fetch("/api/doporuceni", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ kod, familyId }),
@@ -887,7 +888,9 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
         <h1 className="mt-3 text-center text-lg font-semibold text-ink">
           {obdobi.zakladajici
             ? "Hotovo. Jste zakládající rodina — rok zdarma."
-            : `Hotovo. Teď ${ZKUSEBNI_DNI} dní zdarma.`}
+            : obdobi.konec.getTime() - Date.now() > 60 * 24 * 60 * 60 * 1000
+              ? "Hotovo. Klidoo máte zdarma."
+              : `Hotovo. Teď ${ZKUSEBNI_DNI} dní zdarma.`}
         </h1>
         <p className="mt-1 text-center text-sm text-ink-muted">
           {obdobi.zakladajici ? "Klidoo máte zdarma" : "Zkušební období běží"} do{" "}

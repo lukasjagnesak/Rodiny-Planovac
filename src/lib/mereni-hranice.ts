@@ -27,6 +27,7 @@ export const CESTY_S_MERENIM = [
   "/checklist-prvnich-30-dni",
   "/pro-advokaty",
   "/pro-mediatory",
+  "/pro-ospod-a-soudy",
   "/bezpecnost",
   "/zasady-ochrany-osobnich-udaju",
   "/obchodni-podminky",

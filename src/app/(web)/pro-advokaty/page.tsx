@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Scale } from "lucide-react";
 import { DalsiCteni, FotoPas, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
+import { Formulace } from "@/components/web/formulace";
 import { PARTNERSKY_EMAIL } from "@/lib/partneri";
 import { ZNACKA } from "@/lib/brand";
 
@@ -101,7 +102,7 @@ export default function ProAdvokaty() {
             [
               "Tvrzení o nedodržování rytmu",
               "Zprávy v telefonu, svědci",
-              "Historie kalendáře a předávek",
+              "Společný kalendář s výjimkami, zapsanými předem",
             ],
             [
               "„O tom mi nikdo neřekl“",
@@ -138,6 +139,21 @@ export default function ProAdvokaty() {
             ))}
           </div>
         </section>
+
+        <article className="proza mt-12">
+          <h2>Formulace do dohody nebo návrhu</h2>
+          <p>
+            Článek pro dohodu rodičů, kterou předkládáte soudu ke schválení. Je neutrální
+            k oběma rodičům a nezávisí na tom, že by aplikace musela existovat navždy — rodiče
+            se mohou písemně shodnout na jiném nástroji.
+          </p>
+          <p>
+            Klientům, které k nám pošlete, dáme <strong>12 měsíců zdarma</strong> — přes
+            kód kanceláře, bez provize. Druhý rodič neplatí nikdy.
+          </p>
+        </article>
+
+        <Formulace id="formulace" />
 
         <LeadForm
           id="spoluprace"

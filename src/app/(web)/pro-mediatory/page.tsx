@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Handshake } from "lucide-react";
 import { DalsiCteni, FotoPas, Hero, Poznamka, Sloupec, Tabulka } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
+import { Formulace } from "@/components/web/formulace";
 import {
   MINIMALNI_VYPLATA_KC,
   PARTNERSKY_EMAIL,
@@ -83,6 +84,7 @@ export default function ProMediatory() {
                 `Vlastní odkaz s kódem. Počítá se ${PLATNOST_DOPORUCENI_DNI} dní od prvního prokliku`,
               ],
               ["Výplata", `${VYPLATA_OBDOBI}, od ${MINIMALNI_VYPLATA_KC.toLocaleString("cs-CZ")} Kč`],
+              ["Pro rodiny od vás", "12 měsíců zdarma, bez karty. Druhý rodič vždy zdarma"],
               ["Přístup pro vás", "Zdarma, včetně ukázkové rodiny pro práci na sezení"],
               ["Materiály", "Vzor dohody, checklist a kalkulačky pod vaším odkazem"],
               ["Závazek", "Žádný. Program lze kdykoli opustit"],
@@ -119,6 +121,18 @@ export default function ProMediatory() {
             </li>
           </ol>
 
+          <h2>Formulace do mediační dohody</h2>
+          <p>
+            Když se rodiče dohodnou, že budou provoz řešit přes sdílený nástroj, patří to do
+            dohody — jinak to za měsíc nikoho nezavazuje. Tady je článek, který můžete vložit
+            a upravit. Je neutrální: oba rodiče mají stejná práva a dohoda nepadá tím, že by
+            Klidoo skončilo.
+          </p>
+        </article>
+
+        <Formulace id="formulace" />
+
+        <article className="proza">
           <h2>Co k tomu potřebujeme</h2>
           <p>
             Jméno, kontakt a to, kde působíte. Zapsané mediátory si ověříme v seznamu
@@ -147,6 +161,11 @@ export default function ProMediatory() {
 
         <DalsiCteni
           odkazy={[
+            {
+              href: "/pro-ospod-a-soudy",
+              nazev: "Pro OSPOD a soudy",
+              popis: "Rodiny od vás mají rok zdarma. Bez provizí, neutrálně k oběma rodičům.",
+            },
             {
               href: "/pro-advokaty",
               nazev: "Pro advokáty",

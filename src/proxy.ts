@@ -36,6 +36,7 @@ export const PUBLIC_PATHS = [
   "/checklist-prvnich-30-dni",
   "/pro-advokaty",
   "/pro-mediatory",
+  "/pro-ospod-a-soudy",
   "/zasady-ochrany-osobnich-udaju",
   "/bezpecnost",
   // security.txt — kontakt pro nahlášení chyby v zabezpečení.

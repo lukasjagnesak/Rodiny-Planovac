@@ -10,6 +10,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * zapisovat, jinak by šlo zjistit, kteří partneři existují, a připsat
  * si cizí rodinu.
  *
+ * Rodina od partnera dostane období zdarma podle partnera (výchozí
+ * 12 měsíců, migrace 0031) — u mediace, OSPOD i soudu je to slib,
+ * se kterým nás doporučují.
+ *
  * Mlčí i při odmítnutí. Odpověď „takový kód neexistuje" by z tohohle
  * koncového bodu udělala našeptávač partnerských kódů — a rodina stejně
  * nemá co řešit, doporučení je věc mezi partnerem a námi.
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
 
   const { data: partner } = await admin
     .from("partneri")
-    .select("id, aktivni")
+    .select("id, aktivni, zdarma_mesicu")
     .ilike("kod", kod)
     .maybeSingle();
 
@@ -49,11 +53,44 @@ export async function POST(request: NextRequest) {
 
   // Jedinečnost na `family_id` hlídá databáze. Druhý pokus tedy selže,
   // a to je správně — rodina patří tomu, kdo ji doporučil první.
-  await admin.from("doporuceni").insert({
+  const { error } = await admin.from("doporuceni").insert({
     partner_id: partner.id,
     family_id: familyId,
     kod,
   });
+  if (error) return NextResponse.json({ ok: true });
+
+  // Rodina od partnera má období zdarma podle partnera (výchozí rok).
+  // Jen prodloužit, nikdy nezkrátit — zakládající rodina může mít víc.
+  const mesicu = Number(partner.zdarma_mesicu ?? 0);
+  if (mesicu > 0) await prodluzZdarma(admin, familyId, mesicu);
 
   return NextResponse.json({ ok: true });
+}
+
+/** Posune konec období zdarma na `mesicu` od založení rodiny, pokud je to později. */
+async function prodluzZdarma(
+  admin: ReturnType<typeof createAdminClient>,
+  familyId: string,
+  mesicu: number,
+) {
+  const [{ data: rodina }, { data: predplatne }] = await Promise.all([
+    admin.from("families").select("created_at").eq("id", familyId).maybeSingle(),
+    admin
+      .from("predplatna")
+      .select("stav, plati_do, stripe_subscription_id")
+      .eq("family_id", familyId)
+      .maybeSingle(),
+  ]);
+  if (!rodina || !predplatne) return;
+  if (predplatne.stav !== "zkusebni" || predplatne.stripe_subscription_id) return;
+
+  const konec = new Date(rodina.created_at as string);
+  konec.setMonth(konec.getMonth() + mesicu);
+  if (konec <= new Date(predplatne.plati_do as string)) return;
+
+  await admin
+    .from("predplatna")
+    .update({ plati_do: konec.toISOString(), updated_at: new Date().toISOString() })
+    .eq("family_id", familyId);
 }
