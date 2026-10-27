@@ -37,6 +37,9 @@ export const PUBLIC_PATHS = [
   "/pro-advokaty",
   "/pro-mediatory",
   "/zasady-ochrany-osobnich-udaju",
+  "/bezpecnost",
+  // security.txt — kontakt pro nahlášení chyby v zabezpečení.
+  "/.well-known",
   "/obchodni-podminky",
   "/sitemap.xml",
   "/robots.txt",

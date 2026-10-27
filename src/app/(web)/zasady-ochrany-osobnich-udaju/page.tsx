@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ZnovuNastavitSouhlas } from "@/components/web/znovu-souhlas";
 import { Hero, Sloupec, Tabulka } from "@/components/web/prvky";
 import { PROVOZOVATEL, maIdentifikaci } from "@/lib/provozovatel";
@@ -113,7 +114,8 @@ export default function Zasady() {
           </p>
           <p>
             Uvnitř aplikace, tedy tam, kde jsou údaje o dětech, kalendář a doklady, žádné
-            reklamní ani analytické skripty neběží. Ani se souhlasem.
+            reklamní ani analytické skripty neběží. Ani se souhlasem. Jak jsou údaje
+            chráněné, popisujeme na stránce <Link href="/bezpecnost">Bezpečnost a data</Link>.
           </p>
 
           <h2>Komu údaje předáváme</h2>

@@ -45,6 +45,9 @@ export default function ReklamaLayout({ children }: { children: React.ReactNode 
           <Link href="/zasady-ochrany-osobnich-udaju" className="hover:text-ink">
             Zásady ochrany osobních údajů
           </Link>
+          <Link href="/bezpecnost" className="hover:text-ink">
+            Bezpečnost a data
+          </Link>
           <Link href="/obchodni-podminky" className="hover:text-ink">
             Obchodní podmínky
           </Link>
