@@ -105,7 +105,13 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
 
   const expenses: Expense[] = [
     vydaj("x1", -1, "Obědy ve školní jídelně", 1180, "school", TATA, "c-ema"),
-    vydaj("x2", -4, "Zimní bunda", 1890, "clothing", MAMA, "c-tobias"),
+    {
+      ...vydaj("x2", -4, "Zimní bunda", 1890, "clothing", MAMA, "c-tobias"),
+      // Žádost o proplacení, ať je v ukázce vidět, jak se schvaluje.
+      zadosti_proplaceni: [
+        { id: "zp1", family_id: "f-ukazka", expense_id: "x2", pozadal: MAMA, pozadal_jmeno: "Jana", castka: 945, poznamka: "Účtenka je v příloze.", stav: "ceka", odpovedel: null, odpovedel_jmeno: null, duvod: null, odpovezeno_at: null, zaplaceno_at: null, created_at: den(-3) },
+      ],
+    },
     vydaj("x3", -6, "Plavání — pololetí", 3200, "activities", TATA, "c-ema"),
     vydaj("x4", -9, "Kopačky", 990, "activities", MAMA, "c-tobias"),
     vydaj("x5", -12, "Vitamíny a sirup", 420, "health", TATA, null),

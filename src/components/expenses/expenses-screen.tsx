@@ -26,6 +26,7 @@ import { formatDayShort, formatMonth, toDateKey } from "@/lib/dates";
 import { cn, formatMoney } from "@/lib/format";
 import { memberName } from "@/lib/members";
 import { OpakovaneVydaje } from "./opakovane-karta";
+import { ProplaceniPrehled, StitekProplaceni } from "./proplaceni";
 import type { Expense, ExpenseCategory, OpakovanyVydaj, SessionContext } from "@/lib/types";
 import { Ikona } from "@/components/ui/ikona";
 
@@ -219,6 +220,8 @@ export function ExpensesScreen({
         />
       </div>
 
+      <ProplaceniPrehled session={session} expenses={expenses} />
+
       <OpakovaneVydaje session={session} polozky={opakovane} muzeUpravovat={canEdit} />
 
       {perChild.length > 0 ? (
@@ -409,6 +412,7 @@ export function ExpensesScreen({
                             <span className="truncate font-medium text-ink">{e.title}</span>
                             {child ? <Badge color={child.color}>{child.name}</Badge> : null}
                             {e.settled ? <Badge color="var(--success)">vypořádáno</Badge> : null}
+                            <StitekProplaceni expense={e} />
                           </span>
                           <span className="mt-0.5 flex items-center gap-2 text-xs text-ink-muted">
                             <span>{meta.label}</span>
@@ -478,7 +482,9 @@ export function ExpensesScreen({
         open={formOpen}
         onClose={() => setFormOpen(false)}
         session={session}
-        expense={editing}
+        // Po odpovědi na žádost se stránka obnoví — formulář má ukázat
+        // nový stav, ne ten z chvíle, kdy se otevřel.
+        expense={editing ? (expenses.find((x) => x.id === editing.id) ?? editing) : null}
         defaultDate={editing ? null : prefillDate}
       />
 

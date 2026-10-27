@@ -222,6 +222,27 @@ export interface Expense {
   /** Vyplněné, když výdaj vznikl z opakované šablony. */
   opakovani_id?: string | null;
   receipts?: Receipt[];
+  zadosti_proplaceni?: ZadostProplaceni[];
+}
+
+export type StavProplaceni = "ceka" | "schvaleno" | "rozporovano" | "zaplaceno" | "zruseno";
+
+/** Žádost o proplacení podílu z výdaje (migrace 0036). */
+export interface ZadostProplaceni {
+  id: string;
+  family_id: string;
+  expense_id: string;
+  pozadal: string | null;
+  pozadal_jmeno: string;
+  castka: number;
+  poznamka: string | null;
+  stav: StavProplaceni;
+  odpovedel: string | null;
+  odpovedel_jmeno: string | null;
+  duvod: string | null;
+  odpovezeno_at: string | null;
+  zaplaceno_at: string | null;
+  created_at: string;
 }
 
 /** Šablona pravidelného výdaje — výživné, obědy, kroužky, pojištění. */

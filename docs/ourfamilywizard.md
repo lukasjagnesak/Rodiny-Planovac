@@ -28,7 +28,7 @@ orientační.
 | Zprávy se záznamem | Nejde je měnit, čas doručení a přečtení | ✅ Má (nejdou upravit ani smazat, razítko odeslání a přečtení) |
 | **ToneMeter** | Při psaní upozorní na útočné nebo emotivní formulace | ✅ **Má od 27. 10. 2026** — hlídač tónu v češtině (urážky, výhrůžky, obviňování, „vždycky/nikdy“, křik, ironie). Běží jen v prohlížeči, zprávu nikam neposílá; jde vypnout |
 | Výdaje | Evidence, rozdělení, zůstatek | ✅ Má (účtenky, klíč, vyrovnání) |
-| Žádost o proplacení a OFWpay | Žádost o úhradu, platba převodem v aplikaci, historie plateb | ⚠️ Částečně — výdaje a „vypořádáno" ano, žádost se schválením a platba ne |
+| Žádost o proplacení a OFWpay | Žádost o úhradu, platba převodem v aplikaci, historie plateb | ✅ **Žádost se schválením má od 27. 10. 2026** (migrace 0036): schválit, rozporovat s důvodem, vypořádá potvrzení příjmu. Platba v aplikaci ne |
 | **Auditní stopa** | Časová historie žádostí, výdajů, změn rozvrhu a přihlášení | ✅ **Má od 27. 10. 2026** (migrace 0034): rozvrh, výdaje, události, kroužky, děti, členové i stažené výpisy; nejde upravit ani smazat. Přihlášení zatím ne |
 | **Přístup pro profesionály** | Advokát, soudce, opatrovník, mediátor vidí účet rodiny jen pro čtení, zdarma | ✅ **Má od 27. 10. 2026** (migrace 0035). Udělí kterýkoli rodič, druhý dostane zprávu a smí přístup odebrat. Přístup má datum konce, pozvánku jde přijmout jen z e-mailu, na který šla |
 | Výpisy pro soud | Záznamy pro řízení | ✅ Výpis zpráv, historie (Word) a souhrn s ověřovacím kódem; klidoo.cz/overit ověří pravost i to, že soubor nikdo neupravil (SHA-256) |
@@ -63,6 +63,8 @@ orientační.
    ✅ Hotovo (0035, karta v Děti a rodina).
 6. **Žádost o proplacení výdaje** se schválením nebo rozporováním. Platby
    v aplikaci zatím ne.
+   ✅ Hotovo (0036): žádá ten, kdo platil; druhý schválí nebo rozporuje
+   s důvodem; vypořádá to potvrzení příjmu od žadatele. Vše ve Zprávách.
 7. **Formulace do dohody a rozhodnutí** a **přístup zdarma** pro rodiny
    z mediace, OSPOD a soudu.
 

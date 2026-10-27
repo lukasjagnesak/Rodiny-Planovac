@@ -26,7 +26,7 @@ export default async function ExpensesPage({
   const [{ data }, { data: opakovane }] = await Promise.all([
     supabase
       .from("expenses")
-      .select("*, receipts(*)")
+      .select("*, receipts(*), zadosti_proplaceni(*)")
       .eq("family_id", session.family.id)
       .gte("spent_on", chartFrom)
       .lte("spent_on", to)

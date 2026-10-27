@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { ReceiptImage } from "./receipt-image";
+import { ProplaceniVydaje } from "./proplaceni";
+import { posledniZadost } from "@/lib/proplaceni";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_ORDER } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
 import { FREKVENCE_POPIS, type Frekvence } from "@/lib/opakovani";
@@ -230,6 +232,8 @@ export function ExpenseForm({
 
   const amountNumber = Number(form.amount.replace(",", ".")) || 0;
   const otherShare = (amountNumber * Number(form.split_percent)) / 100;
+  const posledni = expense ? posledniZadost(expense.zadosti_proplaceni) : null;
+  const zivaZadost = posledni?.stav === "ceka" || posledni?.stav === "schvaleno";
   const visibleReceipts = existingReceipts.filter((r) => !removedReceipts.includes(r.id));
 
   return (
@@ -476,12 +480,18 @@ export function ExpenseForm({
             />
           </Field>
 
-          <Checkbox
-            label="Vypořádáno"
-            description="Druhý rodič už svůj podíl uhradil."
-            checked={form.settled}
-            onChange={(e) => set("settled", e.target.checked)}
-          />
+          {expense ? <ProplaceniVydaje session={session} expense={expense} /> : null}
+
+          {/* Když běží žádost o proplacení, vypořádá výdaj až potvrzení
+              příjmu — ruční zaškrtnutí by databáze odmítla. */}
+          {zivaZadost ? null : (
+            <Checkbox
+              label="Vypořádáno"
+              description="Druhý rodič už svůj podíl uhradil."
+              checked={form.settled}
+              onChange={(e) => set("settled", e.target.checked)}
+            />
+          )}
         </div>
       </Sheet>
 
