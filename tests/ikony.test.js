@@ -18,6 +18,14 @@ for (const [jmeno, mapa] of Object.entries({ EVENT_KINDS, EXPENSE_CATEGORIES, KO
   for (const [klic, m] of Object.entries(mapa)) ok(`${jmeno}.${klic} → ${m.ikona}`, m.ikona in IKONY);
 }
 
+console.log("── barvy jen z palety Klidoo ──");
+const { BARVY_IKON } = require("../.test-build/lib/barvy.js");
+const { EDUPAGE_DRUHY } = require("../.test-build/lib/constants.js");
+const povolene = new Set(Object.values(BARVY_IKON));
+for (const [jmeno, mapa] of Object.entries({ EVENT_KINDS, EXPENSE_CATEGORIES, KONTAKT_DRUHY, EDUPAGE_DRUHY })) {
+  for (const [klic, m] of Object.entries(mapa)) ok(`${jmeno}.${klic}: ${m.color}`, povolene.has(m.color));
+}
+
 console.log("── pravidla sady ──");
 for (const n of NAZVY_IKON) {
   const s = IKONY[n];

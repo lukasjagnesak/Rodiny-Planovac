@@ -21,6 +21,13 @@ export const PALETA = {
   brandSoft: [94, 0.035, 175],
   parentA: [56, 0.09, 175],
   parentB: [67, 0.11, 35],
+  // Další barvy palety — kreslí jimi ikony kategorií (BARVY_IKON níž).
+  vyzva: [38, 0.062, 175],
+  vyzvaBtn: [53, 0.13, 35],
+  holiday: [70, 0.1, 75],
+  info: [58, 0.06, 240],
+  success: [56, 0.09, 155],
+  danger: [58, 0.11, 25],
 } as const satisfies Record<string, Oklch>;
 
 export type NazevBarvy = keyof typeof PALETA;
@@ -69,3 +76,25 @@ export function naHex(nazev: NazevBarvy): string {
       .join("")
   );
 }
+
+/**
+ * Barvy ikon kategorií — jen z palety Klidoo, žádné vlastní odstíny.
+ *
+ * Kategorie výdajů, typy událostí a kontaktů dřív měly každá svou
+ * náhodnou barvu (cihlová, fialová, olivová…), která do Klidoo nepatřila.
+ * Teď berou jednu z barev, které aplikace už používá: zelenomodrou
+ * značky, terakotu druhého rodiče, jantarovou prázdnin, modrou, zelenou,
+ * červenou a šedou. Hex, protože se k nim přidává průhlednost
+ * (`${barva}1f`) a kreslí se jimi grafy.
+ */
+export const BARVY_IKON = {
+  znacka: naHex("brand"),
+  znackaTmava: naHex("vyzva"),
+  terakota: naHex("parentB"),
+  terakotaTmava: naHex("vyzvaBtn"),
+  jantar: naHex("holiday"),
+  modra: naHex("info"),
+  zelena: naHex("success"),
+  cervena: naHex("danger"),
+  seda: naHex("inkMuted"),
+} as const;

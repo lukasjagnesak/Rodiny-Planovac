@@ -20,6 +20,11 @@ působí jako hračka.
 - Čára 1,75 px, kulaté konce a spoje, bez výplně.
 - Výplň jen u drobných teček (`fill="currentColor"`).
 - Barvu bere z okolí (`currentColor`); na barevném podkladu přes `IkonaDlazdice`.
+- **Barvy jen z palety Klidoo** — `BARVY_IKON` v `src/lib/barvy.ts`:
+  zelenomodrá značky (světlá i tmavá), terakota (světlá i tmavá),
+  jantarová, modrá, zelená, červená, šedá. Hodnoty jsou tytéž jako
+  v `globals.css` (hlídá `test:barvy-pdf`); jiný odstín test `test:ikony`
+  nepustí.
 - Žádný text uvnitř ikony.
 - **Emoji do rozhraní nepatří.** Test `npm run test:ikony` selže, když se
   emoji objeví ve zdrojácích (výjimka: články v `src/obsah`).

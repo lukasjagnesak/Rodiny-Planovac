@@ -104,7 +104,9 @@ export function EventsScreen({
                     : { borderColor: "var(--line-strong)" }
                 }
               >
-                <Ikona nazev={meta.ikona} size={15} />
+                <span style={{ color: meta.color }}>
+                  <Ikona nazev={meta.ikona} size={15} />
+                </span>
                 {meta.label}
               </button>
             );

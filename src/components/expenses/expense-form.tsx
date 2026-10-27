@@ -309,7 +309,9 @@ export function ExpenseForm({
                         : { borderColor: "var(--line-strong)" }
                     }
                   >
-                    <Ikona nazev={meta.ikona} size={16} />
+                    <span style={{ color: meta.color }}>
+                      <Ikona nazev={meta.ikona} size={16} />
+                    </span>
                     {meta.label}
                   </button>
                 );

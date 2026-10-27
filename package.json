@@ -56,7 +56,7 @@
     "test:mereni-druhy": "node tests/mereni-druhy.test.js",
     "test:atribuce": "tsc src/lib/atribuce.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node tests/atribuce.test.js",
     "test:ikony": "tsc src/lib/ikony.ts src/lib/constants.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node tests/ikony.test.js",
-    "ikony": "tsc src/lib/ikony.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node scripts/ikony.mjs",
+    "ikony": "tsc src/lib/ikony.ts src/lib/barvy.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node scripts/ikony.mjs",
     "test:historie": "tsc src/lib/historie.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node tests/historie.test.js",
     "test:kod-vypisu": "tsc src/lib/kod-vypisu.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src --lib es2022,dom && node tests/kod-vypisu.test.js",
     "test:vokativ": "tsc src/lib/vokativ.ts --outDir .test-build --module commonjs --target es2022 --moduleResolution node --skipLibCheck --rootDir src && node tests/vokativ.test.js",

@@ -184,7 +184,9 @@ export function EventForm({
                         : { borderColor: "var(--line-strong)" }
                     }
                   >
-                    <Ikona nazev={meta.ikona} size={24} />
+                    <span style={{ color: meta.color }}>
+                      <Ikona nazev={meta.ikona} size={24} />
+                    </span>
                     {meta.label}
                   </button>
                 );

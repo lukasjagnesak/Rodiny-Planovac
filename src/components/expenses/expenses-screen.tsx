@@ -337,7 +337,9 @@ export function ExpensesScreen({
                   : { borderColor: "var(--line-strong)" }
               }
             >
-              <Ikona nazev={EXPENSE_CATEGORIES[c.category].ikona} size={15} />
+              <span style={{ color: c.color }}>
+                <Ikona nazev={EXPENSE_CATEGORIES[c.category].ikona} size={15} />
+              </span>
               {c.name}
             </button>
           ))}

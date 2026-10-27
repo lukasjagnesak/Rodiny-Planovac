@@ -103,7 +103,9 @@ export function KontaktyScreen({
         skupiny.map(({ druh, polozky }) => (
           <section key={druh} className="space-y-2">
             <h2 className="flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-subtle">
-              <Ikona nazev={KONTAKT_DRUHY[druh].ikona} size={16} />
+              <span style={{ color: KONTAKT_DRUHY[druh].color }}>
+                <Ikona nazev={KONTAKT_DRUHY[druh].ikona} size={16} />
+              </span>
               {KONTAKT_DRUHY[druh].label}
             </h2>
 

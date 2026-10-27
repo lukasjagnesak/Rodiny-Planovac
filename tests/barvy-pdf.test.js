@@ -43,6 +43,12 @@ const DVOJICE = {
   brandSoft: "brand-soft",
   parentA: "parent-a",
   parentB: "parent-b",
+  vyzva: "vyzva",
+  vyzvaBtn: "vyzva-btn",
+  holiday: "holiday",
+  info: "info",
+  success: "success",
+  danger: "danger",
 };
 
 console.log("── paleta sedí s globals.css ──");

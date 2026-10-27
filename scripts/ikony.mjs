@@ -17,8 +17,12 @@ const { NAZVY_IKON, svgIkony } = createRequire(import.meta.url)("../.test-build/
 const cil = path.join(process.cwd(), "public", "ikony");
 await mkdir(cil, { recursive: true });
 
-// Barva značky (--brand, oklch(53% 0.09 175)) v hex pro soubory mimo web.
-const ZNACKA = "#2f7d6d";
+// Barva značky přímo z palety (lib/barvy ↔ globals.css), ne opsaná ručně.
+const { naHex, oklchNaRgb, PALETA } = createRequire(import.meta.url)("../.test-build/lib/barvy.js");
+const ZNACKA = naHex("brand");
+const hex = ([r, g, b]) =>
+  "#" + [r, g, b].map((k) => Math.round(k * 255).toString(16).padStart(2, "0")).join("");
+const ZNACKA_SVETLA = hex(oklchNaRgb(PALETA.brandSoft));
 
 for (const nazev of NAZVY_IKON) {
   const svg = svgIkony(nazev, 24);
@@ -40,7 +44,7 @@ const { IKONY } = createRequire(import.meta.url)("../.test-build/lib/ikony.js");
 
 const dlazdice = (vnitrek) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">` +
-  `<rect width="192" height="192" rx="44" fill="#e2f1ec"/>` +
+  `<rect width="192" height="192" rx="44" fill="${ZNACKA_SVETLA}"/>` +
   `<g transform="translate(36 36) scale(5)" fill="none" stroke="${ZNACKA}" stroke-width="1.75" ` +
   `stroke-linecap="round" stroke-linejoin="round" color="${ZNACKA}">${vnitrek}</g></svg>`;
 

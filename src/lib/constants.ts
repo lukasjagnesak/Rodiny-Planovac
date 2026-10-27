@@ -1,19 +1,20 @@
 import type { EdupageDruh, EventKind, ExpenseCategory, MemberRole } from "./types";
 import type { NazevIkony } from "./ikony";
+import { BARVY_IKON } from "./barvy";
 
 export const EXPENSE_CATEGORIES: Record<
   ExpenseCategory,
   { label: string; ikona: NazevIkony; color: string }
 > = {
-  alimony: { label: "Výživné", ikona: "bankovka", color: "#4a7c6f" },
-  activities: { label: "Kroužky", ikona: "mic", color: "#8a6f9e" },
-  clothing: { label: "Oblečení", ikona: "tricko", color: "#9a5b6b" },
-  fun: { label: "Zábava", ikona: "hvezda", color: "#b58a3c" },
-  school: { label: "Škola", ikona: "batoh", color: "#5f7a8c" },
-  health: { label: "Zdraví", ikona: "srdce", color: "#a8443a" },
-  food: { label: "Jídlo", ikona: "jablko", color: "#4f7a45" },
-  travel: { label: "Cestování", ikona: "letadlo", color: "#3f7d84" },
-  other: { label: "Ostatní", ikona: "krabice", color: "#8a8074" },
+  alimony: { label: "Výživné", ikona: "bankovka", color: BARVY_IKON.znacka },
+  activities: { label: "Kroužky", ikona: "mic", color: BARVY_IKON.terakota },
+  clothing: { label: "Oblečení", ikona: "tricko", color: BARVY_IKON.modra },
+  fun: { label: "Zábava", ikona: "hvezda", color: BARVY_IKON.jantar },
+  school: { label: "Škola", ikona: "batoh", color: BARVY_IKON.znackaTmava },
+  health: { label: "Zdraví", ikona: "srdce", color: BARVY_IKON.cervena },
+  food: { label: "Jídlo", ikona: "jablko", color: BARVY_IKON.zelena },
+  travel: { label: "Cestování", ikona: "letadlo", color: BARVY_IKON.terakotaTmava },
+  other: { label: "Ostatní", ikona: "krabice", color: BARVY_IKON.seda },
 };
 
 export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
@@ -29,14 +30,14 @@ export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
 ];
 
 export const EVENT_KINDS: Record<EventKind, { label: string; ikona: NazevIkony; color: string }> = {
-  school_trip: { label: "Škola v přírodě", ikona: "stan", color: "#4f7a45" },
-  parent_meeting: { label: "Třídní schůzky", ikona: "tabule", color: "#5f7a8c" },
-  photo_session: { label: "Focení", ikona: "fotoaparat", color: "#9a5b6b" },
-  excursion: { label: "Školní výlet", ikona: "autobus", color: "#b58a3c" },
-  medical: { label: "Lékař", ikona: "lekar", color: "#a8443a" },
-  birthday: { label: "Narozeniny", ikona: "dort", color: "#8a6f9e" },
-  holiday: { label: "Prázdniny", ikona: "prazdniny", color: "#3f7d84" },
-  other: { label: "Ostatní", ikona: "spendlik", color: "#8a8074" },
+  school_trip: { label: "Škola v přírodě", ikona: "stan", color: BARVY_IKON.zelena },
+  parent_meeting: { label: "Třídní schůzky", ikona: "tabule", color: BARVY_IKON.znackaTmava },
+  photo_session: { label: "Focení", ikona: "fotoaparat", color: BARVY_IKON.terakotaTmava },
+  excursion: { label: "Školní výlet", ikona: "autobus", color: BARVY_IKON.modra },
+  medical: { label: "Lékař", ikona: "lekar", color: BARVY_IKON.cervena },
+  birthday: { label: "Narozeniny", ikona: "dort", color: BARVY_IKON.terakota },
+  holiday: { label: "Prázdniny", ikona: "prazdniny", color: BARVY_IKON.jantar },
+  other: { label: "Ostatní", ikona: "spendlik", color: BARVY_IKON.seda },
 };
 
 /**
@@ -45,10 +46,10 @@ export const EVENT_KINDS: Record<EventKind, { label: string; ikona: NazevIkony; 
  * později rozešly.
  */
 export const EDUPAGE_DRUHY: Record<EdupageDruh, { label: string; color: string }> = {
-  ukol: { label: "Úkol", color: "#5f7a8c" },
-  pisemka: { label: "Písemka", color: "#a8443a" },
-  zprava: { label: "Zpráva", color: "#4a7c6f" },
-  akce: { label: "Akce školy", color: "#b58a3c" },
+  ukol: { label: "Úkol", color: BARVY_IKON.modra },
+  pisemka: { label: "Písemka", color: BARVY_IKON.cervena },
+  zprava: { label: "Zpráva", color: BARVY_IKON.znacka },
+  akce: { label: "Akce školy", color: BARVY_IKON.jantar },
 };
 
 export const EVENT_KIND_ORDER: EventKind[] = [
@@ -66,11 +67,11 @@ export const KONTAKT_DRUHY: Record<
   import("./types").KontaktDruh,
   { label: string; ikona: NazevIkony; color: string }
 > = {
-  skola: { label: "Škola", ikona: "skola", color: "#5f7a8c" },
-  lekar: { label: "Lékaři", ikona: "lekar", color: "#a8443a" },
-  krouzek: { label: "Kroužky", ikona: "mic", color: "#8a6f9e" },
-  rodina: { label: "Rodina a blízcí", ikona: "rodina", color: "#4a7c6f" },
-  jine: { label: "Ostatní", ikona: "vizitka", color: "#8a8074" },
+  skola: { label: "Škola", ikona: "skola", color: BARVY_IKON.znackaTmava },
+  lekar: { label: "Lékaři", ikona: "lekar", color: BARVY_IKON.cervena },
+  krouzek: { label: "Kroužky", ikona: "mic", color: BARVY_IKON.terakota },
+  rodina: { label: "Rodina a blízcí", ikona: "rodina", color: BARVY_IKON.znacka },
+  jine: { label: "Ostatní", ikona: "vizitka", color: BARVY_IKON.seda },
 };
 
 export const KONTAKT_DRUH_ORDER: import("./types").KontaktDruh[] = [
