@@ -24,7 +24,7 @@ orientační.
 | Funkce OFW | Co dělá | Klidoo |
 |---|---|---|
 | Sdílený kalendář | Rozvrh péče, události | ✅ Má, včetně nocí, prázdnin podle okresu a EduPage |
-| **Trade/Swap** | Žádost o výměnu termínu. Druhý rodič schválí nebo zamítne do určitého data, schválená změna se sama propíše do kalendáře | ✅ **Má od 27. 10. 2026** (migrace 0032). Při dvou rodičích nejde kalendář změnit bez souhlasu, hlídá to databáze; návrh i odpověď jsou ve Zprávách |
+| **Trade/Swap** | Žádost o výměnu termínu. Druhý rodič schválí nebo zamítne do určitého data, schválená změna se sama propíše do kalendáře | ✅ **Má od 27. 10. 2026** (migrace 0032, prohození dnů 0033). Při dvou rodičích nejde kalendář změnit bez souhlasu, hlídá to databáze; návrh i odpověď jsou ve Zprávách |
 | Zprávy se záznamem | Nejde je měnit, čas doručení a přečtení | ✅ Má (nejdou upravit ani smazat, razítko odeslání a přečtení) |
 | **ToneMeter** | Při psaní upozorní na útočné nebo emotivní formulace | ❌ **Chybí** |
 | Výdaje | Evidence, rozdělení, zůstatek | ✅ Má (účtenky, klíč, vyrovnání) |

@@ -62,7 +62,7 @@ export default function ProOspodASoudy() {
             {
               nazev: "Rozvrh nezmění jeden rodič sám",
               popis:
-                "Změnu navrhne jeden, schválí druhý. Bez souhlasu se kalendář nezmění — hlídá to databáze, ne dobrá vůle.",
+                "Změnu nebo prohození dnů navrhne jeden, schválí druhý. Bez souhlasu se kalendář nezmění — hlídá to databáze, ne dobrá vůle.",
             },
             {
               nazev: "Záznam, který nejde přepsat",

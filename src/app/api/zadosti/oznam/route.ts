@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   // Přes klienta přihlášeného uživatele: RLS pustí jen žádost jeho rodiny.
   const { data: z } = await supabase
     .from("zadosti_zmeny")
-    .select("id, family_id, od, do_dne, stav, navrhl, navrhl_jmeno")
+    .select("id, family_id, od, do_dne, vymena_od, stav, navrhl, navrhl_jmeno")
     .eq("id", zadostId)
     .maybeSingle();
   if (!z) return NextResponse.json({ ok: true });
@@ -46,7 +46,9 @@ export async function POST(request: NextRequest) {
       .in("role", ["owner", "parent"])
       .not("custody_side", "is", null);
     komu = (rodice ?? []).map((r) => String(r.user_id)).filter((u) => u !== ja);
-    titulek = `${z.navrhl_jmeno} navrhuje změnu rozvrhu ${rozsah}`;
+    titulek = z.vymena_od
+      ? `${z.navrhl_jmeno} navrhuje prohození ${rozsah}`
+      : `${z.navrhl_jmeno} navrhuje změnu rozvrhu ${rozsah}`;
   } else if (z.stav === "schvaleno" || z.stav === "zamitnuto") {
     if (!z.navrhl || z.navrhl === ja) return NextResponse.json({ ok: true });
     komu = [String(z.navrhl)];

@@ -359,6 +359,9 @@ export interface ZadostZmeny {
   od: string;
   do_dne: string;
   strana: CustodySide;
+  /** Prohození: tyhle dny připadnou druhé straně (migrace 0033). */
+  vymena_od?: string | null;
+  vymena_do?: string | null;
   duvod: string | null;
   navrhl: string | null;
   navrhl_jmeno: string;

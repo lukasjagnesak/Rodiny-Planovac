@@ -55,6 +55,8 @@ function KartaZadosti({ session, zadost }: { session: SessionContext; zadost: Za
   const [text, setText] = React.useState("");
 
   const moje = zadost.navrhl === session.userId;
+  const prohozeni = Boolean(zadost.vymena_od && zadost.vymena_do);
+  const opacna = zadost.strana === "a" ? "b" : "a";
   const muzeOdpovidat = !moje && session.myMembership.role !== "viewer";
   const dite = zadost.child_id
     ? session.children.find((c) => c.id === zadost.child_id)?.name
@@ -85,7 +87,13 @@ function KartaZadosti({ session, zadost }: { session: SessionContext; zadost: Za
         <CalendarClock className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden />
         <div className="min-w-0 flex-1 text-sm">
           <p className="font-semibold text-ink">
-            {moje ? "Navrhli jste změnu rozvrhu" : `${zadost.navrhl_jmeno} navrhuje změnu rozvrhu`}
+            {moje
+              ? prohozeni
+                ? "Navrhli jste prohození"
+                : "Navrhli jste změnu rozvrhu"
+              : prohozeni
+                ? `${zadost.navrhl_jmeno} navrhuje prohození`
+                : `${zadost.navrhl_jmeno} navrhuje změnu rozvrhu`}
           </p>
           <p className="mt-1 flex flex-wrap items-center gap-x-1.5 text-ink">
             <span className="font-medium">{rozsahDnu(zadost.od, zadost.do_dne)}</span>
@@ -94,6 +102,15 @@ function KartaZadosti({ session, zadost }: { session: SessionContext; zadost: Za
             <Dot color={sideColor(session.members, zadost.strana)} />
             <span className="font-medium">{sideLabel(session.members, zadost.strana)}</span>
           </p>
+          {prohozeni ? (
+            <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-ink">
+              <span className="text-ink-muted">výměnou</span>
+              <span className="font-medium">{rozsahDnu(zadost.vymena_od!, zadost.vymena_do!)}</span>
+              <span className="text-ink-muted">u:</span>
+              <Dot color={sideColor(session.members, opacna)} />
+              <span className="font-medium">{sideLabel(session.members, opacna)}</span>
+            </p>
+          ) : null}
           {zadost.duvod ? <p className="mt-1 text-ink-muted">Důvod: {zadost.duvod}</p> : null}
           <p className={poTerminu ? "mt-1 font-medium text-danger" : "mt-1 text-ink-subtle"}>
             {poTerminu

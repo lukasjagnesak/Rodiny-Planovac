@@ -142,11 +142,12 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
     zprava("z4", TATA, "Petr", -1, "12:20", "Koupím je dnes, účtenku dám do výdajů."),
   ];
 
-  // Jana navrhuje prodloužený víkend — žádost čeká na Petra.
+  // Jana navrhuje prohození víkendů — žádost čeká na Petra.
   const zadosti: ZadostZmeny[] = [
     {
       id: "zz1", family_id: "f-ukazka", child_id: null,
       od: vTydnu(5, 2), do_dne: vTydnu(7, 2), strana: "b",
+      vymena_od: vTydnu(5, 3), vymena_do: vTydnu(7, 3),
       duvod: "Jedeme s dětmi k babičce na její narozeniny",
       navrhl: MAMA, navrhl_jmeno: "Jana", odpovedet_do: vTydnu(5, 1),
       stav: "ceka", odpovedel: null, odpoved: null, vyrizeno_at: null, created_at: den(-1),

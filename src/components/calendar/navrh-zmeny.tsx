@@ -39,6 +39,10 @@ export function NavrhZmeny({
   const [doDne, setDoDne] = React.useState(dayKey);
   const [duvod, setDuvod] = React.useState("");
   const [termin, setTermin] = React.useState(vychoziTerminOdpovedi(dayKey, dnes));
+  // Prohození: dny, které výměnou připadnou druhé straně.
+  const [vymena, setVymena] = React.useState(false);
+  const [vymenaOd, setVymenaOd] = React.useState("");
+  const [vymenaDo, setVymenaDo] = React.useState("");
   const [busy, setBusy] = React.useState(false);
   const [chyba, setChyba] = React.useState<string | null>(null);
   const [odeslano, setOdeslano] = React.useState(false);
@@ -73,7 +77,14 @@ export function NavrhZmeny({
     );
   }
 
+  const opacna: CustodySide = strana === "a" ? "b" : "a";
+  const konecZmeny = doDne < dayKey ? dayKey : doDne;
+
   async function odeslat() {
+    if (vymena && (!vymenaOd || !vymenaDo)) {
+      setChyba("U výměny vyplňte od kdy i do kdy.");
+      return;
+    }
     setBusy(true);
     setChyba(null);
     const supabase = createClient();
@@ -81,10 +92,12 @@ export function NavrhZmeny({
       target_family: session.family.id,
       dite: childId,
       od: dayKey,
-      do_dne: doDne < dayKey ? dayKey : doDne,
+      do_dne: konecZmeny,
       strana,
       duvod,
       odpovedet_do: termin,
+      vymena_od: vymena ? vymenaOd : null,
+      vymena_do: vymena ? (vymenaDo < vymenaOd ? vymenaOd : vymenaDo) : null,
     });
     setBusy(false);
     if (error) {
@@ -129,12 +142,54 @@ export function NavrhZmeny({
           <Input
             type="date"
             min={dnes}
-            max={dayKey}
+            max={vymena && vymenaOd && vymenaOd < dayKey ? vymenaOd : dayKey}
             value={termin}
             onChange={(e) => setTermin(e.target.value)}
           />
         </Field>
       </div>
+
+      <label className="flex items-start gap-2.5 text-sm text-ink">
+        <input
+          type="checkbox"
+          className="mt-0.5 h-4 w-4 accent-[var(--brand)]"
+          checked={vymena}
+          onChange={(e) => setVymena(e.target.checked)}
+        />
+        <span>
+          <span className="font-medium">Výměnou nabízím jiné dny</span>
+          <span className="block text-xs text-ink-muted">
+            Prohození: v těch dnech budou děti u: {sideLabel(session.members, opacna)}. Schvaluje
+            se obojí najednou.
+          </span>
+        </span>
+      </label>
+
+      {vymena ? (
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Výměnou od">
+            <Input
+              type="date"
+              min={dnes}
+              value={vymenaOd}
+              onChange={(e) => {
+                setVymenaOd(e.target.value);
+                if (!vymenaDo || vymenaDo < e.target.value) setVymenaDo(e.target.value);
+                // Termín odpovědi nesmí být až po prvním dni výměny.
+                if (e.target.value && termin > e.target.value) setTermin(e.target.value);
+              }}
+            />
+          </Field>
+          <Field label="do (včetně)">
+            <Input
+              type="date"
+              min={vymenaOd || dnes}
+              value={vymenaDo}
+              onChange={(e) => setVymenaDo(e.target.value)}
+            />
+          </Field>
+        </div>
+      ) : null}
 
       <Field label="Důvod" hint="nepovinné">
         <Textarea
@@ -155,7 +210,7 @@ export function NavrhZmeny({
 
       <div className="flex flex-wrap gap-2">
         <Button size="sm" disabled={busy} onClick={odeslat}>
-          <Send className="h-4 w-4" /> Odeslat návrh
+          <Send className="h-4 w-4" /> {vymena ? "Navrhnout prohození" : "Odeslat návrh"}
         </Button>
         <Button size="sm" variant="ghost" disabled={busy} onClick={() => setOtevreno(false)}>
           Zrušit
