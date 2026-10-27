@@ -393,7 +393,7 @@ export function MonthView({
             ))}
             {!okres ? (
               <p className="pt-1 text-xs text-ink-subtle">
-                Jarní prázdniny se liší podle okresu školy — doplň ho u dítěte v sekci Děti
+                Jarní prázdniny se liší podle okresu školy — doplňte ho u dítěte v sekci Děti
                 a rodina.
               </p>
             ) : null}
@@ -438,7 +438,7 @@ export function MonthView({
           {stats.unassigned > 0 ? (
             <p className="flex items-center gap-2 text-xs text-ink-subtle">
               <CalendarDays className="h-3.5 w-3.5" />
-              {stats.unassigned} dní zatím nemá nastavené střídání — doplň vzor v{" "}
+              {stats.unassigned} dní zatím nemá nastavené střídání — doplňte vzor v{" "}
               <a href="/nastaveni/stridani" className="underline">
                 nastavení
               </a>

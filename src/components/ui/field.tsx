@@ -45,7 +45,9 @@ export function Field({
   className?: string;
 }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    // `min-w-0`: pole v mřížce (datum a čas vedle sebe) se jinak nezmenší
+    // pod svou přirozenou šířku a na iPhonu přeteče přes okraj obrazovky.
+    <div className={cn("min-w-0 space-y-1.5", className)}>
       {label ? (
         <Label hint={hint} required={required}>
           {label}

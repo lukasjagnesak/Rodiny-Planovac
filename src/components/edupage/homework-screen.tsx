@@ -357,7 +357,9 @@ function PolozkaCard({
                 ) : null}
 
                 {row.event_id ? (
-                  <span className="text-xs text-success">✓ v kalendáři</span>
+                  <span className="inline-flex items-center gap-1 text-xs text-success">
+                      <Check className="h-3.5 w-3.5" aria-hidden /> v kalendáři
+                    </span>
                 ) : null}
 
                 <button

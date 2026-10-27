@@ -1,18 +1,19 @@
 import type { EdupageDruh, EventKind, ExpenseCategory, MemberRole } from "./types";
+import type { NazevIkony } from "./ikony";
 
 export const EXPENSE_CATEGORIES: Record<
   ExpenseCategory,
-  { label: string; emoji: string; color: string }
+  { label: string; ikona: NazevIkony; color: string }
 > = {
-  alimony: { label: "Výživné", emoji: "💶", color: "#4a7c6f" },
-  activities: { label: "Kroužky", emoji: "⚽", color: "#8a6f9e" },
-  clothing: { label: "Oblečení", emoji: "👕", color: "#9a5b6b" },
-  fun: { label: "Zábava", emoji: "🎉", color: "#b58a3c" },
-  school: { label: "Škola", emoji: "🎒", color: "#5f7a8c" },
-  health: { label: "Zdraví", emoji: "🩺", color: "#a8443a" },
-  food: { label: "Jídlo", emoji: "🍎", color: "#4f7a45" },
-  travel: { label: "Cestování", emoji: "✈️", color: "#3f7d84" },
-  other: { label: "Ostatní", emoji: "📦", color: "#8a8074" },
+  alimony: { label: "Výživné", ikona: "bankovka", color: "#4a7c6f" },
+  activities: { label: "Kroužky", ikona: "mic", color: "#8a6f9e" },
+  clothing: { label: "Oblečení", ikona: "tricko", color: "#9a5b6b" },
+  fun: { label: "Zábava", ikona: "hvezda", color: "#b58a3c" },
+  school: { label: "Škola", ikona: "batoh", color: "#5f7a8c" },
+  health: { label: "Zdraví", ikona: "srdce", color: "#a8443a" },
+  food: { label: "Jídlo", ikona: "jablko", color: "#4f7a45" },
+  travel: { label: "Cestování", ikona: "letadlo", color: "#3f7d84" },
+  other: { label: "Ostatní", ikona: "krabice", color: "#8a8074" },
 };
 
 export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
@@ -27,15 +28,15 @@ export const EXPENSE_CATEGORY_ORDER: ExpenseCategory[] = [
   "other",
 ];
 
-export const EVENT_KINDS: Record<EventKind, { label: string; emoji: string; color: string }> = {
-  school_trip: { label: "Škola v přírodě", emoji: "🏕️", color: "#4f7a45" },
-  parent_meeting: { label: "Třídní schůzky", emoji: "🧑‍🏫", color: "#5f7a8c" },
-  photo_session: { label: "Focení", emoji: "📸", color: "#9a5b6b" },
-  excursion: { label: "Školní výlet", emoji: "🚌", color: "#b58a3c" },
-  medical: { label: "Lékař", emoji: "🩺", color: "#a8443a" },
-  birthday: { label: "Narozeniny", emoji: "🎂", color: "#8a6f9e" },
-  holiday: { label: "Prázdniny", emoji: "🌴", color: "#3f7d84" },
-  other: { label: "Ostatní", emoji: "📌", color: "#8a8074" },
+export const EVENT_KINDS: Record<EventKind, { label: string; ikona: NazevIkony; color: string }> = {
+  school_trip: { label: "Škola v přírodě", ikona: "stan", color: "#4f7a45" },
+  parent_meeting: { label: "Třídní schůzky", ikona: "tabule", color: "#5f7a8c" },
+  photo_session: { label: "Focení", ikona: "fotoaparat", color: "#9a5b6b" },
+  excursion: { label: "Školní výlet", ikona: "autobus", color: "#b58a3c" },
+  medical: { label: "Lékař", ikona: "lekar", color: "#a8443a" },
+  birthday: { label: "Narozeniny", ikona: "dort", color: "#8a6f9e" },
+  holiday: { label: "Prázdniny", ikona: "prazdniny", color: "#3f7d84" },
+  other: { label: "Ostatní", ikona: "spendlik", color: "#8a8074" },
 };
 
 /**
@@ -63,13 +64,13 @@ export const EVENT_KIND_ORDER: EventKind[] = [
 
 export const KONTAKT_DRUHY: Record<
   import("./types").KontaktDruh,
-  { label: string; emoji: string; color: string }
+  { label: string; ikona: NazevIkony; color: string }
 > = {
-  skola: { label: "Škola", emoji: "🎒", color: "#5f7a8c" },
-  lekar: { label: "Lékaři", emoji: "🩺", color: "#a8443a" },
-  krouzek: { label: "Kroužky", emoji: "⚽", color: "#8a6f9e" },
-  rodina: { label: "Rodina a blízcí", emoji: "👨‍👩‍👧", color: "#4a7c6f" },
-  jine: { label: "Ostatní", emoji: "📇", color: "#8a8074" },
+  skola: { label: "Škola", ikona: "skola", color: "#5f7a8c" },
+  lekar: { label: "Lékaři", ikona: "lekar", color: "#a8443a" },
+  krouzek: { label: "Kroužky", ikona: "mic", color: "#8a6f9e" },
+  rodina: { label: "Rodina a blízcí", ikona: "rodina", color: "#4a7c6f" },
+  jine: { label: "Ostatní", ikona: "vizitka", color: "#8a8074" },
 };
 
 export const KONTAKT_DRUH_ORDER: import("./types").KontaktDruh[] = [
@@ -82,14 +83,14 @@ export const KONTAKT_DRUH_ORDER: import("./types").KontaktDruh[] = [
 
 export const DOKLAD_DRUHY: Record<
   import("./types").DokladDruh,
-  { label: string; emoji: string }
+  { label: string; ikona: NazevIkony }
 > = {
-  pojistenec: { label: "Kartička pojištěnce", emoji: "🏥" },
-  obcanka: { label: "Občanský průkaz", emoji: "🪪" },
-  pas: { label: "Cestovní pas", emoji: "🛂" },
-  ockovani: { label: "Očkovací průkaz", emoji: "💉" },
-  rodny_list: { label: "Rodný list", emoji: "📜" },
-  jine: { label: "Jiný doklad", emoji: "📄" },
+  pojistenec: { label: "Kartička pojištěnce", ikona: "karta_zdravi" },
+  obcanka: { label: "Občanský průkaz", ikona: "vizitka" },
+  pas: { label: "Cestovní pas", ikona: "pas" },
+  ockovani: { label: "Očkovací průkaz", ikona: "strikacka" },
+  rodny_list: { label: "Rodný list", ikona: "listina" },
+  jine: { label: "Jiný doklad", ikona: "dokument" },
 };
 
 export const DOKLAD_DRUH_ORDER: import("./types").DokladDruh[] = [

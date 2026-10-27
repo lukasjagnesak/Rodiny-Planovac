@@ -12,6 +12,7 @@ import { EVENT_KINDS, EVENT_KIND_ORDER, REMINDER_CHOICES } from "@/lib/constants
 import { toDateKey } from "@/lib/dates";
 import type { EventKind, FamilyEvent, SessionContext } from "@/lib/types";
 import { hlaskaChyby } from "@/lib/format";
+import { Ikona } from "@/components/ui/ikona";
 
 export function EventForm({
   open,
@@ -66,7 +67,7 @@ export function EventForm({
 
   async function save() {
     if (!form.title.trim()) {
-      setError("Doplň název události.");
+      setError("Doplňte název události.");
       return;
     }
 
@@ -183,9 +184,7 @@ export function EventForm({
                         : { borderColor: "var(--line-strong)" }
                     }
                   >
-                    <span className="text-base" aria-hidden>
-                      {meta.emoji}
-                    </span>
+                    <Ikona nazev={meta.ikona} size={24} />
                     {meta.label}
                   </button>
                 );

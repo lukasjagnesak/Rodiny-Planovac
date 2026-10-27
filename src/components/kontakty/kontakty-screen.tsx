@@ -18,6 +18,7 @@ import { EmptyState, Segmented } from "@/components/ui/misc";
 import { KontaktForm } from "./kontakt-form";
 import { KONTAKT_DRUHY, KONTAKT_DRUH_ORDER } from "@/lib/constants";
 import type { Kontakt, KontaktDruh, SessionContext } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 export function KontaktyScreen({
   session,
@@ -102,7 +103,7 @@ export function KontaktyScreen({
         skupiny.map(({ druh, polozky }) => (
           <section key={druh} className="space-y-2">
             <h2 className="flex items-center gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-subtle">
-              <span aria-hidden>{KONTAKT_DRUHY[druh].emoji}</span>
+              <Ikona nazev={KONTAKT_DRUHY[druh].ikona} size={16} />
               {KONTAKT_DRUHY[druh].label}
             </h2>
 

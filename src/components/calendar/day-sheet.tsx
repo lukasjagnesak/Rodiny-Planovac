@@ -25,6 +25,7 @@ import type {
   RozvrhZmena,
   SessionContext,
 } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 export function DaySheet({
   dayKey,
@@ -432,7 +433,9 @@ export function DaySheet({
                 return (
                   <li key={e.id} className="rounded-xl border border-line bg-surface-2 p-3">
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                      <span aria-hidden>{meta.emoji}</span>
+                      <span className="self-center" style={{ color: meta.color }}>
+                        <Ikona nazev={meta.ikona} size={16} />
+                      </span>
                       <span className="font-medium text-ink">{e.title}</span>
                       {!e.all_day ? (
                         <span className="tnum text-sm text-ink-muted">

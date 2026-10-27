@@ -6,12 +6,14 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { jePodporovan, aktualniOdber, zapniNotifikace, vypniNotifikace } from "@/lib/push-client";
+import { Ikona } from "@/components/ui/ikona";
+import type { NazevIkony } from "@/lib/ikony";
 
-const WHAT_ARRIVES = [
-  { emoji: "🚗", text: "Večer předem: „Zítra vezete Kubu na fotbal, 16:00, ZŠ Komenského.“" },
-  { emoji: "❓", text: "Když na zítřejší kroužek nikdo není přiřazený jako řidič." },
-  { emoji: "🔄", text: "Den před předáním dětí." },
-  { emoji: "🩺", text: "Připomínky událostí podle toho, co si u nich nastavíte." },
+const WHAT_ARRIVES: { ikona: NazevIkony; text: string }[] = [
+  { ikona: "auto", text: "Večer předem: „Zítra vezete Kubu na fotbal, 16:00, ZŠ Komenského.“" },
+  { ikona: "otaznik", text: "Když na zítřejší kroužek nikdo není přiřazený jako řidič." },
+  { ikona: "predani", text: "Den před předáním dětí." },
+  { ikona: "zvonek", text: "Připomínky událostí podle toho, co si u nich nastavíte." },
 ];
 
 type Stav = "zjistuje" | "nepodporovano" | "zamitnuto" | "vypnuto" | "zapnuto";
@@ -170,8 +172,8 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
           <ul className="space-y-2.5">
             {WHAT_ARRIVES.map((item) => (
               <li key={item.text} className="flex gap-3 text-sm">
-                <span className="shrink-0" aria-hidden>
-                  {item.emoji}
+                <span className="mt-0.5 text-brand">
+                  <Ikona nazev={item.ikona} size={18} />
                 </span>
                 <span className="text-ink-muted">{item.text}</span>
               </li>

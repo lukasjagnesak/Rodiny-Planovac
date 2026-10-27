@@ -48,6 +48,7 @@ import type {
   RozvrhZmena,
   SessionContext,
 } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 export function Dashboard({
   session,
@@ -445,10 +446,10 @@ export function Dashboard({
                 <li key={e.id} className="flex items-center gap-3 px-4 py-3">
                   <span
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                    style={{ backgroundColor: `${meta.color}1f` }}
+                    style={{ backgroundColor: `${meta.color}1f`, color: meta.color }}
                     aria-hidden
                   >
-                    {meta.emoji}
+                    <Ikona nazev={meta.ikona} size={18} />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5">

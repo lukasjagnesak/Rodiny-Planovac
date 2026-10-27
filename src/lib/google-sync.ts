@@ -134,7 +134,7 @@ export async function syncUserCalendar(userId: string): Promise<SyncResult> {
           familyId,
           day: block.startKey,
           payload: {
-            summary: `👨‍👩‍👧 Děti: ${sideLabel(memberViews, block.side)}`,
+            summary: `Děti: ${sideLabel(memberViews, block.side)}`,
             description: `${block.nights} ${block.nights === 1 ? "noc" : block.nights < 5 ? "noci" : "nocí"} · ${ZNACKA}`,
             // Google bere `end.date` jako exkluzivní — proto +1 den.
             startDate: block.startKey,
@@ -175,7 +175,7 @@ export async function syncUserCalendar(userId: string): Promise<SyncResult> {
             familyId,
             day: instance.day,
             payload: {
-              summary: `🏃 ${instance.activity.name}${child ? ` — ${child.name}` : ""}`,
+              summary: `${instance.activity.name}${child ? ` — ${child.name}` : ""}`,
               description: lines.join("\n"),
               location: instance.activity.address || instance.activity.location || undefined,
               startDateTime: `${instance.day}T${formatTime(instance.startsAt)}:00`,
@@ -204,7 +204,7 @@ export async function syncUserCalendar(userId: string): Promise<SyncResult> {
           familyId,
           day: toDateKey(start),
           payload: {
-            summary: `${meta.emoji} ${event.title}${child ? ` — ${child.name}` : ""}`,
+            summary: `${event.title}${child ? ` — ${child.name}` : ""}`,
             description: [
               meta.label,
               responsible ? `Zajišťuje: ${responsible.name}` : null,

@@ -13,7 +13,7 @@ import type { GoogleAccount } from "@/lib/types";
 
 const ERROR_MESSAGES: Record<string, string> = {
   nenastaveno:
-    "Na serveru chybí GOOGLE_CLIENT_ID a GOOGLE_CLIENT_SECRET. Doplň je do .env a restartuj aplikaci.",
+    "Na serveru chybí GOOGLE_CLIENT_ID a GOOGLE_CLIENT_SECRET. Doplňte je do .env a restartujte aplikaci.",
   "neplatny-stav": "Ověření se nezdařilo. Zkuste propojení spustit znovu.",
   "bez-refresh-tokenu":
     "Google nevrátil trvalý přístup. Odeber aplikaci v nastavení účtu Google (Zabezpečení → Aplikace třetích stran) a zkuste to znovu.",
@@ -107,7 +107,7 @@ export function GoogleSettings({
         <Card>
           <CardBody>
             <Alert tone="warning">
-              Propojení zatím není na serveru nastavené. Doplň <code>GOOGLE_CLIENT_ID</code> a{" "}
+              Propojení zatím není na serveru nastavené. Doplňte <code>GOOGLE_CLIENT_ID</code> a{" "}
               <code>GOOGLE_CLIENT_SECRET</code> — postup najdete v README.
             </Alert>
           </CardBody>

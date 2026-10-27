@@ -21,6 +21,7 @@ import { DOKLAD_DRUHY, DOKLAD_DRUH_ORDER } from "@/lib/constants";
 import { formatDay } from "@/lib/dates";
 import type { DokladDruh, Dokument, SessionContext } from "@/lib/types";
 import { hlaskaChyby } from "@/lib/format";
+import { Ikona } from "@/components/ui/ikona";
 
 export function DokumentyScreen({
   session,
@@ -162,8 +163,11 @@ export function DokumentyScreen({
             return (
               <li key={d.id}>
                 <Card className="flex items-center gap-3 p-4">
-                  <span className="text-2xl" aria-hidden>
-                    {DOKLAD_DRUHY[d.druh].emoji}
+                  <span
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"
+                    aria-hidden
+                  >
+                    <Ikona nazev={DOKLAD_DRUHY[d.druh].ikona} size={22} />
                   </span>
 
                   <div className="min-w-0 flex-1">
@@ -215,7 +219,7 @@ export function DokumentyScreen({
                 <Select value={druh} onChange={(e) => setDruh(e.target.value as DokladDruh)}>
                   {DOKLAD_DRUH_ORDER.map((d) => (
                     <option key={d} value={d}>
-                      {DOKLAD_DRUHY[d].emoji} {DOKLAD_DRUHY[d].label}
+                      {DOKLAD_DRUHY[d].label}
                     </option>
                   ))}
                 </Select>

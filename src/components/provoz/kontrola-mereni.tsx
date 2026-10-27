@@ -88,7 +88,7 @@ export function KontrolaMereni() {
     if (!cil) {
       setVysledky((p) => ({
         ...p,
-        [druh]: { ok: false, text: "Chybí ID účtu nebo štítek — doplň je v .env a přestav aplikaci." },
+        [druh]: { ok: false, text: "Chybí ID účtu nebo štítek — doplňte je v .env a přestavte aplikaci." },
       }));
       return;
     }

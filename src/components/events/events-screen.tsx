@@ -12,6 +12,7 @@ import { formatDay, formatTime, relativeDayLabel } from "@/lib/dates";
 import { cn } from "@/lib/format";
 import { memberName } from "@/lib/members";
 import type { EventKind, FamilyEvent, SessionContext } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 export function EventsScreen({
   session,
@@ -103,7 +104,8 @@ export function EventsScreen({
                     : { borderColor: "var(--line-strong)" }
                 }
               >
-                {meta.emoji} {meta.label}
+                <Ikona nazev={meta.ikona} size={15} />
+                {meta.label}
               </button>
             );
           })}
@@ -155,10 +157,10 @@ export function EventsScreen({
                 >
                   <span
                     className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
-                    style={{ backgroundColor: `${meta.color}1f` }}
+                    style={{ backgroundColor: `${meta.color}1f`, color: meta.color }}
                     aria-hidden
                   >
-                    {meta.emoji}
+                    <Ikona nazev={meta.ikona} size={22} />
                   </span>
 
                   <span className="min-w-0 flex-1">

@@ -12,6 +12,7 @@ import { formatDayShort } from "@/lib/dates";
 import { formatMoney, hlaskaChyby } from "@/lib/format";
 import { FREKVENCE_POPIS, pristiTermin } from "@/lib/opakovani";
 import type { OpakovanyVydaj, SessionContext } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 /**
  * Přehled pravidelných výdajů.
@@ -85,10 +86,10 @@ export function OpakovaneVydaje({
               >
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base"
-                  style={{ backgroundColor: `${meta.color}22` }}
+                  style={{ backgroundColor: `${meta.color}22`, color: meta.color }}
                   aria-hidden
                 >
-                  {meta.emoji}
+                  <Ikona nazev={meta.ikona} size={18} />
                 </span>
 
                 <div className="min-w-0 flex-1">

@@ -220,7 +220,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
                       <option value="">— vyberte —</option>
                       {EXPENSE_CATEGORY_ORDER.map((k) => (
                         <option key={k} value={k}>
-                          {EXPENSE_CATEGORIES[k].emoji} {EXPENSE_CATEGORIES[k].label}
+                          {EXPENSE_CATEGORIES[k].label}
                         </option>
                       ))}
                     </Select>
@@ -283,7 +283,7 @@ export function ImportScreen({ session }: { session: SessionContext }) {
                         >
                           {EXPENSE_CATEGORY_ORDER.map((k) => (
                             <option key={k} value={k}>
-                              {EXPENSE_CATEGORIES[k].emoji} {EXPENSE_CATEGORIES[k].label}
+                              {EXPENSE_CATEGORIES[k].label}
                             </option>
                           ))}
                         </Select>

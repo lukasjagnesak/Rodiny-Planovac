@@ -89,7 +89,7 @@ export default function MissingConfigPage() {
               <code className="rounded bg-surface px-1">cp .env.example .env.local</code>
             </li>
             <li>
-              Doplň klíče ze Supabase. Adresa musí být celá včetně{" "}
+              Doplňte klíče ze Supabase. Adresa musí být celá včetně{" "}
               <code className="rounded bg-surface px-1">https://</code>, bez uvozovek
               a bez mezer — tedy{" "}
               <code className="rounded bg-surface px-1">https://abcdefgh.supabase.co</code>.

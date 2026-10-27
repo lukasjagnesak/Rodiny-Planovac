@@ -152,11 +152,11 @@ export async function planNotifications(): Promise<number> {
           planned.push({
             familyId: family.id,
             userId: member.userId,
-            title: `${meta.emoji} ${event.title}`,
+            title: `${meta.label}: ${event.title}`,
             body:
               `${formatDayLong(start)}${event.all_day ? "" : ` v ${formatTime(start)}`}\n` +
               (child ? `Dítě: ${child.name}\n` : "") +
-              (event.location ? `📍 ${event.location}\n` : "") +
+              (event.location ? `Kde: ${event.location}\n` : "") +
               (event.notes ? `\n${event.notes}` : ""),
             sendAt,
             dedupeKey: `event:${event.id}:${offset}`,
@@ -195,11 +195,11 @@ export async function planNotifications(): Promise<number> {
           planned.push({
             familyId: family.id,
             userId: driver.userId,
-            title: `🚗 Zítra vezete ${direction}`,
+            title: `Zítra vezete ${direction}`,
             body:
               `${instance.activity.name}${child ? ` — ${child.name}` : ""}\n` +
-              `⏰ ${formatTime(instance.startsAt)}–${formatTime(instance.endsAt)}\n` +
-              (place ? `📍 ${place}` : ""),
+              `${formatTime(instance.startsAt)}–${formatTime(instance.endsAt)}\n` +
+              (place ? `Kde: ${place}` : ""),
             sendAt,
             dedupeKey: `ride:${instance.activity.id}:${dayKey}:${direction}`,
           });
@@ -211,11 +211,11 @@ export async function planNotifications(): Promise<number> {
             planned.push({
               familyId: family.id,
               userId: member.userId,
-              title: "❓ Zítra chybí řidič",
+              title: "Zítra chybí řidič",
               body:
                 `${instance.activity.name}${child ? ` — ${child.name}` : ""}\n` +
-                `⏰ ${formatTime(instance.startsAt)}\n\n` +
-                "Doplň prosím v aplikaci, kdo veze.",
+                `${formatTime(instance.startsAt)}\n\n` +
+                "Doplňte prosím v aplikaci, kdo veze.",
               sendAt,
               dedupeKey: `ride-missing:${instance.activity.id}:${dayKey}`,
             });
@@ -243,7 +243,7 @@ export async function planNotifications(): Promise<number> {
         planned.push({
           familyId: family.id,
           userId: member.userId,
-          title: "🔄 Zítra předání dětí",
+          title: "Zítra předání dětí",
           body:
             `${formatDayLong(day.date)}\n` +
             `Děti přecházejí k: ${sideLabel(members, day.side)}`,

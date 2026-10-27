@@ -27,6 +27,7 @@ import { cn, formatMoney } from "@/lib/format";
 import { memberName } from "@/lib/members";
 import { OpakovaneVydaje } from "./opakovane-karta";
 import type { Expense, ExpenseCategory, OpakovanyVydaj, SessionContext } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 export function ExpensesScreen({
   session,
@@ -336,7 +337,8 @@ export function ExpensesScreen({
                   : { borderColor: "var(--line-strong)" }
               }
             >
-              {EXPENSE_CATEGORIES[c.category].emoji} {c.name}
+              <Ikona nazev={EXPENSE_CATEGORIES[c.category].ikona} size={15} />
+              {c.name}
             </button>
           ))}
         </div>
@@ -394,10 +396,10 @@ export function ExpensesScreen({
                       >
                         <span
                           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg"
-                          style={{ backgroundColor: `${meta.color}1f` }}
+                          style={{ backgroundColor: `${meta.color}1f`, color: meta.color }}
                           aria-hidden
                         >
-                          {meta.emoji}
+                          <Ikona nazev={meta.ikona} size={20} />
                         </span>
 
                         <span className="min-w-0 flex-1">

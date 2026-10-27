@@ -58,7 +58,7 @@ export function ChildForm({
 
   async function save() {
     if (!form.name.trim()) {
-      setError("Doplň jméno.");
+      setError("Doplňte jméno.");
       return;
     }
     setBusy(true);

@@ -513,3 +513,23 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Datum a čas na iPhonu. Safari dává těmto polím vlastní minimální
+ * šířku a vzhled, takže dvě vedle sebe přetekla přes pravý okraj
+ * obrazovky (formulář události). Bez vlastního vzhledu se chovají jako
+ * obyčejné textové pole a vejdou se do mřížky.
+ */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+}
+
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value {
+  text-align: left;
+}

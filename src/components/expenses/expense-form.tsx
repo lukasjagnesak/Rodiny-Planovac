@@ -14,6 +14,7 @@ import { toDateKey } from "@/lib/dates";
 import { FREKVENCE_POPIS, type Frekvence } from "@/lib/opakovani";
 import { formatMoney, hlaskaChyby } from "@/lib/format";
 import type { Expense, ExpenseCategory, Receipt, SessionContext } from "@/lib/types";
+import { Ikona } from "@/components/ui/ikona";
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 
@@ -96,7 +97,7 @@ export function ExpenseForm({
       return;
     }
     if (!form.title.trim()) {
-      setError("Doplň, za co to bylo.");
+      setError("Doplňte, za co to bylo.");
       return;
     }
 
@@ -308,7 +309,7 @@ export function ExpenseForm({
                         : { borderColor: "var(--line-strong)" }
                     }
                   >
-                    <span aria-hidden>{meta.emoji}</span>
+                    <Ikona nazev={meta.ikona} size={16} />
                     {meta.label}
                   </button>
                 );

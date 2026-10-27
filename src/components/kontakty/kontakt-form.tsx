@@ -137,7 +137,7 @@ export function KontaktForm({
               <Select value={druh} onChange={(e) => setDruh(e.target.value as KontaktDruh)}>
                 {KONTAKT_DRUH_ORDER.map((d) => (
                   <option key={d} value={d}>
-                    {KONTAKT_DRUHY[d].emoji} {KONTAKT_DRUHY[d].label}
+                    {KONTAKT_DRUHY[d].label}
                   </option>
                 ))}
               </Select>

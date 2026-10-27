@@ -29,7 +29,7 @@ export async function POST() {
   let odeslano = 0;
   for (const odber of odbery) {
     const vysledek = await posliPush(odber, {
-      titulek: "🔔 Zkušební notifikace",
+      titulek: "Zkušební notifikace",
       telo: `${ZNACKA} je správně propojený — připomínky vám budou chodit sem.`,
       odkaz: "/prehled",
       tag: "test",
