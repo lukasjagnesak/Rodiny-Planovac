@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Select, Textarea } from "@/components/ui/field";
+import { UpozorneniTonu, useHlidacTonu } from "./hlidac-tonu";
+import { zkontrolujTon } from "@/lib/ton";
 import { Alert, EmptyState, Spinner } from "@/components/ui/misc";
 import { Avatar } from "@/components/ui/badge";
 import { formatDayLong } from "@/lib/dates";
@@ -44,6 +46,12 @@ export function ZpravyScreen({
   const [busy, setBusy] = React.useState(false);
   const [chyba, setChyba] = React.useState<string | null>(null);
   const konec = React.useRef<HTMLDivElement>(null);
+  const pole = React.useRef<HTMLTextAreaElement>(null);
+  // Hlídač tónu (lib/ton) běží jen v prohlížeči. Upozornění se ukáže
+  // jednou za text — „Odeslat i tak" pak odešle bez dalšího ptaní.
+  const [hlidac, setHlidac] = useHlidacTonu();
+  const nalezy = React.useMemo(() => (hlidac ? zkontrolujTon(text) : []), [hlidac, text]);
+  const [upozorneni, setUpozorneni] = React.useState(false);
 
   const dny = React.useMemo(() => poDnech(zpravy), [zpravy]);
 
@@ -65,9 +73,14 @@ export function ZpravyScreen({
     konec.current?.scrollIntoView({ block: "end" });
   }, [dny.length]);
 
-  async function odeslat() {
+  async function odeslat(iTak = false) {
     const cisty = text.trim();
     if (!cisty) return;
+    if (!iTak && nalezy.length > 0) {
+      setUpozorneni(true);
+      return;
+    }
+    setUpozorneni(false);
 
     setBusy(true);
     setChyba(null);
@@ -165,12 +178,22 @@ export function ZpravyScreen({
           />
           <CardBody className="space-y-3 pt-3">
             <Textarea
+              ref={pole}
               rows={3}
               placeholder="Ve čtvrtek vyzvednu Kubu až v 17:00, mám poradu."
               value={text}
               maxLength={4000}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                setUpozorneni(false);
+              }}
             />
+            {hlidac && nalezy.length > 0 && !upozorneni ? (
+              <p className="text-xs text-warning">
+                Hlídač tónu: {nalezy.length === 1 ? "jedno místo může" : `${nalezy.length} místa mohou`}{" "}
+                vyznít útočně.
+              </p>
+            ) : null}
 
             <div className="grid gap-2 sm:grid-cols-2">
               <Select value={dite} onChange={(e) => setDite(e.target.value)}>
@@ -192,10 +215,46 @@ export function ZpravyScreen({
 
             {chyba ? <Alert tone="danger">{chyba}</Alert> : null}
 
-            <Button className="w-full" onClick={odeslat} disabled={busy || !text.trim()}>
-              {busy ? <Spinner /> : <Send className="h-4 w-4" />}
-              Odeslat
-            </Button>
+            {upozorneni ? (
+              <UpozorneniTonu
+                text={text}
+                nalezy={nalezy}
+                busy={busy}
+                onUpravit={() => {
+                  setUpozorneni(false);
+                  pole.current?.focus();
+                }}
+                onZtisit={(novy) => {
+                  setText(novy);
+                  setUpozorneni(false);
+                }}
+                onOdeslat={() => odeslat(true)}
+              />
+            ) : (
+              <Button className="w-full" onClick={() => odeslat()} disabled={busy || !text.trim()}>
+                {busy ? <Spinner /> : <Send className="h-4 w-4" />}
+                Odeslat
+              </Button>
+            )}
+
+            <p className="text-xs leading-relaxed text-ink-subtle">
+              {hlidac ? (
+                <>
+                  Hlídač tónu upozorní na urážky, výhrůžky a křik. Kontroluje jen v tomto
+                  zařízení, zprávu nikam neposílá.{" "}
+                  <button type="button" className="underline" onClick={() => setHlidac(false)}>
+                    Vypnout
+                  </button>
+                </>
+              ) : (
+                <>
+                  Hlídač tónu je vypnutý.{" "}
+                  <button type="button" className="underline" onClick={() => setHlidac(true)}>
+                    Zapnout
+                  </button>
+                </>
+              )}
+            </p>
           </CardBody>
         </Card>
       ) : (

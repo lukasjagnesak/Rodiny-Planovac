@@ -26,7 +26,7 @@ orientační.
 | Sdílený kalendář | Rozvrh péče, události | ✅ Má, včetně nocí, prázdnin podle okresu a EduPage |
 | **Trade/Swap** | Žádost o výměnu termínu. Druhý rodič schválí nebo zamítne do určitého data, schválená změna se sama propíše do kalendáře | ✅ **Má od 27. 10. 2026** (migrace 0032, prohození dnů 0033). Při dvou rodičích nejde kalendář změnit bez souhlasu, hlídá to databáze; návrh i odpověď jsou ve Zprávách |
 | Zprávy se záznamem | Nejde je měnit, čas doručení a přečtení | ✅ Má (nejdou upravit ani smazat, razítko odeslání a přečtení) |
-| **ToneMeter** | Při psaní upozorní na útočné nebo emotivní formulace | ❌ **Chybí** |
+| **ToneMeter** | Při psaní upozorní na útočné nebo emotivní formulace | ✅ **Má od 27. 10. 2026** — hlídač tónu v češtině (urážky, výhrůžky, obviňování, „vždycky/nikdy“, křik, ironie). Běží jen v prohlížeči, zprávu nikam neposílá; jde vypnout |
 | Výdaje | Evidence, rozdělení, zůstatek | ✅ Má (účtenky, klíč, vyrovnání) |
 | Žádost o proplacení a OFWpay | Žádost o úhradu, platba převodem v aplikaci, historie plateb | ⚠️ Částečně — výdaje a „vypořádáno" ano, žádost se schválením a platba ne |
 | **Auditní stopa** | Časová historie žádostí, výdajů, změn rozvrhu a přihlášení | ✅ **Má od 27. 10. 2026** (migrace 0034): rozvrh, výdaje, události, kroužky, děti, členové i stažené výpisy; nejde upravit ani smazat. Přihlášení zatím ne |
