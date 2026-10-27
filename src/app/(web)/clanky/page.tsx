@@ -5,6 +5,7 @@ import { dobaCteni } from "@/lib/clanky-typy";
 import { vydane } from "@/lib/clanky";
 import { formatDatum } from "@/lib/dates";
 import { ZNACKA } from "@/lib/brand";
+import { ZDARMA_S_PODMINKOU } from "@/lib/tarify";
 
 const POPISEK =
   "Praktické texty o provozu rodiny se dvěma domovy — noci, prázdniny, " +
@@ -72,7 +73,7 @@ export default function Clanky() {
 
       <VyzvaPas
         nadpis="Přestaňte si to pamatovat"
-        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě — a vidí to oba rodiče. 30 dní zdarma, bez zadání karty."
+        text={`Kalendář péče, kroužky, odvozy i výdaje na jednom místě — a vidí to oba rodiče. ${ZDARMA_S_PODMINKOU}, bez zadání karty.`}
       />
     </>
   );

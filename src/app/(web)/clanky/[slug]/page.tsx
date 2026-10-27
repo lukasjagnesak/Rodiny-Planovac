@@ -8,6 +8,7 @@ import { dobaCteni } from "@/lib/clanky-typy";
 import { najdi } from "@/lib/clanky";
 import { formatDatum } from "@/lib/dates";
 import { ZNACKA } from "@/lib/brand";
+import { ZDARMA_S_PODMINKOU } from "@/lib/tarify";
 
 export const revalidate = 3600;
 
@@ -72,7 +73,7 @@ export default async function ClanekStranka({
 
       <VyzvaPas
         nadpis="Napsané jednou, vidí to oba"
-        text="Kalendář péče, kroužky, odvozy i výdaje na jednom místě. 30 dní zdarma, bez zadání karty."
+        text={`Kalendář péče, kroužky, odvozy i výdaje na jednom místě. ${ZDARMA_S_PODMINKOU}, bez zadání karty.`}
       />
     </>
   );

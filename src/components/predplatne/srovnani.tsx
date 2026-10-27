@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Check, Minus } from "lucide-react";
-import { SROVNANI, ZKUSEBNI_DNI } from "@/lib/tarify";
+import { SROVNANI } from "@/lib/tarify";
 import { cn } from "@/lib/format";
 
 /**
@@ -19,7 +19,7 @@ export function SrovnaniTarifu({
   className?: string;
 }) {
   const nadpisBez =
-    varianta === "aplikace" ? "Po zkušebním období" : `Po ${ZKUSEBNI_DNI} dnech zdarma`;
+    varianta === "aplikace" ? "Po zkušebním období" : "Po skončení období zdarma";
 
   return (
     <div className={cn(className)}>

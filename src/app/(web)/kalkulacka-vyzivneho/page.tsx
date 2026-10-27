@@ -5,7 +5,8 @@ import { PruhKlidoo } from "@/components/web/pruh-klidoo";
 import { OdkazMereny } from "@/components/web/odkaz-mereny";
 import { KalkulackaVyzivneho } from "@/components/web/kalkulacka-vyzivneho";
 import { ZNACKA } from "@/lib/brand";
-import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { CENIK, korun } from "@/lib/tarify";
+import { ZdarmaVeta } from "@/components/web/zakladajici";
 
 const TITULEK = "Kalkulačka výživného 2026 — i pro střídavou péči";
 const POPISEK =
@@ -176,7 +177,7 @@ export default function KalkulackaVyzivnehoStranka() {
             Vyzkoušet zdarma
           </OdkazMereny>
           <p className="mt-3 text-sm text-ink-muted">
-            {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Potom{" "}
+            <ZdarmaVeta /> Potom{" "}
             {korun(CENIK[0].cena)} měsíčně za celou rodinu.
           </p>
         </section>

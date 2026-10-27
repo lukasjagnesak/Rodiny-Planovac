@@ -18,7 +18,8 @@ import { LeadForm } from "@/components/web/lead-form";
 import { UkazkyAplikace } from "@/components/web/ukazky";
 import { Karusel } from "@/components/web/karusel";
 import { POPIS, ZNACKA } from "@/lib/brand";
-import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { ZakladajiciPruh, ZdarmaVeta } from "@/components/web/zakladajici";
 
 export const metadata: Metadata = {
   title: {
@@ -96,7 +97,7 @@ const OTAZKY = [
   {
     otazka: "Kolik to stojí?",
     odpoved:
-      "Prvních 30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo " +
+      `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo ` +
       "1 990 Kč ročně za celou rodinu, ne za jednoho člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.",
   },
   {
@@ -165,10 +166,12 @@ export default async function Domu() {
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-muted">
               U koho jsou tenhle týden. Kdo je veze z fotbalu. Kdo zaplatil obědy a jestli
               se to někdy vyrovná. V Klidoo je to napsané jednou, na jednom místě, a vidí
-              to oba.
+              to oba. Začít můžete i sami — druhého rodiče pozvete, až bude chtít.
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <ZakladajiciPruh className="mt-6 max-w-lg" />
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href="/registrace"
                 className="inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
@@ -188,7 +191,7 @@ export default async function Domu() {
             <p className="mt-4 flex items-start gap-2 text-sm text-ink-subtle">
               <Users size={16} className="mt-0.5 shrink-0" aria-hidden />
               <span>
-                {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Potom{" "}
+                <ZdarmaVeta vedlePruhu /> Potom{" "}
                 <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
                   {korun(CENIK[0].cena)} měsíčně
                 </Link>{" "}
@@ -599,8 +602,7 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
             </h2>
             <p className="mt-3 text-lg leading-relaxed text-ink-muted">
               Kroužky, předávky a účtenky nepočkají, až na to bude klid. Založení rodiny
-              trvá dvě minuty a prvních {ZKUSEBNI_SLIB.dni} dní nic neplatíte. Ani kartu
-              nezadáváte.
+              trvá dvě minuty a kartu nezadáváte.
             </p>
 
             <Link

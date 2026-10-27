@@ -24,6 +24,33 @@ export interface Cenik {
 export const ZKUSEBNI_DNI = 30;
 
 /**
+ * Zakládající rodiny: prvních 50 rodin má rok zdarma.
+ *
+ * Kdo nabídku dostane, rozhoduje databáze (migrace 0030) — počítá místa
+ * pod zámkem, takže jich nikdy nebude 51. Tady jsou jen texty.
+ *
+ * Až se místa zaplní, přepněte `aktivni` na `false`: všechny texty
+ * webu se vrátí k {@link ZKUSEBNI_DNI} dnům. Do té doby počítadlo
+ * (`/api/zakladajici`) samo přepne výzvy na běžnou nabídku, kdyby se
+ * na přepnutí zapomnělo — statické texty ale ne.
+ */
+export const ZAKLADAJICI = {
+  aktivni: true,
+  mist: 50,
+} as const;
+
+/**
+ * Co nová rodina dostane zdarma, jako část věty: „… rok zdarma …".
+ * Jedna hodnota pro všechny výzvy, aby se nikde neslibovalo něco jiného.
+ */
+export const ZDARMA = ZAKLADAJICI.aktivni ? "rok zdarma" : `${ZKUSEBNI_DNI} dní zdarma`;
+
+/** Totéž s podmínkou, kde je na ni místo: „Prvních 50 rodin má rok zdarma". */
+export const ZDARMA_S_PODMINKOU = ZAKLADAJICI.aktivni
+  ? `Prvních ${ZAKLADAJICI.mist} rodin má rok zdarma`
+  : `${ZKUSEBNI_DNI} dní zdarma`;
+
+/**
  * Co zkušební období obsahuje.
  *
  * Odpověď je „všechno" a je to schválně: okleštěná verze zdarma znamená,
@@ -33,12 +60,12 @@ export const ZKUSEBNI_DNI = 30;
  */
 export const ZKUSEBNI_SLIB = {
   dni: ZKUSEBNI_DNI,
-  vetaKratka: `${ZKUSEBNI_DNI} dní zdarma, všechny funkce. Bez karty.`,
+  vetaKratka: `${ZDARMA_S_PODMINKOU}, všechny funkce. Bez karty.`,
   body: [
     "Všechny funkce, žádná omezená verze.",
     "Bez zadání karty — nic se samo nestrhne.",
     "Druhý rodič se může připojit hned a taky nic neplatí.",
-    "Po 30 dnech se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů.",
+    "Po skončení období zdarma se nic nesmaže: kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů.",
   ],
 } as const;
 

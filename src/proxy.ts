@@ -44,6 +44,8 @@ export const PUBLIC_PATHS = [
   "/sitemap.xml",
   "/robots.txt",
   "/api/kalkulacka",
+  // Počet volných míst pro zakládající rodiny — jen jedno číslo.
+  "/api/zakladajici",
   // Kalkulačka výživného: PDF na e-mail i odložení výpočtu před
   // registrací. Obojí volá člověk, který účet ještě nemá — bez tohohle
   // řádku ho middleware pošle na přihlášení a z volání se vrátí

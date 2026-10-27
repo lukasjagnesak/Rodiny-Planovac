@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Sloupec, Nadtitulek, Poznamka } from "@/components/web/prvky";
 import { PROVOZOVATEL } from "@/lib/provozovatel";
-import { CENIK, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
+import { CENIK, ZAKLADAJICI, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
 import { ZNACKA } from "@/lib/brand";
 
 export const metadata: Metadata = {
@@ -75,6 +75,13 @@ export default function ObchodniPodminky() {
             Registrací a založením rodiny vzniká smlouva o poskytování služby na zkušební
             období v délce {ZKUSEBNI_DNI} dní. Zkušební období je bezplatné a nevyžaduje
             platební kartu.
+          </p>
+          <p>
+            <strong>Zakládající rodiny.</strong> Prvních {ZAKLADAJICI.mist} rodin založených
+            ve službě má zkušební období v délce jednoho roku od založení rodiny. Pořadí určuje
+            okamžik založení rodiny v naší databázi; zda rodina mezi zakládající patří, uvidíte
+            v aplikaci v části Předplatné. Po skončení roku platí stejná pravidla jako po
+            skončení běžného zkušebního období.
           </p>
           <p>
             Objednáním předplatného v aplikaci a jeho zaplacením vzniká smlouva o placeném

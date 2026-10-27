@@ -3,12 +3,13 @@ import Link from "next/link";
 import { Nadtitulek, Sloupec } from "@/components/web/prvky";
 import { VstupniRozvrh } from "@/components/web/vstupni-rozvrh";
 import { ZNACKA } from "@/lib/brand";
-import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { ZakladajiciPruh, ZdarmaVeta } from "@/components/web/zakladajici";
 
 const TITULEK = "Rozvrh střídavé péče na měsíc dopředu";
 const POPISEK =
   "Klepněte, jak se střídáte, a uvidíte, u koho budou děti každý den příštího měsíce. " +
-  "Pak si rozpis uložte do Klidoo a uvidí ho i druhý rodič. 30 dní zdarma, bez karty.";
+  `Pak si rozpis uložte do Klidoo a uvidí ho i druhý rodič. ${ZDARMA_S_PODMINKOU}, bez karty.`;
 
 export const metadata: Metadata = {
   title: TITULEK,
@@ -50,7 +51,7 @@ const OTAZKY = [
       "Po uložení si v aplikaci nastavíte rozpis po dnech, i dvoutýdenní, a k tomu výjimky a prázdniny. Nahoře stačí vybrat to nejbližší.",
   },
   {
-    otazka: "Co se stane po 30 dnech?",
+    otazka: "Co se stane, až skončí období zdarma?",
     odpoved: ZKUSEBNI_SLIB.body[3],
   },
   {
@@ -78,6 +79,7 @@ export default function VyzkousetStranka() {
         <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
           Klepněte, jak se střídáte, a uvidíte celý měsíc dopředu.
         </p>
+        <ZakladajiciPruh kompaktni className="mt-3" />
       </div>
 
       <VstupniRozvrh>
@@ -110,7 +112,7 @@ export default function VyzkousetStranka() {
         <section className="mt-10 rounded-2xl bg-surface-2 px-5 py-4">
           <h2 className="font-semibold text-ink">Kolik to stojí</h2>
           <p className="mt-1 text-[0.95rem] leading-relaxed text-ink-muted">
-            {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez zadávání karty. Potom{" "}
+            <ZdarmaVeta /> Potom{" "}
             {korun(CENIK[0].cena)} měsíčně, nebo {korun(CENIK[1].cena)} ročně — za celou rodinu,
             ne za každého zvlášť.{" "}
             <Link href="/cenik" className="font-medium text-brand underline underline-offset-4">

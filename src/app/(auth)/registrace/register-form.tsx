@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { SocialniPrihlaseni } from "@/components/ui/socialni-prihlaseni";
-import { CENIK, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { CENIK, ZAKLADAJICI, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import { useZakladajiciVolno } from "@/components/web/zakladajici";
 import { ZNACKA } from "@/lib/brand";
 import { prettyError } from "../prihlaseni/login-form";
 import { zmer } from "@/lib/mereni";
@@ -27,21 +28,28 @@ import { bezpecnyCil } from "@/lib/navrat";
  * (nic, dokud sám nechce). Cena zůstává — schovat ji by byl podvod — ale
  * až jako odpověď na otázku „a kdybych chtěl pokračovat".
  */
-const JISTOTY = [
-  { co: "Žádná platební karta", proc: "Nic nezadáváte, nic se nestrhne." },
-  {
-    co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
-    proc: "Žádná ořezaná verze na zkoušku.",
-  },
-  {
-    co: "Po zkušební době se rozhodnete sami",
-    proc: "Bez placení se nic nesmaže — jen se zamkne zapisování.",
-  },
-  {
-    co: "Druhý rodič je zdarma",
-    proc: "Platí se jen za jednu domácnost, a jen když se rozhodnete pokračovat.",
-  },
-];
+function jistoty(rok: boolean) {
+  return [
+    { co: "Žádná platební karta", proc: "Nic nezadáváte, nic se nestrhne." },
+    rok
+      ? {
+          co: "Rok zdarma, všechny funkce",
+          proc: `Prvních ${ZAKLADAJICI.mist} rodin, které Klidoo založí, má celý rok bez placení.`,
+        }
+      : {
+          co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
+          proc: "Žádná ořezaná verze na zkoušku.",
+        },
+    {
+      co: "Po zkušební době se rozhodnete sami",
+      proc: "Bez placení se nic nesmaže — jen se zamkne zapisování.",
+    },
+    {
+      co: "Druhý rodič je zdarma",
+      proc: "Platí se jen za jednu domácnost, a jen když se rozhodnete pokračovat.",
+    },
+  ];
+}
 
 /**
  * Věta nad formulářem podle toho, odkud člověk přišel. Kdo si právě
@@ -49,8 +57,10 @@ const JISTOTY = [
  * registrace je pak „uložit si to", ne „založit si něco neznámého".
  */
 function coCeka(dal: string, pozvanka: boolean): string | null {
-  if (pozvanka) return "Registrujete se na základě pozvánky. Po dokončení vás rovnou přidáme do rodiny.";
-  if (dal.includes("/vitejte?plan=")) return "Váš rozpis je uložený. Po registraci ho najdete v kalendáři.";
+  if (pozvanka)
+    return "Registrujete se na základě pozvánky. Po dokončení vás rovnou přidáme do rodiny.";
+  if (dal.includes("/vitejte?plan="))
+    return "Váš rozpis je uložený. Po registraci ho najdete v kalendáři.";
   if (dal.startsWith("/prevzit/vyzivne")) {
     return "Váš výpočet je uložený. Po registraci se přenese do aplikace i s výživným.";
   }
@@ -145,8 +155,11 @@ export function RegisterForm() {
       </div>
     );
   }
-
   const kontext = coCeka(dal, Boolean(inviteToken));
+  // Rok zdarma jen dokud jsou místa. Než se počet načte, platí rok —
+  // tak to stojí i na stránce, ze které člověk přišel.
+  const volno = useZakladajiciVolno();
+  const rok = ZAKLADAJICI.aktivni && volno !== 0;
 
   return (
     <form onSubmit={onSubmit} onFocusCapture={hlasZacatek} className="card space-y-5 p-5 sm:p-6">
@@ -158,8 +171,7 @@ export function RegisterForm() {
             Připojte se k rodině
           </h1>
           <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">
-            Pro vás je {ZNACKA} zdarma — platí jen jedna domácnost, ne vy. Kartu po vás
-            nechceme.
+            Pro vás je {ZNACKA} zdarma — platí jen jedna domácnost, ne vy. Kartu po vás nechceme.
           </p>
         </div>
       ) : (
@@ -168,7 +180,7 @@ export function RegisterForm() {
             Vyzkoušejte {ZNACKA} zdarma
           </h1>
           <ul className="mt-3 space-y-2.5">
-            {JISTOTY.map(({ co, proc }) => (
+            {jistoty(rok).map(({ co, proc }) => (
               <li key={co} className="flex items-start gap-2.5">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
                   <Check size={13} strokeWidth={3} aria-hidden />
@@ -237,9 +249,7 @@ export function RegisterForm() {
         <Button type="submit" size="lg" className="w-full" disabled={busy}>
           {busy ? <Spinner /> : inviteToken ? "Připojit se zdarma" : "Vytvořit účet zdarma"}
         </Button>
-        <p className="text-center text-sm font-medium text-ink">
-          Bez karty. Nic se samo nestrhne.
-        </p>
+        <p className="text-center text-sm font-medium text-ink">Bez karty. Nic se samo nestrhne.</p>
       </div>
 
       {/* Cena patří sem, ne až za paywall. Kdo ji uvidí až po měsíci
@@ -247,8 +257,8 @@ export function RegisterForm() {
           jako to, čím je: volba na potom, ne podmínka teď. */}
       {inviteToken ? null : (
         <p className="text-center text-[0.8125rem] leading-relaxed text-ink-muted">
-          Když budete po {ZKUSEBNI_SLIB.dni} dnech chtít pokračovat, stojí {ZNACKA}{" "}
-          {korun(CENIK[0].cena)} měsíčně za celou rodinu.{" "}
+          Když budete po {rok ? "roce" : `${ZKUSEBNI_SLIB.dni} dnech`} chtít pokračovat, stojí{" "}
+          {ZNACKA} {korun(CENIK[0].cena)} měsíčně za celou rodinu.{" "}
           <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
             Ceník
           </Link>

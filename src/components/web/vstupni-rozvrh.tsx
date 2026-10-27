@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/format";
 import { zmer } from "@/lib/mereni";
-import { ZKUSEBNI_SLIB } from "@/lib/tarify";
+import { ZdarmaVeta } from "@/components/web/zakladajici";
 import {
   RYTMY,
   nahledCtyrTydnu,
@@ -189,7 +189,7 @@ export function VstupniRozvrh({ children }: { children: React.ReactNode }) {
         {chyba ? <p className="mt-3 text-sm text-danger">{chyba}</p> : null}
         <div ref={horni} className="mt-3">{tlacitko("Uložit do Klidoo zdarma")}</div>
         <p className="mt-2.5 text-[0.8125rem] leading-relaxed text-ink-muted">
-          {ZKUSEBNI_SLIB.dni} dní zdarma se všemi funkcemi, bez karty. Druhý rodič v ceně.
+          <ZdarmaVeta /> Druhý rodič v ceně.
           Rozpis na vás v aplikaci počká.
         </p>
         {/* Vedlejší cesta až za hlavní akcí: kdo se střídá neobvykle, ten

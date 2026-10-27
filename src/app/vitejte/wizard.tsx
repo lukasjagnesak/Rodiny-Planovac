@@ -851,9 +851,26 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
   const router = useRouter();
   const [platit, setPlatit] = React.useState(false);
 
-  const konecZkusebni = new Date();
-  konecZkusebni.setDate(konecZkusebni.getDate() + ZKUSEBNI_DNI);
-  const datum = konecZkusebni.toLocaleDateString("cs-CZ");
+  // Kolik má rodina zdarma, rozhodla databáze při založení (zakládající
+  // rodiny rok, ostatní 30 dní). Než se to načte, počítá se s 30 dny.
+  const [obdobi, setObdobi] = React.useState<{ konec: Date; zakladajici: boolean }>(() => {
+    const konec = new Date();
+    konec.setDate(konec.getDate() + ZKUSEBNI_DNI);
+    return { konec, zakladajici: false };
+  });
+  React.useEffect(() => {
+    createClient()
+      .from("predplatna")
+      .select("plati_do, zakladajici")
+      .eq("family_id", familyId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.plati_do) {
+          setObdobi({ konec: new Date(data.plati_do), zakladajici: Boolean(data.zakladajici) });
+        }
+      });
+  }, [familyId]);
+  const datum = obdobi.konec.toLocaleDateString("cs-CZ");
 
   function doAplikace() {
     zmer("onboarding-bez-karty");
@@ -868,10 +885,13 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
           <ShieldCheck className="h-6 w-6" />
         </div>
         <h1 className="mt-3 text-center text-lg font-semibold text-ink">
-          Hotovo. Teď {ZKUSEBNI_DNI} dní zdarma.
+          {obdobi.zakladajici
+            ? "Hotovo. Jste zakládající rodina — rok zdarma."
+            : `Hotovo. Teď ${ZKUSEBNI_DNI} dní zdarma.`}
         </h1>
         <p className="mt-1 text-center text-sm text-ink-muted">
-          Zkušební období běží do <strong className="text-ink">{datum}</strong>. Kartu k němu
+          {obdobi.zakladajici ? "Klidoo máte zdarma" : "Zkušební období běží"} do{" "}
+          <strong className="text-ink">{datum}</strong>. Kartu k němu
           nepotřebujete a nic se samo nestrhne — tři dny předem se ozveme.
         </p>
       </div>
@@ -881,7 +901,7 @@ function VolbaPlatby({ familyId, branaJede }: { familyId: string; branaJede: boo
           Prohlédnout aplikaci <ArrowRight className="h-4 w-4" />
         </Button>
 
-        {branaJede && !platit ? (
+        {branaJede && !platit && !obdobi.zakladajici ? (
           <>
             <div className="flex items-center gap-3 py-1" aria-hidden>
               <span className="h-px flex-1 bg-line" />

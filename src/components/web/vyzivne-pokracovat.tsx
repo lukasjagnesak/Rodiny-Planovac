@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { zmer } from "@/lib/mereni";
 import { rozvrhZPece } from "@/lib/vyzivne-plan";
 import { spocitejVyzivne, type VyzivneVstup } from "@/lib/vyzivne";
-import { ZKUSEBNI_DNI } from "@/lib/tarify";
+import { ZdarmaVeta } from "@/components/web/zakladajici";
 
 /**
  * Věta o tom, co se do aplikace přenese — přesně podle toho, co se
@@ -123,8 +123,7 @@ export function VyzivnePokracovat({ vstup }: { vstup: VyzivneVstup }) {
       </button>
 
       <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
-        {coSePrenese(rozvrh, maCastku)} — nic nevyplňujete znovu. {ZKUSEBNI_DNI} dní
-        zdarma, bez karty. Druhý rodič v ceně. Příjmy se neukládají.
+        {coSePrenese(rozvrh, maCastku)} — nic nevyplňujete znovu. <ZdarmaVeta /> Druhý rodič v ceně. Příjmy se neukládají.
       </p>
     </div>
   );

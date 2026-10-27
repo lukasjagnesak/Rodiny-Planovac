@@ -24,6 +24,8 @@ export interface Predplatne {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   tarif: string | null;
+  /** Jedna z prvních 50 rodin s rokem zdarma (migrace 0030). */
+  zakladajici?: boolean;
 }
 
 export interface StavPristupu {
@@ -32,6 +34,8 @@ export interface StavPristupu {
   muzeZapisovat: boolean;
   /** Běží zkušební období? */
   jeZkusebni: boolean;
+  /** Zakládající rodina s rokem zdarma, který ještě běží? */
+  zakladajici: boolean;
   /** Kolik dní zbývá. Záporné číslo znamená, že už vypršelo. */
   dniDoKonce: number;
   /** Text pro pruh nad aplikací. `null` = nic neukazovat. */
@@ -60,6 +64,7 @@ export function vyhodnot(predplatne: Predplatne | null): StavPristupu {
       predplatne: null,
       muzeZapisovat: true,
       jeZkusebni: false,
+      zakladajici: false,
       dniDoKonce: 0,
       upozorneni: null,
     };
@@ -87,11 +92,11 @@ export function vyhodnot(predplatne: Predplatne | null): StavPristupu {
   } else if (predplatne.stav === "po_splatnosti") {
     upozorneni = "Platba neprošla. Zkusíme to znovu — zkontrolujte prosím kartu.";
   } else if (jeZkusebni && dni <= UPOZORNIT_OD_DNI) {
-    upozorneni =
-      dni <= 1
-        ? "Zkušební období končí dnes."
-        : `Zkušební období končí za ${pluralDni(dni)}.`;
+    const co = predplatne.zakladajici ? "Rok zdarma" : "Zkušební období";
+    upozorneni = dni <= 1 ? `${co} končí dnes.` : `${co} končí za ${pluralDni(dni)}.`;
   }
 
-  return { predplatne, muzeZapisovat, jeZkusebni, dniDoKonce: dni, upozorneni };
+  const zakladajici = Boolean(predplatne.zakladajici) && jeZkusebni && platnost;
+
+  return { predplatne, muzeZapisovat, jeZkusebni, zakladajici, dniDoKonce: dni, upozorneni };
 }

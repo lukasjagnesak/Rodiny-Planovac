@@ -84,5 +84,18 @@ console.log("── krajní případy ──");
   ok("a neotravuje se hláškou", v.upozorneni === null);
 }
 
+console.log("── zakládající rodina ──");
+{
+  const v = vyhodnot({ ...p("zkusebni", 300), zakladajici: true });
+  ok("rok zdarma se pozná", v.zakladajici);
+  ok("zapisuje se", v.muzeZapisovat);
+  ok("a nic se neotravuje", v.upozorneni === null);
+  const konec = vyhodnot({ ...p("zkusebni", 3), zakladajici: true });
+  ok("před koncem mluví o roku zdarma", konec.upozorneni === "Rok zdarma končí za 3 dny.");
+  const po = vyhodnot({ ...p("zkusebni", -1), zakladajici: true });
+  ok("po roce už zakládající výhoda neběží", !po.zakladajici && !po.muzeZapisovat);
+  ok("běžná rodina zakládající není", !vyhodnot(p("zkusebni", 20)).zakladajici);
+}
+
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\nSelhalo: ${selhalo}`);
 process.exit(selhalo === 0 ? 0 : 1);

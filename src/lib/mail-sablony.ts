@@ -20,6 +20,7 @@
 
 import { ZNACKA } from "./brand";
 import { PROVOZOVATEL } from "./provozovatel";
+import { ZAKLADAJICI, ZDARMA, ZDARMA_S_PODMINKOU, ZKUSEBNI_DNI } from "./tarify";
 
 export interface Zprava {
   predmet: string;
@@ -252,10 +253,10 @@ export function dikVzorDohodyZprava(vstup: { web: string; odhlaseni: string }): 
 <p style="margin:0 0 12px 0;">
   Přesně na tenhle provoz děláme <strong>${ZNACKA}</strong> — jeden kalendář,
   do kterého vidí oba rodiče, s kroužky, odvozy a výdaji na jednom místě.
-  Vyzkoušet se dá <strong>30 dní zdarma</strong>, bez zadávání karty
+  ${ZAKLADAJICI.aktivni ? `Prvních ${ZAKLADAJICI.mist} rodin ho má <strong>rok zdarma</strong>` : `Vyzkoušet se dá <strong>${ZKUSEBNI_DNI} dní zdarma</strong>`}, bez zadávání karty
   a bez závazku.
 </p>
-${tlacitko(odkaz, "Vyzkoušet 30 dní zdarma")}
+${tlacitko(odkaz, `Vyzkoušet ${ZDARMA}`)}
 <p style="margin:16px 0 0 0;font-size:13px;color:${BARVA_TLUMENA};">
   Kdyby cokoli, stačí na tenhle e-mail odpovědět. Čte to člověk, který aplikaci píše.
 </p>`;
@@ -267,8 +268,8 @@ než končí. Papír vyřeší, kdo má děti kdy. Neřeší už ale úterky, kd
 kroužek, ani to, kdo naposledy platil obědy.
 
 Přesně na tenhle provoz děláme ${ZNACKA} — jeden kalendář, do kterého vidí
-oba rodiče, s kroužky, odvozy a výdaji na jednom místě. Vyzkoušet se dá
-30 dní zdarma, bez zadávání karty a bez závazku.
+oba rodiče, s kroužky, odvozy a výdaji na jednom místě. ${ZDARMA_S_PODMINKOU},
+bez zadávání karty a bez závazku.
 
 ${odkaz}
 

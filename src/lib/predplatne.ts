@@ -18,7 +18,7 @@ export async function nactiPredplatne(familyId: string): Promise<StavPristupu> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("predplatna")
-    .select("family_id, stav, plati_do, stripe_customer_id, stripe_subscription_id, tarif")
+    .select("family_id, stav, plati_do, stripe_customer_id, stripe_subscription_id, tarif, zakladajici")
     .eq("family_id", familyId)
     .maybeSingle();
 
@@ -48,7 +48,7 @@ export async function smiZapisovatUzivatel(userId: string): Promise<boolean> {
 
   const { data: predplatna } = await admin
     .from("predplatna")
-    .select("family_id, stav, plati_do, stripe_customer_id, stripe_subscription_id, tarif")
+    .select("family_id, stav, plati_do, stripe_customer_id, stripe_subscription_id, tarif, zakladajici")
     .in("family_id", rodiny);
 
   return rodiny.some((familyId) => {

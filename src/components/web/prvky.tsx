@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/format";
 import { Znak } from "@/components/ui/logo";
-import { ZKUSEBNI_SLIB } from "@/lib/tarify";
+import { ZDARMA_S_PODMINKOU } from "@/lib/tarify";
 
 /**
  * Stavební prvky veřejného webu.
@@ -327,8 +327,7 @@ export function VyzvaPas({
           {tlacitko}
         </Link>
         <p className="mt-3 text-sm text-ink-subtle">
-          {ZKUSEBNI_SLIB.dni} dní zdarma, bez zadávání karty. Platí jedna domácnost za celou
-          rodinu.
+          {ZDARMA_S_PODMINKOU}, bez zadávání karty. Platí jedna domácnost za celou rodinu.
         </p>
       </div>
     </section>

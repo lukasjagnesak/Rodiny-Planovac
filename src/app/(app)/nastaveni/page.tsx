@@ -43,7 +43,9 @@ export default async function SettingsPage() {
     ? null
     : !pristup.muzeZapisovat
       ? "jen ke čtení"
-      : pristup.jeZkusebni
+      : pristup.zakladajici
+        ? "zakládající rodina"
+        : pristup.jeZkusebni
         ? `zkušební · ${pristup.dniDoKonce} dní`
         : pristup.predplatne.stav === "po_splatnosti"
           ? "platba vázne"

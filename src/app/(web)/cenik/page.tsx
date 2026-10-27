@@ -2,14 +2,23 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, CreditCard, Users } from "lucide-react";
 import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
-import { CENIK, CO_JE_V_CENE, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
+import {
+  CENIK,
+  CO_JE_V_CENE,
+  ZAKLADAJICI,
+  ZDARMA,
+  ZDARMA_S_PODMINKOU,
+  ZKUSEBNI_SLIB,
+  korun,
+} from "@/lib/tarify";
+import { ZakladajiciPruh } from "@/components/web/zakladajici";
 import { SrovnaniTarifu } from "@/components/predplatne/srovnani";
 import { ZNACKA } from "@/lib/brand";
 
 export const metadata: Metadata = {
   title: "Ceník",
   description:
-    "30 dní zdarma se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo 1 990 Kč ročně za celou rodinu — druhý rodič neplatí nic.",
+    `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom 199 Kč měsíčně nebo 1 990 Kč ročně za celou rodinu — druhý rodič neplatí nic.`,
   alternates: { canonical: "/cenik" },
 };
 
@@ -23,7 +32,7 @@ export const metadata: Metadata = {
 
 const OTAZKY = [
   {
-    otazka: "Co se stane po 30 dnech?",
+    otazka: "Co se stane, až období zdarma skončí?",
     odpoved:
       "Nic se nesmaže. Kalendář, výdaje i doklady zůstanou čitelné. Zamkne se zapisování a vytváření dokumentů pro soud nebo advokáta. Jakmile předplatné zaplatíte, můžete zase psát — v tom stavu, ve kterém jste skončil.",
   },
@@ -61,12 +70,16 @@ export default function Cenik() {
         <Sloupec siroky>
           <Nadtitulek>Ceník</Nadtitulek>
           <h1 className="mt-3 max-w-3xl font-display text-[2rem] font-semibold leading-[1.1] tracking-tight text-ink sm:text-[2.75rem]">
-            {ZKUSEBNI_SLIB.dni} dní zdarma. Se vším všudy.
+            {ZAKLADAJICI.aktivni
+              ? `Prvních ${ZAKLADAJICI.mist} rodin: rok zdarma.`
+              : `${ZKUSEBNI_SLIB.dni} dní zdarma. Se vším všudy.`}
           </h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Žádná osekaná verze na vyzkoušení: měsíc máte přesně to, co si potom případně
-            předplatíš. Bez zadání karty, takže se nemá co samo strhnout.
+            Žádná osekaná verze na vyzkoušení: po celé období zdarma máte přesně to, co si
+            potom případně předplatíte. Bez zadání karty, takže se nemá co samo strhnout.
           </p>
+
+          <ZakladajiciPruh kompaktni className="mt-5" />
 
           <ul className="mt-7 grid gap-2.5 sm:grid-cols-2">
             {ZKUSEBNI_SLIB.body.map((bod) => (
@@ -123,7 +136,7 @@ export default function Cenik() {
                     href="/registrace"
                     className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-xl bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
                   >
-                    Začít {ZKUSEBNI_SLIB.dni} dní zdarma
+                    Začít — {ZDARMA}
                   </Link>
                 </div>
               );

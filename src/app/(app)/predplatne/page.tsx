@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { requireSession } from "@/lib/session";
 import { nactiPredplatne } from "@/lib/predplatne";
 import { stripeJeNastaveny } from "@/lib/stripe";
-import { CO_JE_V_CENE, tarifPodleId, ZKUSEBNI_DNI } from "@/lib/tarify";
+import { CO_JE_V_CENE, tarifPodleId, ZAKLADAJICI, ZKUSEBNI_DNI } from "@/lib/tarify";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/misc";
 import { SpravaPredplatneho, VolbaTarifu } from "@/components/predplatne/volba-tarifu";
@@ -51,6 +51,12 @@ export default async function PredplatnePage({
         <CardBody className="pt-3 text-sm text-ink-muted">
           {predplatne === null ? (
             <p>Vaše rodina má přístup bez omezení.</p>
+          ) : pristup.zakladajici ? (
+            <p>
+              Jste jedna z prvních {ZAKLADAJICI.mist} rodin, které Klidoo začaly používat — děkujeme.
+              Máte ho zdarma do <strong className="text-ink">{plati}</strong>, bez karty. Budeme
+              rádi, když nám odpovíte na e-mail, co vám chybí; podle toho ho stavíme.
+            </p>
           ) : predplatne.stav === "zkusebni" && pristup.muzeZapisovat ? (
             <p>
               Zkušební období běží do <strong className="text-ink">{plati}</strong>. Karta k němu
@@ -90,9 +96,17 @@ export default async function PredplatnePage({
       ) : (
         <Card>
           <CardHeader
-            title={pristup.muzeZapisovat ? "Pokračovat po zkušebním období" : "Odemknout zápis"}
+            title={
+              pristup.zakladajici
+                ? "Chcete Klidoo podpořit už teď?"
+                : pristup.muzeZapisovat
+                  ? "Pokračovat po zkušebním období"
+                  : "Odemknout zápis"
+            }
             description={
-              pristup.jeZkusebni && pristup.dniDoKonce > 2
+              pristup.zakladajici
+                ? `Nemusíte. Kdyby se vám to hodilo, karta se strhne až ${plati}, po skončení roku zdarma.`
+                : pristup.jeZkusebni && pristup.dniDoKonce > 2
                 ? `Zaplatit můžete hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdete.`
                 : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebujete.`
             }
@@ -140,7 +154,9 @@ function Odznak({ pristup }: { pristup: Awaited<ReturnType<typeof nactiPredplatn
       ? ["Jen ke čtení", "bg-danger/10 text-danger"]
       : predplatne.stav === "po_splatnosti"
         ? ["Platba vázne", "bg-warning/15 text-warning"]
-        : jeZkusebni
+        : pristup.zakladajici
+          ? ["Zakládající rodina", "bg-brand-soft text-brand"]
+          : jeZkusebni
           ? [`Zkušební · ${dniDoKonce} dní`, "bg-brand-soft text-brand"]
           : ["Aktivní", "bg-success/10 text-success"];
 
