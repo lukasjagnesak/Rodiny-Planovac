@@ -87,6 +87,43 @@ která se teprve rozjíždí, jen zamotají data.
 
 ---
 
+## Co změnit teď (27. 10. 2026) — rok zdarma pro prvních 50 rodin
+
+Za ~2 000 Kč a týden reklam: ~200 návštěv, 1 registrace, 0 platících.
+Většina peněz šla na kalkulačku výživného, kde člověk řeší „kolik budu
+platit", ne aplikaci. Od 27. 10. má prvních 50 rodin Klidoo **rok
+zdarma bez karty** — to je silnější háček, než jsme kdy měli, a reklama
+ho musí říct hned v nadpisu.
+
+Postup v Google Ads, v tomhle pořadí (zabere ~20 minut):
+
+1. **Kampaň s kalkulačkou výživného** → Rozpočet **30 Kč/den** (nebo
+   pozastavit). Ušetřené peníze přesunout do sestav **Nástroj**
+   a **Rozvrh a noci** níž.
+2. **Sdílená knihovna → Seznamy vylučujících klíčových slov** → smazat
+   `zdarma`, `free`, `zadarmo`. Dřív odfiltrovávaly lovce věcí zadarmo;
+   teď je „zdarma" přesně to, co nabízíme, a „aplikace střídavá péče
+   zdarma" je ideální dotaz.
+3. Do sestavy **Nástroj** přidat klíčová slova:
+   ```
+   aplikace střídavá péče zdarma
+   kalendář pro rozvedené rodiče
+   aplikace na střídání dětí
+   rozvrh dětí po rozvodu
+   ```
+4. **Každá sestava → nová responzivní reklama** s nadpisy a popisy
+   z oddílu [Texty inzerátů](#texty-inzerátů) (verze „rok zdarma").
+   Nadpisy *Prvních 50 rodin rok zdarma* a *U koho jsou děti příští
+   týden?* **připnout na pozici 1 a 2.** Staré reklamy nechat běžet
+   týden vedle, pak vypnout tu, která má méně registrací v `/provoz`.
+5. **Cílová URL** všech nových reklam: `https://klidoo.cz/vyzkouset`.
+6. Za 7 dní: `/provoz` → Vstupní stránka /vyzkouset → sloupec Google Ads.
+
+> Až místa dojdou (`/api/zakladajici` vrátí `"volno":0`), reklamy
+> s „rok zdarma" **okamžitě vypnout** — slibovaly by, co už neplatí.
+
+---
+
 ## Strategie na jednu větu
 
 Sklízet poptávku, která už existuje, ne ji vytvářet. Rozchod má
@@ -216,7 +253,6 @@ pověst. Případně až později a opatrně.
 Na úrovni účtu, aby platila všude:
 
 ```
-zdarma, free, zadarmo
 práce, brigáda, kurz, školení, seminář
 diplomová, bakalářská, seminární, referát
 judikát, judikatura, zákon, paragraf, soudní rozhodnutí
@@ -226,6 +262,9 @@ kniha, knihy, pdf zdarma
 wikipedia, diskuze, fórum
 dávky, přídavky, porodné, rodičovský příspěvek
 ```
+
+> `zdarma`, `free`, `zadarmo` tu byly do 27. 10. 2026. Od nabídky
+> „rok zdarma" jsou to naopak dobré dotazy — nevracet.
 
 > Tohle je **výchozí seznam, ne konečný.** Jednou týdně projdi sestavu
 > vyhledávacích dotazů a přidávej. Bez toho rozpočet vyteče do dotazů,
@@ -238,7 +277,31 @@ dávky, přídavky, porodné, rodičovský příspěvek
 Pravidla: mluv o situaci, ne o čtenáři. „Rozvádíte se?" je za hranou
 u Googlu (osobní vlastnosti) i lidsky.
 
-**Nadpisy:**
+**Nadpisy — verze „rok zdarma"** (od 27. 10. 2026, max. 30 znaků):
+
+```
+Prvních 50 rodin rok zdarma
+U koho jsou děti příští týden?
+Rok zdarma, bez karty
+Funguje i bez druhého rodiče
+Rozvrh dětí na měsíc dopředu
+Druhý rodič neplatí nic
+Kalendář pro dva domovy
+Kroužky, odvozy i výdaje
+Česká aplikace, data v EU
+Zkuste to za dvě minuty
+```
+
+**Popisy — verze „rok zdarma"** (max. 90 znaků):
+
+```
+Klepněte, jak se střídáte, a uvidíte celý měsíc. Prvních 50 rodin má rok zdarma.
+Začnete sami, druhého rodiče pozvete, až bude chtít. Bez karty, nic se nestrhne.
+Kdo má děti o Vánocích, kdo platil tábor. Napsané jednou, vidí to oba rodiče.
+Česká aplikace pro rodiny se dvěma domovy. Sudé a liché týdny, prázdniny, výdaje.
+```
+
+**Nadpisy — původní verze** (pro srovnání, po vyhodnocení vypnout):
 
 ```
 Kalendář pro dva domovy
@@ -351,3 +414,4 @@ nedostal data. Zmizí to sama pár hodin po prvním skutečném odeslání.
 | 2026-09-11 | Přidána stránka Kontrola měření | Ověřování konverzí přes DevTools se nedá dělat při každé změně v `.env` |
 | 2026-09-11 | Oprava tvaru gtag: `arguments` místo pole | gtag.js bere z dataLayer jen objekt `arguments`, takže značka neodeslala jediný požadavek |
 | 2026-10-27 | Reklamní kód jen na veřejném webu, ne v aplikaci a průvodci | V aplikaci jsou data dětí a zprávy; Pixel umí číst formuláře. „Založená rodina" se proto do Ads neposílá |
+| 2026-10-27 | Rok zdarma pro prvních 50 rodin; výživné na 30 Kč/den; „zdarma" pryč z vylučujících | Týden reklam: 1 registrace. Strach z ceny a záměr „kolik budu platit" místo „potřebuju aplikaci" |

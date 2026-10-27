@@ -111,7 +111,27 @@ na fotbal?*
 *Kdo má děti o Vánocích? Kdo zaplatil tábor? Napsané jednou, vidí to
 oba.* Dole malý kalendář a logo.
 
-**Hlavní text** (první řádek je to, co se zobrazí; zbytek je pod „více"):
+**Hlavní text — verze „rok zdarma"** (od 27. 10. 2026, tyhle dát
+nahoru; první řádek je to, co se zobrazí, zbytek je pod „více"):
+
+```
+Prvních 50 rodin má Klidoo rok zdarma. Bez karty, nic se samo nestrhne.
+Klepněte, jak se střídáte, a uvidíte, u koho budou děti celý příští měsíc. Druhý rodič neplatí nic.
+```
+
+```
+Týden u vás, týden u druhého. A kdo veze na fotbal?
+Klidoo: jeden kalendář pro oba domovy, kroužky i výdaje. Začnete sami, druhý rodič se přidá, až bude chtít. Prvních 50 rodin rok zdarma.
+```
+
+**Nadpis — verze „rok zdarma":**
+
+```
+Prvních 50 rodin: rok zdarma
+Rozvrh dětí na měsíc dopředu, zdarma
+```
+
+**Hlavní text — původní verze:**
 
 ```
 U koho jsou děti příští týden? Klepněte, jak se střídáte, a uvidíte celý měsíc dopředu.
@@ -140,7 +160,9 @@ kalendář, ne účet).
   rozvedený?" — to Facebook zamítne (pravidla o osobních vlastnostech)
   a člověk se cítí sledovaný. Ano „Týden u vás, týden u druhého".
 - Žádné sliby, které stránka nesplní. Stránka ukazuje kalendář a stojí
-  za ní 30 dní zdarma bez karty — nic víc nesmí reklama tvrdit.
+  za ní 30 dní zdarma bez karty (a pro prvních 50 rodin rok) — nic víc
+  nesmí reklama tvrdit. **Až místa dojdou, reklamy s „rok zdarma"
+  hned vypnout.**
 - Žádné vymyšlené recenze ani čísla uživatelů.
 
 ---
