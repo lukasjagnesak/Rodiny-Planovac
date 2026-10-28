@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Field, Textarea } from "@/components/ui/field";
+import { Checkbox, Field, Input, Textarea } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { formatDayShort } from "@/lib/dates";
 import { formatMoney, hlaskaChyby } from "@/lib/format";
@@ -18,6 +18,8 @@ import {
   posledniZadost,
 } from "@/lib/proplaceni";
 import { maDvaRodice } from "@/lib/zadosti";
+import { formatUcet, normalizujUcet } from "@/lib/ucet";
+import { QrPlatba } from "./qr-platba";
 import type { Expense, SessionContext, ZadostProplaceni } from "@/lib/types";
 
 /**
@@ -124,17 +126,34 @@ export function ProplaceniVydaje({
 function Pozadat({ session, expense }: { session: SessionContext; expense: Expense }) {
   const router = useRouter();
   const [poznamka, setPoznamka] = React.useState("");
+  const ulozeny = session.profile.ucet ?? null;
+  const [ucet, setUcet] = React.useState(ulozeny ? formatUcet(ulozeny) : "");
+  const [ulozit, setUlozit] = React.useState(true);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const podil = podilKProplaceni(expense.amount, expense.split_percent);
 
   async function pozadat() {
-    setBusy(true);
     setError(null);
+    let iban: string | null = null;
+    if (ucet.trim()) {
+      const vysledek = normalizujUcet(ucet);
+      if ("chyba" in vysledek) {
+        setError(vysledek.chyba);
+        return;
+      }
+      iban = vysledek.iban;
+    }
+    setBusy(true);
     const supabase = createClient();
+    // Nový účet si rodič uloží do profilu, ať ho příště nepíše znovu.
+    if (iban && iban !== ulozeny && ulozit) {
+      await supabase.from("profiles").update({ ucet: iban }).eq("id", session.userId);
+    }
     const { data, error } = await supabase.rpc("pozadej_o_proplaceni", {
       vydaj: expense.id,
       poznamka: poznamka.trim() || null,
+      ucet: iban,
     });
     setBusy(false);
     if (error) {
@@ -155,9 +174,24 @@ function Pozadat({ session, expense }: { session: SessionContext; expense: Expen
         ({Number(expense.split_percent)} %) a může ji schválit, nebo rozporovat. Zapíše se do
         Zpráv.
       </p>
+      <Field label="Na účet" hint="Druhý rodič dostane QR kód k zaplacení. Bez účtu jde žádat taky.">
+        <Input
+          autoComplete="off"
+          placeholder="123456789/0800"
+          value={ucet}
+          onChange={(e) => setUcet(e.target.value)}
+        />
+      </Field>
+      {ucet.trim() && ucet.trim() !== (ulozeny ? formatUcet(ulozeny) : "") ? (
+        <Checkbox
+          label="Uložit účet do profilu"
+          checked={ulozit}
+          onChange={(e) => setUlozit(e.target.checked)}
+        />
+      ) : null}
       <Textarea
         rows={2}
-        placeholder="Poznámka (nepovinné), např. číslo účtu"
+        placeholder="Poznámka (nepovinné)"
         value={poznamka}
         onChange={(e) => setPoznamka(e.target.value)}
       />
@@ -233,6 +267,19 @@ function ZadostRadek({
         <Alert tone="warning">
           {zadost.odpovedel_jmeno ?? "Druhý rodič"} rozporuje: {zadost.duvod}
         </Alert>
+      ) : null}
+      {zadost.ucet && moje && (zadost.stav === "ceka" || zadost.stav === "schvaleno") ? (
+        <p className="text-xs text-ink-subtle">Na účet {formatUcet(zadost.ucet)}</p>
+      ) : null}
+      {/* QR dostane ten, kdo platí, až když žádost schválil — platit
+          rozporovanou nebo čekající částku nemá smysl. */}
+      {zadost.ucet && !moje && zadost.stav === "schvaleno" ? (
+        <QrPlatba
+          iban={zadost.ucet}
+          castka={Number(zadost.castka)}
+          mena={expense.currency || session.family.currency}
+          zprava={`Klidoo: ${expense.title} ${formatDayShort(expense.spent_on)}`}
+        />
       ) : null}
       {zadost.stav === "schvaleno" ? (
         <p className="text-xs text-ink-subtle">

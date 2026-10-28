@@ -51,6 +51,8 @@ export interface Profile {
   locale: string;
   /** Vlastní rozvržení přehledu — viz `lib/prehled-karty.ts`. NULL = výchozí. */
   prehled_karty: string[] | null;
+  /** Účet pro proplácení jako IBAN (migrace 0037). Vidí ho jen rodina. */
+  ucet?: string | null;
 }
 
 export interface FamilyMember {
@@ -243,6 +245,8 @@ export interface ZadostProplaceni {
   odpovezeno_at: string | null;
   zaplaceno_at: string | null;
   created_at: string;
+  /** Kam platit, jako IBAN — zapsaný při žádosti (migrace 0037). */
+  ucet?: string | null;
 }
 
 /** Šablona pravidelného výdaje — výživné, obědy, kroužky, pojištění. */

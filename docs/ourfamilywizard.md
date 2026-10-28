@@ -65,6 +65,7 @@ orientační.
    v aplikaci zatím ne.
    ✅ Hotovo (0036): žádá ten, kdo platil; druhý schválí nebo rozporuje
    s důvodem; vypořádá to potvrzení příjmu od žadatele. Vše ve Zprávách.
+   Od 0037 se schválenou žádostí i QR Platba na účet žadatele.
 7. **Formulace do dohody a rozhodnutí** a **přístup zdarma** pro rodiny
    z mediace, OSPOD a soudu.
 

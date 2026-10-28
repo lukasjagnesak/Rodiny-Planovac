@@ -109,11 +109,16 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
       ...vydaj("x2", -4, "Zimní bunda", 1890, "clothing", MAMA, "c-tobias"),
       // Žádost o proplacení, ať je v ukázce vidět, jak se schvaluje.
       zadosti_proplaceni: [
-        { id: "zp1", family_id: "f-ukazka", expense_id: "x2", pozadal: MAMA, pozadal_jmeno: "Jana", castka: 945, poznamka: "Účtenka je v příloze.", stav: "ceka", odpovedel: null, odpovedel_jmeno: null, duvod: null, odpovezeno_at: null, zaplaceno_at: null, created_at: den(-3) },
+        { id: "zp1", family_id: "f-ukazka", expense_id: "x2", pozadal: MAMA, pozadal_jmeno: "Jana", castka: 945, poznamka: "Účtenka je v příloze.", stav: "ceka", odpovedel: null, odpovedel_jmeno: null, duvod: null, odpovezeno_at: null, zaplaceno_at: null, created_at: den(-3), ucet: "CZ6508000000192000145399" },
       ],
     },
     vydaj("x3", -6, "Plavání — pololetí", 3200, "activities", TATA, "c-ema"),
-    vydaj("x4", -9, "Kopačky", 990, "activities", MAMA, "c-tobias"),
+    {
+      ...vydaj("x4", -9, "Kopačky", 990, "activities", MAMA, "c-tobias"),
+      zadosti_proplaceni: [
+        { id: "zp2", family_id: "f-ukazka", expense_id: "x4", pozadal: MAMA, pozadal_jmeno: "Jana", castka: 495, poznamka: null, stav: "schvaleno", odpovedel: TATA, odpovedel_jmeno: "Petr", duvod: null, odpovezeno_at: den(-7), zaplaceno_at: null, created_at: den(-8), ucet: "CZ6508000000192000145399" },
+      ],
+    },
     vydaj("x5", -12, "Vitamíny a sirup", 420, "health", TATA, null),
     // Starší měsíce, ať graf vývoje není jeden sloupec.
     vydaj("x6", -35, "Školní pomůcky", 2350, "school", MAMA, "c-tobias", true),

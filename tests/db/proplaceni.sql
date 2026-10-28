@@ -63,3 +63,36 @@ reset role;
 -- Smazání rodiny projde i s výdaji
 delete from families where id = :'rodina';
 select count(*) as zbylo from zadosti_proplaceni where family_id = :'rodina';
+
+-- ── 0037: účet a QR Platba ─────────────────────────────────────────
+insert into auth.users (id, email, raw_user_meta_data) values
+ ('00000000-0000-0000-0000-0000000002f1','ondra@x.cz','{"full_name":"Ondra"}'),
+ ('00000000-0000-0000-0000-0000000002f2','marta@x.cz','{"full_name":"Marta"}');
+select iban_platny('CZ6508000000192000145399') as platny, iban_platny('CZ6508000000192000145398') as preklep,
+       ucet_cesky('CZ6508000000192000145399') as cesky;
+set role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000002f1',false);
+select create_family('Malí','Ondra','a') as rodina2 \gset
+reset role;
+insert into family_members (family_id, user_id, role, custody_side) values (:'rodina2','00000000-0000-0000-0000-0000000002f2','parent','b');
+set role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000002f1',false);
+-- Překlep v profilu databáze nepustí
+update profiles set ucet = 'CZ6508000000192000145398' where id = auth.uid();
+update profiles set ucet = 'CZ6508000000192000145399' where id = auth.uid();
+insert into expenses (family_id, title, amount, split_percent, paid_by, spent_on)
+values (:'rodina2', 'Bunda', 1890, 50, auth.uid(), current_date) returning id as v1 \gset
+insert into expenses (family_id, title, amount, split_percent, paid_by, spent_on)
+values (:'rodina2', 'Boty', 1000, 50, auth.uid(), current_date) returning id as v2 \gset
+-- Účet z profilu
+select pozadej_o_proplaceni(:'v1') as zp1 \gset
+select ucet from zadosti_proplaceni where id = :'zp1';
+-- Špatný účet v žádosti neprojde, jiný platný ano
+select pozadej_o_proplaceni(:'v2', null, 'CZ00');
+select pozadej_o_proplaceni(:'v2', null, 'SK31 1200 0000 1987 4263 7541') as zp2 \gset
+select ucet from zadosti_proplaceni where id = :'zp2';
+-- Marta vidí účet z profilu i u žádosti
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000002f2',false);
+select ucet from profiles where id = '00000000-0000-0000-0000-0000000002f1';
+select text from zpravy where family_id = :'rodina2' order by created_at;
+reset role;

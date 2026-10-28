@@ -12,6 +12,7 @@ import { Alert, ColorPicker, Segmented, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE } from "@/lib/constants";
 import type { GoogleAccount, SessionContext } from "@/lib/types";
 import { hlaskaChyby } from "@/lib/format";
+import { formatUcet, normalizujUcet } from "@/lib/ucet";
 
 const CURRENCIES = ["CZK", "EUR", "USD", "PLN"];
 
@@ -25,6 +26,9 @@ export function SettingsForms({
   const [name, setName] = React.useState(session.profile.full_name);
   const [phone, setPhone] = React.useState(session.profile.phone ?? "");
   const [color, setColor] = React.useState(session.profile.color);
+  const [ucet, setUcet] = React.useState(
+    session.profile.ucet ? formatUcet(session.profile.ucet) : "",
+  );
   const [familyName, setFamilyName] = React.useState(session.family.name);
   const [currency, setCurrency] = React.useState(session.family.currency);
   const [saving, setSaving] = React.useState<"profile" | "family" | null>(null);
@@ -38,10 +42,21 @@ export function SettingsForms({
     setError(null);
     setMessage(null);
 
+    let iban: string | null = null;
+    if (ucet.trim()) {
+      const vysledek = normalizujUcet(ucet);
+      if ("chyba" in vysledek) {
+        setSaving(null);
+        setError(vysledek.chyba);
+        return;
+      }
+      iban = vysledek.iban;
+    }
+
     const supabase = createClient();
     const { error } = await supabase
       .from("profiles")
-      .update({ full_name: name.trim(), phone: phone.trim() || null, color })
+      .update({ full_name: name.trim(), phone: phone.trim() || null, color, ucet: iban })
       .eq("id", session.userId);
 
     setSaving(null);
@@ -99,6 +114,19 @@ export function SettingsForms({
               placeholder="+420 777 123 456"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+            />
+          </Field>
+
+          <Field
+            label="Číslo účtu"
+            hint="nepovinné · pro žádosti o proplacení, druhý rodič dostane QR kód k zaplacení"
+          >
+            <Input
+              inputMode="text"
+              autoComplete="off"
+              placeholder="123456789/0800"
+              value={ucet}
+              onChange={(e) => setUcet(e.target.value)}
             />
           </Field>
 
