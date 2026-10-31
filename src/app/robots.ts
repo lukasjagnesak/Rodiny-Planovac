@@ -23,6 +23,7 @@ export default function robots(): MetadataRoute.Robots {
         "/rozvrh",
         "/ukoly",
         "/kontakty",
+        "/darky",
         "/doklady",
         "/oznameni",
         "/nastaveni",

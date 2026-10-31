@@ -24,6 +24,7 @@ import {
   Table2,
   Users,
   Wallet,
+  Gift,
 } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/format";
@@ -44,6 +45,7 @@ const NAV = [
 const SECONDARY = [
   { href: "/rozvrh", label: "Rozvrh", Icon: Table2 },
   { href: "/ukoly", label: "Ze školy", Icon: BookOpen },
+  { href: "/darky", label: "Dárky", Icon: Gift },
   { href: "/kontakty", label: "Kontakty", Icon: Contact },
   { href: "/doklady", label: "Doklady", Icon: FileText },
   { href: "/souhrn", label: "Souhrn pro soud", Icon: FileBarChart },

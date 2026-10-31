@@ -9,6 +9,7 @@ import { ZpravyScreen } from "@/components/zpravy/zpravy-screen";
 import { RozvrhScreen } from "@/components/rozvrh/rozvrh-screen";
 import { ukazkovaRodina } from "@/lib/ukazkova-rodina";
 import { HistorieScreen } from "@/components/historie/historie-screen";
+import { DarkyScreen } from "@/components/darky/darky-screen";
 import { UkazkaFormulareUdalosti } from "./formular-udalosti";
 
 /**
@@ -21,7 +22,7 @@ import { UkazkaFormulareUdalosti } from "./formular-udalosti";
  *
  * Jen pro vývoj, v ostrém provozu neexistuje (stejně jako `nahled-mobil`).
  */
-const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh", "historie", "udalost"] as const;
+const OBRAZOVKY = ["prehled", "kalendar", "vydaje", "krouzky", "zpravy", "rozvrh", "historie", "udalost", "darky"] as const;
 type Obrazovka = (typeof OBRAZOVKY)[number];
 
 export default async function UkazkaObrazovky({
@@ -71,6 +72,7 @@ export default async function UkazkaObrazovky({
         />
       </div>
     ),
+    darky: <DarkyScreen session={r.session} darky={r.darky} />,
     vydaje: (
       <ExpensesScreen
         session={r.session}

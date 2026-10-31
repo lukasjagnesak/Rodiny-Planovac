@@ -15,6 +15,7 @@
  */
 import { addDays, format, startOfWeek } from "date-fns";
 import type {
+  Darek,
   Activity,
   ActivityOccurrence,
   CustodyPattern,
@@ -181,5 +182,19 @@ export function ukazkovaRodina(dnes: Date = new Date()) {
     zaznam(1, -12, "19:00", "Petr", "krouzky", "Upraven kroužek: Plavání"),
   ];
 
-  return { session, zadosti, historie, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
+  const darek = (id: string, child_id: string | null, nazev: string, cena: number | null, pridal: string, koupi: string | null, koupeno = false, prilezitost: Darek["prilezitost"] = "vanoce", poznamka: string | null = null): Darek => ({
+    id, family_id: "f-ukazka", child_id, nazev, odkaz: null, cena, prilezitost, poznamka,
+    pridal, pridal_jmeno: pridal === TATA ? "Petr" : "Jana",
+    koupi, koupi_jmeno: koupi === TATA ? "Petr" : koupi === MAMA ? "Jana" : null,
+    koupeno_at: koupeno ? den(-2) : null, expense_id: null, darovano: false, created_at: den(-10),
+  });
+  const darky: Darek[] = [
+    darek("g1", "c-ema", "Lego Friends — kavárna", 899, MAMA, null, false, "vanoce", "Ema ho viděla u kamarádky."),
+    darek("g2", "c-tobias", "Odrážedlo na kolo, 16\"", 2490, TATA, null),
+    darek("g3", "c-ema", "Kniha Harry Potter 2", 399, TATA, MAMA),
+    darek("g4", "c-tobias", "Fotbalový míč vel. 4", 450, MAMA, TATA, true),
+    darek("g5", null, "Společná deskovka Dobble", 349, MAMA, TATA),
+  ];
+
+  return { session, zadosti, historie, darky, patterns, activities, occurrences, events, expenses, opakovane, rozvrh, zpravy, pondeli: klic(pondeli) };
 }

@@ -36,6 +36,9 @@ export const IKONY = {
   spendlik:
     '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
 
+  darek:
+    '<rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v7.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M12 8v13"/><path d="M12 8C10.8 4.6 6.8 4 6.8 6.4 6.8 8 9.6 8 12 8zM12 8c1.2-3.4 5.2-4 5.2-1.6C17.2 8 14.4 8 12 8z"/>',
+
   // ── Výdaje ─────────────────────────────────────────────────────
   bankovka:
     '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><circle cx="6.2" cy="9.5" r=".9" fill="currentColor" stroke="none"/><circle cx="17.8" cy="14.5" r=".9" fill="currentColor" stroke="none"/>',

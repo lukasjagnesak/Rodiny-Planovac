@@ -422,3 +422,27 @@ export interface ZaznamHistorie {
   popis: string;
   zaznam_id: string | null;
 }
+
+export type Prilezitost = "narozeniny" | "svatek" | "vanoce" | "jine";
+
+/** Nápad na dárek pro dítě (migrace 0038). */
+export interface Darek {
+  id: string;
+  family_id: string;
+  /** NULL = pro všechny děti. */
+  child_id: string | null;
+  nazev: string;
+  odkaz: string | null;
+  cena: number | null;
+  prilezitost: Prilezitost | null;
+  poznamka: string | null;
+  pridal: string | null;
+  pridal_jmeno: string;
+  /** Kdo si dárek zamluvil, že ho koupí. */
+  koupi: string | null;
+  koupi_jmeno: string | null;
+  koupeno_at: string | null;
+  expense_id: string | null;
+  darovano: boolean;
+  created_at: string;
+}
