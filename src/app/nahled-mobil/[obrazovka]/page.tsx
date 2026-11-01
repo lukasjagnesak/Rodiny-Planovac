@@ -77,6 +77,7 @@ export default async function UkazkaObrazovky({
       <ExpensesScreen
         session={r.session}
         expenses={r.expenses}
+        nevyrovnane={r.expenses.filter((e) => !e.settled)}
         opakovane={r.opakovane}
         monthKey={mesic}
         prefillDate={null}

@@ -27,6 +27,8 @@ import { cn, formatMoney } from "@/lib/format";
 import { memberName } from "@/lib/members";
 import { OpakovaneVydaje } from "./opakovane-karta";
 import { ProplaceniPrehled, StitekProplaceni } from "./proplaceni";
+import { VyrovnaniSheet } from "./vyrovnani";
+import { rozpisDluhu } from "@/lib/vyrovnani";
 import type { Expense, ExpenseCategory, OpakovanyVydaj, SessionContext } from "@/lib/types";
 import { Ikona } from "@/components/ui/ikona";
 
@@ -34,6 +36,7 @@ export function ExpensesScreen({
   session,
   expenses,
   opakovane,
+  nevyrovnane = [],
   monthKey,
   prefillDate,
   prevzato = null,
@@ -41,6 +44,8 @@ export function ExpensesScreen({
   session: SessionContext;
   expenses: Expense[];
   opakovane: OpakovanyVydaj[];
+  /** Všechny nevyrovnané výdaje bez ohledu na měsíc — pro „kdo komu dluží". */
+  nevyrovnane?: Expense[];
   monthKey: string;
   prefillDate: string | null;
   /** Výsledek převzetí výpočtu z veřejné kalkulačky, viz `/prevzit/vyzivne`. */
@@ -82,17 +87,16 @@ export function ExpensesScreen({
 
   const total = visible.reduce((sum, e) => sum + Number(e.amount), 0);
 
-  /** Kolik komu zbývá doplatit z nevypořádaných výdajů. */
-  const balance = React.useMemo(() => {
-    let value = 0;
-    for (const e of monthExpenses) {
-      if (e.settled) continue;
-      const share = (Number(e.amount) * Number(e.split_percent)) / 100;
-      if (e.paid_by === session.userId) value += share;
-      else if (e.paid_by) value -= share;
-    }
-    return value;
-  }, [monthExpenses, session.userId]);
+  /**
+   * Kolik komu zbývá doplatit. Přes všechny nevyrovnané výdaje — dřív
+   * jen ze zobrazeného měsíce, takže starší dluh po přelomu měsíce
+   * z dlaždice zmizel, ačkoli zaplacený nebyl.
+   */
+  const balance = React.useMemo(
+    () => rozpisDluhu(nevyrovnane, session.userId).saldo,
+    [nevyrovnane, session.userId],
+  );
+  const [vyrovnani, setVyrovnani] = React.useState(false);
 
   const perChild = React.useMemo(
     () =>
@@ -207,17 +211,25 @@ export function ExpensesScreen({
           icon={<Wallet className="h-3.5 w-3.5" />}
           accent="var(--brand)"
         />
-        <StatTile
-          label={balance >= 0 ? "Mně dluží" : "Já dlužím"}
-          value={
-            <span className={cn("tnum", balance >= 0 ? "text-success" : "text-danger")}>
-              {formatMoney(Math.abs(balance), currency)}
-            </span>
-          }
-          hint="z nevypořádaných výdajů"
-          icon={<Scale className="h-3.5 w-3.5" />}
-          accent={balance >= 0 ? "var(--success)" : "var(--danger)"}
-        />
+        {/* Klepnutím rozpis: za co kdo komu dluží a potvrzení zaplacení. */}
+        <button
+          type="button"
+          onClick={() => setVyrovnani(true)}
+          className="rounded-2xl text-left transition-transform active:scale-[0.98]"
+          aria-label="Vyrovnání: kdo komu dluží"
+        >
+          <StatTile
+            label={balance >= 0 ? "Mně dluží" : "Já dlužím"}
+            value={
+              <span className={cn("tnum", balance >= 0 ? "text-success" : "text-danger")}>
+                {formatMoney(Math.abs(balance), currency)}
+              </span>
+            }
+            hint="za co a vyrovnat ›"
+            icon={<Scale className="h-3.5 w-3.5" />}
+            accent={balance >= 0 ? "var(--success)" : "var(--danger)"}
+          />
+        </button>
       </div>
 
       <ProplaceniPrehled session={session} expenses={expenses} />
@@ -487,6 +499,14 @@ export function ExpensesScreen({
         expense={editing ? (expenses.find((x) => x.id === editing.id) ?? editing) : null}
         defaultDate={editing ? null : prefillDate}
       />
+
+      {vyrovnani ? (
+        <VyrovnaniSheet
+          session={session}
+          nevyrovnane={nevyrovnane}
+          onClose={() => setVyrovnani(false)}
+        />
+      ) : null}
 
       {lightbox ? (
         <ReceiptLightbox

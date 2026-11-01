@@ -23,7 +23,7 @@ export default async function ExpensesPage({
   const chartFrom = toDateKey(startOfMonth(subMonths(anchor, 5)));
   const to = toDateKey(endOfMonth(anchor));
 
-  const [{ data }, { data: opakovane }] = await Promise.all([
+  const [{ data }, { data: opakovane }, { data: nevyrovnane }] = await Promise.all([
     supabase
       .from("expenses")
       .select("*, receipts(*), zadosti_proplaceni(*)")
@@ -38,6 +38,15 @@ export default async function ExpensesPage({
       .eq("family_id", session.family.id)
       .order("aktivni", { ascending: false })
       .order("created_at"),
+    // Dluh se přelomem měsíce neztrácí — rozpis „kdo komu dluží" bere
+    // všechny nevyrovnané výdaje, ne jen zobrazený měsíc.
+    supabase
+      .from("expenses")
+      .select("*, zadosti_proplaceni(*)")
+      .eq("family_id", session.family.id)
+      .eq("settled", false)
+      .order("spent_on")
+      .limit(1000),
   ]);
 
   return (
@@ -45,6 +54,7 @@ export default async function ExpensesPage({
       session={session}
       expenses={(data ?? []) as Expense[]}
       opakovane={(opakovane ?? []) as OpakovanyVydaj[]}
+      nevyrovnane={(nevyrovnane ?? []) as Expense[]}
       monthKey={toDateKey(startOfMonth(anchor)).slice(0, 7)}
       prefillDate={novy ?? null}
       prevzato={prevzato ?? null}

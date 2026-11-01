@@ -11,6 +11,7 @@ import { Alert, Spinner } from "@/components/ui/misc";
 import { ReceiptImage } from "./receipt-image";
 import { ProplaceniVydaje } from "./proplaceni";
 import { posledniZadost } from "@/lib/proplaceni";
+import { maDvaRodice } from "@/lib/zadosti";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_ORDER } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
 import { FREKVENCE_POPIS, type Frekvence } from "@/lib/opakovani";
@@ -233,6 +234,17 @@ export function ExpenseForm({
   const amountNumber = Number(form.amount.replace(",", ".")) || 0;
   const otherShare = (amountNumber * Number(form.split_percent)) / 100;
   const posledni = expense ? posledniZadost(expense.zadosti_proplaceni) : null;
+  // Kdo výdaj zaplatil a kdo nese `split_percent`. Popisky se řídí
+  // plátcem, ne tím, kdo formulář zrovna vyplňuje.
+  const platil = session.members.find((m) => m.userId === form.paid_by);
+  const platilJmeno = platil?.name ?? "plátce";
+  const neplati = session.members.find(
+    (m) => m.userId !== form.paid_by && m.side && (m.role === "owner" || m.role === "parent"),
+  );
+  const neplatiJmeno = neplati?.name ?? "Druhý rodič";
+  // Zaplacení potvrzuje ten, komu se platilo (migrace 0039).
+  const smiVyrovnat =
+    !maDvaRodice(session.members) || !expense?.paid_by || expense.paid_by === session.userId;
   const zivaZadost = posledni?.stav === "ceka" || posledni?.stav === "schvaleno";
   const visibleReceipts = existingReceipts.filter((r) => !removedReceipts.includes(r.id));
 
@@ -345,8 +357,8 @@ export function ExpenseForm({
           </Field>
 
           <Field
-            label="Podíl druhého rodiče"
-            hint={`${form.split_percent} % = ${formatMoney(otherShare, session.family.currency)}`}
+            label={`Kolik z toho nese ${neplatiJmeno}`}
+            hint={`${neplatiJmeno}: ${form.split_percent} % = ${formatMoney(otherShare, session.family.currency)} · ${platilJmeno}: ${100 - Number(form.split_percent)} %`}
           >
             <input
               type="range"
@@ -358,9 +370,9 @@ export function ExpenseForm({
               className="w-full accent-[var(--brand)]"
             />
             <div className="flex justify-between text-xs text-ink-subtle">
-              <span>vše platím já</span>
+              <span>nic</span>
               <span>půl na půl</span>
-              <span>vše platí druhý</span>
+              <span>všechno</span>
             </div>
           </Field>
 
@@ -484,13 +496,18 @@ export function ExpenseForm({
 
           {/* Když běží žádost o proplacení, vypořádá výdaj až potvrzení
               příjmu — ruční zaškrtnutí by databáze odmítla. */}
-          {zivaZadost ? null : (
+          {zivaZadost ? null : smiVyrovnat ? (
             <Checkbox
               label="Vypořádáno"
-              description="Druhý rodič už svůj podíl uhradil."
+              description={`${neplatiJmeno} už svůj podíl uhradil(a).`}
               checked={form.settled}
               onChange={(e) => set("settled", e.target.checked)}
             />
+          ) : (
+            <p className="text-sm text-ink-muted">
+              {form.settled ? "Vyrovnáno. " : ""}Zaplacení potvrzuje {platilJmeno} — ve Výdajích
+              klepnutím na dlaždici dluhu.
+            </p>
           )}
         </div>
       </Sheet>

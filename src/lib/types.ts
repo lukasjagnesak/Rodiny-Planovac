@@ -88,6 +88,8 @@ export interface MemberView {
   profese: Profese | null;
   pristupDo: string | null;
   udelil: string | null;
+  /** Účet z profilu (IBAN) — pro QR platbu při vyrovnání. */
+  ucet?: string | null;
 }
 
 export interface FamilyInvite {

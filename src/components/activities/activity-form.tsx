@@ -53,6 +53,11 @@ export function ActivityForm({
 
   const cenaCislo = Number(form.price) || 0;
   const podilDruheho = (cenaCislo * Number(form.split_percent)) / 100;
+  // `split_percent` nese ten, kdo kroužek neplatí — popisek ho jmenuje.
+  const neplatiJmeno =
+    session.members.find(
+      (m) => m.userId !== form.paid_by && m.side && (m.role === "owner" || m.role === "parent"),
+    )?.name ?? "druhý rodič";
 
   // Při otevření naplníme formulář — buď z upravovaného kroužku, nebo výchozími hodnotami.
   React.useEffect(() => {
@@ -343,7 +348,7 @@ export function ActivityForm({
               </Field>
 
               <Field
-                label="Podíl druhého rodiče"
+                label={form.paid_by ? `Kolik z toho nese ${neplatiJmeno}` : "Podíl druhého rodiče"}
                 hint={`${form.split_percent} % = ${formatMoney(podilDruheho, session.family.currency)}`}
               >
                 <input
@@ -356,16 +361,16 @@ export function ActivityForm({
                   className="w-full accent-[var(--brand)]"
                 />
                 <div className="flex justify-between text-xs text-ink-subtle">
-                  <span>vše platím já</span>
+                  <span>nic</span>
                   <span>půl na půl</span>
-                  <span>vše platí druhý</span>
+                  <span>všechno</span>
                 </div>
               </Field>
 
               {activity ? (
                 <div className="rounded-xl border border-line bg-surface-2 p-3">
                   <p className="text-sm text-ink-muted">
-                    Zaplacené období zapiš do výdajů — jinak se do přehledu ani do
+                    Zaplacené období zapište do výdajů — jinak se do přehledu ani do
                     vyrovnání mezi rodiči nepromítne.
                   </p>
                   <Button

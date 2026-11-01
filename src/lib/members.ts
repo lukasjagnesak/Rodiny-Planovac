@@ -25,6 +25,7 @@ export function toMemberView(m: FamilyMember & { profile: Profile | null }): Mem
     profese: m.profese ?? null,
     pristupDo: m.pristup_do ?? null,
     udelil: m.udelil ?? null,
+    ucet: profile?.ucet ?? null,
   };
 }
 
