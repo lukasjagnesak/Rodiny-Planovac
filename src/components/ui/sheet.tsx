@@ -5,6 +5,25 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/format";
 
 /**
+ * Zámek scrollu stránky pod otevřenými panely — počítadlem, ne
+ * uložením předchozí hodnoty. Panely jdou přes sebe (formulář výdaje
+ * a nad ním „Smazat?") a při smazání se zavřou oba naráz. Dřív si
+ * každý pamatoval, co bylo před ním, a ten horní pak vrátil „hidden"
+ * — stránka zůstala zamčená a nešlo scrollovat.
+ */
+let otevrenychPanelu = 0;
+
+function zamkniScroll() {
+  otevrenychPanelu += 1;
+  document.body.style.overflow = "hidden";
+}
+
+function odemkniScroll() {
+  otevrenychPanelu = Math.max(0, otevrenychPanelu - 1);
+  if (otevrenychPanelu === 0) document.body.style.overflow = "";
+}
+
+/**
  * Modální panel. Na mobilu vyjíždí zespodu (bottom sheet),
  * na větších obrazovkách je to klasický vystředěný dialog.
  */
@@ -25,19 +44,23 @@ export function Sheet({
   footer?: React.ReactNode;
   size?: "md" | "lg";
 }) {
+  // Escape přes ref — `onClose` bývá nová funkce při každém vykreslení
+  // a efekt se zámkem scrollu se kvůli ní nesmí spouštět znovu.
+  const zavrit = React.useRef(onClose);
+  zavrit.current = onClose;
+
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") zavrit.current();
     };
     document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    zamkniScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
+      odemkniScroll();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
