@@ -34,12 +34,13 @@ export function SettingsForms({
   const [saving, setSaving] = React.useState<"profile" | "family" | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [chybaProfilu, setChybaProfilu] = React.useState<string | null>(null);
 
   const isOwner = session.myMembership.role === "owner";
 
   async function saveProfile() {
     setSaving("profile");
-    setError(null);
+    setChybaProfilu(null);
     setMessage(null);
 
     let iban: string | null = null;
@@ -47,21 +48,34 @@ export function SettingsForms({
       const vysledek = normalizujUcet(ucet);
       if ("chyba" in vysledek) {
         setSaving(null);
-        setError(vysledek.chyba);
+        setChybaProfilu(vysledek.chyba);
         return;
       }
       iban = vysledek.iban;
     }
 
     const supabase = createClient();
-    const { error } = await supabase
+    const zaklad = { full_name: name.trim(), phone: phone.trim() || null, color };
+    // Účet posílat jen při změně. Bez sloupce `ucet` (databáze bez
+    // migrace 0037) by jinak neprošlo ani uložení jména nebo telefonu.
+    const zmenaUctu = iban !== (session.profile.ucet ?? null);
+    let { error } = await supabase
       .from("profiles")
-      .update({ full_name: name.trim(), phone: phone.trim() || null, color, ucet: iban })
+      .update(zmenaUctu ? { ...zaklad, ucet: iban } : zaklad)
       .eq("id", session.userId);
 
+    let bezUctu = false;
+    if (error && zmenaUctu && /ucet/i.test(error.message ?? "")) {
+      ({ error } = await supabase.from("profiles").update(zaklad).eq("id", session.userId));
+      bezUctu = !error;
+    }
+
     setSaving(null);
-    if (error) setError(hlaskaChyby(error));
-    else {
+    if (error) setChybaProfilu(hlaskaChyby(error));
+    else if (bezUctu) {
+      setChybaProfilu("Jméno a telefon jsou uložené, číslo účtu se uložit nepodařilo. Zkuste to prosím později.");
+      router.refresh();
+    } else {
       setMessage("Profil uložen.");
       router.refresh();
     }
@@ -134,9 +148,17 @@ export function SettingsForms({
             <ColorPicker value={color} palette={COLOR_PALETTE} onChange={setColor} />
           </Field>
 
-          <Button onClick={saveProfile} disabled={saving === "profile"}>
-            {saving === "profile" ? <Spinner /> : "Uložit profil"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button onClick={saveProfile} disabled={saving === "profile"}>
+              {saving === "profile" ? <Spinner /> : "Uložit profil"}
+            </Button>
+            {/* Hláška i u tlačítka — ta nahoře stránky bývá mimo obrazovku
+                a uložení pak vypadá, že se nic nestalo. */}
+            {message && saving === null ? (
+              <span className="text-sm text-success">{message}</span>
+            ) : null}
+          </div>
+          {chybaProfilu ? <Alert tone="danger">{chybaProfilu}</Alert> : null}
         </CardBody>
       </Card>
 
