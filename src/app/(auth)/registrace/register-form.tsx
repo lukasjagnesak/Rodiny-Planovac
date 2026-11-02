@@ -10,7 +10,7 @@ import { Field, Input } from "@/components/ui/field";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { SocialniPrihlaseni } from "@/components/ui/socialni-prihlaseni";
 import { CENIK, ZAKLADAJICI, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
-import { useZakladajiciVolno } from "@/components/web/zakladajici";
+import { useZakladajiciVolno, ZakladajiciNabidka } from "@/components/web/zakladajici";
 import { ZNACKA } from "@/lib/brand";
 import { prettyError } from "../prihlaseni/login-form";
 import { zmer } from "@/lib/mereni";
@@ -31,17 +31,17 @@ import { bezpecnyCil } from "@/lib/navrat";
 function jistoty(rok: boolean) {
   return [
     { co: "Žádná platební karta", proc: "Nic nezadáváte, nic se nestrhne." },
-    rok
-      ? {
-          co: "Rok zdarma, všechny funkce",
-          proc: `Prvních ${ZAKLADAJICI.mist} rodin, které Klidoo založí, má celý rok bez placení.`,
-        }
-      : {
-          co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
-          proc: "Žádná ořezaná verze na zkoušku.",
-        },
+    // Rok zdarma říká velký blok nad formulářem — tady by se opakoval.
+    ...(rok
+      ? []
+      : [
+          {
+            co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
+            proc: "Žádná ořezaná verze na zkoušku.",
+          },
+        ]),
     {
-      co: "Po zkušební době se rozhodnete sami",
+      co: rok ? "Po roce se rozhodnete sami" : "Po zkušební době se rozhodnete sami",
       proc: "Bez placení se nic nesmaže — jen se zamkne zapisování.",
     },
     {
@@ -141,6 +141,12 @@ export function RegisterForm() {
     window.location.assign(redirectTarget);
   }
 
+  // Rok zdarma jen dokud jsou místa. Než se počet načte, platí rok —
+  // tak to stojí i na stránce, ze které člověk přišel. Hook musí běžet
+  // před každým `return` níž, jinak React při potvrzení e-mailu spadne.
+  const volno = useZakladajiciVolno();
+  const rok = ZAKLADAJICI.aktivni && volno !== 0;
+
   if (needsConfirm) {
     return (
       <div className="card p-6 text-center">
@@ -156,10 +162,6 @@ export function RegisterForm() {
     );
   }
   const kontext = coCeka(dal, Boolean(inviteToken));
-  // Rok zdarma jen dokud jsou místa. Než se počet načte, platí rok —
-  // tak to stojí i na stránce, ze které člověk přišel.
-  const volno = useZakladajiciVolno();
-  const rok = ZAKLADAJICI.aktivni && volno !== 0;
 
   return (
     <form onSubmit={onSubmit} onFocusCapture={hlasZacatek} className="card space-y-5 p-5 sm:p-6">
@@ -176,8 +178,9 @@ export function RegisterForm() {
         </div>
       ) : (
         <div>
+          {rok ? <ZakladajiciNabidka className="mb-5" /> : null}
           <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            Vyzkoušejte {ZNACKA} zdarma
+            {rok ? `Založte si ${ZNACKA}` : `Vyzkoušejte ${ZNACKA} zdarma`}
           </h1>
           <ul className="mt-3 space-y-2.5">
             {jistoty(rok).map(({ co, proc }) => (

@@ -120,3 +120,72 @@ export function ZdarmaVeta({
     </>
   );
 }
+
+/**
+ * Velký blok nabídky — nahoře na registraci a na ceníku.
+ *
+ * Lidé z Instagramu a reklam jdou rovnou na registraci. Kdo tam uvidí
+ * nejdřív formulář a cenu, odejde dřív, než dočte, že platit nebude.
+ * Proto je „rok zdarma" první a největší věc na stránce a hned pod ním
+ * skutečný počet volných míst z databáze.
+ */
+export function ZakladajiciNabidka({ className }: { className?: string }) {
+  const volno = useZakladajiciVolno();
+  if (!ZAKLADAJICI.aktivni || volno === 0) return null;
+  const obsazeno = typeof volno === "number" ? ZAKLADAJICI.mist - volno : null;
+
+  return (
+    <div
+      className={cn("rounded-2xl bg-brand px-5 py-5 text-center text-brand-ink sm:px-6", className)}
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] opacity-90">
+        Zakládající rodiny
+      </p>
+      <p className="mt-1 font-display text-[2.5rem] font-bold leading-none tracking-tight sm:text-5xl">
+        Rok zdarma
+      </p>
+      <p className="mt-2 text-base font-medium">
+        pro prvních {ZAKLADAJICI.mist} rodin · bez karty · všechny funkce
+      </p>
+
+      {obsazeno !== null && typeof volno === "number" ? (
+        <div className="mx-auto mt-4 max-w-xs">
+          <div
+            className="h-2 overflow-hidden rounded-full bg-white/25"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={ZAKLADAJICI.mist}
+            aria-valuenow={obsazeno}
+            aria-label="Obsazená místa zakládajících rodin"
+          >
+            <div
+              className="h-full rounded-full bg-white"
+              style={{ width: `${Math.max(4, (obsazeno / ZAKLADAJICI.mist) * 100)}%` }}
+            />
+          </div>
+          <p className="mt-1.5 text-sm font-semibold">
+            Zbývá {mist(volno)} z {ZAKLADAJICI.mist}
+          </p>
+        </div>
+      ) : null}
+
+      <p className="mt-3 text-sm opacity-90">
+        Teď neplatíte nic. Po roce se rozhodnete sami, nic se samo nestrhne.
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Věta k ceně v ceníku: kdo přišel z reklamy na „rok zdarma", nesmí
+ * u 129 Kč znejistět, jestli se to týká jeho.
+ */
+export function ZakladajiciUCeny() {
+  const volno = useZakladajiciVolno();
+  if (!ZAKLADAJICI.aktivni || volno === 0) return null;
+  return (
+    <p className="mt-2 inline-flex rounded-pill bg-brand-soft px-2.5 py-1 text-sm font-semibold text-brand">
+      Zakládající rodiny: první rok za 0&nbsp;Kč
+    </p>
+  );
+}

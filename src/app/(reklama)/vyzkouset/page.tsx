@@ -4,7 +4,7 @@ import { Nadtitulek, Sloupec } from "@/components/web/prvky";
 import { VstupniRozvrh } from "@/components/web/vstupni-rozvrh";
 import { ZNACKA } from "@/lib/brand";
 import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
-import { ZakladajiciPruh, ZdarmaVeta } from "@/components/web/zakladajici";
+import { ZakladajiciNabidka, ZdarmaVeta } from "@/components/web/zakladajici";
 
 const TITULEK = "Rozvrh střídavé péče na měsíc dopředu";
 const POPISEK =
@@ -79,7 +79,7 @@ export default function VyzkousetStranka() {
         <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
           Klepněte, jak se střídáte, a uvidíte celý měsíc dopředu.
         </p>
-        <ZakladajiciPruh kompaktni className="mt-3" />
+        <ZakladajiciNabidka className="mt-4" />
       </div>
 
       <VstupniRozvrh>

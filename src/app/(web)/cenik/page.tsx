@@ -11,7 +11,7 @@ import {
   ZKUSEBNI_SLIB,
   korun,
 } from "@/lib/tarify";
-import { ZakladajiciPruh } from "@/components/web/zakladajici";
+import { ZakladajiciNabidka, ZakladajiciUCeny } from "@/components/web/zakladajici";
 import { SrovnaniTarifu } from "@/components/predplatne/srovnani";
 import { ZNACKA } from "@/lib/brand";
 
@@ -79,7 +79,7 @@ export default function Cenik() {
             potom případně předplatíte. Bez zadání karty, takže se nemá co samo strhnout.
           </p>
 
-          <ZakladajiciPruh kompaktni className="mt-5" />
+          <ZakladajiciNabidka className="mt-6 max-w-xl" />
 
           <ul className="mt-7 grid gap-2.5 sm:grid-cols-2">
             {ZKUSEBNI_SLIB.body.map((bod) => (
@@ -134,6 +134,7 @@ export default function Cenik() {
                       vychází na {korun(tarif.mesicne)} měsíčně
                     </p>
                   ) : null}
+                  <ZakladajiciUCeny />
                   <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-muted">{tarif.popis}</p>
 
                   <Link
