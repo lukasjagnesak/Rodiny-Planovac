@@ -65,3 +65,8 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000001b2'
 update family_members set role = 'owner' where user_id = auth.uid();
 update family_members set display_name = 'Máma' where user_id = auth.uid() returning display_name, role;
 reset role;
+
+-- Z family_members smí na profiles vést jen jeden cizí klíč, jinak
+-- dotazy `profile:profiles(*)` v aplikaci selžou (oprava 0040).
+select count(*) as klicu_na_profiles from pg_constraint
+where conrelid = 'family_members'::regclass and confrelid = 'profiles'::regclass and contype = 'f';

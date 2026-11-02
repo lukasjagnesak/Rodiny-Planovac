@@ -10,6 +10,7 @@ import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field"
 import { Alert, ColorPicker, Spinner } from "@/components/ui/misc";
 import { COLOR_PALETTE, PRICE_PERIODS } from "@/lib/constants";
 import { DOW_LONG, DOW_ORDER, toDateKey } from "@/lib/dates";
+import { moznostiPlatce } from "@/lib/members";
 import { formatMoney, hlaskaChyby } from "@/lib/format";
 import type { Activity, SessionContext } from "@/lib/types";
 
@@ -339,7 +340,10 @@ export function ActivityForm({
               <Field label="Kdo kroužek platí">
                 <Select value={form.paid_by} onChange={(e) => set("paid_by", e.target.value)}>
                   <option value="">Zatím nikdo</option>
-                  {session.members.map((m) => (
+                  {moznostiPlatce(session.members, {
+                    userId: session.userId,
+                    name: session.profile.full_name || "Já",
+                  }).map((m) => (
                     <option key={m.userId} value={m.userId}>
                       {m.name}
                     </option>

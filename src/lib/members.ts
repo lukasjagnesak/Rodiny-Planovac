@@ -84,3 +84,17 @@ export function sideText(members: MemberView[], side: CustodySide | null): strin
   }
   return barva;
 }
+
+/**
+ * Kdo může výdaj zaplatit: členové rodiny bez profesionálů a vždycky
+ * i přihlášený člověk sám. Výběr nesmí zůstat prázdný — formulář by
+ * pak neměl komu výdaj připsat a vybrat by nešlo nic.
+ */
+export function moznostiPlatce(
+  members: MemberView[],
+  ja: { userId: string; name: string },
+): { userId: string; name: string }[] {
+  const lide = members.filter((m) => !m.profese).map((m) => ({ userId: m.userId, name: m.name }));
+  if (!lide.some((m) => m.userId === ja.userId)) lide.unshift(ja);
+  return lide;
+}

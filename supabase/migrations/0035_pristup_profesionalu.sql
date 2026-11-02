@@ -25,7 +25,9 @@
 
 alter table family_members add column if not exists profese text;
 alter table family_members add column if not exists pristup_do date;
-alter table family_members add column if not exists udelil uuid references profiles (id) on delete set null;
+-- Bez cizího klíče schválně: druhý klíč z family_members na profiles
+-- by rozbil dotazy `profile:profiles(*)` (PostgREST neví, který vzít).
+alter table family_members add column if not exists udelil uuid;
 alter table family_invites add column if not exists profese text;
 alter table family_invites add column if not exists pristup_do date;
 

@@ -429,7 +429,11 @@ export function ExpensesScreen({
                           <span className="mt-0.5 flex items-center gap-2 text-xs text-ink-muted">
                             <span>{meta.label}</span>
                             <span>·</span>
-                            <span>platil {memberName(session.members, e.paid_by)}</span>
+                            <span>
+                              {e.paid_by
+                                ? `platil(a) ${memberName(session.members, e.paid_by)}`
+                                : "ze společného"}
+                            </span>
                             {(e.receipts?.length ?? 0) > 0 ? (
                               <>
                                 <span>·</span>

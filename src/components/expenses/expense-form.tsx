@@ -12,6 +12,7 @@ import { ReceiptImage } from "./receipt-image";
 import { ProplaceniVydaje } from "./proplaceni";
 import { posledniZadost } from "@/lib/proplaceni";
 import { maDvaRodice } from "@/lib/zadosti";
+import { moznostiPlatce } from "@/lib/members";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_ORDER } from "@/lib/constants";
 import { toDateKey } from "@/lib/dates";
 import { FREKVENCE_POPIS, type Frekvence } from "@/lib/opakovani";
@@ -55,7 +56,8 @@ export function ExpenseForm({
         title: expense.title,
         amount: String(expense.amount),
         spent_on: expense.spent_on,
-        paid_by: expense.paid_by ?? session.userId,
+        // NULL = zaplaceno ze společného; nepřepisovat na přihlášeného.
+        paid_by: expense.paid_by ?? "",
         split_percent: String(expense.split_percent),
         settled: expense.settled,
         note: expense.note ?? "",
@@ -233,6 +235,10 @@ export function ExpenseForm({
 
   const amountNumber = Number(form.amount.replace(",", ".")) || 0;
   const otherShare = (amountNumber * Number(form.split_percent)) / 100;
+  const platci = moznostiPlatce(session.members, {
+    userId: session.userId,
+    name: session.profile.full_name || session.profile.email || "Já",
+  });
   const posledni = expense ? posledniZadost(expense.zadosti_proplaceni) : null;
   // Kdo výdaj zaplatil a kdo nese `split_percent`. Popisky se řídí
   // plátcem, ne tím, kdo formulář zrovna vyplňuje.
@@ -241,7 +247,8 @@ export function ExpenseForm({
   const neplati = session.members.find(
     (m) => m.userId !== form.paid_by && m.side && (m.role === "owner" || m.role === "parent"),
   );
-  const neplatiJmeno = neplati?.name ?? "Druhý rodič";
+  const neplatiJmeno = neplati?.name ?? "druhý rodič";
+  const velkym = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
   // Zaplacení potvrzuje ten, komu se platilo (migrace 0039).
   const smiVyrovnat =
     !maDvaRodice(session.members) || !expense?.paid_by || expense.paid_by === session.userId;
@@ -258,7 +265,11 @@ export function ExpenseForm({
         footer={
           <>
             {expense ? (
-              <Button variant="ghost" className="text-danger" onClick={() => setConfirmDelete(true)}>
+              <Button
+                variant="ghost"
+                className="text-danger"
+                onClick={() => setConfirmDelete(true)}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             ) : null}
@@ -346,35 +357,42 @@ export function ExpenseForm({
             </Select>
           </Field>
 
-          <Field label="Kdo zaplatil">
+          <Field
+            label="Kdo zaplatil"
+            hint={form.paid_by ? undefined : "ze společných peněz — nikdo nikomu nic nedluží"}
+          >
             <Select value={form.paid_by} onChange={(e) => set("paid_by", e.target.value)}>
-              {session.members.map((m) => (
+              {platci.map((m) => (
                 <option key={m.userId} value={m.userId}>
-                  {m.name}
+                  {m.userId === session.userId ? `${m.name} (já)` : m.name}
                 </option>
               ))}
+              <option value="">Rodina (společné peníze)</option>
             </Select>
           </Field>
 
-          <Field
-            label={`Kolik z toho nese ${neplatiJmeno}`}
-            hint={`${neplatiJmeno}: ${form.split_percent} % = ${formatMoney(otherShare, session.family.currency)} · ${platilJmeno}: ${100 - Number(form.split_percent)} %`}
-          >
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={5}
-              value={form.split_percent}
-              onChange={(e) => set("split_percent", e.target.value)}
-              className="w-full accent-[var(--brand)]"
-            />
-            <div className="flex justify-between text-xs text-ink-subtle">
-              <span>nic</span>
-              <span>půl na půl</span>
-              <span>všechno</span>
-            </div>
-          </Field>
+          {/* Ze společných peněz se nic nedělí — posuvník by jen mátl. */}
+          {form.paid_by ? (
+            <Field
+              label={`Kolik z toho nese ${neplatiJmeno}`}
+              hint={`${velkym(neplatiJmeno)}: ${form.split_percent} % = ${formatMoney(otherShare, session.family.currency)} · ${platilJmeno}: ${100 - Number(form.split_percent)} %`}
+            >
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={form.split_percent}
+                onChange={(e) => set("split_percent", e.target.value)}
+                className="w-full accent-[var(--brand)]"
+              />
+              <div className="flex justify-between text-xs text-ink-subtle">
+                <span>nic</span>
+                <span>půl na půl</span>
+                <span>všechno</span>
+              </div>
+            </Field>
+          ) : null}
 
           {/* ── Opakování ────────────────────────────────────────── */}
           {expense ? null : (
@@ -499,7 +517,7 @@ export function ExpenseForm({
           {zivaZadost ? null : smiVyrovnat ? (
             <Checkbox
               label="Vypořádáno"
-              description={`${neplatiJmeno} už svůj podíl uhradil(a).`}
+              description={`${velkym(neplatiJmeno)} už svůj podíl uhradil(a).`}
               checked={form.settled}
               onChange={(e) => set("settled", e.target.checked)}
             />
