@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, QrCode } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { rozpisDluhu, maZivouZadost, smimVyrovnat, type PolozkaDluhu } from "@/l
 import { maDvaRodice } from "@/lib/zadosti";
 import { StitekProplaceni } from "./proplaceni";
 import { QrPlatba } from "./qr-platba";
+import { QrKZaslani } from "./qr-k-zaslani";
 import type { Expense, SessionContext } from "@/lib/types";
 
 /**
@@ -45,6 +46,7 @@ export function VyrovnaniSheet({
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [potvrzujiVse, setPotvrzujiVse] = React.useState(false);
+  const [posilam, setPosilam] = React.useState(false);
 
   const kVyrovnani = r.mneDluzi.filter((p) => smimVyrovnat(p.expense, ja, dvaRodice));
   const kVyrovnaniCelkem = kVyrovnani.reduce((s, p) => s + p.podil, 0);
@@ -110,6 +112,14 @@ export function VyrovnaniSheet({
             ) : null}
           </div>
 
+          {/* Pro druhého rodiče, který Klidoo nemá (nebo ho neotevře):
+              obrázek s QR a rozpisem, který se pošle přes WhatsApp, SMS… */}
+          {muzeUpravovat && r.saldo > 0 ? (
+            <Button variant="secondary" className="w-full" onClick={() => setPosilam(true)}>
+              <QrCode className="h-4 w-4" /> Poslat QR k zaplacení
+            </Button>
+          ) : null}
+
           {qr ? (
             <QrPlatba
               iban={druhy!.ucet!}
@@ -169,6 +179,16 @@ export function VyrovnaniSheet({
           ) : null}
         </div>
       </Sheet>
+
+      {posilam ? (
+        <QrKZaslani
+          session={session}
+          polozky={r.mneDluzi}
+          castka={r.saldo}
+          odecteno={r.dluzimCelkem}
+          onClose={() => setPosilam(false)}
+        />
+      ) : null}
 
       <ConfirmSheet
         open={potvrzujiVse}

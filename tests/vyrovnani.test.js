@@ -3,7 +3,7 @@
  *
  * Spouští se přes `npm run test:vyrovnani`.
  */
-const { rozpisDluhu, smimVyrovnat, maZivouZadost } = require("../.test-build/lib/vyrovnani.js");
+const { rozpisDluhu, smimVyrovnat, maZivouZadost, textRozpisu } = require("../.test-build/lib/vyrovnani.js");
 
 let selhalo = 0;
 function ok(popis, podminka) {
@@ -39,6 +39,16 @@ const sZadosti = v("g", "ja", 600, 50, "2026-10-30", {
   zadosti_proplaceni: [{ stav: "ceka", created_at: "2026-10-30T10:00:00Z" }],
 });
 ok("s rozběhnutou žádostí ne", maZivouZadost(sZadosti) && !smimVyrovnat(sZadosti, "ja", true));
+
+const t = textRozpisu({
+  polozky: r.mneDluzi.map((p) => ({ ...p, expense: { ...p.expense, title: p.expense.id === "a" ? "Boty" : "Obědy" } })),
+  castka: 990,
+  mena: "CZK",
+  ucet: "19-2000145399/0800",
+});
+ok("rozpis: částka v nadpisu", t.split("\n")[0].includes("990") && t.includes("Kč"));
+ok("rozpis: položka s datem a podílem", /• Boty \(27\. 9\.\): 400\sKč z 1\s000\sKč/.test(t));
+ok("rozpis: účet", t.includes("19-2000145399/0800"));
 
 if (selhalo) {
   console.error(`\n${selhalo} selhalo`);

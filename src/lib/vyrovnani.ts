@@ -59,3 +59,44 @@ export function smimVyrovnat(e: Expense, ja: string, dvaRodice: boolean): boolea
   if (e.settled || maZivouZadost(e)) return false;
   return !dvaRodice || !e.paid_by || e.paid_by === ja;
 }
+
+function penize(castka: number, mena: string): string {
+  return new Intl.NumberFormat("cs-CZ", {
+    style: "currency",
+    currency: mena,
+    maximumFractionDigits: castka % 1 === 0 ? 0 : 2,
+  }).format(castka);
+}
+
+function den(klic: string): string {
+  const [, m, d] = klic.split("-").map(Number);
+  return `${d}. ${m}.`;
+}
+
+/**
+ * Rozpis k zaslání druhému rodiči, který Klidoo nemá: za co a kolik.
+ * Jde jako text ke QR kódu (WhatsApp, SMS, e-mail).
+ */
+export function textRozpisu(vstup: {
+  polozky: PolozkaDluhu[];
+  castka: number;
+  mena: string;
+  ucet: string;
+  /** Co dlužím já a už je odečtené od částky. */
+  odecteno?: number;
+}): string {
+  const radky = vstup.polozky.map(
+    (p) =>
+      `• ${p.expense.title} (${den(p.expense.spent_on)}): ${penize(p.podil, vstup.mena)} z ${penize(Number(p.expense.amount), vstup.mena)}`,
+  );
+  return [
+    `Vyrovnání výdajů za děti: ${penize(vstup.castka, vstup.mena)}`,
+    "",
+    ...radky,
+    ...(vstup.odecteno
+      ? [`• odečteno, co dlužím já: −${penize(vstup.odecteno, vstup.mena)}`]
+      : []),
+    "",
+    `Na účet ${vstup.ucet}. QR kód je v obrázku, stačí ho naskenovat v aplikaci banky.`,
+  ].join("\n");
+}
