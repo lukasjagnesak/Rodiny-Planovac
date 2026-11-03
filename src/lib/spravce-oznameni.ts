@@ -43,9 +43,10 @@ export interface OznameniSpravci {
 /**
  * Pošle oznámení všem správcům.
  *
- * `tag` je odvozený od cesty, takže se pět oznámení stejného druhu na
- * zamčené obrazovce nakupí, místo aby se přepsala na jedno. U platby
- * i u nového kontaktu je počet ta informace, ne poslední kus.
+ * Každé oznámení má vlastní `tag`, takže se na zamčené obrazovce
+ * nakupí. Se stejným tagem (dřív odvozeným od cesty) by nové nahradilo
+ * předchozí — tři nové rodiny by vypadaly jako jedna. U platby, kontaktu
+ * i nové rodiny je počet ta informace, ne poslední kus.
  */
 export async function ohlasSpravci(oznameni: OznameniSpravci): Promise<void> {
   const komu = spravci();
@@ -88,7 +89,7 @@ async function posliPushSpravcum(komu: string[], oznameni: OznameniSpravci): Pro
         titulek: oznameni.titulek,
         telo: oznameni.telo,
         odkaz: oznameni.odkaz,
-        tag: `spravce-${oznameni.odkaz}`,
+        tag: `spravce-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       },
     );
 
@@ -152,4 +153,78 @@ export async function ohlasNovyKontakt(vstup: {
     telo: `${vstup.magnet}: ${vstup.email}${kdo ? ` — ${kdo}` : ""}`,
     odkaz: "/provoz",
   });
+}
+
+/**
+ * Nové rodiny a připojení druhého rodiče od posledního ohlášení.
+ *
+ * Volá se hned po založení rodiny (z průvodce) i z hodinového cronu.
+ * Každý řádek se „zabere" jedním UPDATE … WHERE ohlaseno_spravci IS
+ * NULL, takže upozornění odejde jednou, i když obě cesty přijdou naráz.
+ * Bere jen posledních sedm dní — po delší odstávce správce nechce
+ * desítky starých upozornění najednou.
+ */
+export async function ohlasNoveRodiny(): Promise<{ rodiny: number; pripojeni: number }> {
+  if (spravci().length === 0) return { rodiny: 0, pripojeni: 0 };
+  const admin = createAdminClient();
+  const od = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const ted = new Date().toISOString();
+
+  const { data: rodiny } = await admin
+    .from("families")
+    .update({ ohlaseno_spravci: ted })
+    .is("ohlaseno_spravci", null)
+    .gte("created_at", od)
+    .select("id, name, created_by");
+
+  let volno: number | null = null;
+  if ((rodiny ?? []).length > 0) {
+    const { data } = await admin.rpc("zakladajici_volno");
+    volno = typeof data === "number" ? data : null;
+  }
+
+  for (const r of rodiny ?? []) {
+    const [{ data: profil }, { data: predplatne }] = await Promise.all([
+      admin.from("profiles").select("email, full_name").eq("id", r.created_by).maybeSingle(),
+      admin.from("predplatna").select("zakladajici").eq("family_id", r.id).maybeSingle(),
+    ]);
+    const kdo = [profil?.full_name, profil?.email].filter(Boolean).join(", ") || "neznámý účet";
+    const nabidka = predplatne?.zakladajici
+      ? ` Zakládající rodina${volno !== null ? `, zbývá ${volno} míst` : ""}.`
+      : "";
+    await ohlasSpravci({
+      titulek: "Nová rodina",
+      telo: `${r.name}: ${kdo}.${nabidka}`,
+      odkaz: "/provoz",
+    });
+  }
+
+  // Druhý rodič (nebo pečující) přijal pozvánku — nejsilnější znamení,
+  // že rodina Klidoo opravdu používá. Zakladatel se nepočítá.
+  const { data: clenove } = await admin
+    .from("family_members")
+    .update({ ohlaseno_spravci: ted })
+    .is("ohlaseno_spravci", null)
+    .gte("created_at", od)
+    .select("family_id, user_id, role, family:families(name, created_by)");
+
+  let pripojeni = 0;
+  for (const c of clenove ?? []) {
+    const rodina = c.family as unknown as { name: string; created_by: string | null } | null;
+    if (!rodina || rodina.created_by === c.user_id) continue;
+    const { data: profil } = await admin
+      .from("profiles")
+      .select("email, full_name")
+      .eq("id", c.user_id)
+      .maybeSingle();
+    const kdo = [profil?.full_name, profil?.email].filter(Boolean).join(", ") || "neznámý účet";
+    await ohlasSpravci({
+      titulek: c.role === "viewer" ? "Nový člen jen ke čtení" : "Připojil se druhý rodič",
+      telo: `${rodina.name}: ${kdo}.`,
+      odkaz: "/provoz",
+    });
+    pripojeni++;
+  }
+
+  return { rodiny: (rodiny ?? []).length, pripojeni };
 }

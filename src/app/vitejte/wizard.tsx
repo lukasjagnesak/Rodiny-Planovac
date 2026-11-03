@@ -134,6 +134,10 @@ export function OnboardingWizard({
       });
       if (familyError) throw familyError;
 
+      // Správci do telefonu, že vznikla rodina. `keepalive`, ať to
+      // dojde, i když průvodce za chvíli přesměruje. Nečeká se na to.
+      void fetch("/api/rodina/ohlasit", { method: "POST", keepalive: true }).catch(() => {});
+
       if (validChildren.length > 0) {
         const { error: childError } = await supabase.from("children").insert(
           validChildren.map((c) => ({

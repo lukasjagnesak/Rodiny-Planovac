@@ -34,6 +34,7 @@ export function AcceptInviteButton({
 
     // Advokát nebo OSPOD není druhý rodič — do měření nepatří.
     if (!profesional) zmer("druhy_rodic");
+    void fetch("/api/rodina/ohlasit", { method: "POST", keepalive: true }).catch(() => {});
 
     document.cookie = `${ACTIVE_FAMILY_COOKIE}=${data}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     router.push("/prehled");

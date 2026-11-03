@@ -6,6 +6,7 @@ import { posliPripominkyPredplatneho } from "@/lib/predplatne-pripominky";
 import { posliSekvence } from "@/lib/sekvence-odesilani";
 import { vygenerujOpakovaneVydaje } from "@/lib/vydaje-opakovane";
 import { ohlas } from "@/lib/poplach";
+import { ohlasNoveRodiny } from "@/lib/spravce-oznameni";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -29,6 +30,13 @@ export async function GET(request: NextRequest) {
 
   const started = Date.now();
   const report: Record<string, unknown> = {};
+
+  // Pojistka k upozornění správci z průvodce: co ještě ohlášené není.
+  try {
+    report.ohlaseni = await ohlasNoveRodiny();
+  } catch (e) {
+    report.ohlaseniError = e instanceof Error ? e.message : String(e);
+  }
 
   try {
     report.planned = await planNotifications();
