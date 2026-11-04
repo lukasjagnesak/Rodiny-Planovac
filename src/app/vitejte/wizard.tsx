@@ -160,6 +160,9 @@ export function OnboardingWizard({
         fixed_side: kind === "fixed_parent" ? anchorSide : null,
       });
       if (patternError) throw patternError;
+      // first_calendar_created — jen do vlastního měření; /vitejte je
+      // aplikace a reklamní systémy odsud nic nedostávají.
+      zmer("kalendar-zalozen");
 
       // Výživné z veřejné kalkulačky. Zakládá se jako opakovaný výdaj,
       // protože právě tím se z čísla na obrazovce stane něco, co každý

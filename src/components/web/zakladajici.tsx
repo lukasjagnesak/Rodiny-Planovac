@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Users } from "lucide-react";
 import { cn } from "@/lib/format";
 import { ZAKLADAJICI, ZKUSEBNI_DNI } from "@/lib/tarify";
 
@@ -187,5 +187,44 @@ export function ZakladajiciUCeny() {
     <p className="mt-2 inline-flex rounded-pill bg-brand-soft px-2.5 py-1 text-sm font-semibold text-brand">
       Zakládající rodiny: první rok za 0&nbsp;Kč
     </p>
+  );
+}
+
+/**
+ * Nabídka na registraci: krátká karta podle návrhu „CRO" — nadpis,
+ * jedna věta s cenou a skutečný počet volných míst z databáze. Žádný
+ * odpočet ani časovač: počet míst je jediná naléhavost a je pravdivá.
+ *
+ * Když místa dojdou (nebo se nabídka vypne), karta sama ukáže běžné
+ * zkušební období — reklamy vedoucí sem dál dávají smysl.
+ */
+export function ZakladajiciPromo({ className }: { className?: string }) {
+  const volno = useZakladajiciVolno();
+  const rok = ZAKLADAJICI.aktivni && volno !== 0;
+
+  return (
+    <div className={cn("rounded-2xl border border-brand/25 bg-brand-soft px-4 py-3", className)}>
+      <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-brand">
+        {rok ? "Nabídka pro zakládající rodiny" : "Vyzkoušení zdarma"}
+      </p>
+      <p className="mt-0.5 font-display text-2xl font-semibold leading-tight tracking-tight text-ink">
+        {rok ? "První rok zdarma" : `${ZKUSEBNI_DNI} dní zdarma`}
+      </p>
+      <p className="mt-1 text-sm text-ink-muted">
+        {rok ? "0 Kč na 12 měsíců" : "Všechny funkce"} · bez platební karty
+      </p>
+      {/* Řádek drží místo, i když se počet ještě načítá — stránka pak
+          neposkočí (CLS). */}
+      {rok ? (
+        <p className="mt-1 flex min-h-5 items-center gap-1.5 text-sm font-medium text-ink">
+          {typeof volno === "number" ? (
+            <>
+              <Users className="h-4 w-4 text-brand" aria-hidden />
+              Zbývá {volno} z {ZAKLADAJICI.mist} míst
+            </>
+          ) : null}
+        </p>
+      ) : null}
+    </div>
   );
 }

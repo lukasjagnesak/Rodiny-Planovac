@@ -1,7 +1,7 @@
 /**
  * Měřicí skripty Googlu a Mety smí běžet jen na veřejném webu.
  *
- * Každá stránka ve skupinách (web), (reklama) a (auth) má být na seznamu
+ * Každá stránka ve skupinách (web), (reklama), (auth) a (registrace) má být na seznamu
  * `CESTY_S_MERENIM` — jinak by z ní reklama neviděla konverze. A žádná
  * jiná na něm být nesmí: aplikace, průvodce, pozvánka i partnerský
  * přehled pracují s daty rodiny.
@@ -34,7 +34,7 @@ function stranky(slozka, cesta = "", skupina = null, nalezene = []) {
   return nalezene;
 }
 
-const VEREJNE = new Set(["(web)", "(reklama)", "(auth)"]);
+const VEREJNE = new Set(["(web)", "(reklama)", "(auth)", "(registrace)"]);
 const vsechny = stranky(path.join(__dirname, "..", "src/app"));
 ok(`stránky se našly (${vsechny.length})`, vsechny.length > 30);
 

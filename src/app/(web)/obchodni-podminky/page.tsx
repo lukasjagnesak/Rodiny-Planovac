@@ -76,7 +76,8 @@ export default function ObchodniPodminky() {
             období v délce {ZKUSEBNI_DNI} dní. Zkušební období je bezplatné a nevyžaduje
             platební kartu.
           </p>
-          <p>
+          {/* Kotva pro „Podmínky nabídky" z registrace. */}
+          <p id="zakladajici" className="scroll-mt-24">
             <strong>Zakládající rodiny.</strong> Prvních {ZAKLADAJICI.mist} rodin založených
             ve službě má zkušební období v délce jednoho roku od založení rodiny. Pořadí určuje
             okamžik založení rodiny v naší databázi; zda rodina mezi zakládající patří, uvidíte
