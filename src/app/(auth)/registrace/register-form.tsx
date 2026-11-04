@@ -268,6 +268,18 @@ export function RegisterForm() {
         </p>
       )}
 
+      {/* Kdo přišel z reklamy rovnou sem a ještě se nerozhodl: místo
+          zavření stránky ať má kam jít dál. */}
+      {inviteToken ? null : (
+        <Link
+          href="/"
+          className="block rounded-xl bg-surface-2 px-4 py-3 text-center text-sm text-ink-muted transition-colors hover:text-ink"
+        >
+          Chcete vědět víc o {ZNACKA}?{" "}
+          <span className="font-medium text-brand">Podívejte se, co umí →</span>
+        </Link>
+      )}
+
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
         Už máte účet?{" "}
         <Link
