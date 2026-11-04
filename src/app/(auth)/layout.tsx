@@ -35,7 +35,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Logo size={44} />
           </Link>
           <p className="max-w-xs text-sm text-ink-muted">
-            Kalendář střídavé péče, kroužky, výdaje a školní termíny — přehledně
+            Kalendář střídavé péče, kroužky, výdaje, školní akce a rozvrhy — přehledně
             pro obě domácnosti.
           </p>
         </div>

@@ -60,7 +60,7 @@ export default function ObchodniPodminky() {
           <h2>2. Co je předmětem smlouvy</h2>
           <p>
             {ZNACKA} je webová aplikace pro rodiny, jejichž děti žijí ve dvou domácnostech:
-            kalendář střídavé péče, evidence výdajů, kroužků a školních termínů a komunikace
+            kalendář střídavé péče, evidence výdajů, kroužků, školních akcí a rozvrhů a komunikace
             mezi rodiči. Poskytuje se jako služba dostupná přes internetový prohlížeč, nikoli
             jako software k instalaci.
           </p>

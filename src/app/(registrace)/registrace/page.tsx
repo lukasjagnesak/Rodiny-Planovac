@@ -8,7 +8,7 @@ import { ZakladajiciPromo } from "@/components/web/zakladajici";
 export const metadata: Metadata = {
   title: "Registrace",
   description:
-    "Předávky, kroužky, školní termíny a výdaje na děti přehledně na jednom místě. Bez platební karty.",
+    "Předávky, kroužky, školní akce, rozvrhy a výdaje na děti přehledně na jednom místě. Bez platební karty.",
 };
 
 const VYHODY = [
@@ -46,7 +46,7 @@ export default async function RegisterPage({
             Střídavá péče bez zbytečného chaosu.
           </h1>
           <p className="mt-2 max-w-xl text-[0.9375rem] leading-snug text-ink-muted sm:text-lg sm:leading-relaxed">
-            Předávky, kroužky, školní termíny a výdaje na děti přehledně na jednom místě. I když
+            Předávky, kroužky, školní akce, rozvrhy a výdaje na děti přehledně na jednom místě. I když
             Klidoo zatím používáte sami.
           </p>
           <ul className="mt-3 space-y-1">

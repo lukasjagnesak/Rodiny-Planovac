@@ -448,6 +448,56 @@
       background-position: -200% 0;
     }
   }
+  /* Záře na konci pruhu zakládajících rodin. Animuje se jen opacity
+     a transform — žádné přepočítávání rozvržení, šetrné k INP. */
+  @keyframes rp-zare {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: translate(50%, -50%) scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(50%, -50%) scale(1.2);
+    }
+  }
+  .zare-konec {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 9999px;
+    transform: translate(50%, -50%);
+    background: white;
+    box-shadow:
+      0 0 0 2px color-mix(in oklch, var(--brand) 35%, transparent),
+      0 0 10px 3px color-mix(in oklch, var(--brand) 70%, transparent);
+  }
+  /* Svit je samostatný prvek pod tečkou, ne ::after — jinak by se
+     poloprůhledná záře kreslila přes tečku a ta by zešedla. */
+  .zare-svit {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 1.9rem;
+    height: 1.9rem;
+    pointer-events: none;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--brand) 55%, transparent) 0%,
+      transparent 70%
+    );
+    animation: rp-zare 2.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .zare-svit {
+      animation: none;
+      opacity: 0.8;
+      transform: translate(50%, -50%);
+    }
+  }
 
   .animate-fade-in {
     animation: rp-fade-in 0.18s ease-out both;

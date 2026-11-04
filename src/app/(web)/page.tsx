@@ -63,7 +63,7 @@ const FUNKCE = [
     ikona: GraduationCap,
     nazev: "Škola a rozvrh",
     popis:
-      "Rozvrh každého dítěte, školní termíny a zprávy z EduPage. Oba rodiče je vidí " +
+      "Rozvrh každého dítěte, školní akce a zprávy z EduPage. Oba rodiče je vidí " +
       "ve stejnou chvíli, bez přeposílání.",
   },
   {
@@ -93,7 +93,7 @@ const OTAZKY = [
     otazka: "Musí Klidoo používat oba rodiče?",
     odpoved:
       "Nemusí. Spousta lidí si ho pořizuje proto, že v tom chce mít sám pořádek. Kalendář, " +
-      "výdaje a školní termíny dávají smysl i bez druhé strany. Když se druhý rodič přidá, " +
+      "výdaje, školní akce a rozvrhy dávají smysl i bez druhé strany. Když se druhý rodič přidá, " +
       "ušetří to zprávy oběma. Jeho přístup je zdarma, platí jedna domácnost.",
   },
   {
@@ -336,7 +336,7 @@ export default async function Domu() {
                 Funguje i tehdy, když ho používáte bez druhého rodiče
               </h2>
               <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Nemusíte druhého rodiče nikam přemlouvat. Kalendář, výdaje a školní termíny
+                Nemusíte druhého rodiče nikam přemlouvat. Kalendář, výdaje, školní akce a rozvrhy
                 dávají smysl už proto, že v tom chcete mít konečně pořádek ty. Když se druhý
                 rodič později přidá, uvidí stejný týden a psaní ubude oběma.
               </p>

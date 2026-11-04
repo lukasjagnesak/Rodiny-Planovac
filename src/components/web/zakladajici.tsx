@@ -213,17 +213,48 @@ export function ZakladajiciPromo({ className }: { className?: string }) {
       <p className="mt-1 text-sm text-ink-muted">
         {rok ? "0 Kč na 12 měsíců" : "Všechny funkce"} · bez platební karty
       </p>
-      {/* Řádek drží místo, i když se počet ještě načítá — stránka pak
-          neposkočí (CLS). */}
-      {rok ? (
-        <p className="mt-1 flex min-h-5 items-center gap-1.5 text-sm font-medium text-ink">
-          {typeof volno === "number" ? (
-            <>
+      {/* Ukazatel naplnění ze skutečného počtu v databázi. Místo pro něj
+          je vyhrazené i během načítání, ať stránka neposkočí (CLS). */}
+      {rok ? <UkazatelMist volno={volno} /> : null}
+    </div>
+  );
+}
+
+/**
+ * Kolik z 50 zakládajících rodin je zaregistrovaných — zelený pruh,
+ * jehož konec jemně září. Záře je jen ozdoba konce pruhu; s vypnutými
+ * animacemi v systému (prefers-reduced-motion) zůstane klidná.
+ */
+function UkazatelMist({ volno }: { volno: number | null | undefined }) {
+  const znamo = typeof volno === "number";
+  const obsazeno = znamo ? ZAKLADAJICI.mist - volno : 0;
+  const podil = znamo ? Math.min(100, Math.max(3, (obsazeno / ZAKLADAJICI.mist) * 100)) : 0;
+
+  return (
+    <div className="mt-2.5 min-h-[2.75rem]">
+      {znamo ? (
+        <>
+          <div
+            className="relative h-2.5 rounded-full bg-brand/15"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={ZAKLADAJICI.mist}
+            aria-valuenow={obsazeno}
+            aria-label={`Zaregistrováno ${obsazeno} z ${ZAKLADAJICI.mist} zakládajících rodin`}
+          >
+            <div className="relative h-full rounded-full bg-brand" style={{ width: `${podil}%` }}>
+              <span aria-hidden className="zare-svit" />
+              <span aria-hidden className="zare-konec" />
+            </div>
+          </div>
+          <p className="mt-1.5 flex items-center justify-between gap-2 text-sm">
+            <span className="flex items-center gap-1.5 font-medium text-ink">
               <Users className="h-4 w-4 text-brand" aria-hidden />
-              Zbývá {volno} z {ZAKLADAJICI.mist} míst
-            </>
-          ) : null}
-        </p>
+              {obsazeno} z {ZAKLADAJICI.mist} rodin
+            </span>
+            <span className="text-ink-muted">zbývá {mist(volno)}</span>
+          </p>
+        </>
       ) : null}
     </div>
   );

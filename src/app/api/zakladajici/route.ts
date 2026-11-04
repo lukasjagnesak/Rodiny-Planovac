@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ZAKLADAJICI } from "@/lib/tarify";
 
+// Vždy z databáze, nikdy z doby sestavení — číslo se mění s každou rodinou.
+export const dynamic = "force-dynamic";
+
 /**
  * Kolik míst pro zakládající rodiny ještě zbývá.
  *
@@ -24,8 +27,14 @@ export async function GET() {
   }
 
   return NextResponse.json(
-    { volno, mist: ZAKLADAJICI.mist },
-    // Minuta stačí: číslo se mění, jen když vznikne rodina.
-    { headers: { "Cache-Control": "public, max-age=60" } },
+    {
+      volno,
+      mist: ZAKLADAJICI.mist,
+      // Kolik zakládajících rodin už je zaregistrovaných — dopočet z téhož
+      // čísla z databáze (funkce zakladajici_volno počítá skutečné řádky).
+      obsazeno: volno === null ? null : ZAKLADAJICI.mist - volno,
+    },
+    // Půl minuty: dost čerstvé, a přitom databázi nezahltí návštěvy z reklamy.
+    { headers: { "Cache-Control": "public, max-age=30" } },
   );
 }
