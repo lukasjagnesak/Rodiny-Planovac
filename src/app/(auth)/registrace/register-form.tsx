@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Check, MailCheck } from "lucide-react";
+import { ArrowRight, Check, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
@@ -65,6 +65,30 @@ function coCeka(dal: string, pozvanka: boolean): string | null {
     return "Váš výpočet je uložený. Po registraci se přenese do aplikace i s výživným.";
   }
   return null;
+}
+
+/**
+ * Výzva „Chcete vědět víc?" pro toho, kdo přišel z reklamy rovnou na
+ * registraci a ještě se nerozhodl. Musí být vidět na první pohled —
+ * nenápadný odkaz dole přehlédl, a místo prohlédnutí webu stránku zavřel.
+ */
+function VedetVic({ className }: { className?: string }) {
+  return (
+    <Link
+      href="/"
+      className={`flex items-center justify-between gap-3 rounded-2xl border-2 border-brand/40 bg-brand-soft px-4 py-3.5 transition-colors hover:border-brand ${className ?? ""}`}
+    >
+      <span className="min-w-0">
+        <span className="block font-display text-base font-semibold text-ink">
+          Chcete vědět víc o {ZNACKA}?
+        </span>
+        <span className="block text-sm text-ink-muted">
+          Podívejte se, co umí a jak vypadá, než se zaregistrujete.
+        </span>
+      </span>
+      <ArrowRight className="h-5 w-5 shrink-0 text-brand" aria-hidden />
+    </Link>
+  );
 }
 
 export function RegisterForm() {
@@ -178,7 +202,8 @@ export function RegisterForm() {
         </div>
       ) : (
         <div>
-          {rok ? <ZakladajiciNabidka className="mb-5" /> : null}
+          {rok ? <ZakladajiciNabidka className="mb-3" /> : null}
+          <VedetVic className="mb-5" />
           <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
             {rok ? `Založte si ${ZNACKA}` : `Vyzkoušejte ${ZNACKA} zdarma`}
           </h1>
@@ -268,17 +293,8 @@ export function RegisterForm() {
         </p>
       )}
 
-      {/* Kdo přišel z reklamy rovnou sem a ještě se nerozhodl: místo
-          zavření stránky ať má kam jít dál. */}
-      {inviteToken ? null : (
-        <Link
-          href="/"
-          className="block rounded-xl bg-surface-2 px-4 py-3 text-center text-sm text-ink-muted transition-colors hover:text-ink"
-        >
-          Chcete vědět víc o {ZNACKA}?{" "}
-          <span className="font-medium text-brand">Podívejte se, co umí →</span>
-        </Link>
-      )}
+      {/* Podruhé dole — tam se zastaví, kdo dočetl a pořád váhá. */}
+      {inviteToken ? null : <VedetVic />}
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
         Už máte účet?{" "}
