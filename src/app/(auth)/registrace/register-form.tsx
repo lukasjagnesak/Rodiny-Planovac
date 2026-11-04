@@ -29,26 +29,31 @@ import { bezpecnyCil } from "@/lib/navrat";
  * až jako odpověď na otázku „a kdybych chtěl pokračovat".
  */
 function jistoty(rok: boolean) {
-  return [
-    { co: "Žádná platební karta", proc: "Nic nezadáváte, nic se nestrhne." },
-    // Rok zdarma říká velký blok nad formulářem — tady by se opakoval.
-    ...(rok
-      ? []
-      : [
-          {
-            co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
-            proc: "Žádná ořezaná verze na zkoušku.",
-          },
-        ]),
-    {
-      co: rok ? "Po roce se rozhodnete sami" : "Po zkušební době se rozhodnete sami",
-      proc: "Bez placení se nic nesmaže — jen se zamkne zapisování.",
-    },
-    {
-      co: "Druhý rodič je zdarma",
-      proc: "Platí se jen za jednu domácnost, a jen když se rozhodnete pokračovat.",
-    },
-  ];
+  return {
+    // Dvě největší obavy — zvýrazněné hned pod tlačítkem.
+    hlavni: [
+      { co: "Žádná platební karta", proc: "Nic nezadáváte, nic se samo nestrhne." },
+      {
+        co: rok ? "Po roce se rozhodnete sami" : "Po zkušební době se rozhodnete sami",
+        proc: "Bez placení se nic nesmaže, jen se zamkne zapisování.",
+      },
+    ],
+    dalsi: [
+      // Rok zdarma říká velký blok nad formulářem — tady by se opakoval.
+      ...(rok
+        ? []
+        : [
+            {
+              co: `${ZKUSEBNI_SLIB.dni} dní zdarma, všechny funkce`,
+              proc: "Žádná ořezaná verze na zkoušku.",
+            },
+          ]),
+      {
+        co: "Druhý rodič je zdarma",
+        proc: "Platí se jen za jednu domácnost, a jen když se rozhodnete pokračovat.",
+      },
+    ],
+  };
 }
 
 /**
@@ -203,23 +208,12 @@ export function RegisterForm() {
       ) : (
         <div>
           {rok ? <ZakladajiciNabidka className="mb-3" /> : null}
-          <VedetVic className="mb-5" />
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+          <VedetVic />
+          {/* Nadpis pro čtečky a vyhledávače; vidět je hned formulář,
+              text o tom, co člověk dostane, je pod tlačítkem. */}
+          <h1 className="sr-only">
             {rok ? `Založte si ${ZNACKA}` : `Vyzkoušejte ${ZNACKA} zdarma`}
           </h1>
-          <ul className="mt-3 space-y-2.5">
-            {jistoty(rok).map(({ co, proc }) => (
-              <li key={co} className="flex items-start gap-2.5">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
-                  <Check size={13} strokeWidth={3} aria-hidden />
-                </span>
-                <span className="text-[0.95rem] leading-snug">
-                  <strong className="font-semibold text-ink">{co}.</strong>{" "}
-                  <span className="text-ink-muted">{proc}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
       )}
 
@@ -277,8 +271,44 @@ export function RegisterForm() {
         <Button type="submit" size="lg" className="w-full" disabled={busy}>
           {busy ? <Spinner /> : inviteToken ? "Připojit se zdarma" : "Vytvořit účet zdarma"}
         </Button>
-        <p className="text-center text-sm font-medium text-ink">Bez karty. Nic se samo nestrhne.</p>
       </div>
+
+      {/* Co člověk dostane — až pod tlačítkem. Nad formulářem bylo tolik
+          textu, že na telefonu tlačítko registrace nebylo vidět. Dvě
+          největší obavy (karta a co po roce) jsou zvýrazněné. */}
+      {inviteToken ? (
+        <p className="text-center text-sm font-medium text-ink">Bez karty. Nic se samo nestrhne.</p>
+      ) : (
+        <div className="space-y-3">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {jistoty(rok).hlavni.map(({ co, proc }) => (
+              <div key={co} className="rounded-xl bg-brand-soft px-3.5 py-3">
+                <p className="flex items-center gap-2 font-display text-base font-semibold text-ink">
+                  <Check size={18} strokeWidth={3} className="shrink-0 text-brand" aria-hidden />
+                  {co}
+                </p>
+                <p className="mt-0.5 text-sm leading-snug text-ink-muted">{proc}</p>
+              </div>
+            ))}
+          </div>
+          <ul className="space-y-2">
+            {jistoty(rok).dalsi.map(({ co, proc }) => (
+              <li key={co} className="flex items-start gap-2.5 text-sm leading-snug">
+                <Check
+                  size={15}
+                  strokeWidth={3}
+                  className="mt-0.5 shrink-0 text-brand"
+                  aria-hidden
+                />
+                <span>
+                  <strong className="font-semibold text-ink">{co}.</strong>{" "}
+                  <span className="text-ink-muted">{proc}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Cena patří sem, ne až za paywall. Kdo ji uvidí až po měsíci
           práce s kalendářem, právem se cítí podvedený. Jen je napsaná
