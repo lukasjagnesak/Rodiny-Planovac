@@ -402,14 +402,22 @@ export function RegisterForm() {
 
       {inviteToken ? null : (
         <>
-          <KartaSoukromi />
           <Link
-            href="/jak-funguje"
-            className="flex items-center justify-center gap-1 text-sm font-medium text-brand underline-offset-4 hover:underline"
+            href="/"
+            className="flex items-center justify-between gap-3 rounded-2xl border-2 border-brand/40 bg-brand-soft px-4 py-3.5 transition-colors hover:border-brand"
           >
-            Prohlédnout aplikaci
-            <ChevronRight className="h-4 w-4" aria-hidden />
+            <span className="min-w-0">
+              <span className="block font-display text-base font-semibold text-ink">
+                Chcete vědět víc o {ZNACKA}?
+              </span>
+              <span className="block text-sm text-ink-muted">
+                Prohlédněte si aplikaci a co umí.
+              </span>
+            </span>
+            <ChevronRight className="h-5 w-5 shrink-0 text-brand" aria-hidden />
           </Link>
+          {/* Karta soukromí patří až pod kartu „Chcete vědět víc“. */}
+          <KartaSoukromi />
           <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[0.8125rem] text-ink-subtle">
             <Link href="/cenik" className="underline-offset-4 hover:text-ink hover:underline">
               Ceník
