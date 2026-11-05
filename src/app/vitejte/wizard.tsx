@@ -120,19 +120,32 @@ export function OnboardingWizard({
   const [weeklyMap, setWeeklyMap] = React.useState(predvyplneno?.weeklyMap ?? "aabbaab");
 
   const validChildren = children.filter((c) => c.name.trim().length > 0);
+  const zaklada = React.useRef(false);
+  const zalozenaId = React.useRef<string | null>(null);
 
   async function finish() {
+    // Dvojí klik (nebo Enter a klik) před překreslením tlačítka by
+    // založil dvě rodiny — a zabral dvě místa zakládajících rodin.
+    if (zaklada.current) return;
+    zaklada.current = true;
     setBusy(true);
     setError(null);
     const supabase = createClient();
 
     try {
-      const { data: familyId, error: familyError } = await supabase.rpc("create_family", {
-        family_name: familyName.trim(),
-        my_name: myName.trim() || null,
-        my_side: mySide,
-      });
-      if (familyError) throw familyError;
+      // Když minulý pokus rodinu založil a spadl až na dalším kroku,
+      // opakování ji nezakládá znovu.
+      let familyId = zalozenaId.current;
+      if (!familyId) {
+        const { data, error: familyError } = await supabase.rpc("create_family", {
+          family_name: familyName.trim(),
+          my_name: myName.trim() || null,
+          my_side: mySide,
+        });
+        if (familyError) throw familyError;
+        familyId = data as string;
+        zalozenaId.current = familyId;
+      }
 
       // Správci do telefonu, že vznikla rodina. `keepalive`, ať to
       // dojde, i když průvodce za chvíli přesměruje. Nečeká se na to.
@@ -217,6 +230,7 @@ export function OnboardingWizard({
       setBusy(false);
       setStep(3);
     } catch (e) {
+      zaklada.current = false;
       setBusy(false);
       setError(e instanceof Error ? e.message : "Něco se pokazilo, zkuste to prosím znovu.");
     }

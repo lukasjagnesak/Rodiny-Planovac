@@ -60,7 +60,7 @@ export function PristupProfesionalu({
         <CardBody>
           <p className="text-sm text-ink-muted">
             Místo přeposílání výpisů můžete dát advokátovi, mediátorovi nebo OSPOD přístup přímo.
-            Vidí kalendář, zprávy, výdaje a doklady, nic nemůže změnit ani smazat. Druhý rodič
+            Vidí kalendář, zprávy a výdaje s účtenkami, nic nemůže změnit ani smazat. Doklady dětí nevidí. Druhý rodič
             se o tom dozví a přístup může kdykoli odebrat.
           </p>
         </CardBody>
@@ -347,7 +347,7 @@ function PozvatProfesionala({
             <div className="flex gap-2.5 rounded-xl bg-surface-2 p-3 text-sm text-ink-muted">
               <Eye className="mt-0.5 h-4 w-4 shrink-0 text-ink-subtle" />
               <p>
-                Uvidí kalendář, zprávy, výdaje, doklady a historii změn. Nemůže nic zapsat, změnit
+                Uvidí kalendář, zprávy, výdaje s účtenkami a historii změn. Doklady dětí neuvidí. Nemůže nic zapsat, změnit
                 ani smazat. Druhý rodič dostane zprávu a přístup může kdykoli odebrat.
               </p>
             </div>

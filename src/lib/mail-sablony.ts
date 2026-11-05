@@ -154,7 +154,7 @@ function pozvankaProfesionala(
 <h1 style="margin:0 0 12px 0;font-size:20px;line-height:1.3;">${escapeHtml(kdo)} vám dává přístup jen ke čtení</h1>
 <p style="margin:0 0 12px 0;">
   Jde o rodinu <strong>${escapeHtml(rodina)}</strong> v ${ZNACKA}: rozvrh péče o děti, zprávy mezi
-  rodiči, výdaje s doklady a historii změn. Nic nemůžete změnit ani smazat. ${escapeHtml(konec)}
+  rodiči, výdaje s účtenkami a historii změn. Nic nemůžete změnit ani smazat. ${escapeHtml(konec)}
 </p>
 <p style="margin:0 0 12px 0;">
   Pozvánku přijmete jen po přihlášení e-mailem, na který přišla${escapeHtml(email)}. Účet je zdarma.
@@ -164,7 +164,7 @@ ${tlacitko(vstup.odkaz, "Přijmout pozvánku")}
 
   const text = `${kdo} vám dává přístup jen ke čtení k rodině ${rodina} v ${ZNACKA}.
 
-Uvidíte rozvrh péče, zprávy mezi rodiči, výdaje s doklady a historii změn. Nic nemůžete změnit ani smazat. ${konec}
+Uvidíte rozvrh péče, zprávy mezi rodiči, výdaje s účtenkami a historii změn. Nic nemůžete změnit ani smazat. ${konec}
 
 Pozvánku přijmete jen po přihlášení e-mailem, na který přišla${email}. Účet je zdarma.
 ${vstup.odkaz}

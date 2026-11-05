@@ -448,7 +448,7 @@ function InviteSheet({
 
             <Field
               label="Strana v kalendáři péče"
-              hint="nech prázdné u prarodičů a partnerů"
+              hint="nechte prázdné u prarodičů a partnerů"
             >
               <Select
                 value={side}

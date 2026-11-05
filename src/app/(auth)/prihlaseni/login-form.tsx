@@ -13,8 +13,8 @@ import { SocialniPrihlaseni } from "@/components/ui/socialni-prihlaseni";
 /** Důvody, se kterými sem posílá `/auth/callback` neúspěšný odkaz z e-mailu. */
 const HLASKY: Record<string, string> = {
   "odkaz-vyprsel":
-    "Odkaz už neplatí — platí 60 minut a použít se dá jen jednou. Nech si poslat nový.",
-  "odkaz-neplatny": "Odkaz se nepodařilo ověřit. Nech si poslat nový.",
+    "Odkaz už neplatí — platí 60 minut a použít se dá jen jednou. Nechte si poslat nový.",
+  "odkaz-neplatny": "Odkaz se nepodařilo ověřit. Nechte si poslat nový.",
 };
 
 export function LoginForm() {
@@ -161,11 +161,12 @@ export function LoginForm() {
 /** Supabase vrací hlášky anglicky — přeložíme ty nejčastější. */
 export function prettyError(message: string): string {
   const map: Record<string, string> = {
-    "Invalid login credentials": "Nesprávný e-mail nebo heslo.",
+    // Texty podle slovníku značky (master brief 2026, kap. 2.3).
+    "Invalid login credentials": "Přihlášení se nepodařilo. Zkontrolujte údaje a zkuste to znovu.",
     "Email not confirmed": "E-mail zatím není potvrzený. Zkontrolujte schránku.",
-    "User already registered": "Uživatel s tímto e-mailem už existuje.",
-    "Password should be at least 6 characters":
-      "Heslo musí mít alespoň 6 znaků.",
+    "User already registered":
+      "Pro tento e-mail už účet existuje. Přihlaste se nebo obnovte heslo.",
+    "Password should be at least 6 characters": "Heslo musí mít alespoň 8 znaků.",
     "Signups not allowed for this instance": "Registrace jsou vypnuté.",
   };
   return map[message] ?? message;

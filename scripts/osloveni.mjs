@@ -57,6 +57,7 @@ const SLOVNIK = {
   neuložíš: "neuložíte", předplatíš: "předplatíte", vezeš: "vezete",
   vyplníš: "vyplníte", nahraješ: "nahrajete", vybereš: "vyberete",
   doplníš: "doplníte", opravíš: "opravíte", zavřeš: "zavřete",
+  nech: "nechte", zkus: "zkuste",
   posuneš: "posunete", přepneš: "přepnete", schováš: "schováte",
   vrátíš: "vrátíte", klikneš: "kliknete", přestaneš: "přestanete",
   zobrazíš: "zobrazíte", předplatíš: "předplatíte",

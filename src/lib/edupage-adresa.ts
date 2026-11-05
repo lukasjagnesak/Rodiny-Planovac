@@ -16,7 +16,7 @@ export interface Vysledek {
 
 const RADA =
   "Sem patří jen část adresy před .edupage.org — třeba zsmukarov " +
-  "z https://zsmukarov.edupage.org. Nebo nech pole prázdné a školu " +
+  "z https://zsmukarov.edupage.org. Nebo nechte pole prázdné a školu " +
   "najdeme podle e-mailu sami.";
 
 export function normalizujSubdomenu(vstup: string | null | undefined): Vysledek {

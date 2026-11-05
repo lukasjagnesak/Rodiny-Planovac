@@ -85,6 +85,10 @@ export function withAlpha(barva: string, alpha: number): string {
  * policy", což nikomu nic neřekne. Nejčastější příčina zamítnutého zápisu
  * je přitom zamčené předplatné — tak ať to tak i vypadá.
  */
+/** Slovník značky (master brief 2026, kap. 2.3): neuložená změna. */
+export const NEULOZENO =
+  "Změnu se nepodařilo uložit. Vaše údaje zůstaly vyplněné. Zkuste to znovu.";
+
 export function hlaskaChyby(chyba: { message?: string; code?: string } | null | undefined): string {
   if (!chyba) return "Něco se nepovedlo. Zkuste to prosím znovu.";
 
@@ -96,5 +100,9 @@ export function hlaskaChyby(chyba: { message?: string; code?: string } | null | 
   if (chyba.code === "23505") return "Tenhle záznam už existuje.";
   if (/Failed to fetch|NetworkError/i.test(zprava)) return "Nejsme online. Zkuste to prosím znovu.";
 
-  return zprava || "Něco se nepovedlo. Zkuste to prosím znovu.";
+  // Hlášky z našich databázových funkcí jsou česky a říkají, co dělat —
+  // ty projdou. Technické anglické hlášky (síť, Postgres, Supabase)
+  // člověku nic neřeknou; místo nich věta ze slovníku značky.
+  if (zprava && /[áčďéěíňóřšťúůýž]/i.test(zprava)) return zprava;
+  return NEULOZENO;
 }

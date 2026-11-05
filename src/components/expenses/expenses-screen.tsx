@@ -366,8 +366,8 @@ export function ExpensesScreen({
         <Card>
           <EmptyState
             icon={<Wallet className="h-6 w-6" />}
-            title="Žádné výdaje v tomto měsíci"
-            description="Přidejte výdaj i s fotkou účtenky — druhý rodič ho hned uvidí."
+            title="Zatím nemáte žádné výdaje"
+            description="V tomto měsíci tu nic není. První výdaj můžete přidat kdykoli, i s fotkou účtenky."
             action={
               canEdit ? (
                 <Button

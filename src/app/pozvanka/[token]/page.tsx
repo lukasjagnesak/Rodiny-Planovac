@@ -118,7 +118,7 @@ export default async function InvitePage({
         title={`Připojit se k rodině ${familyName}`}
         text={
           profesional
-            ? `Přihlášen jako ${user.email}. ${pristup} Uvidíte kalendář, zprávy, výdaje a doklady, nic nemůžete změnit.`
+            ? `Přihlášen jako ${user.email}. ${pristup} Uvidíte kalendář, zprávy a výdaje s účtenkami, nic nemůžete změnit.`
             : `Přihlášen jako ${user.email}. Po potvrzení uvidíte kalendář, kroužky i výdaje.`
         }
         action={<AcceptInviteButton token={token} profesional={profesional} />}
