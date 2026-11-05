@@ -26,7 +26,7 @@ import { cn } from "@/lib/format";
  * Jména jsou smyšlená, data obyčejný měsíc obyčejné rodiny.
  */
 
-type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky" | "zpravy" | "rozvrh" | "historie";
+export type Obrazovka = "kalendar" | "prehled" | "vydaje" | "krouzky" | "zpravy" | "rozvrh" | "historie";
 
 const ZALOZKY: { id: Obrazovka; popisek: string; Ikona: typeof CalendarDays }[] = [
   { id: "kalendar", popisek: "Kalendář", Ikona: CalendarDays },
@@ -69,8 +69,22 @@ const POPISKY: Record<Obrazovka, { nadpis: string; text: string }> = {
   },
 };
 
-export function UkazkyAplikace() {
-  const [aktivni, setAktivni] = React.useState<Obrazovka>("kalendar");
+export function UkazkyAplikace({
+  jen,
+  nazvy = {},
+  bezDalsich = false,
+}: {
+  /** Jen tyhle záložky, v tomhle pořadí (homepage: 4 ze zadání). */
+  jen?: Obrazovka[];
+  /** Vlastní popisky záložek, např. „Kalendář péče“. */
+  nazvy?: Partial<Record<Obrazovka, string>>;
+  /** Bez seznamu „co se do záložek nevešlo“. */
+  bezDalsich?: boolean;
+} = {}) {
+  const zalozky = (jen ?? ZALOZKY.map((z) => z.id))
+    .map((id) => ZALOZKY.find((z) => z.id === id)!)
+    .map((z) => ({ ...z, popisek: nazvy[z.id] ?? z.popisek }));
+  const [aktivni, setAktivni] = React.useState<Obrazovka>(zalozky[0].id);
   const popisek = POPISKY[aktivni];
 
   // Na telefonu: záložky, telefon, popis — kdo vidí telefon, má mít
@@ -79,7 +93,7 @@ export function UkazkyAplikace() {
   return (
     <div className="grid items-start gap-x-10 gap-y-7 lg:grid-cols-[1fr_auto] lg:grid-rows-[auto_1fr]">
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Ukázky obrazovek aplikace">
-        {ZALOZKY.map(({ id, popisek: text, Ikona }) => {
+        {zalozky.map(({ id, popisek: text, Ikona }) => {
           const vybrana = id === aktivni;
           return (
             <button
@@ -106,7 +120,7 @@ export function UkazkyAplikace() {
         <Telefon>
           {/* Všechny snímky v DOM, viditelný jen vybraný: přepnutí záložky
               pak nečeká na stažení obrázku. */}
-          {ZALOZKY.map(({ id, popisek: text }) => (
+          {zalozky.map(({ id, popisek: text }) => (
             <Image
               key={id}
               src={`/ukazky/${id}.png`}
@@ -131,14 +145,16 @@ export function UkazkyAplikace() {
           {popisek.text}
         </p>
 
-        <ul className="mt-7 grid gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-muted sm:grid-cols-2">
-          {DALSI.map((polozka) => (
-            <li key={polozka} className="flex items-center gap-2">
-              <Check size={14} className="shrink-0 text-brand" aria-hidden />
-              {polozka}
-            </li>
-          ))}
-        </ul>
+        {bezDalsich ? null : (
+          <ul className="mt-7 grid gap-x-6 gap-y-2 border-t border-line pt-5 text-sm text-ink-muted sm:grid-cols-2">
+            {DALSI.map((polozka) => (
+              <li key={polozka} className="flex items-center gap-2">
+                <Check size={14} className="shrink-0 text-brand" aria-hidden />
+                {polozka}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

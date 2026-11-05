@@ -47,8 +47,9 @@ působí jako hračka.
 
 | Oblast | Ikony |
 |---|---|
-| Události | `lekar`, `tabule`, `stan`, `autobus`, `fotoaparat`, `dort`, `prazdniny`, `spendlik`, `darek` |
+| Události | `lekar`, `tabule`, `stan`, `autobus`, `fotoaparat`, `dort`, `prazdniny`, `spendlik`, `darek`, `kalendar`, `zprava` |
 | Výdaje | `bankovka`, `mic`, `tricko`, `hvezda`, `batoh`, `srdce`, `jablko`, `letadlo`, `krabice` |
 | Kontakty | `skola`, `rodina`, `vizitka` |
 | Doklady | `karta_zdravi`, `pas`, `strikacka`, `listina`, `dokument` |
+| Důvěra | `stit`, `zamek` |
 | Notifikace | `auto`, `otaznik`, `predani`, `zvonek` |

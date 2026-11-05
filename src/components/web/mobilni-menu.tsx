@@ -12,7 +12,15 @@ import { cn } from "@/lib/format";
  * Odkazy v hlavičce se pod 1024 px schovávaly úplně, takže se z telefonu
  * nedalo dostat na kalkulačky ani na průvodce — a to je většina návštěv.
  */
-export function MobilniMenu({ odkazy }: { odkazy: { href: string; popisek: string }[] }) {
+export interface PolozkaMenu {
+  /** Bez odkazu je to nadpis skupiny (např. „Nástroje“). */
+  href?: string;
+  popisek: string;
+  /** Položka pod nadpisem skupiny — menší a odsazená. */
+  vnorena?: boolean;
+}
+
+export function MobilniMenu({ odkazy }: { odkazy: PolozkaMenu[] }) {
   const [open, setOpen] = React.useState(false);
   // Panel se vykresluje portálem do <body>. Hlavička má `backdrop-blur`,
   // a ten z ní udělá vztažný rámec pro `position: fixed` — panel uvnitř
@@ -56,16 +64,30 @@ export function MobilniMenu({ odkazy }: { odkazy: { href: string; popisek: strin
               )}
             >
               <nav className="flex flex-col">
-                {odkazy.map(({ href, popisek }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className="border-b border-line py-4 font-display text-lg font-semibold text-ink"
-                  >
-                    {popisek}
-                  </Link>
-                ))}
+                {odkazy.map(({ href, popisek, vnorena }) =>
+                  href ? (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "border-b border-line text-ink",
+                        vnorena
+                          ? "py-3 pl-4 text-[0.95rem] font-medium text-ink-muted"
+                          : "py-4 font-display text-lg font-semibold",
+                      )}
+                    >
+                      {popisek}
+                    </Link>
+                  ) : (
+                    <span
+                      key={popisek}
+                      className="border-b border-line pb-2 pt-5 text-xs font-semibold uppercase tracking-wider text-ink-subtle"
+                    >
+                      {popisek}
+                    </span>
+                  ),
+                )}
               </nav>
 
               <div className="mt-7 flex flex-col gap-3">
@@ -74,7 +96,7 @@ export function MobilniMenu({ odkazy }: { odkazy: { href: string; popisek: strin
                   onClick={() => setOpen(false)}
                   className="inline-flex h-12 items-center justify-center rounded-xl bg-brand px-6 font-semibold text-brand-ink"
                 >
-                  Vyzkoušet zdarma
+                  Začít zdarma
                 </Link>
                 <Link
                   href="/prihlaseni"

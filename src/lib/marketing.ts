@@ -214,6 +214,7 @@ const UDALOSTI: Record<string, { ga: string; meta: string | null }> = {
   // Kroky registrační stránky. Jen název kroku, žádný obsah formuláře.
   // Meta je nedostává — učit se má na dokončených registracích.
   "registrace-zobrazeni": { ga: "landing_view", meta: null },
+  "registrace-cta": { ga: "registration_cta_click", meta: null },
   "registrace-zacal": { ga: "registration_start", meta: null },
   "registrace-odeslano": { ga: "registration_submit", meta: null },
   registrace: { ga: "sign_up", meta: "CompleteRegistration" },

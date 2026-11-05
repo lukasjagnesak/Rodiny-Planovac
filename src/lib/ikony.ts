@@ -39,6 +39,11 @@ export const IKONY = {
   darek:
     '<rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v7.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V12"/><path d="M12 8v13"/><path d="M12 8C10.8 4.6 6.8 4 6.8 6.4 6.8 8 9.6 8 12 8zM12 8c1.2-3.4 5.2-4 5.2-1.6C17.2 8 14.4 8 12 8z"/>',
 
+  kalendar:
+    '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><circle cx="8.5" cy="13.5" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="13.5" r=".9" fill="currentColor" stroke="none"/><circle cx="15.5" cy="13.5" r=".9" fill="currentColor" stroke="none"/><circle cx="8.5" cy="17" r=".9" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/>',
+  zprava:
+    '<path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5V17.5h-1A1.5 1.5 0 0 1 3 16V7a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M7.5 10h9M7.5 13.5h5.5"/>',
+
   // ── Výdaje ─────────────────────────────────────────────────────
   bankovka:
     '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><circle cx="6.2" cy="9.5" r=".9" fill="currentColor" stroke="none"/><circle cx="17.8" cy="14.5" r=".9" fill="currentColor" stroke="none"/>',
@@ -75,6 +80,11 @@ export const IKONY = {
     '<path d="M14.5 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/><path d="M14.5 3 19 7.5V12"/><path d="M14.5 3v4.5H19"/><path d="M8.5 11h5.5M8.5 14.5h3"/><circle cx="17" cy="16.5" r="2.5"/><path d="m15.8 18.7-.8 2.8 2-1 2 1-.8-2.8"/>',
   dokument:
     '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 16.5h4"/>',
+
+  // ── Důvěra ─────────────────────────────────────────────────────
+  stit: '<path d="M12 21s7.5-3.5 7.5-9.5V5.5L12 3 4.5 5.5v6C4.5 17.5 12 21 12 21z"/><path d="m8.8 12 2.2 2.2 4.3-4.4"/>',
+  zamek:
+    '<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>',
 
   // ── Notifikace ─────────────────────────────────────────────────
   auto: '<path d="M4.5 16.5h15v-4l-1.9-4.3A2 2 0 0 0 15.8 7H8.2a2 2 0 0 0-1.8 1.2L4.5 12.5z"/><path d="M4.5 12.5h15"/><path d="M4.5 16.5V19H7v-2.5M17 16.5V19h2.5v-2.5"/><circle cx="8" cy="14.5" r=".9" fill="currentColor" stroke="none"/><circle cx="16" cy="14.5" r=".9" fill="currentColor" stroke="none"/>',

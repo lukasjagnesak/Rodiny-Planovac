@@ -158,14 +158,16 @@ export function LoginForm() {
   );
 }
 
+/** Registrace s e-mailem, pro který už účet je — formulář k ní přidá odkaz. */
+export const UCET_EXISTUJE = "Pro tento e-mail už účet existuje. Přihlaste se k němu.";
+
 /** Supabase vrací hlášky anglicky — přeložíme ty nejčastější. */
 export function prettyError(message: string): string {
   const map: Record<string, string> = {
     // Texty podle slovníku značky (master brief 2026, kap. 2.3).
     "Invalid login credentials": "Přihlášení se nepodařilo. Zkontrolujte údaje a zkuste to znovu.",
     "Email not confirmed": "E-mail zatím není potvrzený. Zkontrolujte schránku.",
-    "User already registered":
-      "Pro tento e-mail už účet existuje. Přihlaste se nebo obnovte heslo.",
+    "User already registered": UCET_EXISTUJE,
     "Password should be at least 6 characters": "Heslo musí mít alespoň 8 znaků.",
     "Signups not allowed for this instance": "Registrace jsou vypnuté.",
   };

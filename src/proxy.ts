@@ -24,6 +24,8 @@ export const PUBLIC_PATHS = [
   // přesměruje do aplikace sama.
   "/",
   "/jak-funguje-stridava-pece",
+  "/jak-funguje",
+  "/o-klidoo",
   "/vzor-dohody-o-stridave-peci",
   "/kalkulacka-vyzivneho",
   "/kalkulacka",

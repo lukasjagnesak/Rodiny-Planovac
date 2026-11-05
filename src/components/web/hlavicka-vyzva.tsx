@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { VyzvaRegistrace } from "./vyzva-registrace";
 
 /**
  * Stránky, na kterých tlačítko v záhlaví chybí schválně.
@@ -19,11 +19,12 @@ export function HlavickaVyzva() {
   if (BEZ_VYZVY.has(cesta)) return null;
 
   return (
-    <Link
-      href="/registrace"
+    <VyzvaRegistrace
+      stranka={cesta === "/" ? "homepage" : cesta.slice(1).split("/")[0] || "web"}
+      misto="hlavicka"
       className="inline-flex h-10 items-center rounded-xl bg-brand px-3 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover sm:px-4"
     >
-      Vyzkoušet<span className="hidden xs:inline">&nbsp;zdarma</span>
-    </Link>
+      Začít<span className="hidden xs:inline">&nbsp;zdarma</span>
+    </VyzvaRegistrace>
   );
 }

@@ -2,9 +2,11 @@ import Link from "next/link";
 import { Logo, Znak } from "@/components/ui/logo";
 import { SledovaniPuvodu } from "@/components/web/puvod";
 import { SouhlasLista } from "@/components/web/souhlas-lista";
-import { MobilniMenu } from "@/components/web/mobilni-menu";
+import { MobilniMenu, type PolozkaMenu } from "@/components/web/mobilni-menu";
+import { NastrojeMenu, type Nastroj } from "@/components/web/nastroje-menu";
 import { HlavickaVyzva } from "@/components/web/hlavicka-vyzva";
 import { ZNACKA } from "@/lib/brand";
+import { DEFINICE } from "@/lib/texty";
 
 /**
  * Veřejná část webu — bez přihlášení a bez aplikační navigace.
@@ -14,19 +16,60 @@ import { ZNACKA } from "@/lib/brand";
  * hlavička krátká a jediné výrazné tlačítko vede do aplikace.
  */
 
-const NAVIGACE = [
-  { href: "/jak-funguje-stridava-pece", popisek: "Průvodce" },
-  { href: "/kalkulacka-vyzivneho", popisek: "Výživné" },
-  { href: "/kalkulacka", popisek: "Kalkulačka péče" },
-  { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody" },
-  { href: "/clanky", popisek: "Články" },
+/** Nástroje zdarma — rozbalovací nabídka v hlavičce i skupina v mobilním menu. */
+const NASTROJE: Nastroj[] = [
+  {
+    href: "/kalkulacka",
+    popisek: "Kalkulačka péče",
+    popis: "Noci u každého rodiče, týden/týden i 2–2–3",
+    ikona: "kalendar",
+  },
+  {
+    href: "/kalkulacka-vyzivneho",
+    popisek: "Kalkulačka výživného",
+    popis: "Orientační výpočet podle příjmů a péče",
+    ikona: "bankovka",
+  },
+  {
+    href: "/vzor-dohody-o-stridave-peci",
+    popisek: "Vzor dohody",
+    popis: "Péče, předávání, prázdniny a výdaje",
+    ikona: "listina",
+  },
+  {
+    href: "/jak-funguje-stridava-pece",
+    popisek: "Průvodce péčí",
+    popis: "Jak se určuje rozsah péče a režimy",
+    ikona: "dokument",
+  },
+  {
+    href: "/checklist-prvnich-30-dni",
+    popisek: "Checklist prvních 30 dní",
+    popis: "Škola, lékař, předávky a dvě domácnosti",
+    ikona: "otaznik",
+  },
+  { href: "/clanky", popisek: "Články", popis: "Praktické tipy pro rodiče", ikona: "zprava" },
+];
+
+/**
+ * Hlavní navigace podle zadání 2026: Jak funguje | Nástroje | Ceník |
+ * Přihlásit se | [Začít zdarma]. Na mobilu kompaktní hlavička s jedním
+ * kontrastním tlačítkem, zbytek v menu.
+ */
+const MOBILNI_MENU: PolozkaMenu[] = [
+  { href: "/jak-funguje", popisek: "Jak funguje" },
+  { popisek: "Nástroje" },
+  ...NASTROJE.map((n) => ({ href: n.href, popisek: n.popisek, vnorena: true })),
   { href: "/cenik", popisek: "Ceník" },
+  { href: "/o-klidoo", popisek: "O Klidoo" },
 ];
 
 const PATICKA = [
   {
     nadpis: "Pro rodiče",
     odkazy: [
+      { href: "/jak-funguje", popisek: "Jak Klidoo funguje" },
+      { href: "/o-klidoo", popisek: "O Klidoo" },
       { href: "/jak-funguje-stridava-pece", popisek: "Jak funguje střídavá péče" },
       { href: "/vzor-dohody-o-stridave-peci", popisek: "Vzor dohody o střídavé péči" },
       { href: "/checklist-prvnich-30-dni", popisek: "Checklist prvních 30 dní" },
@@ -66,16 +109,20 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             <Logo size={32} />
           </Link>
 
-          <nav className="ml-4 hidden items-center gap-5 lg:flex">
-            {NAVIGACE.map(({ href, popisek }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
-              >
-                {popisek}
-              </Link>
-            ))}
+          <nav aria-label="Hlavní navigace" className="ml-6 hidden items-center gap-6 lg:flex">
+            <Link
+              href="/jak-funguje"
+              className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+            >
+              Jak funguje
+            </Link>
+            <NastrojeMenu nastroje={NASTROJE} />
+            <Link
+              href="/cenik"
+              className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+            >
+              Ceník
+            </Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
@@ -88,7 +135,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
               Přihlásit se
             </Link>
             <HlavickaVyzva />
-            <MobilniMenu odkazy={NAVIGACE} />
+            <MobilniMenu odkazy={MOBILNI_MENU} />
           </div>
         </div>
       </header>
@@ -101,7 +148,7 @@ export default function WebLayout({ children }: { children: React.ReactNode }) {
             <div>
               <Logo size={30} />
               <p className="mt-3 max-w-[22rem] text-sm leading-relaxed text-ink-muted">
-                Kalendář, kroužky a výdaje pro rodiny, které žijí ve dvou domácnostech.
+                {DEFINICE}
               </p>
             </div>
 

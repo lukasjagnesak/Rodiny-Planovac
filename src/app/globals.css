@@ -239,6 +239,8 @@
   --color-vyzva: var(--vyzva);
   --color-vyzva-ink: var(--vyzva-ink);
   --color-vyzva-btn: var(--vyzva-btn);
+  --color-vyzva-ink-muted: var(--vyzva-ink-muted);
+  --color-vyzva-btn-ink: var(--vyzva-btn-ink);
 
   --radius-card: 1rem;
   --radius-pill: 999px;

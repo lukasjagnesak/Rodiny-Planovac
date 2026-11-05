@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ChevronRight, Eye, EyeOff, Lock, MailCheck, ShieldCheck, Users } from "lucide-react";
+import { ChevronRight, Eye, EyeOff, MailCheck, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
@@ -14,7 +14,9 @@ import { CENIK, ZAKLADAJICI, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { useZakladajiciVolno } from "@/components/web/zakladajici";
 import { ZNACKA } from "@/lib/brand";
 import { cn } from "@/lib/format";
-import { prettyError } from "../../(auth)/prihlaseni/login-form";
+import { UCET_EXISTUJE, prettyError } from "../../(auth)/prihlaseni/login-form";
+import { Ikona } from "@/components/ui/ikona";
+import { KartaSoukromi } from "@/components/web/karta-soukromi";
 import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
 import { bezpecnyCil } from "@/lib/navrat";
@@ -256,6 +258,7 @@ export function RegisterForm() {
         <PoleFormulare
           id="reg-jmeno"
           label="Jméno"
+          napoveda="jak vás uvidí členové rodiny"
           chyba={zobrazenaChyba("jmeno")}
           input={{
             ref: (el) => {
@@ -325,7 +328,20 @@ export function RegisterForm() {
 
         {error ? (
           <Alert tone="danger" className="text-[0.95rem]">
-            <span role="alert">{error}</span>
+            <span role="alert">
+              {error}
+              {error === UCET_EXISTUJE ? (
+                <>
+                  {" "}
+                  <Link
+                    href={`/prihlaseni?dal=${encodeURIComponent(dal)}`}
+                    className="font-semibold underline underline-offset-4"
+                  >
+                    Přejít na přihlášení
+                  </Link>
+                </>
+              ) : null}
+            </span>
           </Alert>
         ) : null}
 
@@ -343,19 +359,22 @@ export function RegisterForm() {
             <ShieldCheck className="h-4 w-4 text-brand" aria-hidden />
             Bez karty. Bez automatické platby.
           </p>
+          {inviteToken ? null : (
+            <p className="text-center text-[0.8125rem] text-ink-subtle">
+              {rok
+                ? "Rok zdarma začne běžet ve chvíli, kdy založíte rodinu."
+                : `Zkušební doba ${ZKUSEBNI_SLIB.dni} dní začne běžet ve chvíli, kdy založíte rodinu.`}
+            </p>
+          )}
         </div>
 
         {inviteToken ? null : (
-          <ul className="space-y-1.5 border-t border-line pt-4 text-sm text-ink-muted">
-            <li className="flex items-start gap-2">
-              <Users className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden />
-              Druhý rodič nemá samostatný poplatek, platí se za celou rodinu.
-            </li>
-            <li className="flex items-start gap-2">
-              <Lock className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden />
-              Údaje vidí jen členové rodiny, které sami pozvete.
-            </li>
-          </ul>
+          <p className="flex items-start gap-2 border-t border-line pt-4 text-sm text-ink-muted">
+            <span className="mt-0.5 shrink-0 text-brand">
+              <Ikona nazev="rodina" size={16} />
+            </span>
+            Druhý rodič nemá samostatný poplatek, platí se za celou rodinu.
+          </p>
         )}
 
         {/* Cena patří sem, ne až za paywall. Kdo ji uvidí až po měsíci
@@ -383,19 +402,13 @@ export function RegisterForm() {
 
       {inviteToken ? null : (
         <>
+          <KartaSoukromi />
           <Link
-            href="/"
-            className="flex items-center justify-between gap-3 rounded-2xl border-2 border-brand/40 bg-brand-soft px-4 py-3.5 transition-colors hover:border-brand"
+            href="/jak-funguje"
+            className="flex items-center justify-center gap-1 text-sm font-medium text-brand underline-offset-4 hover:underline"
           >
-            <span className="min-w-0">
-              <span className="block font-display text-base font-semibold text-ink">
-                Chcete vědět víc o {ZNACKA}?
-              </span>
-              <span className="block text-sm text-ink-muted">
-                Prohlédněte si aplikaci a co umí.
-              </span>
-            </span>
-            <ChevronRight className="h-5 w-5 shrink-0 text-brand" aria-hidden />
+            Prohlédnout aplikaci
+            <ChevronRight className="h-4 w-4" aria-hidden />
           </Link>
           <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[0.8125rem] text-ink-subtle">
             <Link href="/cenik" className="underline-offset-4 hover:text-ink hover:underline">

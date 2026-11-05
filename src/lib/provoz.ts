@@ -48,6 +48,8 @@ export const DRUHY = [
   "rozvrh-jinak",
   // Registrační formulář: začal vyplňovat, nebo šel přes Google/Apple.
   "registrace-zobrazeni",
+  // Klik na výzvu k registraci (stránka a místo v parametrech).
+  "registrace-cta",
   "registrace-zacal",
   "registrace-odeslano",
   "registrace-cizi",

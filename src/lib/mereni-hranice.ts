@@ -16,6 +16,8 @@
  */
 export const CESTY_S_MERENIM = [
   "/",
+  "/jak-funguje",
+  "/o-klidoo",
   "/jak-funguje-stridava-pece",
   "/vzor-dohody-o-stridave-peci",
   "/kalkulacka-vyzivneho",

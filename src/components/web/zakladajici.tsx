@@ -211,7 +211,7 @@ export function ZakladajiciPromo({ className }: { className?: string }) {
         {rok ? "První rok zdarma" : `${ZKUSEBNI_DNI} dní zdarma`}
       </p>
       <p className="mt-1 text-sm text-ink-muted">
-        {rok ? "0 Kč na 12 měsíců" : "Všechny funkce"} · bez platební karty
+        {rok ? "12 měsíců se všemi funkcemi" : "Všechny funkce"} · bez platební karty
       </p>
       {/* Ukazatel naplnění ze skutečného počtu v databázi. Místo pro něj
           je vyhrazené i během načítání, ať stránka neposkočí (CLS). */}

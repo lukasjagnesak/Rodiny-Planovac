@@ -2,123 +2,121 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import {
-  BellRing,
-  CalendarDays,
-  Car,
-  FileText,
-  GraduationCap,
-  Receipt,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Sloupec, Nadtitulek, DalsiCteni, FotoPas, VyzvaPas } from "@/components/web/prvky";
-import { LeadForm } from "@/components/web/lead-form";
+import { Sloupec, Nadtitulek } from "@/components/web/prvky";
 import { UkazkyAplikace } from "@/components/web/ukazky";
-import { Karusel } from "@/components/web/karusel";
-import { POPIS, ZNACKA } from "@/lib/brand";
-import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
-import { ZakladajiciPruh, ZdarmaVeta } from "@/components/web/zakladajici";
+import { KartaSoukromi } from "@/components/web/karta-soukromi";
+import { ZakladajiciPromo } from "@/components/web/zakladajici";
+import {
+  TLACITKO_HLAVNI,
+  TLACITKO_VEDLEJSI,
+  VyzvaRegistrace,
+} from "@/components/web/vyzva-registrace";
+import { Ikona } from "@/components/ui/ikona";
+import type { NazevIkony } from "@/lib/ikony";
+import { ZNACKA } from "@/lib/brand";
+import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
+import {
+  BENEFITY,
+  BEZ_KARTY,
+  DEFINICE,
+  HLAVNI_POPIS,
+  PO_SKONCENI,
+  PRO_JEDNOHO,
+  TAGLINE,
+} from "@/lib/texty";
+
+const POPIS_STRANKY =
+  "Aplikace pro střídavou péči. Mějte předávky, kroužky, školní akce, rozvrhy a výdaje na děti pohromadě. Funguje i pro jednoho rodiče.";
 
 export const metadata: Metadata = {
-  title: {
-    absolute: `${ZNACKA} — kalendář a výdaje pro střídavou péči`,
-  },
-  description: POPIS,
+  title: { absolute: "Střídavá péče: kalendář, předávky a výdaje | Klidoo" },
+  description: POPIS_STRANKY,
   alternates: { canonical: "/" },
   openGraph: {
-    // Ve vyhledávači vyhrává titulek s klíčovým slovem, na Facebooku
-    // ten, u kterého člověk zpomalí. Proto se tyhle dva liší.
-    title: `${ZNACKA} — konec dohadování, kdo, kdy a za kolik`,
-    description: POPIS,
+    title: `${ZNACKA} — ${TAGLINE}`,
+    description: DEFINICE,
     type: "website",
     url: "/",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: ZNACKA }],
   },
 };
 
-const FUNKCE = [
+/**
+ * Homepage podle zadání 2026: devět sekcí v pořadí hodnota → produkt →
+ * důvěra → nabídka → akce. V každé sekci nejvýš jedno plné tlačítko,
+ * vedlejší akce jen obrysem nebo odkazem. Ceny z `tarify.ts`, hlavní
+ * věty z `texty.ts`.
+ */
+
+const IKONY_BENEFITU: NazevIkony[] = ["predani", "skola", "bankovka"];
+
+/** 02 — situace, které rodič pozná. Problém, pak funkce. Nikoho neobviňují. */
+const SITUACE: { citat: string; funkce: string; popis: string; ikona: NazevIkony }[] = [
   {
-    ikona: CalendarDays,
-    nazev: "Kalendář péče",
-    popis:
-      "Sudé a liché týdny, 2–2–3 nebo vlastní rozpis po dnech. Prázdniny a svátky " +
-      "se doplní samy podle okresu, ve kterém dítě chodí do školy.",
+    citat: "Dnes vyzvedáváš ty, nebo já?",
+    funkce: "Kalendář péče s předávkami",
+    popis: "U koho děti spí a kdo je vyzvedává, je napsané den po dni. Vidí to oba.",
+    ikona: "predani",
   },
   {
-    ikona: Car,
-    nazev: "Kroužky a doprava",
-    popis:
-      "U každé aktivity je napsané, kdo veze a kdo vyzvedává. Včetně toho, kdo to má příští týden.",
+    citat: "O tom výletu jsem vůbec nevěděl.",
+    funkce: "Školní akce a rozvrhy",
+    popis: "Akce, rozvrh a zprávy ze školy (i z EduPage) na jednom místě pro oba rodiče.",
+    ikona: "autobus",
   },
   {
-    ikona: Receipt,
-    nazev: "Výdaje s účtenkami",
-    popis:
-      "Vyfotíte účtenku, zadáte částku a klíč rozdělení. Na konci měsíce je vidět, " +
-      "kolik kdo zaplatil a kolik z toho připadá na koho. Umí i import z Excelu.",
-  },
-  {
-    ikona: GraduationCap,
-    nazev: "Škola a rozvrh",
-    popis:
-      "Rozvrh každého dítěte, školní akce a zprávy z EduPage. Oba rodiče je vidí " +
-      "ve stejnou chvíli, bez přeposílání.",
-  },
-  {
-    ikona: BellRing,
-    nazev: "Připomínky",
-    popis:
-      "Upozornění před předávkou, kroužkem i doktorem přijde do telefonu. Kdy má " +
-      "dorazit, si nastavíte u každého typu zvlášť.",
-  },
-  {
-    ikona: FileText,
-    nazev: "Doklady dětí",
-    popis:
-      "Kartička pojištěnce, občanka, potvrzení ze školy. Vyfocené jednou a dostupné " +
-      "i ve chvíli, kdy je originál v druhé domácnosti.",
+    citat: "Kdo platil ten tábor?",
+    funkce: "Výdaje a účtenky",
+    popis: "Kdo co zaplatil, jak se to dělí podle vaší dohody a kolik zbývá vyrovnat.",
+    ikona: "stan",
   },
 ];
 
+/** 03 — tři kroky k prvnímu kalendáři. Pořadí je skutečné, proto čísla. */
+const KROKY: { nazev: string; popis: string; ikona: NazevIkony }[] = [
+  { nazev: "Vytvoříte rodinu", popis: "Jméno rodiny a děti. Stačí pár údajů.", ikona: "rodina" },
+  {
+    nazev: "Nastavíte péči",
+    popis: "Týden/týden, 2–2–3, sudé a liché týdny nebo vlastní rozpis.",
+    ikona: "kalendar",
+  },
+  {
+    nazev: "Doplníte kroužky, školu a výdaje",
+    popis: "Kdykoli později, nic z toho není povinné.",
+    ikona: "mic",
+  },
+];
+
+/** 08 — odpovědi podle obchodních podmínek a skutečného chování aplikace. */
 const OTAZKY = [
   {
-    otazka: "Kolik to stojí?",
+    otazka: "Musí se připojit druhý rodič?",
     odpoved:
-      `${ZDARMA_S_PODMINKOU}, se všemi funkcemi a bez zadání karty. Potom ${korun(CENIK[0].cena)} měsíčně nebo ` +
-      `${korun(CENIK[1].cena)} ročně za celou rodinu, ne za jednoho člověka. Druhý rodič, prarodiče, nový partner, teta i chůva jsou v ceně.`,
+      "Nemusí. Kalendář, výdaje, školní akce a rozvrhy dávají smysl i bez druhé strany. Druhého rodiče pozvete, až budete chtít. Jeho přístup je v ceně.",
   },
   {
-    otazka: "Musí Klidoo používat oba rodiče?",
-    odpoved:
-      "Nemusí. Spousta lidí si ho pořizuje proto, že v tom chce mít sám pořádek. Kalendář, " +
-      "výdaje, školní akce a rozvrhy dávají smysl i bez druhé strany. Když se druhý rodič přidá, " +
-      "ušetří to zprávy oběma. Jeho přístup je zdarma, platí jedna domácnost.",
+    otazka: "Potřebuji platební kartu?",
+    odpoved: `Ne. ${ZDARMA_S_PODMINKOU}, ostatní ${ZKUSEBNI_DNI} dní, vždy bez karty a se všemi funkcemi. Kartu zadáte, jen pokud se rozhodnete pokračovat.`,
   },
   {
-    otazka: "Vidí druhý rodič všechno, co si zapíšu?",
+    otazka: "Co se stane po skončení období zdarma?",
+    odpoved: `${PO_SKONCENI} Pokračovat stojí ${korun(CENIK[0].cena)} měsíčně nebo ${korun(CENIK[1].cena)} ročně za celou rodinu.`,
+  },
+  {
+    otazka: "Kdo vidí moje údaje?",
     odpoved:
-      "Vidí to, co je společné: kalendář péče, kroužky, události a výdaje, které do rodiny " +
-      "zadáte. Nastavení, propojení s Googlem nebo EduPage a upozornění zůstávají jen vám.",
+      "Jen členové rodiny, které sami pozvete. Kalendář, kroužky, události a výdaje vidí všichni členové. Doklady dětí jen rodiče a pečující osoby. Nastavení a propojení s Googlem nebo EduPage zůstávají jen vám. Přístup hlídá přímo databáze.",
+  },
+  {
+    otazka: "Jak zruším předplatné?",
+    odpoved:
+      "V aplikaci v části Předplatné, jedním kliknutím a bez psaní podpoře. Do konce zaplaceného období vše běží dál, pak se aplikace přepne do čtení. Nic se nesmaže.",
   },
   {
     otazka: "Umí to sudé a liché týdny?",
     odpoved:
-      "Ano, a taky střídání po týdnu, čtrnáctidenní cyklus, schéma 2–2–3 nebo vlastní rozpis, " +
-      "kde si naklikáte konkrétní dny. Rozpis může být jednotýdenní i dvoutýdenní.",
-  },
-  {
-    otazka: "Propojím to s kalendářem v telefonu?",
-    odpoved:
-      "Ano, přes Google Kalendář. Péče, kroužky i události se vám pak zobrazí vedle pracovních " +
-      "schůzek, takže si na týden u dětí nenaplánujete služebku.",
-  },
-  {
-    otazka: "Kde jsou data uložená?",
-    odpoved:
-      "Na evropských serverech. Fotky účtenek a dokladů leží v úložišti, ke kterému se " +
-      "dostane jen vaše rodina. Přístup hlídá databáze, ne jen aplikace.",
+      "Ano, a také střídání po týdnu, čtrnáctidenní cyklus, schéma 2–2–3 nebo vlastní rozpis po dnech.",
   },
 ];
 
@@ -137,439 +135,302 @@ export default async function Domu() {
 
   return (
     <>
-      {/* ── Hlavička ─────────────────────────────────────────────── */}
-      <section className="pb-10 pt-12 sm:pb-16 sm:pt-20">
-        <div className="mx-auto grid w-full max-w-5xl items-center gap-12 px-5 sm:px-6 lg:grid-cols-[1.05fr_1fr]">
+      {/* ── 01 Hero ──────────────────────────────────────────────── */}
+      <section className="pb-12 pt-8 sm:pb-16 sm:pt-16">
+        <div className="mx-auto grid w-full max-w-5xl items-center gap-10 px-5 sm:px-6 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <Nadtitulek>Pro rodiče, kteří spolu už nebydlí</Nadtitulek>
-            {/* Nadpis pojmenovává nepřítele, ne produkt. „Kalendář pro
-                střídavou péči" je popis kategorie — takových vět čte
-                člověk ve výsledcích hledání deset a nezastaví se u žádné.
-                U koho jsou tenhle týden a kdo platil obědy pozná jako
-                svoje. */}
-            <h1 className="mt-3 font-display text-[2.25rem] font-semibold leading-[1.08] tracking-tight text-ink sm:text-[3.25rem]">
-              Konec dohadování,
-              <br />
-              kdo, kdy a za kolik.
+            <h1 className="font-display text-[2.1rem] font-semibold leading-[1.06] tracking-tight text-ink sm:text-[3.1rem]">
+              {HLAVNI_POPIS}
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-muted">
-              U koho jsou tenhle týden. Kdo je veze z fotbalu. Kdo zaplatil obědy a jestli
-              se to někdy vyrovná. V Klidoo je to napsané jednou, na jednom místě, a vidí
-              to oba. Začít můžete i sami — druhého rodiče pozvete, až bude chtít.
+            <p className="mt-4 max-w-xl text-[1.0625rem] leading-relaxed text-ink-muted sm:text-lg">
+              Mějte přehled o tom, kdy jsou děti u kterého rodiče, kdo je vyzvedává a jak se dělí
+              společné výdaje. {ZNACKA} pomáhá organizovat život ve dvou domácnostech.
             </p>
 
-            <ZakladajiciPruh className="mt-6 max-w-lg" />
+            <ul className="mt-5 space-y-2">
+              {BENEFITY.map((b, i) => (
+                <li key={b} className="flex items-center gap-3 text-[0.98rem] text-ink">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand">
+                    <Ikona nazev={IKONY_BENEFITU[i]} size={18} />
+                  </span>
+                  {b}
+                </li>
+              ))}
+            </ul>
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link
-                href="/registrace"
-                className="inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
-              >
-                Vyzkoušet zdarma
-              </Link>
-              <Link
-                href="/kalkulacka"
-                className="inline-flex h-12 items-center rounded-xl border border-line-strong bg-surface px-6 font-medium text-ink transition-colors hover:bg-surface-2"
-              >
-                Spočítat noci u rodičů
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <VyzvaRegistrace stranka="homepage" misto="hero" className={TLACITKO_HLAVNI}>
+                Začít zdarma
+              </VyzvaRegistrace>
+              <Link href="/jak-funguje" className={TLACITKO_VEDLEJSI}>
+                Podívat se do aplikace
               </Link>
             </div>
-
-            {/* Věta musí zůstat jedním odstavcem: `flex` by z každého kusu
-                textu udělal vlastní sloupec a odkaz by se zalomil doprostřed. */}
-            <p className="mt-4 flex items-start gap-2 text-sm text-ink-subtle">
-              <Users size={16} className="mt-0.5 shrink-0" aria-hidden />
-              <span>
-                <ZdarmaVeta vedlePruhu /> Potom{" "}
-                <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
-                  {korun(CENIK[0].cena)} měsíčně
-                </Link>{" "}
-                za celou rodinu. Druhý rodič neplatí nic.
+            <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink-muted">
+              <span className="flex items-center gap-1.5">
+                <span className="text-brand">
+                  <Ikona nazev="stit" size={16} />
+                </span>
+                {BEZ_KARTY}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-brand">
+                  <Ikona nazev="rodina" size={16} />
+                </span>
+                {PRO_JEDNOHO}
               </span>
             </p>
           </div>
 
-          {/* Skutečný snímek aplikace, ne kresba. Jen na počítači: na
-              telefonu hned pod úvodem následuje „Podívejte se dovnitř"
-              a dva telefony za sebou by jen prodloužily cestu k tlačítku. */}
-          <div className="mx-auto hidden w-[280px] rounded-[2.25rem] border-[10px] border-ink/85 bg-canvas shadow-xl lg:block">
-            <div className="overflow-hidden rounded-[1.6rem]">
-              <Image
-                src="/ukazky/prehled.png"
-                alt="Přehled v aplikaci Klidoo: u koho jsou děti dnes, kdy končí škola, útrata a noci za měsíc"
-                width={780}
-                height={1688}
-                sizes="280px"
-                priority
-                className="block h-auto w-full"
-              />
+          {/* Skutečný kalendář ukázkové rodiny. Na telefonu až pod
+              tlačítkem a oříznutý, ať nadpis a výzva zůstanou nahoře. */}
+          <div className="mx-auto w-[240px] sm:w-[280px]">
+            <div className="max-h-[420px] overflow-hidden rounded-[2.25rem] border-[10px] border-ink/85 bg-canvas shadow-xl lg:max-h-none">
+              <div className="overflow-hidden rounded-[1.6rem]">
+                <Image
+                  src="/ukazky/kalendar.png"
+                  alt="Kalendář péče v aplikaci Klidoo: barevně rozlišené dny u každého rodiče a nejbližší předávka"
+                  width={780}
+                  height={1688}
+                  sizes="(min-width: 640px) 280px, 240px"
+                  priority
+                  className="block h-auto w-full"
+                />
+              </div>
             </div>
+            <p className="mt-3 text-center text-xs text-ink-subtle">
+              Skutečná aplikace, ukázková rodina.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── Jak to vypadá uvnitř ─────────────────────────────────── */}
-      {/* Rodič, který se rozhoduje, chce vidět aplikaci dřív, než dá
-          e-mail. Popis funkcí to nenahradí. */}
-      <section className="py-14 sm:py-20">
+      {/* ── 02 Známé situace ─────────────────────────────────────── */}
+      <section className="border-y border-line bg-surface py-14 sm:py-16">
         <Sloupec siroky>
-          <Nadtitulek>Jak to vypadá uvnitř</Nadtitulek>
-          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Podívejte se dovnitř
+          <h2 className="max-w-3xl font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Tohle zná skoro každý rodič ve dvou domácnostech.
           </h2>
-          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Obrazovky, ve kterých rodiče tráví skoro všechen čas. Skutečné snímky aplikace, jen s vymyšlenou rodinou.
-          </p>
-
-          <div className="mt-10">
-            <UkazkyAplikace />
-          </div>
-        </Sloupec>
-      </section>
-
-      <VyzvaPas
-        nadpis="Takhle to vypadá i u vás"
-        text="Založení rodiny trvá dvě minuty. Kalendář se naklikne, zbytek se doplní časem."
-      />
-
-      {/* ── Co se doopravdy děje ─────────────────────────────────── */}
-      <section className="border-y border-line bg-surface py-14 sm:py-16">
-        <Sloupec siroky>
-          <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-12">
-            <div>
-              <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                Právní část se vyřeší jednou. Provoz každý týden.
-              </h2>
-              <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-                Rozsudek nebo dohoda je hotová za pár měsíců. Co rodiče doopravdy vyčerpá,
-                začne až potom a trvá dalších deset let. Nikdo o tom předem nemluví.
-              </p>
-            </div>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image
-                src="/foto/vecer-doma.jpg"
-                alt="Matka telefonuje u kuchyňské linky, dcera za ní u stolu píše úkoly."
-                fill
-                sizes="(min-width: 1024px) 28rem, 100vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="mt-9 grid gap-6 sm:grid-cols-3">
-            {[
-              {
-                nazev: "Informace se ztrácejí",
-                popis:
-                  "Škola napíše jednomu, druhý o tom neví. Zubař, plavky, výlet, souhlas s focením.",
-              },
-              {
-                nazev: "Peníze se nepočítají",
-                popis:
-                  "Kdo zaplatil lyžák, kdo brusle, kdo tábor. Za rok si to nikdo nepamatuje a zůstane pocit křivdy.",
-              },
-              {
-                nazev: "Domlouvání bere energii",
-                popis:
-                  "Deset zpráv o tom, kdo vyzvedne dítě ve čtvrtek, je deset příležitostí k hádce.",
-              },
-            ].map(({ nazev, popis }) => (
-              <div key={nazev} className="border-l-2 border-line-strong pl-4">
-                <h3 className="font-display font-semibold text-ink">{nazev}</h3>
-                <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">{popis}</p>
-              </div>
-            ))}
-          </div>
-        </Sloupec>
-      </section>
-
-      {/* ── Funkce ───────────────────────────────────────────────── */}
-      <section className="py-14 sm:py-20">
-        <Sloupec siroky>
-          <Nadtitulek>Co Klidoo umí</Nadtitulek>
-          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Šest věcí, které přestanete řešit po telefonu
-          </h2>
-
-          {/* Karusel, ne mřížka. Šest dlaždic pod sebou je na telefonu
-              šest obrazovek scrollování — vedle sebe se projedou palcem. */}
-          <Karusel popis="Co Klidoo umí" className="mt-10">
-            {FUNKCE.map(({ ikona: Ikona, nazev, popis }) => (
-              <div
-                key={nazev}
-                className="h-full rounded-2xl border border-line bg-surface p-5"
-              >
-                <span
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft text-brand"
-                  aria-hidden
-                >
-                  <Ikona size={20} />
-                </span>
-                <h3 className="mt-3.5 font-display text-base font-semibold text-ink">
-                  {nazev}
-                </h3>
-                <p className="mt-1.5 text-[0.95rem] leading-relaxed text-ink-muted">{popis}</p>
-              </div>
-            ))}
-          </Karusel>
-        </Sloupec>
-      </section>
-
-      {/* ── Sám, nebo spolu ──────────────────────────────────────── */}
-      <section className="border-y border-line bg-surface py-14 sm:py-16">
-        <Sloupec siroky>
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div>
-              {/* Fotka je tu schválně jednoho rodiče s dítětem: sekce slibuje,
-                  že appka dává smysl i bez druhé strany, a obrázek celé rodiny
-                  by tvrdil pravý opak. */}
-              <div className="relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
-                <Image
-                  src="/foto/tata-a-dcera.jpg"
-                  alt="Otec sedí večer u stolu vedle dcery, která kreslí."
-                  fill
-                  sizes="(min-width: 1024px) 32rem, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                Funguje i tehdy, když ho používáte bez druhého rodiče
-              </h2>
-              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Nemusíte druhého rodiče nikam přemlouvat. Kalendář, výdaje, školní akce a rozvrhy
-                dávají smysl už proto, že v tom chcete mít konečně pořádek ty. Když se druhý
-                rodič později přidá, uvidí stejný týden a psaní ubude oběma.
-              </p>
-            </div>
-            <div className="card p-6">
-              <h3 className="font-display text-lg font-semibold text-ink">
-                Když se přidá i druhá strana
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {[
-                  "Předávky, kroužky a doktoři jsou v jednom rozpisu, ne ve dvou hlavách.",
-                  "Výdaje se dělí podle klíče, na kterém jste se domluvili, ne podle paměti.",
-                  "Změnu vidí druhý rodič hned, bez zprávy „prosím tě, ještě…“.",
-                  "Přístup druhého rodiče je zdarma.",
-                ].map((veta) => (
-                  <li key={veta} className="flex gap-3 text-[0.95rem] text-ink-muted">
-                    <ShieldCheck
-                      size={18}
-                      className="mt-0.5 shrink-0 text-brand"
-                      aria-hidden
-                    />
-                    {veta}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </Sloupec>
-      </section>
-
-      {/* ── Pás s fotkou ─────────────────────────────────────────── */}
-      {/* Nad ním jsou samá čísla a obrazovky. Tohle je místo, kde
-          návštěvník uvidí, o koho vlastně jde — hned vedle toho, kdo
-          za Klidoo stojí.
-
-          Je tu schválně otec. Appky pro rodiny se vizuálně dělají pro
-          matky a otec ve střídavé péči si zvykl, že na obrázcích není —
-          na nejvýš položené fotce celého webu to má vidět jinak. */}
-      <FotoPas
-        src="/foto/cesta-ze-skoly.jpg"
-        alt="Otec jde s dcerou a synem ze školy podzimní ulicí, kluk mu něco vypráví."
-      />
-
-      {/* ── Kdo za tím stojí ─────────────────────────────────────── */}
-      {/* Tady je jediná věc, kterou konkurence nemůže zkopírovat. Funkce
-          se dají dodělat za měsíc, „psal to někdo, kdo tím prošel“ ne.
-          Proto je to hned pod první fotkou, ne schované v patičce. */}
-      <section className="border-y border-line bg-surface py-14 sm:py-16">
-        <Sloupec siroky>
-          <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
-            <div>
-              <Nadtitulek>Kdo za tím stojí</Nadtitulek>
-              <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                Klidoo píše rodič, který tím sám prochází
-              </h2>
-              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
-Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
-                a zprávy o tom, kdo koho kdy vyzvedne, z hlavy někam, kde to uvidí
-                oba rodiče.
-              </p>
-              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-muted">
-                Každá funkce v aplikaci řeší něco, co v provozu dvou domácností
-                opakovaně drhlo. Když vám něco chybí nebo něco nefunguje, napište
-                na{" "}
-                <a
-                  href="mailto:info@klidoo.cz"
-                  className="font-medium text-brand underline underline-offset-4"
-                >
-                  info@klidoo.cz
-                </a>
-                . Odpovídám na to sám.
-              </p>
-            </div>
-
-            <div className="card p-6 sm:p-7">
-              <h3 className="font-display text-lg font-semibold text-ink">
-                Postavené na české střídavé péči
-              </h3>
-              <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
-                Několik věcí ve střídavé péči má v Česku vlastní pravidla. Bez nich
-                se rozpis počítá špatně:
-              </p>
-              <ul className="mt-4 space-y-3.5">
-                {[
-                  {
-                    nazev: "Počítá noci, ne dny",
-                    popis:
-                      "Den strávíte s dítětem oba, noc má jen jeden. Poměr péče se proto počítá z nocí a tak ho počítá i Klidoo.",
-                  },
-                  {
-                    nazev: "Zná český školní rok",
-                    popis:
-                      "Jarní prázdniny připadají podle okresu na jiný týden. Doplní se samy, včetně svátků a ředitelského volna.",
-                  },
-                  {
-                    nazev: "Výživné podle tabulky ministerstva",
-                    popis:
-                      "Doporučená rozmezí podle věku dítěte, příjmů obou rodičů a rozsahu péče.",
-                  },
-                  {
-                    nazev: "Druhý rodič neplatí nic",
-                    popis:
-                      "A ani nikdo další. Prarodiče, nový partner, teta i chůva: přidejte každého, kdo vozí, hlídá nebo vyzvedává. Platí jedna domácnost za celou rodinu.",
-                  },
-                ].map(({ nazev, popis }) => (
-                  <li key={nazev} className="flex gap-3">
-                    <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand" aria-hidden />
-                    <span>
-                      <span className="block font-medium text-ink">{nazev}</span>
-                      <span className="mt-0.5 block text-[0.9rem] leading-relaxed text-ink-muted">
-                        {popis}
-                      </span>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {SITUACE.map(({ citat, funkce, popis, ikona }) => (
+              <div key={citat} className="flex flex-col rounded-2xl border border-line bg-canvas p-5">
+                <p className="font-display text-lg font-semibold leading-snug text-ink">„{citat}“</p>
+                <div className="mt-4 flex items-start gap-3 border-t border-line pt-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand">
+                    <Ikona nazev={ikona} size={20} />
+                  </span>
+                  <span>
+                    <span className="block font-semibold text-ink">{funkce}</span>
+                    <span className="mt-0.5 block text-[0.9375rem] leading-relaxed text-ink-muted">
+                      {popis}
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </Sloupec>
       </section>
 
-      {/* ── Rozcestník na obsah ──────────────────────────────────── */}
+      {/* ── 03 Jak to funguje ────────────────────────────────────── */}
       <section className="py-14 sm:py-20">
         <Sloupec siroky>
           <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            Než se do toho pustíte
+            Začněte jednoduše.
+          </h2>
+          <ol className="mt-8 grid gap-4 md:grid-cols-3">
+            {KROKY.map(({ nazev, popis, ikona }, i) => (
+              <li key={nazev} className="rounded-2xl border border-line bg-surface p-5">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-brand-ink">
+                    {i + 1}
+                  </span>
+                  <span className="text-brand">
+                    <Ikona nazev={ikona} size={22} />
+                  </span>
+                </div>
+                <h3 className="mt-4 font-display text-lg font-semibold text-ink">{nazev}</h3>
+                <p className="mt-1 text-[0.95rem] leading-relaxed text-ink-muted">{popis}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+            <VyzvaRegistrace stranka="homepage" misto="kroky" className={TLACITKO_HLAVNI}>
+              Vytvořit kalendář
+            </VyzvaRegistrace>
+            <p className="text-sm text-ink-muted">Druhého rodiče můžete pozvat později.</p>
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 04 Produkt v praxi ───────────────────────────────────── */}
+      <section className="border-y border-line bg-surface py-14 sm:py-20">
+        <Sloupec siroky>
+          <Nadtitulek>Produkt v praxi</Nadtitulek>
+          <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Vše důležité na jednom místě.
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
-            Tři věci, které řeší skoro každý, kdo o střídavé péči uvažuje. Zdarma a bez
-            registrace.
+            Skutečné obrazovky aplikace, jen s vymyšlenou rodinou.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {[
-              {
-                href: "/jak-funguje-stridava-pece",
-                nazev: "Jak funguje střídavá péče",
-                popis: "Podmínky, rytmy střídání, výživné a trvalé bydliště. Bez právničiny.",
-              },
-              {
-                href: "/vzor-dohody-o-stridave-peci",
-                nazev: "Vzor dohody",
-                popis: "Co musí obsahovat, aby ji soud schválil, a na co se zapomíná.",
-              },
-              {
-                href: "/kalkulacka-vyzivneho",
-                nazev: "Kalkulačka výživného",
-                popis:
-                  "Podle tabulky ministerstva. Počítá s příjmy obou rodičů i s rozsahem péče.",
-              },
-            ].map(({ href, nazev, popis }) => (
-              <Link
-                key={href}
-                href={href}
-                className="card block p-5 transition-colors hover:border-brand"
+          <div className="mt-10">
+            <UkazkyAplikace
+              jen={["kalendar", "krouzky", "vydaje", "rozvrh"]}
+              nazvy={{
+                kalendar: "Kalendář péče",
+                krouzky: "Kroužky a doprava",
+                vydaje: "Výdaje a účtenky",
+                rozvrh: "Školní akce a rozvrhy",
+              }}
+              bezDalsich
+            />
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 05 Jeden rodič ───────────────────────────────────────── */}
+      <section className="py-14 sm:py-20">
+        <Sloupec siroky>
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+            {/* Jeden rodič s dítětem: sekce slibuje, že aplikace dává smysl
+                i bez druhé strany. */}
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <Image
+                src="/foto/tata-a-dcera.jpg"
+                alt="Otec sedí večer u stolu vedle dcery, která kreslí."
+                fill
+                sizes="(min-width: 1024px) 32rem, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                Druhý rodič se zatím nechce přidat?
+              </h2>
+              <p className="mt-3 text-lg leading-relaxed text-ink-muted">
+                Začněte sami. Vytvořte si přehled střídání, kroužků a výdajů. Druhého rodiče
+                pozvete později, až budete chtít.
+              </p>
+              <VyzvaRegistrace
+                stranka="homepage"
+                misto="jeden-rodic"
+                className={`${TLACITKO_VEDLEJSI} mt-6`}
               >
-                <span className="font-display font-semibold text-ink">{nazev}</span>
-                <span className="mt-1.5 block text-sm leading-relaxed text-ink-muted">
-                  {popis}
-                </span>
+                Začít s vlastním kalendářem
+              </VyzvaRegistrace>
+            </div>
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 06 Důvěra ────────────────────────────────────────────── */}
+      <section className="border-y border-line bg-surface py-14 sm:py-16">
+        <Sloupec siroky>
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
+            <div>
+              <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                Klidoo jsem nezačal budovat jako firma. Ale jako táta.
+              </h2>
+              <p className="mt-4 text-[1.0625rem] leading-relaxed text-ink-muted">
+                Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky a zprávy
+                o tom, kdo koho kdy vyzvedne, z hlavy někam, kde to uvidí oba rodiče. Každá funkce
+                řeší něco, co v provozu dvou domácností opakovaně drhlo.
+              </p>
+              <Link
+                href="/o-klidoo"
+                className="mt-4 inline-flex items-center gap-1 font-medium text-brand underline-offset-4 hover:underline"
+              >
+                Přečíst příběh Klidoo ›
               </Link>
+            </div>
+            <KartaSoukromi className="self-start bg-canvas" />
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 07 Cena ──────────────────────────────────────────────── */}
+      <section className="py-14 sm:py-20">
+        <Sloupec siroky>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Jedna cena za celou rodinu.
+          </h2>
+          <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
+            <div className="rounded-2xl border-2 border-brand bg-surface p-6">
+              <p className="font-display text-4xl font-semibold tracking-tight text-ink">
+                {korun(CENIK[0].cena)}
+                <span className="text-base font-normal text-ink-subtle"> / měsíc za rodinu</span>
+              </p>
+              <p className="mt-1 text-sm text-ink-muted">
+                nebo {korun(CENIK[1].cena)} ročně · druhý rodič bez dalšího poplatku
+              </p>
+              <p className="mt-4 text-[0.95rem] leading-relaxed text-ink-muted">{PO_SKONCENI}</p>
+              <VyzvaRegistrace
+                stranka="homepage"
+                misto="cena"
+                className={`${TLACITKO_HLAVNI} mt-6 w-full sm:w-auto`}
+              >
+                Začít zdarma
+              </VyzvaRegistrace>
+              <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                <Link href="/cenik" className="text-brand underline-offset-4 hover:underline">
+                  Celý ceník
+                </Link>
+                <Link
+                  href="/obchodni-podminky#zakladajici"
+                  className="text-brand underline-offset-4 hover:underline"
+                >
+                  Podmínky nabídky
+                </Link>
+              </p>
+            </div>
+            <ZakladajiciPromo />
+          </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 08 FAQ ───────────────────────────────────────────────── */}
+      <section className="border-t border-line bg-surface py-14 sm:py-16">
+        <Sloupec>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
+            Nejčastější otázky
+          </h2>
+          <div className="mt-6 space-y-3">
+            {OTAZKY.map(({ otazka, odpoved }) => (
+              <details key={otazka} className="group rounded-2xl border border-line bg-canvas px-4 py-3.5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-medium text-ink">
+                  {otazka}
+                  <span
+                    aria-hidden
+                    className="text-ink-subtle transition-transform group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">{odpoved}</p>
+              </details>
             ))}
           </div>
         </Sloupec>
       </section>
 
-      {/* ── Otázky ───────────────────────────────────────────────── */}
-      <section className="border-t border-line bg-surface py-14 sm:py-16">
-        <Sloupec siroky>
-          <div className="max-w-2xl">
-            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
-              Časté otázky
+      {/* ── 09 Závěr ─────────────────────────────────────────────── */}
+      <section className="bg-vyzva py-14 sm:py-20">
+        <Sloupec>
+          <div className="text-center">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-vyzva-ink sm:text-4xl">
+              {TAGLINE}
             </h2>
-            <div className="mt-6 space-y-3">
-              {OTAZKY.map(({ otazka, odpoved }) => (
-                <details
-                  key={otazka}
-                  className="rounded-2xl border border-line bg-canvas px-4 py-3.5"
-                >
-                  <summary className="cursor-pointer font-medium text-ink">{otazka}</summary>
-                  <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-muted">
-                    {odpoved}
-                  </p>
-                </details>
-              ))}
-            </div>
-
-            <LeadForm
-              magnet="newsletter"
-              nadpis="Chcete vědět, co přibude?"
-              popis="Píšeme jen tehdy, když je co říct: nová funkce, mobilní aplikace, změna v pravidlech střídavé péče. Pár e-mailů za rok."
-              tlacitko="Odebírat"
-              hotovo="Díky. Ozveme se, až bude co říct."
-            />
-
-            {/* Poslední věta stránky. Kdo dočetl až sem, už ví, co Klidoo
-                umí — potřebuje důvod začít dnes, ne další výčet funkcí. */}
-            <h2 className="mt-14 font-display text-3xl font-semibold tracking-tight text-ink">
-              Příští týden se to bude řešit znovu
-            </h2>
-            <p className="mt-3 text-lg leading-relaxed text-ink-muted">
-              Kroužky, předávky a účtenky nepočkají, až na to bude klid. Založení rodiny
-              trvá dvě minuty a kartu nezadáváte.
+            <p className="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-vyzva-ink-muted">
+              Mějte praktické věci pohromadě.
             </p>
-
-            <Link
-              href="/registrace"
-              className="mt-6 inline-flex h-12 items-center rounded-xl bg-brand px-6 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+            <VyzvaRegistrace
+              stranka="homepage"
+              misto="zaver"
+              className="mt-7 inline-flex h-12 items-center justify-center rounded-xl bg-vyzva-btn px-7 font-semibold text-vyzva-btn-ink transition-opacity hover:opacity-90"
             >
-              Založit rodinu zdarma
-            </Link>
-            <p className="mt-3 text-sm text-ink-subtle">
-              {ZKUSEBNI_SLIB.vetaKratka} Potom {korun(CENIK[0].cena)} měsíčně za celou rodinu —{" "}
-              <Link href="/cenik" className="underline underline-offset-4 hover:text-ink">
-                ceník
-              </Link>
-              .
-            </p>
+              Vytvořit kalendář zdarma
+            </VyzvaRegistrace>
           </div>
-
-          <DalsiCteni
-            odkazy={[
-              {
-                href: "/pro-advokaty",
-                nazev: "Pro advokáty",
-                popis: "Klienti odcházejí s režimem, který funguje i po rozsudku.",
-              },
-              {
-                href: "/pro-mediatory",
-                nazev: "Pro mediátory",
-                popis: "Provize za doporučení a nástroj, který dohodu udrží naživu.",
-              },
-            ]}
-          />
         </Sloupec>
       </section>
 
@@ -584,9 +445,7 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
               url: "https://klidoo.cz",
               logo: "https://klidoo.cz/icons/icon-512.png",
               email: "info@klidoo.cz",
-              // Pomáhá Googlu spojit doménu se jménem značky — přesně to,
-              // co chybí, když hledání „klidoo“ nenajde vůbec nic. Až
-              // budou sociální sítě, jejich odkazy patří do `sameAs`.
+              description: DEFINICE,
             },
             {
               "@context": "https://schema.org",
@@ -602,7 +461,7 @@ Klidoo vzniklo z vlastní potřeby: dostat předávky, kroužky, účtenky
               applicationCategory: "LifestyleApplication",
               operatingSystem: "Web",
               inLanguage: "cs",
-              description: POPIS,
+              description: DEFINICE,
               offers: CENIK.map((tarif) => ({
                 "@type": "Offer",
                 name: tarif.nazev,
