@@ -39,7 +39,7 @@ const STRANKY = [
 
 (async () => {
   const b = await chromium.launch({
-    executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+    ...(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}),
   });
   let selhalo = 0;
 

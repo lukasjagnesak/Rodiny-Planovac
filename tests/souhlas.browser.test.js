@@ -17,7 +17,7 @@ const { chromium } = require(process.env.PLAYWRIGHT ?? "playwright");
 const TRETI_STRANY = /googletagmanager|google-analytics|connect\.facebook|facebook\.net|doubleclick/i;
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   let selhalo = 0;
   const ok = (popis, podminka) => {
     console.log((podminka ? "  ✓ " : "  ✗ ") + popis);
