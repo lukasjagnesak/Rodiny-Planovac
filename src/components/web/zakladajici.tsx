@@ -198,6 +198,17 @@ export function ZakladajiciUCeny() {
  * Když místa dojdou (nebo se nabídka vypne), karta sama ukáže běžné
  * zkušební období — reklamy vedoucí sem dál dávají smysl.
  */
+/**
+ * Obsah, který má smysl jen do naplnění kapacity — pak zmizí sám.
+ * Během načítání čísla se ukazuje: míst je zatím dost a naopak by
+ * nabídka u většiny návštěv naskočila až po chvíli a posunula stránku.
+ */
+export function DokudJsouMista({ children }: { children: React.ReactNode }) {
+  const volno = useZakladajiciVolno();
+  if (!ZAKLADAJICI.aktivni || volno === 0) return null;
+  return <>{children}</>;
+}
+
 export function ZakladajiciPromo({ className }: { className?: string }) {
   const volno = useZakladajiciVolno();
   const rok = ZAKLADAJICI.aktivni && volno !== 0;

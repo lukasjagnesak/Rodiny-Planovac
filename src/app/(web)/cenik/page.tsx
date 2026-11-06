@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Sloupec, Nadtitulek, DalsiCteni } from "@/components/web/prvky";
 import { CENIK, CO_JE_V_CENE, ZAKLADAJICI, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
-import { ZakladajiciPromo } from "@/components/web/zakladajici";
+import { DokudJsouMista, ZakladajiciPromo } from "@/components/web/zakladajici";
 import { KartaSoukromi } from "@/components/web/karta-soukromi";
 import { SrovnaniTarifu } from "@/components/predplatne/srovnani";
 import {
@@ -87,6 +87,44 @@ export default function Cenik() {
         </Sloupec>
       </section>
 
+      {/* ── Nabídka pro zakládající rodiny: první, dokud jsou místa ─ */}
+      {ZAKLADAJICI.aktivni ? (
+        <DokudJsouMista>
+          <section className="pb-12 sm:pb-16">
+            <Sloupec siroky>
+              <div className="grid gap-6 rounded-3xl border-2 border-brand/30 bg-brand-soft/60 p-5 sm:p-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand">
+                    Jen pro prvních {ZAKLADAJICI.mist} rodin
+                  </p>
+                  <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                    Zakládající rodiny: první rok zdarma
+                  </h2>
+                  <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-muted">
+                    Prvních {ZAKLADAJICI.mist} rodin má 12 měsíců zdarma od založení rodiny, se
+                    všemi funkcemi a bez platební karty. Jeden účet může mít jednu zakládající
+                    rodinu. Po roce se sami rozhodnete, jestli pokračovat za běžnou cenu níže.
+                    Platba se sama nikdy nespustí.
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                    <VyzvaRegistrace stranka="cenik" misto="zakladajici" className={TLACITKO_HLAVNI}>
+                      Získat rok zdarma
+                    </VyzvaRegistrace>
+                    <Link
+                      href="/obchodni-podminky#zakladajici"
+                      className="text-sm font-medium text-brand underline-offset-4 hover:underline"
+                    >
+                      Podmínky nabídky ›
+                    </Link>
+                  </div>
+                </div>
+                <ZakladajiciPromo />
+              </div>
+            </Sloupec>
+          </section>
+        </DokudJsouMista>
+      ) : null}
+
       {/* ── Standardní tarify ─────────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-12 sm:py-16">
         <Sloupec siroky>
@@ -147,34 +185,6 @@ export default function Cenik() {
           </div>
         </Sloupec>
       </section>
-
-      {/* ── Nabídka pro zakládající rodiny (zvlášť od standardu) ──── */}
-      {ZAKLADAJICI.aktivni ? (
-        <section className="py-12 sm:py-16">
-          <Sloupec siroky>
-            <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-center">
-              <div>
-                <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                  Zakládající rodiny: první rok zdarma
-                </h2>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-muted">
-                  Prvních {ZAKLADAJICI.mist} rodin má 12 měsíců zdarma od založení rodiny, se
-                  všemi funkcemi a bez platební karty. Jeden účet může mít jednu zakládající
-                  rodinu. Po roce se sami rozhodnete, jestli pokračovat za běžnou cenu. Platba se
-                  sama nikdy nespustí.
-                </p>
-                <Link
-                  href="/obchodni-podminky#zakladajici"
-                  className="mt-3 inline-block text-sm font-medium text-brand underline-offset-4 hover:underline"
-                >
-                  Podmínky nabídky ›
-                </Link>
-              </div>
-              <ZakladajiciPromo />
-            </div>
-          </Sloupec>
-        </section>
-      ) : null}
 
       {/* ── Co je v ceně ──────────────────────────────────────────── */}
       <section className="border-y border-line bg-surface py-12 sm:py-16">
