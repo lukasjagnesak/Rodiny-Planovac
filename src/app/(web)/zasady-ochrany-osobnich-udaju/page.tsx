@@ -63,6 +63,11 @@ export default function Zasady() {
               "Do odvolání souhlasu, nejdéle 3 roky",
             ],
             [
+              "E-mail a křestní jméno pro tipy a nabídky Klidoo (jen pokud jste zaškrtli souhlas)",
+              "Zasílání obchodních sdělení — souhlas; evidujeme čas, verzi textu a odvolání",
+              "Do odvolání souhlasu nebo smazání účtu",
+            ],
+            [
               "Přístupový token ke Googlu a EduPage",
               "Synchronizace, kterou si sami zapnete — souhlas",
               "Do odpojení propojení",
@@ -155,6 +160,13 @@ export default function Zasady() {
               předplatném; předává se e-mailová adresa příjemce a obsah zprávy.
             </li>
             <li>
+              <strong>Mailchimp</strong> (Intuit Inc., USA) — rozesílání tipů a nabídek, jen
+              pokud k tomu dáte souhlas. Předává se e-mail, křestní jméno, datum registrace
+              a interní identifikátor účtu; nic o dětech ani obsah aplikace. Předání do USA
+              probíhá na základě rozhodnutí Evropské komise o odpovídající ochraně (EU-US
+              Data Privacy Framework). Při smazání účtu kontakt z Mailchimpu vymažeme.
+            </li>
+            <li>
               <strong>Google</strong> (Analytics, Ads) a <strong>Meta</strong> — jen se
               souhlasem a jen na veřejném webu: měření návštěvnosti a účinnosti reklamy.
               Předává se identifikátor prohlížeče, navštívené stránky veřejného webu a to,
@@ -167,7 +179,7 @@ export default function Zasady() {
             Máte právo na přístup ke svým údajům, na jejich opravu a výmaz, na omezení
             zpracování, na přenositelnost a právo vznést námitku proti zpracování založenému
             na oprávněném zájmu. Souhlas můžete kdykoli odvolat — u obchodních sdělení stačí
-            odkaz v patičce e-mailu.
+            odkaz v patičce e-mailu nebo volba v aplikaci (Nastavení → E-maily).
           </p>
           <p>
             Napište na {PROVOZOVATEL.email} a ozveme se nejpozději do měsíce. Pokud budete mít

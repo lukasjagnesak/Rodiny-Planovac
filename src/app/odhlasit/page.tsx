@@ -37,6 +37,9 @@ export default async function OdhlaseniPage({
     // Opakované kliknutí na tentýž odkaz nemá skončit chybou — druhé
     // odhlášení jen potvrdí to první.
     await admin.from("mail_odhlaseni").upsert({ email }, { onConflict: "email" });
+    // Totéž platí pro marketingový souhlas účtu: synchronizace pak
+    // kontakt odhlásí i v Mailchimpu.
+    await admin.rpc("marketing_odhlasit_email", { p_email: email, p_zdroj: "odhlasovaci-odkaz" });
   }
 
   return (

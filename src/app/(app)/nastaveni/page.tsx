@@ -7,6 +7,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Bell,
+  Mail,
   Repeat,
   Smartphone,
 } from "lucide-react";
@@ -25,7 +26,7 @@ export default async function SettingsPage() {
   const session = await requireSession();
   const supabase = await createClient();
 
-  const [{ data: google }, { data: edupage }, { count: pocetOdberu }, pristup] = await Promise.all([
+  const [{ data: google }, { data: edupage }, { count: pocetOdberu }, pristup, { data: marketing }] = await Promise.all([
     supabase.from("google_accounts").select("*").eq("user_id", session.userId).maybeSingle(),
     supabase
       .from("edupage_accounts")
@@ -37,6 +38,7 @@ export default async function SettingsPage() {
       .select("id", { count: "exact", head: true })
       .eq("user_id", session.userId),
     nactiPredplatne(session.family.id),
+    supabase.from("marketing_kontakty").select("souhlas").eq("user_id", session.userId).maybeSingle(),
   ]);
 
   const stavPredplatneho = !pristup.predplatne
@@ -95,6 +97,13 @@ export default async function SettingsPage() {
       description: "Připomínky, kdo veze a co se blíží",
       Icon: Bell,
       badge: (pocetOdberu ?? 0) > 0 ? "zapnuto" : null,
+    },
+    {
+      href: "/nastaveni/e-maily",
+      title: "E-maily",
+      description: "Tipy, novinky a nabídky Klidoo",
+      Icon: Mail,
+      badge: marketing?.souhlas ? "odebíráte" : null,
     },
     {
       href: "/nastaveni/aplikace",

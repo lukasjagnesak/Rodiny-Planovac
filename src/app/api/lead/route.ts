@@ -20,7 +20,7 @@ function text(hodnota: unknown, maxDelka: number): string | null {
 export async function POST(request: NextRequest) {
   if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
     return NextResponse.json(
-      { error: "Zkoušíte to moc často. Dej tomu chvilku." },
+      { error: "Zkoušíte to moc často. Zkuste to prosím za chvíli." },
       { status: 429 },
     );
   }

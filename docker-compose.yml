@@ -63,6 +63,21 @@ services:
         curl -fsS -m 280 -H \"Authorization: Bearer $$CRON_SECRET\" http://app:3000/api/cron/reminders || echo 'cron: pokus selhal';
       done"
 
+  # Synchronizace marketingových kontaktů do Mailchimpu, každých 5 minut.
+  # Dokud není v .env MAILCHIMP_ZAPNUTO=1, route nic neposílá.
+  cron-marketing:
+    image: alpine:3.20
+    restart: unless-stopped
+    env_file: .env
+    depends_on: [app]
+    networks: [web]
+    command: >
+      sh -c "apk add --no-cache curl >/dev/null &&
+      while true; do
+        sleep 300;
+        curl -fsS -m 270 -H \"Authorization: Bearer $$CRON_SECRET\" http://app:3000/api/cron/marketing >/dev/null || echo 'cron-marketing: pokus selhal';
+      done"
+
   # EduPage nemá veřejné API — tahle služba napodobuje mobilní aplikaci.
   # V komerčním nasazení ji prostě nespouštěj:
   #   docker compose up -d --scale edupage=0

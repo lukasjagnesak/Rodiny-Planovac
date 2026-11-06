@@ -20,6 +20,7 @@ import { KartaSoukromi } from "@/components/web/karta-soukromi";
 import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
 import { bezpecnyCil } from "@/lib/navrat";
+import { COOKIE_SOUHLAS, MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
 
 /**
  * Věta nad formulářem podle toho, odkud člověk přišel. Kdo si právě
@@ -87,6 +88,8 @@ export function RegisterForm() {
     heslo: false,
   });
   const [ukazHeslo, setUkazHeslo] = React.useState(false);
+  // Marketingový souhlas: dobrovolný, nikdy předem zaškrtnutý.
+  const [marketing, setMarketing] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [needsConfirm, setNeedsConfirm] = React.useState(false);
@@ -156,7 +159,18 @@ export function RegisterForm() {
       email: hodnoty.email.trim(),
       password: hodnoty.heslo,
       options: {
-        data: { full_name: hodnoty.jmeno.trim() },
+        data: {
+          full_name: hodnoty.jmeno.trim(),
+          // Souhlas do metadat jen když je zaškrtnutý. Databáze ho podle
+          // nich zapíše i s verzí textu (trigger `on_auth_user_marketing`).
+          ...(marketing
+            ? {
+                marketing_souhlas: true,
+                marketing_verze: MARKETING_SOUHLAS.verze,
+                marketing_zdroj: inviteToken ? "pozvanka" : "registrace",
+              }
+            : {}),
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback?dal=${encodeURIComponent(redirectTarget)}`,
       },
     });
@@ -242,7 +256,13 @@ export function RegisterForm() {
           <div
             className="space-y-2.5"
             onClickCapture={(e) => {
-              if ((e.target as HTMLElement).closest("button, a")) zmer("registrace-cizi");
+              if (!(e.target as HTMLElement).closest("button, a")) return;
+              zmer("registrace-cizi");
+              // Přes Google se do metadat nic přidat nedá. Souhlas si
+              // pamatuje krátká cookie a zapíše ho `/auth/callback`.
+              document.cookie = marketing
+                ? `${COOKIE_SOUHLAS}=${MARKETING_SOUHLAS.verze}; Max-Age=900; Path=/; SameSite=Lax; Secure`
+                : `${COOKIE_SOUHLAS}=; Max-Age=0; Path=/`;
             }}
           >
             {GOOGLE_ZAPNUTY ? (
@@ -325,6 +345,18 @@ export function RegisterForm() {
             </button>
           }
         />
+
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl px-1 py-1 text-sm leading-relaxed text-ink-muted">
+          <input
+            type="checkbox"
+            checked={marketing}
+            onChange={(e) => setMarketing(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 rounded border-line-strong accent-[var(--brand)]"
+          />
+          <span>
+            {MARKETING_SOUHLAS.text} Nepovinné, účet funguje i bez toho.
+          </span>
+        </label>
 
         {error ? (
           <Alert tone="danger" className="text-[0.95rem]">

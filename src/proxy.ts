@@ -65,6 +65,8 @@ export const PUBLIC_PATHS = [
   "/api/mail/kontrola",
   // Stripe chodí bez cookies a podpis si ověřuje route sama.
   "/api/stripe/webhook",
+  // Mailchimp taky: token v URL a podpis si ověřuje route sama.
+  "/api/mailchimp/webhook",
 ];
 
 /**

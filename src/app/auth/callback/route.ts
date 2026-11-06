@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { siteUrl } from "@/lib/google";
 import { bezpecnyCil } from "@/lib/navrat";
+import { COOKIE_SOUHLAS, MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
 
 /**
  * Cíl odkazů z potvrzovacích e-mailů a magic linků.
@@ -40,5 +41,22 @@ export async function GET(request: NextRequest) {
     return naPrihlaseni("odkaz-vyprsel");
   }
 
-  return NextResponse.redirect(`${zaklad}${kam}`);
+  const odpoved = NextResponse.redirect(`${zaklad}${kam}`);
+
+  // Souhlas zaškrtnutý při registraci přes Google (viz register-form).
+  // Zapisuje se pod session právě přihlášeného — cizí účet tím ovlivnit nejde.
+  const souhlas = request.cookies.get(COOKIE_SOUHLAS)?.value;
+  if (souhlas) {
+    if (souhlas === MARKETING_SOUHLAS.verze) {
+      const { error: chybaSouhlasu } = await supabase.rpc("nastav_marketing_souhlas", {
+        p_souhlas: true,
+        p_verze: MARKETING_SOUHLAS.verze,
+        p_zdroj: "registrace-google",
+      });
+      if (chybaSouhlasu) console.error("[auth] souhlas z registrace se neuložil:", chybaSouhlasu.message);
+    }
+    odpoved.cookies.set(COOKIE_SOUHLAS, "", { maxAge: 0, path: "/" });
+  }
+
+  return odpoved;
 }
