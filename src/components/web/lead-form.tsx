@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
 import { zmer } from "@/lib/mereni";
+import { PravniPoucka } from "./pravni-poucka";
 
 /**
  * Sběr kontaktu na veřejném webu.
@@ -218,15 +219,9 @@ export function LeadForm({
               )}
             >
               Pošleme vám materiál a k tomu pár zpráv o tom, jak Klidoo pomáhá s koordinací.
-              Odhlásit se dá jedním klikem, odkaz je v každé zprávě.{" "}
-              <Link
-                href="/zasady-ochrany-osobnich-udaju"
-                className={cn("underline", tmavy ? "text-vyzva-ink" : "text-ink-muted")}
-              >
-                Zásady ochrany osobních údajů
-              </Link>
-              .
+              Odhlásit se dá jedním klikem, odkaz je v každé zprávě.
             </p>
+            <PravniPoucka druh="odber" tmavy={tmavy} />
           </form>
         </>
       )}

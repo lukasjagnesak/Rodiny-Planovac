@@ -6,6 +6,7 @@ import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
 import { zmer } from "@/lib/mereni";
 import type { VyzivneVstup } from "@/lib/vyzivne";
+import { PravniPoucka } from "./pravni-poucka";
 
 /**
  * Odeslání výpočtu v PDF na e-mail.
@@ -156,6 +157,7 @@ export function VyzivnePdf({ vstup }: { vstup: VyzivneVstup }) {
         číslo vyšlo. E-mail si necháme, ať se ozveme, když se tabulka nebo soudní praxe
         změní. Odhlásit se dá jedním kliknutím.
       </p>
+      <PravniPoucka druh="odber" className="mt-1.5" />
     </div>
   );
 }

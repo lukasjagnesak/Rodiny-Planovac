@@ -21,6 +21,7 @@ import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
 import { bezpecnyCil } from "@/lib/navrat";
 import { COOKIE_SOUHLAS, MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
+import { PravniPoucka } from "@/components/web/pravni-poucka";
 
 /**
  * Věta nad formulářem podle toho, odkud člověk přišel. Kdo si právě
@@ -387,6 +388,7 @@ export function RegisterForm() {
               tlacitko
             )}
           </Button>
+          <PravniPoucka druh="registrace" className="text-center" />
           <p className="flex items-center justify-center gap-1.5 text-sm font-medium text-ink">
             <ShieldCheck className="h-4 w-4 text-brand" aria-hidden />
             Bez karty. Bez automatické platby.

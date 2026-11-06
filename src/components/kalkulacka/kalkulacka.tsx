@@ -20,6 +20,7 @@ import { cn, hlaskaChyby } from "@/lib/format";
 import type { PatternKind } from "@/lib/types";
 import { BARVA_A, BARVA_B, Vysledek } from "./vysledek";
 import { zmer } from "@/lib/mereni";
+import { PravniPoucka } from "@/components/web/pravni-poucka";
 
 const VZORY: PatternKind[] = [
   "iso_week_parity",
@@ -326,8 +327,9 @@ export function Kalkulacka() {
 
               <p className="text-xs text-ink-subtle">
                 Výpočet proběhl u vás v prohlížeči. Na server se něco pošle až teď, když
-                klikneš.
+                kliknete.
               </p>
+              {email.trim() ? <PravniPoucka druh="odber" /> : null}
             </div>
           )}
         </div>
