@@ -6,6 +6,8 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { jePodporovan, aktualniOdber, zapniNotifikace, vypniNotifikace } from "@/lib/push-client";
+import { jeNativni } from "@/lib/nativni-most";
+import { registrujNativniPush } from "@/lib/push-nativni-klient";
 import { Ikona } from "@/components/ui/ikona";
 import type { NazevIkony } from "@/lib/ikony";
 
@@ -23,8 +25,16 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
   const [busy, setBusy] = React.useState<"zapnout" | "vypnout" | "test" | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  // Aplikace z App Store / Google Play: notifikace přes Apple a Google,
+  // ne přes Web Push (ten v aplikaci pro iPhone nefunguje).
+  const [nativni, setNativni] = React.useState(false);
 
   React.useEffect(() => {
+    if (jeNativni()) {
+      setNativni(true);
+      registrujNativniPush().then((s) => setStav(s));
+      return;
+    }
     if (!jePodporovan()) {
       setStav("nepodporovano");
       return;
@@ -37,6 +47,13 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
   }, []);
 
   async function zapnout() {
+    if (nativni) {
+      setBusy("zapnout");
+      setError(null);
+      setStav(await registrujNativniPush({ vyzadat: true }));
+      setBusy(null);
+      return;
+    }
     if (!verejnyKlic) {
       setError("Server nemá nastavené notifikace — chybí VAPID klíč.");
       return;
@@ -113,8 +130,9 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
               <span className="flex items-start gap-2">
                 <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
-                  Notifikace jsou u prohlížeče zablokované. Odblokuj je v nastavení stránky
-                  (ikona zámku vedle adresy) a stránku obnov.
+                  {nativni
+                    ? "Notifikace jsou pro Klidoo vypnuté v nastavení telefonu. Povolte je v Nastavení → Klidoo → Oznámení."
+                    : "Notifikace jsou u prohlížeče zablokované. Odblokujte je v nastavení stránky (ikona zámku vedle adresy) a stránku obnovte."}
                 </span>
               </span>
             </Alert>
@@ -137,14 +155,16 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
               {busy === "test" ? <Spinner /> : <Send className="h-4 w-4" />}
               Poslat zkušební notifikaci
             </Button>
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={vypnout}
-              disabled={busy === "vypnout"}
-            >
-              <BellOff className="h-4 w-4" /> Vypnout na tomhle zařízení
-            </Button>
+            {nativni ? null : (
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={vypnout}
+                disabled={busy === "vypnout"}
+              >
+                <BellOff className="h-4 w-4" /> Vypnout na tomhle zařízení
+              </Button>
+            )}
           </div>
         </>
       ) : (
@@ -156,7 +176,7 @@ export function PushSettings({ verejnyKlic }: { verejnyKlic: string | null }) {
             <div className="min-w-0 flex-1">
               <p className="font-medium text-ink">Notifikace jsou vypnuté</p>
               <p className="text-sm text-ink-muted">
-                Zapni si je na každém zařízení zvlášť — telefon i počítač.
+                Zapněte si je na každém zařízení zvlášť — telefon i počítač.
               </p>
             </div>
             <Button onClick={zapnout} disabled={busy === "zapnout"}>

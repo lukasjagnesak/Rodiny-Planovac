@@ -93,6 +93,7 @@ const PATICKA = [
       { href: "/overit", popisek: "Ověření výpisu" },
       { href: "/bezpecnost", popisek: "Bezpečnost a data" },
       { href: "/obchodni-podminky", popisek: "Obchodní podmínky" },
+      { href: "/smazani-uctu", popisek: "Smazání účtu" },
     ],
   },
 ];

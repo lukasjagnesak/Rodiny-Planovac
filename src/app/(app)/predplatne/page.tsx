@@ -7,6 +7,7 @@ import { CO_JE_V_CENE, tarifPodleId, ZAKLADAJICI, ZKUSEBNI_DNI } from "@/lib/tar
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Alert } from "@/components/ui/misc";
 import { SpravaPredplatneho, VolbaTarifu } from "@/components/predplatne/volba-tarifu";
+import { vAplikaci } from "@/lib/nativni-server";
 import { SrovnaniTarifu } from "@/components/predplatne/srovnani";
 
 export const metadata: Metadata = { title: "Předplatné" };
@@ -23,6 +24,9 @@ export default async function PredplatnePage({
   const tarif = tarifPodleId(predplatne?.tarif);
   const plati = predplatne ? new Date(predplatne.plati_do).toLocaleDateString("cs-CZ") : null;
   const jeZaplaceno = predplatne?.stav === "aktivni" || predplatne?.stav === "po_splatnosti";
+  // Aplikace z obchodu: jen stav, bez nákupu, ceny a správy plateb
+  // (Apple 3.1.3(f), Google Play — platby jen na webu).
+  const aplikace = await vAplikaci();
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -53,9 +57,9 @@ export default async function PredplatnePage({
             <p>Vaše rodina má přístup bez omezení.</p>
           ) : pristup.zakladajici ? (
             <p>
-              Jste jedna z prvních {ZAKLADAJICI.mist} rodin, které Klidoo začaly používat — děkujeme.
-              Máte ho zdarma do <strong className="text-ink">{plati}</strong>, bez karty. Budeme
-              rádi, když nám odpovíte na e-mail, co vám chybí; podle toho ho stavíme.
+              Jste jedna z prvních {ZAKLADAJICI.mist} rodin, které Klidoo začaly používat —
+              děkujeme. Máte ho zdarma do <strong className="text-ink">{plati}</strong>, bez karty.
+              Budeme rádi, když nám odpovíte na e-mail, co vám chybí; podle toho ho stavíme.
             </p>
           ) : predplatne.stav === "zkusebni" && pristup.muzeZapisovat ? (
             <p>
@@ -69,13 +73,13 @@ export default async function PredplatnePage({
             </p>
           ) : !pristup.muzeZapisovat ? (
             <p>
-              Zápis a vytváření dokumentů je zamčené. Kalendář, výdaje i doklady zůstávají
-              čitelné — nic vám nemažeme.
+              Zápis a vytváření dokumentů je zamčené. Kalendář, výdaje i doklady zůstávají čitelné —
+              nic vám nemažeme.
             </p>
           ) : predplatne.stav === "po_splatnosti" ? (
             <p>
               Poslední platba neprošla. Stripe ji ještě několikrát zkusí, aplikace mezitím běží dál.
-              Nejrychlejší je zkontrolovat kartu ve správě plateb.
+              {aplikace ? null : " Nejrychlejší je zkontrolovat kartu ve správě plateb."}
             </p>
           ) : (
             <p>
@@ -86,9 +90,12 @@ export default async function PredplatnePage({
         </CardBody>
       </Card>
 
-      {jeZaplaceno ? (
+      {aplikace ? null : jeZaplaceno ? (
         <Card>
-          <CardHeader title="Platba a faktury" description="Karta, faktury i zrušení jsou ve Stripe." />
+          <CardHeader
+            title="Platba a faktury"
+            description="Karta, faktury i zrušení jsou ve Stripe."
+          />
           <CardBody className="pt-3">
             <SpravaPredplatneho familyId={session.family.id} />
           </CardBody>
@@ -107,8 +114,8 @@ export default async function PredplatnePage({
               pristup.zakladajici
                 ? `Nemusíte. Kdyby se vám to hodilo, karta se strhne až ${plati}, po skončení roku zdarma.`
                 : pristup.jeZkusebni && pristup.dniDoKonce > 2
-                ? `Zaplatit můžete hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdete.`
-                : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebujete.`
+                  ? `Zaplatit můžete hned. Karta se strhne až ${plati}, zbylých ${pristup.dniDoKonce} dní zkušebního období o nic nepřijdete.`
+                  : `Zkušební období je ${ZKUSEBNI_DNI} dní a kartu k němu nepotřebujete.`
             }
           />
           <CardBody className="pt-3">
@@ -117,30 +124,34 @@ export default async function PredplatnePage({
         </Card>
       )}
 
-      <Card>
-        <CardHeader
-          title="Co se změní, když se nezaplatí"
-          description="Nic se nemaže. Zamkne se jen zapisování."
-        />
-        <CardBody className="pt-3">
-          <SrovnaniTarifu varianta="aplikace" />
-        </CardBody>
-      </Card>
+      {aplikace ? null : (
+        <>
+          <Card>
+            <CardHeader
+              title="Co se změní, když se nezaplatí"
+              description="Nic se nemaže. Zamkne se jen zapisování."
+            />
+            <CardBody className="pt-3">
+              <SrovnaniTarifu varianta="aplikace" />
+            </CardBody>
+          </Card>
 
-      <Card>
-        <CardHeader title="Co je v ceně" />
-        <CardBody className="space-y-2.5 pt-3">
-          {CO_JE_V_CENE.map(({ nazev, popis }) => (
-            <div key={nazev} className="flex items-start gap-2.5 text-sm">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-              <span>
-                <span className="font-medium text-ink">{nazev}</span>{" "}
-                <span className="text-ink-muted">— {popis}</span>
-              </span>
-            </div>
-          ))}
-        </CardBody>
-      </Card>
+          <Card>
+            <CardHeader title="Co je v ceně" />
+            <CardBody className="space-y-2.5 pt-3">
+              {CO_JE_V_CENE.map(({ nazev, popis }) => (
+                <div key={nazev} className="flex items-start gap-2.5 text-sm">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+                  <span>
+                    <span className="font-medium text-ink">{nazev}</span>{" "}
+                    <span className="text-ink-muted">— {popis}</span>
+                  </span>
+                </div>
+              ))}
+            </CardBody>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
@@ -157,10 +168,8 @@ function Odznak({ pristup }: { pristup: Awaited<ReturnType<typeof nactiPredplatn
         : pristup.zakladajici
           ? ["Zakládající rodina", "bg-brand-soft text-brand"]
           : jeZkusebni
-          ? [`Zkušební · ${dniDoKonce} dní`, "bg-brand-soft text-brand"]
-          : ["Aktivní", "bg-success/10 text-success"];
+            ? [`Zkušební · ${dniDoKonce} dní`, "bg-brand-soft text-brand"]
+            : ["Aktivní", "bg-success/10 text-success"];
 
-  return (
-    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${styl}`}>{text}</span>
-  );
+  return <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${styl}`}>{text}</span>;
 }

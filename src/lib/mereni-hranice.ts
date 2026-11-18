@@ -34,6 +34,7 @@ export const CESTY_S_MERENIM = [
   "/bezpecnost",
   "/zasady-ochrany-osobnich-udaju",
   "/obchodni-podminky",
+  "/smazani-uctu",
   "/prihlaseni",
   "/registrace",
 ];

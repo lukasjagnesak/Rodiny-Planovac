@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/field";
+import { vAplikaciKlient } from "@/lib/nativni";
 import { prectiSouhlas, ulozSouhlas, type Souhlas } from "@/lib/souhlas";
 
 /**
@@ -23,6 +24,8 @@ export function SouhlasLista() {
   const [marketing, setMarketing] = React.useState(true);
 
   React.useEffect(() => {
+    // V aplikaci z obchodu se nic třetích stran nenačítá, není se na co ptát.
+    if (vAplikaciKlient()) return;
     setZobrazit(prectiSouhlas() === null);
 
     // Odkaz „změnit nastavení" v zásadách lištu vyvolá znovu.

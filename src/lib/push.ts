@@ -1,6 +1,13 @@
 import "server-only";
 
 import webpush from "web-push";
+import {
+  apnsNastaveniZProstredi,
+  druhOdberu,
+  fcmNastaveniZProstredi,
+  posliApns,
+  posliFcm,
+} from "./push-nativni";
 
 /**
  * Nativní push notifikace (Web Push).
@@ -28,8 +35,9 @@ function zajistiNastaveni(): boolean {
   return true;
 }
 
+/** Funguje aspoň jeden kanál: Web Push, Apple (APNs) nebo Android (FCM). */
 export function pushJeNastaveny(): boolean {
-  return zajistiNastaveni();
+  return zajistiNastaveni() || apnsNastaveniZProstredi() !== null || fcmNastaveniZProstredi() !== null;
 }
 
 export interface PushOdber {
@@ -55,6 +63,17 @@ export async function posliPush(
   odber: PushOdber,
   zprava: PushZprava,
 ): Promise<{ ok: boolean; gone?: boolean; chyba?: string }> {
+  // Aplikace z obchodů mají v `endpoint` token zařízení s předponou.
+  const { druh, token } = druhOdberu(odber.endpoint);
+  if (druh === "apns") {
+    const n = apnsNastaveniZProstredi();
+    return n ? posliApns(n, token, zprava) : { ok: false, chyba: "APNs není nastavené." };
+  }
+  if (druh === "fcm") {
+    const n = fcmNastaveniZProstredi();
+    return n ? posliFcm(n, token, zprava) : { ok: false, chyba: "FCM není nastavené." };
+  }
+
   if (!zajistiNastaveni()) {
     return { ok: false, chyba: "VAPID klíče nejsou nastavené." };
   }

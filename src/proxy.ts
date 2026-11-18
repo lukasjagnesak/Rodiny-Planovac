@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { bezpecnyCil, odkazNaPrihlaseni } from "@/lib/navrat";
 import { novyNonce, otiskSkriptu, sestavCsp } from "@/lib/csp";
 import { smiMerit } from "@/lib/mereni-hranice";
+import { jeAplikace, presmerovatVAplikaci } from "@/lib/nativni";
 import { INSTALACE_SCRIPT, THEME_SCRIPT } from "@/lib/vlozene-skripty";
 
 export const PUBLIC_PATHS = [
@@ -47,6 +48,7 @@ export const PUBLIC_PATHS = [
   // security.txt — kontakt pro nahlášení chyby v zabezpečení.
   "/.well-known",
   "/obchodni-podminky",
+  "/smazani-uctu",
   "/sitemap.xml",
   "/robots.txt",
   "/api/kalkulacka",
@@ -120,6 +122,18 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/chybi-nastaveni";
     url.search = "";
     return NextResponse.rewrite(url);
+  }
+
+  // Aplikace z obchodu: marketingové stránky (úvod, ceník, kalkulačky…)
+  // v ní nemají co dělat — ceník by byl výzva k nákupu mimo App Store.
+  if (
+    jeAplikace(request.headers.get("user-agent")) &&
+    presmerovatVAplikaci(request.nextUrl.pathname, smiMerit)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/prehled";
+    url.search = "";
+    return NextResponse.redirect(url);
   }
 
   // Next si nonce přečte z hlavičky požadavku a přidá ho ke všem svým

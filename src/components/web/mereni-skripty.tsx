@@ -11,6 +11,7 @@ import {
   pripravConsentMode,
 } from "@/lib/marketing";
 import { MERICI_SKRIPTY, smiMerit } from "@/lib/mereni-hranice";
+import { vAplikaciKlient } from "@/lib/nativni";
 import { prectiSouhlas, type Souhlas } from "@/lib/souhlas";
 
 /**
@@ -28,7 +29,9 @@ import { prectiSouhlas, type Souhlas } from "@/lib/souhlas";
  */
 export function MereniSkripty() {
   const cesta = usePathname();
-  const smi = smiMerit(cesta);
+  // V aplikaci z obchodu nikdy: Google ani Meta by tam znamenaly
+  // sledování napříč aplikacemi (App Tracking Transparency).
+  const smi = smiMerit(cesta) && !vAplikaciKlient();
   const [souhlas, setSouhlas] = React.useState<Souhlas | null>(null);
   const pripraveno = React.useRef(false);
 

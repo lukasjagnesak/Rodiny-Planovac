@@ -3,6 +3,8 @@
 import * as React from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/misc";
+import { prihlasPres } from "@/lib/oauth";
+import { jeNativni } from "@/lib/nativni-most";
 import { cn } from "@/lib/format";
 
 /**
@@ -51,12 +53,8 @@ export function PrihlaseniApple({
     setError(null);
 
     const supabase = createClient();
-    const { error: potiz } = await supabase.auth.signInWithOAuth({
-      provider: "apple",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?dal=${encodeURIComponent(dal)}`,
-      },
-    });
+    // V aplikaci z obchodu jde přes systémový prohlížeč (lib/oauth.ts).
+    const potiz = await prihlasPres(supabase, "apple", dal);
 
     if (potiz) {
       setBusy(false);
@@ -67,6 +65,9 @@ export function PrihlaseniApple({
       );
     }
     // Při úspěchu odchází prohlížeč k Applu, takže stav necháváme běžet.
+    // V aplikaci zůstává stránka pod systémovým prohlížečem — kdyby ho
+    // člověk zavřel bez přihlášení, tlačítko nesmí zůstat zaseknuté.
+    else if (jeNativni()) setBusy(false);
   }
 
   return (

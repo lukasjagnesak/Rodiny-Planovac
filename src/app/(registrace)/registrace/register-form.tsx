@@ -21,6 +21,7 @@ import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
 import { bezpecnyCil } from "@/lib/navrat";
 import { COOKIE_SOUHLAS, MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
+import { useVAplikaci } from "@/lib/nativni-hook";
 import { PravniPoucka } from "@/components/web/pravni-poucka";
 
 /**
@@ -91,6 +92,9 @@ export function RegisterForm() {
   const [ukazHeslo, setUkazHeslo] = React.useState(false);
   // Marketingový souhlas: dobrovolný, nikdy předem zaškrtnutý.
   const [marketing, setMarketing] = React.useState(false);
+  // Aplikace z App Store / Google Play: bez ceny a odkazů na ceník
+  // (lib/nativni.ts), potvrzení e-mailu se vrací do aplikace.
+  const aplikace = useVAplikaci();
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [needsConfirm, setNeedsConfirm] = React.useState(false);
@@ -172,7 +176,9 @@ export function RegisterForm() {
               }
             : {}),
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?dal=${encodeURIComponent(redirectTarget)}`,
+        // V aplikaci se odkaz z e-mailu otevře v prohlížeči; `/auth/aplikace`
+        // ho vrátí do aplikace, kde leží PKCE ověřovač z této registrace.
+        emailRedirectTo: `${window.location.origin}/auth/${aplikace ? "aplikace" : "callback"}?dal=${encodeURIComponent(redirectTarget)}`,
       },
     });
 
@@ -412,8 +418,9 @@ export function RegisterForm() {
         )}
 
         {/* Cena patří sem, ne až za paywall. Kdo ji uvidí až po měsíci
-            práce s kalendářem, právem se cítí podvedený. */}
-        {inviteToken ? null : (
+            práce s kalendářem, právem se cítí podvedený. V aplikaci
+            z obchodu ale být nesmí (výzva k nákupu mimo App Store). */}
+        {inviteToken || aplikace ? null : (
           <p className="text-center text-[0.8125rem] leading-relaxed text-ink-muted">
             Po {rok ? "roce" : `${ZKUSEBNI_SLIB.dni} dnech`} {korun(CENIK[0].cena)}/měsíc nebo{" "}
             {korun(CENIK[1].cena)}/rok za celou rodinu, jen pokud se rozhodnete pokračovat.
@@ -436,6 +443,7 @@ export function RegisterForm() {
 
       {inviteToken ? null : (
         <>
+          {aplikace ? null : (
           <Link
             href="/"
             className="flex items-center justify-between gap-3 rounded-2xl border-2 border-brand/40 bg-brand-soft px-4 py-3.5 transition-colors hover:border-brand"
@@ -450,12 +458,15 @@ export function RegisterForm() {
             </span>
             <ChevronRight className="h-5 w-5 shrink-0 text-brand" aria-hidden />
           </Link>
+          )}
           {/* Karta soukromí patří až pod kartu „Chcete vědět víc“. */}
           <KartaSoukromi />
           <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[0.8125rem] text-ink-subtle">
-            <Link href="/cenik" className="underline-offset-4 hover:text-ink hover:underline">
-              Ceník
-            </Link>
+            {aplikace ? null : (
+              <Link href="/cenik" className="underline-offset-4 hover:text-ink hover:underline">
+                Ceník
+              </Link>
+            )}
             <Link
               href="/obchodni-podminky#zakladajici"
               className="underline-offset-4 hover:text-ink hover:underline"

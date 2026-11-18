@@ -1,7 +1,10 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/card";
+import { useVAplikaci } from "@/lib/nativni-hook";
 import { CENIK, korun } from "@/lib/tarify";
 
 /**
@@ -18,14 +21,10 @@ import { CENIK, korun } from "@/lib/tarify";
  * a 129 Kč za listinu, kterou potřebuje, je odpověď, kterou pochopí
  * bez počítání.
  */
-export function ZamcenyDokument({
-  nadpis,
-  popis,
-}: {
-  nadpis: string;
-  popis: string;
-}) {
+export function ZamcenyDokument({ nadpis, popis }: { nadpis: string; popis: string }) {
   const mesicni = CENIK.find((t) => t.id === "mesicni") ?? CENIK[0];
+  // V aplikaci z obchodu bez nákupu a ceny (lib/nativni.ts).
+  const aplikace = useVAplikaci();
 
   return (
     <Card>
@@ -36,19 +35,22 @@ export function ZamcenyDokument({
         <h2 className="mt-3 font-display text-lg font-semibold text-ink">{nadpis}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-muted">{popis}</p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-muted">
-          Zapsaná data zůstávají čitelná i bez předplatného — zamčené je jen vytvoření
-          dokumentu.
+          Zapsaná data zůstávají čitelná i bez předplatného — zamčené je jen vytvoření dokumentu.
         </p>
 
-        <Link
-          href="/predplatne"
-          className="mt-5 inline-flex h-11 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
-        >
-          Obnovit předplatné
-        </Link>
-        <p className="mt-3 text-xs text-ink-subtle">
-          Měsíc stojí {korun(mesicni.cena)} a jde kdykoli zrušit.
-        </p>
+        {aplikace ? null : (
+          <>
+            <Link
+              href="/predplatne"
+              className="mt-5 inline-flex h-11 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+            >
+              Obnovit předplatné
+            </Link>
+            <p className="mt-3 text-xs text-ink-subtle">
+              Měsíc stojí {korun(mesicni.cena)} a jde kdykoli zrušit.
+            </p>
+          </>
+        )}
       </CardBody>
     </Card>
   );

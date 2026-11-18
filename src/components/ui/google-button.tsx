@@ -3,6 +3,8 @@
 import * as React from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/misc";
+import { prihlasPres } from "@/lib/oauth";
+import { jeNativni } from "@/lib/nativni-most";
 import { cn } from "@/lib/format";
 
 /** Logo Google. Podmínky užití vyžadují originální barvy, ne obarvení podle motivu. */
@@ -56,14 +58,9 @@ export function PrihlaseniGoogle({
     setError(null);
 
     const supabase = createClient();
-    const { error: potiz } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?dal=${encodeURIComponent(dal)}`,
-        // Ať si člověk může vybrat účet, i když je někde přihlášený.
-        queryParams: { prompt: "select_account" },
-      },
-    });
+    // Ať si člověk může vybrat účet, i když je někde přihlášený.
+    // V aplikaci z obchodu jde přes systémový prohlížeč (lib/oauth.ts).
+    const potiz = await prihlasPres(supabase, "google", dal, { prompt: "select_account" });
 
     if (potiz) {
       setBusy(false);
@@ -74,6 +71,9 @@ export function PrihlaseniGoogle({
       );
     }
     // Při úspěchu odchází prohlížeč na Google, takže stav necháváme běžet.
+    // V aplikaci zůstává stránka pod systémovým prohlížečem — kdyby ho
+    // člověk zavřel bez přihlášení, tlačítko nesmí zůstat zaseknuté.
+    else if (jeNativni()) setBusy(false);
   }
 
   return (

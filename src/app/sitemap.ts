@@ -29,6 +29,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/bezpecnost", priorita: 0.4, frekvence: "yearly" },
   { cesta: "/zasady-ochrany-osobnich-udaju", priorita: 0.2, frekvence: "yearly" },
   { cesta: "/obchodni-podminky", priorita: 0.2, frekvence: "yearly" },
+  { cesta: "/smazani-uctu", priorita: 0.2, frekvence: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

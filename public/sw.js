@@ -14,7 +14,7 @@
 
 /* Verze se mění při každé úpravě tohoto souboru — jinak si prohlížeč
    nechá starou mezipaměť i s neplatnou offline stránkou. */
-const VERZE = "klidoo-v2";
+const VERZE = "klidoo-v3";
 const OFFLINE = "/offline.html";
 
 self.addEventListener("install", (event) => {

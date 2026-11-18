@@ -15,9 +15,12 @@ import { cn } from "@/lib/format";
 export function PruhPredplatneho({
   text,
   zamceno,
+  bezOdkazu = false,
 }: {
   text: string;
   zamceno: boolean;
+  /** Aplikace z obchodu: bez odkazu na předplacení. */
+  bezOdkazu?: boolean;
 }) {
   const klic = "klidoo_pruh_predplatne";
   const [skryty, setSkryty] = React.useState(true);
@@ -50,12 +53,14 @@ export function PruhPredplatneho({
         <Sparkles className="h-4 w-4 shrink-0" />
       )}
       <p className="min-w-0 flex-1">{text}</p>
-      <Link
-        href="/predplatne"
-        className="shrink-0 font-semibold underline underline-offset-4"
-      >
-        {zamceno ? "Odemknout" : "Předplatit"}
-      </Link>
+      {bezOdkazu ? null : (
+        <Link
+          href="/predplatne"
+          className="shrink-0 font-semibold underline underline-offset-4"
+        >
+          {zamceno ? "Odemknout" : "Předplatit"}
+        </Link>
+      )}
       {zamceno ? null : (
         <button
           type="button"

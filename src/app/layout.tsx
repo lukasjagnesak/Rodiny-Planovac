@@ -3,6 +3,7 @@ import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { POPIS, ZNACKA } from "@/lib/brand";
 import { MereniSkripty } from "@/components/web/mereni-skripty";
+import { NativniMost } from "@/components/nativni/nativni-most";
 import { INSTALACE_SCRIPT, THEME_SCRIPT } from "@/lib/vlozene-skripty";
 
 const inter = Inter({
@@ -106,6 +107,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Bez souhlasu se nenačte nic ani na webu; komponenta si ho čte sama.
         */}
         <MereniSkripty />
+        {/* Jen v aplikaci z App Store / Google Play; na webu nedělá nic. */}
+        <NativniMost />
         {children}
       </body>
     </html>

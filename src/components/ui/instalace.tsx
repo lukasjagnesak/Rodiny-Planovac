@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { zmer } from "@/lib/mereni";
 import { Card, CardBody } from "@/components/ui/card";
+import { vAplikaciKlient } from "@/lib/nativni";
 import {
   jeApple,
   jeOdlozeno,
@@ -46,10 +47,13 @@ function useZpusob(): {
 
   React.useEffect(() => {
     function prepocti() {
-      const jakoAplikace = jeSpustenaJakoAplikace(
-        window.matchMedia("(display-mode: standalone)").matches,
-        (window.navigator as Navigator & { standalone?: boolean }).standalone,
-      );
+      // Aplikace z App Store / Google Play je nainstalovaná z podstaty.
+      const jakoAplikace =
+        vAplikaciKlient() ||
+        jeSpustenaJakoAplikace(
+          window.matchMedia("(display-mode: standalone)").matches,
+          (window.navigator as Navigator & { standalone?: boolean }).standalone,
+        );
       const vyzva = window.__klidooVyzva;
       setStav({
         zpusob: zpusobInstalace({

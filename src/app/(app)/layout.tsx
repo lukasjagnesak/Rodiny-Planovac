@@ -5,6 +5,7 @@ import { nactiPredplatne } from "@/lib/predplatne";
 import { PruhPredplatneho } from "@/components/predplatne/pruh";
 import { jeSpravce } from "@/lib/provoz";
 import { createClient } from "@/lib/supabase/server";
+import { vAplikaci } from "@/lib/nativni-server";
 import { pocetNeprectenych, type Zprava } from "@/lib/zpravy";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       .limit(200),
   ]);
 
+  // V aplikaci z obchodu bez výzev k placení (viz lib/nativni.ts):
+  // jen zámek a neprošlá platba, neutrálně a bez odkazu na nákup.
+  const aplikace = await vAplikaci();
+  const textPruhu = !aplikace
+    ? pristup.upozorneni
+    : !pristup.muzeZapisovat
+      ? "Předplatné rodiny není aktivní. Vše zapsané si můžete dál prohlížet."
+      : pristup.predplatne?.stav === "po_splatnosti"
+        ? "Poslední platba předplatného neprošla."
+        : null;
+
   return (
     <AppShell
       session={session}
@@ -30,8 +42,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       neprectenychZprav={pocetNeprectenych((zpravy ?? []) as Zprava[], session.userId)}
       spravce={jeSpravce(session.profile.email)}
       pruh={
-        pristup.upozorneni ? (
-          <PruhPredplatneho text={pristup.upozorneni} zamceno={!pristup.muzeZapisovat} />
+        textPruhu ? (
+          <PruhPredplatneho
+            text={textPruhu}
+            zamceno={!pristup.muzeZapisovat}
+            bezOdkazu={aplikace}
+          />
         ) : null
       }
     >

@@ -1,0 +1,31 @@
+{
+  "appId": "cz.klidoo.app",
+  "appName": "Klidoo",
+  "webDir": "www",
+  "appendUserAgent": "KlidooApp",
+  "server": {
+    "url": "https://klidoo.cz/prehled",
+    "errorPath": "offline.html",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#fdf7f0"
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#fdf7f0",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#fdf7f0",
+      "showSpinner": false
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
