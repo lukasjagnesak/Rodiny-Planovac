@@ -1,0 +1,10 @@
+node_modules/
+# Podpisové klíče a hesla nikdy do gitu
+*.jks
+*.keystore
+keystore.properties
+*.p8
+*.p12
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
