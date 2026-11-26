@@ -4,6 +4,7 @@ import { Hero, Poznamka, Sloupec } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { Ikona } from "@/components/ui/ikona";
 import type { NazevIkony } from "@/lib/ikony";
+import { VANOCNI_TIPY_SOUHLAS } from "@/lib/marketing-souhlas";
 import { ZNACKA } from "@/lib/brand";
 
 /**
@@ -67,7 +68,7 @@ export default function VanocniPlanovac() {
           popis="Napište e-mail a plánovač (PDF, 3 strany) si hned stáhnete. Na tisk i do telefonu."
           tlacitko="Chci plánovač"
           hotovo="Plánovač je připravený."
-          souhlas
+          souhlas={VANOCNI_TIPY_SOUHLAS}
           jmeno
           dekovaciStranka="/vanocni-planovac/dekujeme"
         />

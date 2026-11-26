@@ -2,7 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "./supabase/admin";
 import { ohlasNovyKontakt } from "./spravce-oznameni";
-import { MARKETING_SOUHLAS } from "./marketing-souhlas";
+import { MARKETING_SOUHLAS, textSouhlasu } from "./marketing-souhlas";
 
 /**
  * Uložení kontaktu z veřejného webu.
@@ -25,8 +25,10 @@ export interface LeadVstup {
   ref?: string | null;
   referrer?: string | null;
   landing?: string | null;
-  /** Zaškrtnutý marketingový souhlas; verze se doplní sama. */
+  /** Zaškrtnutý marketingový souhlas. */
   marketing_consent?: boolean;
+  /** Verze textu souhlasu (lib/marketing-souhlas); bez ní obecná. */
+  marketing_consent_version?: string | null;
 }
 
 export type VysledekUlozeni = "ulozeno" | "duplicita" | "chyba";
@@ -39,11 +41,13 @@ export async function ulozLead(vstup: LeadVstup): Promise<VysledekUlozeni> {
   // vzniknout a odchytíme ji.
   // Souhlas zpracuje trigger `klidoo_marketing_lead` v Supabase: s touto
   // verzí zavolá `marketing_request` a Mailchimp pošle potvrzení odběru.
-  const souhlas = vstup.marketing_consent === true;
+  const verze = vstup.marketing_consent_version ?? MARKETING_SOUHLAS.verze;
+  const text = textSouhlasu(verze);
+  const souhlas = vstup.marketing_consent === true && text !== null;
   const { error } = await admin.from("leady").insert({
     ...vstup,
     marketing_consent: souhlas,
-    marketing_consent_version: souhlas ? MARKETING_SOUHLAS.verze : null,
+    marketing_consent_version: souhlas ? verze : null,
   });
 
   if (error) {
@@ -56,8 +60,8 @@ export async function ulozLead(vstup: LeadVstup): Promise<VysledekUlozeni> {
         await admin.rpc("marketing_request", {
           address: vstup.email,
           origin_source: "web-form",
-          version_text: MARKETING_SOUHLAS.verze,
-          consent_text: MARKETING_SOUHLAS.text,
+          version_text: verze,
+          consent_text: text,
         });
       }
       return "duplicita";

@@ -10,3 +10,22 @@ export const MARKETING_SOUHLAS = {
   verze: "klidoo-email-2026-11-06",
   text: "Chci dostávat e-mailem novinky a nabídky Klidoo. Souhlas mohu kdykoli odvolat.",
 } as const;
+
+/**
+ * Souhlas s vánočními tipy (vánoční plánovač). Úzký rozsah: 5 tipů do
+ * 23. 12., ne obecné novinky — kontakty s touto verzí se nesmí dostat
+ * do jiných kampaní bez nového souhlasu. Databáze ji přijímá od úpravy
+ * docs/integrations/sql/2026-11-27_souhlas_vanocni_tipy.sql.
+ */
+export const VANOCNI_TIPY_SOUHLAS = {
+  verze: "klidoo-vanoce-tipy-2026-11",
+  zvyraznene: "Pošlete mi i 5 krátkých tipů,",
+  text: "Pošlete mi i 5 krátkých tipů, jak zvládnout Vánoce ve dvou domovech (do 23. 12.). Odhlásit se jde jedním klikem.",
+} as const;
+
+export const SOUHLASY = [MARKETING_SOUHLAS, VANOCNI_TIPY_SOUHLAS] as const;
+
+/** Text k verzi, nebo `null` pro neznámou verzi. */
+export function textSouhlasu(verze: unknown): string | null {
+  return SOUHLASY.find((s) => s.verze === verze)?.text ?? null;
+}

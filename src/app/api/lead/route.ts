@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
     referrer: text(body?.referrer, 500),
     landing: text(body?.landing, 200),
     marketing_consent: body?.marketing_consent === true,
+    marketing_consent_version: text(body?.marketing_consent_version, 60),
   });
 
   if (vysledek === "chyba") {

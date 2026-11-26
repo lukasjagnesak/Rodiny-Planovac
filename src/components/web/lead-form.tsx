@@ -6,7 +6,6 @@ import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
 import { zmer } from "@/lib/mereni";
 import { PravniPoucka } from "./pravni-poucka";
-import { MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
 
 /**
  * Sběr kontaktu na veřejném webu.
@@ -39,7 +38,7 @@ export interface LeadFormProps {
    * Nezaškrtnuté políčko s marketingovým souhlasem (text a verze z
    * `lib/marketing-souhlas`). Materiál dostane i ten, kdo ho nezaškrtne.
    */
-  souhlas?: boolean;
+  souhlas?: { verze: string; text: string; zvyraznene?: string };
   /** Nepovinné pole na křestní jméno. */
   jmeno?: boolean;
   /** Po odeslání přejít sem (děkovací stránka) místo zprávy na místě. */
@@ -56,7 +55,7 @@ export function LeadForm({
   partner = false,
   varianta = "tmavy",
   id,
-  souhlas = false,
+  souhlas,
   jmeno = false,
   dekovaciStranka,
 }: LeadFormProps) {
@@ -104,6 +103,7 @@ export function LeadForm({
           telefon: data.get("telefon"),
           zprava: data.get("zprava"),
           marketing_consent: souhlas ? data.get("souhlas") === "ano" : false,
+          marketing_consent_version: souhlas?.verze ?? null,
           // Návnada pro roboty; člověk ji nevidí.
           web: data.get("web"),
           ...zapamatujPuvod(),
@@ -121,6 +121,13 @@ export function LeadForm({
         // a jen když na ni člověk přišel odesláním, ne přímým odkazem.
         try {
           sessionStorage.setItem("klidoo-lead", magnet);
+          // Druhá šance na děkovací stránce: jen v tomto prohlížeči,
+          // jen pro toho, kdo souhlas nezaškrtl.
+          if (souhlas && data.get("souhlas") !== "ano") {
+            sessionStorage.setItem("klidoo-lead-email", String(data.get("email") ?? ""));
+          } else {
+            sessionStorage.removeItem("klidoo-lead-email");
+          }
         } catch {
           /* bez úložiště se konverze nezapočítá, nic víc */
         }
@@ -230,47 +237,81 @@ export function LeadForm({
               />
             ) : null}
 
-            <div className="flex flex-wrap gap-2.5">
-              <input
-                name="email"
-                type="email"
-                required
-                placeholder="vas@email.cz"
-                autoComplete="email"
-                aria-label="Váš e-mail"
-                className={cn(poleTridy, "flex-1 basis-56")}
-              />
-              <button
-                type="submit"
-                disabled={stav === "odesila"}
-                className={cn(
-                  "h-[3.125rem] shrink-0 rounded-xl px-5 font-semibold transition-all",
-                  "disabled:cursor-progress disabled:opacity-60",
-                  tmavy
-                    ? "bg-vyzva-btn text-[var(--vyzva-btn-ink)] hover:brightness-110"
-                    : "bg-brand text-brand-ink hover:bg-brand-hover",
-                )}
-              >
-                {stav === "odesila" ? "Odesílám…" : tlacitko}
-              </button>
-            </div>
-
-            {souhlas ? (
-              <label
-                className={cn(
-                  "flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed",
-                  tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-muted",
-                )}
-              >
+            {(() => {
+              const pole = (
                 <input
-                  type="checkbox"
-                  name="souhlas"
-                  value="ano"
-                  className="mt-0.5 h-5 w-5 shrink-0 rounded-md accent-[var(--brand)]"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="vas@email.cz"
+                  autoComplete="email"
+                  aria-label="Váš e-mail"
+                  className={cn(poleTridy, souhlas ? "" : "flex-1 basis-56")}
                 />
-                <span>{MARKETING_SOUHLAS.text} Nepovinné, materiál dostanete i bez toho.</span>
-              </label>
-            ) : null}
+              );
+              const tlacitkoOdeslat = (
+                <button
+                  type="submit"
+                  disabled={stav === "odesila"}
+                  className={cn(
+                    "h-[3.125rem] shrink-0 rounded-xl px-5 font-semibold transition-all",
+                    "disabled:cursor-progress disabled:opacity-60",
+                    souhlas ? "w-full" : "",
+                    tmavy
+                      ? "bg-vyzva-btn text-[var(--vyzva-btn-ink)] hover:brightness-110"
+                      : "bg-brand text-brand-ink hover:bg-brand-hover",
+                  )}
+                >
+                  {stav === "odesila" ? "Odesílám…" : tlacitko}
+                </button>
+              );
+              if (!souhlas) {
+                return (
+                  <div className="flex flex-wrap gap-2.5">
+                    {pole}
+                    {tlacitkoOdeslat}
+                  </div>
+                );
+              }
+              // Se souhlasem: e-mail, políčko, tlačítko — políčko musí být
+              // vidět dřív, než člověk klikne, jinak ho nikdo nezaškrtne.
+              const zbytek = souhlas.zvyraznene && souhlas.text.startsWith(souhlas.zvyraznene)
+                ? souhlas.text.slice(souhlas.zvyraznene.length)
+                : null;
+              return (
+                <>
+                  {pole}
+                  <label
+                    className={cn(
+                      "flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 text-[0.95rem] leading-relaxed",
+                      tmavy
+                        ? "border-white/15 text-[var(--vyzva-ink-muted)]"
+                        : "border-line bg-surface text-ink-muted",
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      name="souhlas"
+                      value="ano"
+                      className="mt-0.5 h-5 w-5 shrink-0 rounded-md accent-[var(--brand)]"
+                    />
+                    <span>
+                      {zbytek !== null ? (
+                        <>
+                          <strong className={tmavy ? "text-vyzva-ink" : "text-ink"}>
+                            {souhlas.zvyraznene}
+                          </strong>
+                          {zbytek}
+                        </>
+                      ) : (
+                        souhlas.text
+                      )}
+                    </span>
+                  </label>
+                  {tlacitkoOdeslat}
+                </>
+              );
+            })()}
 
             {/* Návnada pro roboty. Skrytá před lidmi i odečítačkami. */}
             <input

@@ -17,6 +17,7 @@ import type { NazevIkony } from "@/lib/ikony";
 import { ZNACKA } from "@/lib/brand";
 import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
 import { LeadForm } from "@/components/web/lead-form";
+import { VANOCNI_TIPY_SOUHLAS } from "@/lib/marketing-souhlas";
 import {
   BENEFITY,
   BEZ_KARTY,
@@ -446,7 +447,7 @@ export default async function Domu() {
             popis="Vezměte si zatím vánoční plánovač: tři způsoby, jak rozdělit svátky, plán na celé prázdniny a hotové zprávy pro druhého rodiče. Zdarma, stáhnete ho hned."
             tlacitko="Chci plánovač"
             hotovo="Plánovač je připravený."
-            souhlas
+            souhlas={VANOCNI_TIPY_SOUHLAS}
             dekovaciStranka="/vanocni-planovac/dekujeme"
           />
           <p className="-mt-6 mb-4 text-center text-sm text-ink-muted">
