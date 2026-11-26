@@ -31,6 +31,10 @@ export const DRUHY = [
   "zobrazeni",
   "kalkulacka",
   "lead",
+  // Sběr e-mailů: kolik lidí formulář vidí a kolik ho odešle.
+  "lead-formular-videt",
+  "lead-odeslano",
+  "lead-stazeno",
   "registrace",
   "rodina",
   "druhy_rodic",

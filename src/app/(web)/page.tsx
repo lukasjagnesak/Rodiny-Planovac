@@ -16,6 +16,7 @@ import { Ikona } from "@/components/ui/ikona";
 import type { NazevIkony } from "@/lib/ikony";
 import { ZNACKA } from "@/lib/brand";
 import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
+import { LeadForm } from "@/components/web/lead-form";
 import {
   BENEFITY,
   BEZ_KARTY,
@@ -431,6 +432,30 @@ export default async function Domu() {
               Vytvořit kalendář zdarma
             </VyzvaRegistrace>
           </div>
+        </Sloupec>
+      </section>
+
+      {/* ── 10 Pro ty, kdo ještě nezakládají rodinu ──────────────── */}
+      <section className="py-6 sm:py-10">
+        <Sloupec>
+          <LeadForm
+            id="nejste-pripraveni"
+            varianta="svetly"
+            magnet="vanocni-planovac"
+            nadpis="Ještě nejste připraveni?"
+            popis="Vezměte si zatím vánoční plánovač: tři způsoby, jak rozdělit svátky, plán na celé prázdniny a hotové zprávy pro druhého rodiče. Zdarma, stáhnete ho hned."
+            tlacitko="Chci plánovač"
+            hotovo="Plánovač je připravený."
+            souhlas
+            dekovaciStranka="/vanocni-planovac/dekujeme"
+          />
+          <p className="-mt-6 mb-4 text-center text-sm text-ink-muted">
+            Řešíte spíš papíry? Je tu i{" "}
+            <Link href="/vzor-dohody-o-stridave-peci" className="text-brand underline underline-offset-4">
+              vzor dohody o střídavé péči
+            </Link>
+            .
+          </p>
         </Sloupec>
       </section>
 

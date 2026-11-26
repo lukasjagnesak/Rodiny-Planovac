@@ -6,6 +6,7 @@ import { cn } from "@/lib/format";
 import { zapamatujPuvod } from "@/lib/atribuce";
 import { zmer } from "@/lib/mereni";
 import { PravniPoucka } from "./pravni-poucka";
+import { MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
 
 /**
  * Sběr kontaktu na veřejném webu.
@@ -34,6 +35,15 @@ export interface LeadFormProps {
   /** Tmavý blok se hodí doprostřed článku, světlý na stránku s formulářem. */
   varianta?: "tmavy" | "svetly";
   id?: string;
+  /**
+   * Nezaškrtnuté políčko s marketingovým souhlasem (text a verze z
+   * `lib/marketing-souhlas`). Materiál dostane i ten, kdo ho nezaškrtne.
+   */
+  souhlas?: boolean;
+  /** Nepovinné pole na křestní jméno. */
+  jmeno?: boolean;
+  /** Po odeslání přejít sem (děkovací stránka) místo zprávy na místě. */
+  dekovaciStranka?: string;
 }
 
 export function LeadForm({
@@ -46,10 +56,31 @@ export function LeadForm({
   partner = false,
   varianta = "tmavy",
   id,
+  souhlas = false,
+  jmeno = false,
+  dekovaciStranka,
 }: LeadFormProps) {
   const [stav, setStav] = React.useState<"ceka" | "odesila" | "hotovo">("ceka");
   const [chyba, setChyba] = React.useState<string | null>(null);
   const tmavy = varianta === "tmavy";
+
+  // Kolik lidí formulář vůbec vidí — jmenovatel pro podíl leadů.
+  const obal = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const prvek = obal.current;
+    if (!prvek || typeof IntersectionObserver === "undefined") return;
+    const pozorovatel = new IntersectionObserver(
+      (zaznamy) => {
+        if (zaznamy.some((z) => z.isIntersecting)) {
+          zmer("lead-formular-videt", undefined, { magnet });
+          pozorovatel.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    pozorovatel.observe(prvek);
+    return () => pozorovatel.disconnect();
+  }, [magnet]);
 
   async function odesli(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,6 +103,7 @@ export function LeadForm({
           organizace: data.get("organizace"),
           telefon: data.get("telefon"),
           zprava: data.get("zprava"),
+          marketing_consent: souhlas ? data.get("souhlas") === "ano" : false,
           // Návnada pro roboty; člověk ji nevidí.
           web: data.get("web"),
           ...zapamatujPuvod(),
@@ -83,8 +115,20 @@ export function LeadForm({
         throw new Error(telo?.error ?? "Odeslání se nepovedlo.");
       }
 
-      setStav("hotovo");
+      zmer("lead-odeslano", undefined, { magnet });
+      if (dekovaciStranka) {
+        // Konverze „Lead“ (GA4, Meta) se pošle až z děkovací stránky —
+        // a jen když na ni člověk přišel odesláním, ne přímým odkazem.
+        try {
+          sessionStorage.setItem("klidoo-lead", magnet);
+        } catch {
+          /* bez úložiště se konverze nezapočítá, nic víc */
+        }
+        window.location.assign(dekovaciStranka);
+        return;
+      }
       zmer("lead");
+      setStav("hotovo");
     } catch (potiz) {
       setStav("ceka");
       setChyba(
@@ -104,7 +148,11 @@ export function LeadForm({
   );
 
   return (
-    <div id={id} className={cn("my-10 rounded-2xl p-6 sm:p-7", tmavy ? "bg-vyzva" : "card")}>
+    <div
+      id={id}
+      ref={obal}
+      className={cn("my-10 rounded-2xl p-6 sm:p-7", tmavy ? "bg-vyzva" : "card")}
+    >
       <h3
         className={cn(
           "font-display text-xl font-semibold tracking-tight sm:text-2xl",
@@ -171,6 +219,17 @@ export function LeadForm({
               </div>
             ) : null}
 
+            {jmeno ? (
+              <input
+                name="jmeno"
+                type="text"
+                placeholder="Křestní jméno (nepovinné)"
+                autoComplete="given-name"
+                aria-label="Křestní jméno, nepovinné"
+                className={poleTridy}
+              />
+            ) : null}
+
             <div className="flex flex-wrap gap-2.5">
               <input
                 name="email"
@@ -196,6 +255,23 @@ export function LeadForm({
               </button>
             </div>
 
+            {souhlas ? (
+              <label
+                className={cn(
+                  "flex cursor-pointer items-start gap-2.5 pt-1 text-sm leading-relaxed",
+                  tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-muted",
+                )}
+              >
+                <input
+                  type="checkbox"
+                  name="souhlas"
+                  value="ano"
+                  className="mt-0.5 h-5 w-5 shrink-0 rounded-md accent-[var(--brand)]"
+                />
+                <span>{MARKETING_SOUHLAS.text} Nepovinné, materiál dostanete i bez toho.</span>
+              </label>
+            ) : null}
+
             {/* Návnada pro roboty. Skrytá před lidmi i odečítačkami. */}
             <input
               type="text"
@@ -218,8 +294,9 @@ export function LeadForm({
                 tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-subtle",
               )}
             >
-              Pošleme vám materiál a k tomu pár zpráv o tom, jak Klidoo pomáhá s koordinací.
-              Odhlásit se dá jedním klikem, odkaz je v každé zprávě.
+              {souhlas
+                ? "Materiál si stáhnete hned po odeslání. E-maily posíláme jen tomu, kdo zaškrtne odběr, a odhlásit se dá jedním klikem."
+                : "Pošleme vám materiál a k tomu pár zpráv o tom, jak Klidoo pomáhá s koordinací. Odhlásit se dá jedním klikem, odkaz je v každé zprávě."}
             </p>
             <PravniPoucka druh="odber" tmavy={tmavy} />
           </form>

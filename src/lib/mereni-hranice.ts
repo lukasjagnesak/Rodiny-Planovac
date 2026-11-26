@@ -27,6 +27,7 @@ export const CESTY_S_MERENIM = [
   "/clanky",
   "/dekujeme",
   "/checklist-prvnich-30-dni",
+  "/vanocni-planovac",
   "/pro-advokaty",
   "/pro-mediatory",
   "/pro-ospod-a-soudy",

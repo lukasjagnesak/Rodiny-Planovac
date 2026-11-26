@@ -37,6 +37,8 @@ export const PUBLIC_PATHS = [
   "/clanky",
   "/dekujeme",
   "/checklist-prvnich-30-dni",
+  "/vanocni-planovac",
+  "/stahnout",
   "/pro-advokaty",
   "/pro-mediatory",
   "/pro-ospod-a-soudy",

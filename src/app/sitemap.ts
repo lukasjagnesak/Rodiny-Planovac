@@ -22,6 +22,7 @@ const STRANKY: { cesta: string; priorita: number; frekvence: MetadataRoute.Sitem
   { cesta: "/o-klidoo", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/clanky", priorita: 0.7, frekvence: "weekly" },
   { cesta: "/checklist-prvnich-30-dni", priorita: 0.6, frekvence: "yearly" },
+  { cesta: "/vanocni-planovac", priorita: 0.8, frekvence: "weekly" },
   { cesta: "/pro-advokaty", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-mediatory", priorita: 0.5, frekvence: "yearly" },
   { cesta: "/pro-ospod-a-soudy", priorita: 0.5, frekvence: "yearly" },
