@@ -33,8 +33,13 @@ export function zapnuto(hodnota: string | undefined | null): boolean {
  */
 export const GOOGLE_ZAPNUTY = zapnuto(process.env.NEXT_PUBLIC_PRIHLASENI_GOOGLE);
 export const APPLE_ZAPNUTY = zapnuto(process.env.NEXT_PUBLIC_PRIHLASENI_APPLE);
+export const FACEBOOK_ZAPNUTY = zapnuto(process.env.NEXT_PUBLIC_PRIHLASENI_FACEBOOK);
 
 /** Má se nad formulář vůbec něco kreslit — a s tím i dělicí „nebo“? */
-export function jsouCiziPrihlaseni(google = GOOGLE_ZAPNUTY, apple = APPLE_ZAPNUTY): boolean {
-  return google || apple;
+export function jsouCiziPrihlaseni(
+  google = GOOGLE_ZAPNUTY,
+  apple = APPLE_ZAPNUTY,
+  facebook = FACEBOOK_ZAPNUTY,
+): boolean {
+  return google || apple || facebook;
 }

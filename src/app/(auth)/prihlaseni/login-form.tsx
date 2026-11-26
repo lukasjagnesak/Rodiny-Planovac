@@ -103,6 +103,7 @@ export function LoginForm() {
       <SocialniPrihlaseni
         popisekGoogle="Přihlásit se přes Google"
         popisekApple="Přihlásit se přes Apple"
+        popisekFacebook="Přihlásit se přes Facebook"
         dal={next}
       />
 

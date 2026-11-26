@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 import { PrihlaseniApple } from "@/components/ui/apple-button";
-import { APPLE_ZAPNUTY, GOOGLE_ZAPNUTY } from "@/lib/zpusoby-prihlaseni";
+import { PrihlaseniFacebook } from "@/components/ui/facebook-button";
+import { APPLE_ZAPNUTY, FACEBOOK_ZAPNUTY, GOOGLE_ZAPNUTY } from "@/lib/zpusoby-prihlaseni";
 import { CENIK, ZAKLADAJICI, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
 import { useZakladajiciVolno } from "@/components/web/zakladajici";
 import { ZNACKA } from "@/lib/brand";
@@ -214,7 +215,7 @@ export function RegisterForm() {
   }
 
   const kontext = coCeka(dal, Boolean(inviteToken));
-  const ciziPrihlaseni = GOOGLE_ZAPNUTY || APPLE_ZAPNUTY;
+  const ciziPrihlaseni = GOOGLE_ZAPNUTY || APPLE_ZAPNUTY || FACEBOOK_ZAPNUTY;
   const cil = inviteToken ? `/pozvanka/${inviteToken}` : dal;
   const tlacitko = inviteToken
     ? "Připojit se zdarma"
@@ -257,6 +258,9 @@ export function RegisterForm() {
               <PrihlaseniGoogle popisek="Pokračovat přes Google" dal={cil} />
             ) : null}
             {APPLE_ZAPNUTY ? <PrihlaseniApple popisek="Pokračovat přes Apple" dal={cil} /> : null}
+            {FACEBOOK_ZAPNUTY ? (
+              <PrihlaseniFacebook popisek="Pokračovat přes Facebook" dal={cil} />
+            ) : null}
             <Nebo />
           </div>
         ) : null}

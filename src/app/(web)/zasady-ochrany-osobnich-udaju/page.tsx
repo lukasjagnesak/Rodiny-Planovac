@@ -146,6 +146,11 @@ export default function Zasady() {
               dostaneme přeposílací adresu a tu skutečnou nevidíme.
             </li>
             <li>
+              <strong>Meta (Facebook)</strong> — pouze pokud se přihlásíte přes Facebook. Meta
+              nám předá vaše jméno a e-mail; nic dalšího z Facebooku nečteme a nic tam
+              nepublikujeme.
+            </li>
+            <li>
               <strong>Provozovatel push notifikací vašeho prohlížeče</strong> (například Google
               nebo Apple) — pouze pokud si sami zapnete notifikace; text notifikace k němu
               putuje zašifrovaný a přečíst ho umí jen vaše zařízení.

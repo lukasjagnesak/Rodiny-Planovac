@@ -13,7 +13,7 @@ import { jeNativni, plugin } from "./nativni-most";
  */
 export async function prihlasPres(
   supabase: SupabaseClient,
-  provider: "google" | "apple",
+  provider: "google" | "apple" | "facebook",
   dal: string,
   queryParams?: Record<string, string>,
 ): Promise<{ message: string } | null> {

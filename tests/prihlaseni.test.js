@@ -40,6 +40,8 @@ ok("nic zapnutého = nekreslí se", jsouCiziPrihlaseni(false, false) === false);
 ok("samotný Google stačí", jsouCiziPrihlaseni(true, false) === true);
 ok("samotný Apple stačí", jsouCiziPrihlaseni(false, true) === true);
 ok("oba taky", jsouCiziPrihlaseni(true, true) === true);
+ok("samotný Facebook stačí", jsouCiziPrihlaseni(false, false, true) === true);
+ok("nic ze tří = nekreslí se", jsouCiziPrihlaseni(false, false, false) === false);
 
 console.log(selhalo === 0 ? "\nVšechno prošlo." : `\n${selhalo} selhalo.`);
 process.exit(selhalo === 0 ? 0 : 1);

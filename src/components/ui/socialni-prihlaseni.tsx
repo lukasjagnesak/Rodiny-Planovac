@@ -2,7 +2,8 @@
 
 import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 import { PrihlaseniApple } from "@/components/ui/apple-button";
-import { APPLE_ZAPNUTY, GOOGLE_ZAPNUTY, jsouCiziPrihlaseni } from "@/lib/zpusoby-prihlaseni";
+import { PrihlaseniFacebook } from "@/components/ui/facebook-button";
+import { APPLE_ZAPNUTY, FACEBOOK_ZAPNUTY, GOOGLE_ZAPNUTY, jsouCiziPrihlaseni } from "@/lib/zpusoby-prihlaseni";
 
 /**
  * Blok cizích přihlášení nad formulářem, i s dělicí čarou pod ním.
@@ -17,10 +18,12 @@ import { APPLE_ZAPNUTY, GOOGLE_ZAPNUTY, jsouCiziPrihlaseni } from "@/lib/zpusoby
 export function SocialniPrihlaseni({
   popisekGoogle,
   popisekApple,
+  popisekFacebook,
   dal,
 }: {
   popisekGoogle: string;
   popisekApple: string;
+  popisekFacebook: string;
   dal: string;
 }) {
   if (!jsouCiziPrihlaseni()) return null;
@@ -30,6 +33,7 @@ export function SocialniPrihlaseni({
       <div className="space-y-2.5">
         {GOOGLE_ZAPNUTY ? <PrihlaseniGoogle popisek={popisekGoogle} dal={dal} /> : null}
         {APPLE_ZAPNUTY ? <PrihlaseniApple popisek={popisekApple} dal={dal} /> : null}
+        {FACEBOOK_ZAPNUTY ? <PrihlaseniFacebook popisek={popisekFacebook} dal={dal} /> : null}
       </div>
       <Nebo />
     </>
