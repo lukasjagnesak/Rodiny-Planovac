@@ -17,6 +17,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SettingsForms } from "@/components/settings/settings-forms";
 import { nactiPredplatne } from "@/lib/predplatne";
+import { stavMarketingu } from "@/lib/marketing-stav";
 import { NebezpecnaZona } from "@/components/settings/nebezpecna-zona";
 import type { GoogleAccount } from "@/lib/types";
 
@@ -26,7 +27,7 @@ export default async function SettingsPage() {
   const session = await requireSession();
   const supabase = await createClient();
 
-  const [{ data: google }, { data: edupage }, { count: pocetOdberu }, pristup, { data: marketing }] = await Promise.all([
+  const [{ data: google }, { data: edupage }, { count: pocetOdberu }, pristup, marketing] = await Promise.all([
     supabase.from("google_accounts").select("*").eq("user_id", session.userId).maybeSingle(),
     supabase
       .from("edupage_accounts")
@@ -38,7 +39,7 @@ export default async function SettingsPage() {
       .select("id", { count: "exact", head: true })
       .eq("user_id", session.userId),
     nactiPredplatne(session.family.id),
-    supabase.from("marketing_kontakty").select("souhlas").eq("user_id", session.userId).maybeSingle(),
+    stavMarketingu(session.profile.email),
   ]);
 
   const stavPredplatneho = !pristup.predplatne
@@ -103,7 +104,7 @@ export default async function SettingsPage() {
       title: "E-maily",
       description: "Tipy, novinky a nabídky Klidoo",
       Icon: Mail,
-      badge: marketing?.souhlas ? "odebíráte" : null,
+      badge: marketing === "odebira" ? "odebíráte" : null,
     },
     {
       href: "/nastaveni/aplikace",

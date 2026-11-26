@@ -7,7 +7,7 @@ import { ChevronRight, Eye, EyeOff, MailCheck, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, Spinner } from "@/components/ui/misc";
-import { PrihlaseniGoogle } from "@/components/ui/google-button";
+import { Nebo, PrihlaseniGoogle } from "@/components/ui/google-button";
 import { PrihlaseniApple } from "@/components/ui/apple-button";
 import { APPLE_ZAPNUTY, GOOGLE_ZAPNUTY } from "@/lib/zpusoby-prihlaseni";
 import { CENIK, ZAKLADAJICI, ZKUSEBNI_SLIB, korun } from "@/lib/tarify";
@@ -20,7 +20,7 @@ import { KartaSoukromi } from "@/components/web/karta-soukromi";
 import { zmer } from "@/lib/mereni";
 import { zapisRegistraci } from "@/lib/registrace-mereni";
 import { bezpecnyCil } from "@/lib/navrat";
-import { COOKIE_SOUHLAS, MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
+import { navrhOpravy } from "@/lib/preklep-emailu";
 import { useVAplikaci } from "@/lib/nativni-hook";
 import { PravniPoucka } from "@/components/web/pravni-poucka";
 
@@ -40,12 +40,11 @@ function coCeka(dal: string, pozvanka: boolean): string | null {
   return null;
 }
 
-type Pole = "jmeno" | "email" | "heslo";
+type Pole = "email" | "heslo";
 
 /** Kontrola jednoho pole. Hláška říká, co udělat, ne co je špatně. */
 function chybaPole(pole: Pole, hodnota: string): string | null {
   const v = hodnota.trim();
-  if (pole === "jmeno") return v ? null : "Napište své jméno — uvidí ho jen členové rodiny.";
   if (pole === "email") {
     if (!v) return "Napište e-mail, na který se budete přihlašovat.";
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? null : "Zkontrolujte e-mail, chybí v něm část.";
@@ -80,18 +79,14 @@ export function RegisterForm() {
   const dal = bezpecnyCil(params.get("dal"), "/vitejte");
 
   const [hodnoty, setHodnoty] = React.useState<Record<Pole, string>>({
-    jmeno: "",
     email: params.get("email") ?? "",
     heslo: "",
   });
   const [dotceno, setDotceno] = React.useState<Record<Pole, boolean>>({
-    jmeno: false,
     email: false,
     heslo: false,
   });
   const [ukazHeslo, setUkazHeslo] = React.useState(false);
-  // Marketingový souhlas: dobrovolný, nikdy předem zaškrtnutý.
-  const [marketing, setMarketing] = React.useState(false);
   // Aplikace z App Store / Google Play: bez ceny a odkazů na ceník
   // (lib/nativni.ts), potvrzení e-mailu se vrací do aplikace.
   const aplikace = useVAplikaci();
@@ -101,7 +96,6 @@ export function RegisterForm() {
   const odesila = React.useRef(false);
 
   const prvni = React.useRef<Record<Pole, HTMLInputElement | null>>({
-    jmeno: null,
     email: null,
     heslo: null,
   });
@@ -131,11 +125,12 @@ export function RegisterForm() {
   };
 
   const chyby: Record<Pole, string | null> = {
-    jmeno: chybaPole("jmeno", hodnoty.jmeno),
     email: chybaPole("email", hodnoty.email),
     heslo: chybaPole("heslo", hodnoty.heslo),
   };
   const zobrazenaChyba = (pole: Pole) => (dotceno[pole] ? chyby[pole] : null);
+  // „gmai.com“ apod. Bez potvrzovacího e-mailu by se na překlep nepřišlo.
+  const navrh = dotceno.email && !chyby.email ? navrhOpravy(hodnoty.email) : null;
 
   const zmenPole = (pole: Pole) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setHodnoty((h) => ({ ...h, [pole]: e.target.value }));
@@ -145,8 +140,8 @@ export function RegisterForm() {
     e.preventDefault();
     if (odesila.current) return;
 
-    setDotceno({ jmeno: true, email: true, heslo: true });
-    const prvniChybne = (["jmeno", "email", "heslo"] as Pole[]).find((p) => chyby[p]);
+    setDotceno({ email: true, heslo: true });
+    const prvniChybne = (["email", "heslo"] as Pole[]).find((p) => chyby[p]);
     if (prvniChybne) {
       prvni.current[prvniChybne]?.focus();
       return;
@@ -163,19 +158,11 @@ export function RegisterForm() {
     const { data, error } = await supabase.auth.signUp({
       email: hodnoty.email.trim(),
       password: hodnoty.heslo,
+      // Jméno se tu neptáme — zadá se v průvodci, až je člověk uvnitř.
+      // Registrace má být co nejkratší cesta do aplikace.
       options: {
-        data: {
-          full_name: hodnoty.jmeno.trim(),
-          // Souhlas do metadat jen když je zaškrtnutý. Databáze ho podle
-          // nich zapíše i s verzí textu (trigger `on_auth_user_marketing`).
-          ...(marketing
-            ? {
-                marketing_souhlas: true,
-                marketing_verze: MARKETING_SOUHLAS.verze,
-                marketing_zdroj: inviteToken ? "pozvanka" : "registrace",
-              }
-            : {}),
-        },
+        // Platí jen tehdy, když je v Supabase ještě zapnuté potvrzení
+        // e-mailu. Bez něj se session vrací hned a odkaz se nepoužije.
         // V aplikaci se odkaz z e-mailu otevře v prohlížeči; `/auth/aplikace`
         // ho vrátí do aplikace, kde leží PKCE ověřovač z této registrace.
         emailRedirectTo: `${window.location.origin}/auth/${aplikace ? "aplikace" : "callback"}?dal=${encodeURIComponent(redirectTarget)}`,
@@ -258,46 +245,21 @@ export function RegisterForm() {
           </div>
         ) : null}
 
-        {/* Přes Google odpadá heslo i potvrzovací e-mail. */}
+        {/* Google a Apple nahoře: jedno klepnutí a člověk je uvnitř. */}
         {ciziPrihlaseni ? (
           <div
             className="space-y-2.5"
             onClickCapture={(e) => {
-              if (!(e.target as HTMLElement).closest("button, a")) return;
-              zmer("registrace-cizi");
-              // Přes Google se do metadat nic přidat nedá. Souhlas si
-              // pamatuje krátká cookie a zapíše ho `/auth/callback`.
-              document.cookie = marketing
-                ? `${COOKIE_SOUHLAS}=${MARKETING_SOUHLAS.verze}; Max-Age=900; Path=/; SameSite=Lax; Secure`
-                : `${COOKIE_SOUHLAS}=; Max-Age=0; Path=/`;
+              if ((e.target as HTMLElement).closest("button, a")) zmer("registrace-cizi");
             }}
           >
             {GOOGLE_ZAPNUTY ? (
               <PrihlaseniGoogle popisek="Pokračovat přes Google" dal={cil} />
             ) : null}
             {APPLE_ZAPNUTY ? <PrihlaseniApple popisek="Pokračovat přes Apple" dal={cil} /> : null}
-            <p className="pt-1 text-center text-sm text-ink-subtle">
-              nebo vytvořte účet e-mailem
-            </p>
+            <Nebo />
           </div>
         ) : null}
-
-        <PoleFormulare
-          id="reg-jmeno"
-          label="Jméno"
-          napoveda="jak vás uvidí členové rodiny"
-          chyba={zobrazenaChyba("jmeno")}
-          input={{
-            ref: (el) => {
-              prvni.current.jmeno = el;
-            },
-            autoComplete: "name",
-            placeholder: "Jan Novák",
-            value: hodnoty.jmeno,
-            onChange: zmenPole("jmeno"),
-            onBlur: opustil("jmeno"),
-          }}
-        />
 
         <PoleFormulare
           id="reg-email"
@@ -318,6 +280,19 @@ export function RegisterForm() {
             onBlur: opustil("email"),
           }}
         />
+        {navrh ? (
+          <p className="-mt-1.5 text-sm text-ink-muted" role="status">
+            Nemyslíte{" "}
+            <button
+              type="button"
+              onClick={() => setHodnoty((h) => ({ ...h, email: navrh }))}
+              className="font-semibold text-brand underline underline-offset-4"
+            >
+              {navrh}
+            </button>
+            ?
+          </p>
+        ) : null}
 
         <PoleFormulare
           id="reg-heslo"
@@ -352,18 +327,6 @@ export function RegisterForm() {
             </button>
           }
         />
-
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl px-1 py-1 text-sm leading-relaxed text-ink-muted">
-          <input
-            type="checkbox"
-            checked={marketing}
-            onChange={(e) => setMarketing(e.target.checked)}
-            className="mt-0.5 h-5 w-5 shrink-0 rounded border-line-strong accent-[var(--brand)]"
-          />
-          <span>
-            {MARKETING_SOUHLAS.text} Nepovinné, účet funguje i bez toho.
-          </span>
-        </label>
 
         {error ? (
           <Alert tone="danger" className="text-[0.95rem]">

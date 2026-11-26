@@ -145,13 +145,13 @@ export function LoginForm() {
         }}
         className="w-full text-center text-sm text-ink-muted underline-offset-4 hover:text-ink hover:underline"
       >
-        {mode === "password" ? "Přihlásit se odkazem v e-mailu" : "Přihlásit se heslem"}
+        {mode === "password" ? "Nepamatujete si heslo? Pošleme odkaz e-mailem" : "Přihlásit se heslem"}
       </button>
 
       <div className="border-t border-line pt-4 text-center text-sm text-ink-muted">
         Nemáte účet?{" "}
         <Link href="/registrace" className="font-medium text-brand hover:underline">
-          Zaregistruj se
+          Zaregistrujte se
         </Link>
       </div>
     </form>
