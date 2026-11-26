@@ -35,7 +35,6 @@ export const DRUHY = [
   "lead-formular-videt",
   "lead-odeslano",
   "lead-stazeno",
-  "lead-souhlas-dodatecne",
   "registrace",
   "rodina",
   "druhy_rodic",

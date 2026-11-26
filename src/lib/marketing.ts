@@ -211,6 +211,9 @@ const UDALOSTI: Record<string, { ga: string; meta: string | null }> = {
   // reklama naučila hledat lidi, a rozpis si naklikají desítky za týden.
   "rozvrh-zadani": { ga: "rozvrh_zadani", meta: "Lead" },
   lead: { ga: "generate_lead", meta: "Lead" },
+  // Stažení plánovače bez e-mailu: v GA jako stažení souboru, pro Metu
+  // to není lead (nikdo nenechal kontakt).
+  "lead-stazeno": { ga: "file_download", meta: null },
   // Kroky registrační stránky. Jen název kroku, žádný obsah formuláře.
   // Meta je nedostává — učit se má na dokončených registracích.
   "registrace-zobrazeni": { ga: "landing_view", meta: null },

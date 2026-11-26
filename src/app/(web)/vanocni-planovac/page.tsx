@@ -6,11 +6,13 @@ import { Ikona } from "@/components/ui/ikona";
 import type { NazevIkony } from "@/lib/ikony";
 import { VANOCNI_TIPY_SOUHLAS } from "@/lib/marketing-souhlas";
 import { ZNACKA } from "@/lib/brand";
+import { NabidkaKlidoo, StahnoutPlanovac } from "@/components/web/vanocni-planovac";
 
 /**
  * Vánoční plánovač — vstupní stránka ze slova VÁNOCE pod reelsem
- * a z reklam. Za e-mail se rovnou stahuje PDF (/stahnout/…), nic se
- * neposílá poštou. Souhlas s novinkami je zvlášť a nepovinný.
+ * a z reklam. PDF se stahuje volně, bez e-mailu (/stahnout/…). E-mail
+ * jen pro toho, kdo chce i 5 tipů — samostatný formulář, odeslání =
+ * souhlas s přesně tímhle.
  */
 const POPIS =
   "Tři způsoby, jak rozdělit Vánoce mezi dva domovy, plán na celé prázdniny a čtyři hotové zprávy pro druhého rodiče. PDF zdarma.";
@@ -57,23 +59,15 @@ export default function VanocniPlanovac() {
         nadtitulek="Vánoce 2026 · zdarma"
         nadpis="Vánoce ve dvou domovech, domluvené včas"
         perex="Plánovač, se kterým se s druhým rodičem domluvíte na svátcích do 5. prosince, ne 23. Tři modely rozdělení, plán na celé prázdniny a hotové zprávy, které nikoho nenaštvou."
-      />
+      >
+        <div className="mt-7 flex flex-col items-start gap-2">
+          <StahnoutPlanovac misto="hero" />
+          <p className="text-sm text-ink-subtle">PDF, 3 strany. Bez e-mailu a bez registrace.</p>
+        </div>
+      </Hero>
 
       <Sloupec>
-        <LeadForm
-          id="stahnout"
-          varianta="svetly"
-          magnet="vanocni-planovac"
-          nadpis="Stáhnout vánoční plánovač"
-          popis="Napište e-mail a plánovač (PDF, 3 strany) si hned stáhnete. Na tisk i do telefonu."
-          tlacitko="Chci plánovač"
-          hotovo="Plánovač je připravený."
-          souhlas={VANOCNI_TIPY_SOUHLAS}
-          jmeno
-          dekovaciStranka="/vanocni-planovac/dekujeme"
-        />
-
-        <h2 className="mt-12 font-display text-2xl font-semibold tracking-tight text-ink">
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
           Co v něm je
         </h2>
         <ul className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -105,6 +99,24 @@ export default function VanocniPlanovac() {
             />
           ))}
         </div>
+        <div className="mt-6 flex justify-center">
+          <StahnoutPlanovac misto="pod-ukazkou" />
+        </div>
+
+        {/* Odběr je samostatný a dobrovolný: plánovač je výš i bez něj. */}
+        <LeadForm
+          id="tipy"
+          varianta="svetly"
+          magnet="vanocni-planovac"
+          nadpis="Chcete k plánovači i tipy?"
+          popis="Pět krátkých e-mailů do 23. 12., které vás provedou od návrhu druhému rodiči až po samotnou předávku."
+          tlacitko="Pošlete mi tipy"
+          hotovo="Hotovo. Přišel vám e-mail, ve kterém odběr jedním klepnutím potvrdíte. Když nedorazí, mrkněte do složky Hromadné nebo Spam."
+          souhlasOdeslanim={VANOCNI_TIPY_SOUHLAS}
+          jmeno
+        />
+
+        <NabidkaKlidoo misto="vanocni-planovac" />
 
         <Poznamka>
           Plánovač je orientační pomůcka, ne právní rada. Pokud máte svátky upravené rozsudkem

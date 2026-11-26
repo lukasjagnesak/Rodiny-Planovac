@@ -18,6 +18,7 @@ import { ZNACKA } from "@/lib/brand";
 import { CENIK, ZDARMA_S_PODMINKOU, ZKUSEBNI_DNI, korun } from "@/lib/tarify";
 import { LeadForm } from "@/components/web/lead-form";
 import { VANOCNI_TIPY_SOUHLAS } from "@/lib/marketing-souhlas";
+import { StahnoutPlanovac } from "@/components/web/vanocni-planovac";
 import {
   BENEFITY,
   BEZ_KARTY,
@@ -437,26 +438,33 @@ export default async function Domu() {
       </section>
 
       {/* ── 10 Pro ty, kdo ještě nezakládají rodinu ──────────────── */}
-      <section className="py-6 sm:py-10">
+      <section className="py-10 sm:py-14">
         <Sloupec>
-          <LeadForm
-            id="nejste-pripraveni"
-            varianta="svetly"
-            magnet="vanocni-planovac"
-            nadpis="Ještě nejste připraveni?"
-            popis="Vezměte si zatím vánoční plánovač: tři způsoby, jak rozdělit svátky, plán na celé prázdniny a hotové zprávy pro druhého rodiče. Zdarma, stáhnete ho hned."
-            tlacitko="Chci plánovač"
-            hotovo="Plánovač je připravený."
-            souhlas={VANOCNI_TIPY_SOUHLAS}
-            dekovaciStranka="/vanocni-planovac/dekujeme"
-          />
-          <p className="-mt-6 mb-4 text-center text-sm text-ink-muted">
-            Řešíte spíš papíry? Je tu i{" "}
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            Ještě nejste připraveni?
+          </h2>
+          <p className="mt-3 text-[0.95rem] leading-relaxed text-ink-muted">
+            Vezměte si zatím vánoční plánovač: tři způsoby, jak rozdělit svátky, plán na celé
+            prázdniny a hotové zprávy pro druhého rodiče. Zdarma, bez e-mailu. Řešíte spíš
+            papíry? Je tu i{" "}
             <Link href="/vzor-dohody-o-stridave-peci" className="text-brand underline underline-offset-4">
               vzor dohody o střídavé péči
             </Link>
             .
           </p>
+          <div className="mt-5">
+            <StahnoutPlanovac misto="homepage" />
+          </div>
+          <LeadForm
+            id="tipy"
+            varianta="svetly"
+            magnet="vanocni-planovac"
+            nadpis="Chcete k plánovači i tipy?"
+            popis="Pět krátkých e-mailů do 23. 12., které vás provedou od návrhu druhému rodiči až po samotnou předávku."
+            tlacitko="Pošlete mi tipy"
+            hotovo="Hotovo. Přišel vám e-mail, ve kterém odběr jedním klepnutím potvrdíte. Když nedorazí, mrkněte do složky Hromadné nebo Spam."
+            souhlasOdeslanim={VANOCNI_TIPY_SOUHLAS}
+          />
         </Sloupec>
       </section>
 

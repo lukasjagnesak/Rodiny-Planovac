@@ -39,6 +39,12 @@ export interface LeadFormProps {
    * `lib/marketing-souhlas`). Materiál dostane i ten, kdo ho nezaškrtne.
    */
   souhlas?: { verze: string; text: string; zvyraznene?: string };
+  /**
+   * Formulář, jehož jediným účelem je odběr (např. „pošlete mi tipy“):
+   * odeslání = souhlas. Text souhlasu stojí přímo nad tlačítkem, políčko
+   * by bylo navíc. Nepoužívat u formulářů, které vydávají materiál.
+   */
+  souhlasOdeslanim?: { verze: string; text: string };
   /** Nepovinné pole na křestní jméno. */
   jmeno?: boolean;
   /** Po odeslání přejít sem (děkovací stránka) místo zprávy na místě. */
@@ -56,6 +62,7 @@ export function LeadForm({
   varianta = "tmavy",
   id,
   souhlas,
+  souhlasOdeslanim,
   jmeno = false,
   dekovaciStranka,
 }: LeadFormProps) {
@@ -102,8 +109,12 @@ export function LeadForm({
           organizace: data.get("organizace"),
           telefon: data.get("telefon"),
           zprava: data.get("zprava"),
-          marketing_consent: souhlas ? data.get("souhlas") === "ano" : false,
-          marketing_consent_version: souhlas?.verze ?? null,
+          marketing_consent: souhlasOdeslanim
+            ? true
+            : souhlas
+              ? data.get("souhlas") === "ano"
+              : false,
+          marketing_consent_version: (souhlasOdeslanim ?? souhlas)?.verze ?? null,
           // Návnada pro roboty; člověk ji nevidí.
           web: data.get("web"),
           ...zapamatujPuvod(),
@@ -246,7 +257,7 @@ export function LeadForm({
                   placeholder="vas@email.cz"
                   autoComplete="email"
                   aria-label="Váš e-mail"
-                  className={cn(poleTridy, souhlas ? "" : "flex-1 basis-56")}
+                  className={cn(poleTridy, souhlas || souhlasOdeslanim ? "" : "flex-1 basis-56")}
                 />
               );
               const tlacitkoOdeslat = (
@@ -256,7 +267,7 @@ export function LeadForm({
                   className={cn(
                     "h-[3.125rem] shrink-0 rounded-xl px-5 font-semibold transition-all",
                     "disabled:cursor-progress disabled:opacity-60",
-                    souhlas ? "w-full" : "",
+                    souhlas || souhlasOdeslanim ? "w-full" : "",
                     tmavy
                       ? "bg-vyzva-btn text-[var(--vyzva-btn-ink)] hover:brightness-110"
                       : "bg-brand text-brand-ink hover:bg-brand-hover",
@@ -265,6 +276,22 @@ export function LeadForm({
                   {stav === "odesila" ? "Odesílám…" : tlacitko}
                 </button>
               );
+              if (souhlasOdeslanim) {
+                return (
+                  <>
+                    {pole}
+                    <p
+                      className={cn(
+                        "text-[0.95rem] leading-relaxed",
+                        tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-muted",
+                      )}
+                    >
+                      {souhlasOdeslanim.text}
+                    </p>
+                    {tlacitkoOdeslat}
+                  </>
+                );
+              }
               if (!souhlas) {
                 return (
                   <div className="flex flex-wrap gap-2.5">
@@ -335,7 +362,9 @@ export function LeadForm({
                 tmavy ? "text-[var(--vyzva-ink-muted)]" : "text-ink-subtle",
               )}
             >
-              {souhlas
+              {souhlasOdeslanim
+                ? "Nic jiného než tyhle tipy vám posílat nebudeme. Odhlásit se dá jedním klikem v každém e-mailu."
+                : souhlas
                 ? "Materiál si stáhnete hned po odeslání. E-maily posíláme jen tomu, kdo zaškrtne odběr, a odhlásit se dá jedním klikem."
                 : "Pošleme vám materiál a k tomu pár zpráv o tom, jak Klidoo pomáhá s koordinací. Odhlásit se dá jedním klikem, odkaz je v každé zprávě."}
             </p>
