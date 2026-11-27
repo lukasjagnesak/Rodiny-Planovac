@@ -1,0 +1,6 @@
+# Nahlášení chyby v zabezpečení Klidoo. Podrobnosti: https://klidoo.cz/bezpecnost
+Contact: mailto:info@klidoo.cz
+Expires: 2027-10-27T00:00:00.000Z
+Preferred-Languages: cs, en
+Canonical: https://klidoo.cz/.well-known/security.txt
+Policy: https://klidoo.cz/bezpecnost
