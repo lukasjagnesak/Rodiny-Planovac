@@ -1,57 +1,36 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { HODINA, klicVolajiciho, Limit } from "@/lib/limit";
-import { vytvorDocx, type Odstavec } from "@/lib/docx";
-import {
-  CHECKLIST_PATA,
-  CHECKLIST_TITULEK,
-  CHECKLIST_UVOD,
-  SEKCE,
-} from "@/lib/checklist";
+import { checklistPdf } from "@/lib/checklist-pdf";
 
 /**
- * Checklist ke stažení ve Wordu.
+ * Checklist ke stažení v PDF.
  *
  * Skládá se ze stejných dat, jaká vykresluje stránka — kdyby to bylo
  * dvakrát, rozejde se to při první úpravě a lidem přijde něco jiného,
  * než co si přečetli.
- */
-/**
- * Skládání dokumentu stojí procesor, a jde o to samé soubor pořád
- * dokola. Třicet stažení za hodinu pokryje i člověka, který si to
- * rozmyslí a stáhne znovu.
+ *
+ * Skládání dokumentu stojí procesor a jde pořád o tentýž soubor, proto
+ * se jednou složí a drží v paměti. Limit chrání před tím, kdo by adresu
+ * zkoušel ve smyčce.
  */
 const LIMIT = new Limit(30, HODINA);
+
+let soubor: Buffer | null = null;
 
 export function GET(request: NextRequest) {
   if (LIMIT.prekrocen(klicVolajiciho(request.headers) ?? "neznámá")) {
     return NextResponse.json(
-      { error: "Zkoušíte to moc často. Dej tomu chvilku." },
+      { error: "Zkoušíte to moc často. Zkuste to prosím za chvíli." },
       { status: 429 },
     );
   }
 
-  const odstavce: Odstavec[] = [
-    { druh: "nadpis1", text: CHECKLIST_TITULEK },
-    { druh: "text", text: CHECKLIST_UVOD },
-  ];
-
-  for (const sekce of SEKCE) {
-    odstavce.push({ druh: "nadpis2", text: sekce.nadpis });
-    for (const bod of sekce.body) {
-      odstavce.push({ druh: "odrazka", text: bod });
-    }
-  }
-
-  odstavce.push({ druh: "drobne", text: CHECKLIST_PATA });
-
-  const soubor = vytvorDocx(odstavce);
+  soubor ??= checklistPdf();
 
   return new NextResponse(new Uint8Array(soubor), {
     headers: {
-      "Content-Type":
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "Content-Disposition":
-        'attachment; filename="klidoo-checklist-prvnich-30-dni.docx"',
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="Klidoo-checklist-prvnich-30-dni.pdf"',
       "Content-Length": String(soubor.length),
       // Obsah se mění jen s nasazením, ne s uživatelem.
       "Cache-Control": "public, max-age=3600",

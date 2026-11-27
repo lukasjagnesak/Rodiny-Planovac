@@ -4,6 +4,11 @@ import { FotoPas, Hero, Poznamka, Sloupec } from "@/components/web/prvky";
 import { LeadForm } from "@/components/web/lead-form";
 import { NastrojeDokumentu } from "@/components/web/kopirovat";
 import {
+  ChecklistInteraktivni,
+  StahnoutChecklist,
+} from "@/components/web/checklist-interaktivni";
+import { MARKETING_SOUHLAS } from "@/lib/marketing-souhlas";
+import {
   CHECKLIST_TITULEK,
   CHECKLIST_UVOD,
   SEKCE,
@@ -12,7 +17,7 @@ import { ZNACKA } from "@/lib/brand";
 
 const POPISEK =
   "Devatenáct věcí, které je potřeba zařídit v prvním měsíci střídavé péče — " +
-  "škola, lékař, doklady, peníze, provoz. Ke stažení ve Wordu, zdarma.";
+  "škola, lékař, doklady, peníze, provoz. Odškrtávejte online nebo si stáhněte PDF, zdarma.";
 
 export const metadata: Metadata = {
   title: CHECKLIST_TITULEK,
@@ -42,7 +47,11 @@ export default function Checklist() {
         nadpis="Prvních 30 dní ve střídavé péči"
         perex={CHECKLIST_UVOD}
       >
-        <NastrojeDokumentu text={textChecklistu()} />
+        <div className="flex flex-wrap items-center gap-3">
+          <StahnoutChecklist misto="hero" />
+          <NastrojeDokumentu text={textChecklistu()} />
+        </div>
+        <p className="mt-3 text-sm text-ink-muted">PDF k vytištění. Bez e-mailu a bez registrace.</p>
       </Hero>
 
       <FotoPas
@@ -52,39 +61,24 @@ export default function Checklist() {
       />
 
       <Sloupec>
-        <div className="space-y-8">
-          {SEKCE.map(({ nadpis, body }) => (
-            <section key={nadpis} className="card p-5 sm:p-6">
-              <h2 className="font-display text-lg font-semibold text-ink">{nadpis}</h2>
-              <ul className="mt-4 space-y-3">
-                {body.map((bod) => (
-                  <li
-                    key={bod}
-                    className="flex gap-3 text-[0.95rem] leading-relaxed text-ink-muted"
-                  >
-                    <span
-                      aria-hidden
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded-[5px] border border-line-strong"
-                    />
-                    {bod}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+        <ChecklistInteraktivni sekce={SEKCE} />
+
+        <div className="no-print my-10 flex flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-6">
+          <h2 className="font-display text-xl font-semibold text-ink">Na lednici nebo pro druhého rodiče</h2>
+          <p className="text-[0.95rem] leading-relaxed text-ink-muted">
+            Stejný seznam v PDF se zaškrtávacími políčky, dvě strany A4. Otevře se v každém
+            telefonu i počítači.
+          </p>
+          <StahnoutChecklist misto="pod-seznamem" />
         </div>
 
         <LeadForm
           magnet="checklist-30-dni"
-          nadpis="Stáhnout ve Wordu"
-          popis="Celý checklist v jednom souboru se zaškrtávacími políčky — k vytištění na lednici nebo k poslání druhému rodiči. Otevře se v Wordu, Pages i Google Dokumentech."
-          tlacitko="Chci soubor"
-          hotovo="Díky. Soubor se stáhne tlačítkem níž — a dáme vědět, až přibude něco dalšího."
-          odkaz={{
-            href: "/api/checklist",
-            popisek: "Stáhnout checklist (.docx)",
-            stahnout: true,
-          }}
+          nadpis="Chcete vědět, až přibude další návod?"
+          popis="Občas pošleme nový checklist, vzor nebo článek pro rodiny ve dvou domácnostech. Žádné denní zprávy."
+          tlacitko="Odebírat"
+          hotovo="Díky, ozveme se, až bude co poslat."
+          souhlasOdeslanim={MARKETING_SOUHLAS}
         />
 
         <Poznamka>

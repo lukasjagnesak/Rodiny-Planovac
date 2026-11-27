@@ -231,6 +231,8 @@ export type Prvek =
   | { typ: "cislo"; popis: string; hodnota: string }
   | { typ: "cara" }
   | { typ: "mezera"; vyska?: number }
+  /** Prázdné zaškrtávací políčko s textem — pro checklisty k vytištění. */
+  | { typ: "ukol"; text: string }
   /** Bílá karta se zaoblením — nosný prvek webu. */
   | { typ: "karta"; prvky: Prvek[] };
 
@@ -452,6 +454,29 @@ function polozka(
     }
     case "mezera":
       return y - (prvek.vyska ?? 12);
+    case "ukol": {
+      const v = VELIKOST.odstavec;
+      const policko = 11;
+      const odsazeni = policko + 10;
+      const radky = zalom(prvek.text, v, sirka - odsazeni);
+      y -= 6;
+      const horni = y;
+      for (const radek of radky) {
+        y -= v * 1.55;
+        textOps(ctx, radek, v, x + odsazeni, y, INK, "telo");
+      }
+      // Políčko sedí na první řádce, ne uprostřed víceřádkového bodu —
+      // tak se odškrtává i na papíře.
+      const spodek = horni - v * 1.55 - 2.2;
+      ctx.out?.push(
+        "q",
+        `${TLUMENA} RG 1 w`,
+        zaobleny(x, spodek, policko, policko, 2.5),
+        "h S",
+        "Q",
+      );
+      return y - 4;
+    }
     case "karta": {
       const vnitrni = sirka - KARTA.okraj * 2;
       let konec = y - KARTA.okraj;
